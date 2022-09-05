@@ -21,6 +21,7 @@ import com.google.ar.core.Plane;
 import com.google.ar.sceneform.AnchorNode;
 import com.google.ar.sceneform.HitTestResult;
 import com.google.ar.sceneform.Node;
+import com.google.ar.sceneform.animation.ModelAnimation;
 import com.google.ar.sceneform.animation.ModelAnimator;
 import com.google.ar.sceneform.math.Vector3;
 import com.google.ar.sceneform.rendering.Color;
@@ -73,8 +74,10 @@ public class FirstFragment extends Fragment {
             ModelRenderable
             .builder()
             //.setSource(view.getContext(), Uri.parse("models/tree.glb"))
+//            .setSource(view.getContext(), Uri.parse("models/halloween.glb"))
+            .setSource(view.getContext(), Uri.parse("models/steampunk_vehicle.glb"))
 //            .setSource(view.getContext(), Uri.parse("models/test_anim.glb"))
-            .setSource(view.getContext(), Uri.parse("models/halloween.glb"))
+//            .setSource(view.getContext(), Uri.parse("models/steampunk_vehicle.gltf"))
             .setIsFilamentGltf(true)    //これは上のファイルを読み込む場合は必要なよう
             .build();
 
@@ -179,7 +182,7 @@ public class FirstFragment extends Fragment {
 
                     //AnchorNodeを親として、モデル情報からNodeを生成
                     TestAnimationNode node = new TestAnimationNode( transformationSystem );
-                    //node.setLocalScale( new Vector3( 0.2f, 0.2f, 0.2f ) );
+//                    node.setLocalScale( new Vector3( 0.001f, 0.001f, 0.001f ) );
                     node.setParent(anchorNode);
                     node.setRenderable( renderable );
                     node.select();
@@ -195,8 +198,7 @@ public class FirstFragment extends Fragment {
 
                     Log.i("アニメーション", "getAnimationCount()=" + node.getRenderableInstance().getAnimationCount() );
 
-/*                    ModelAnimator animator = new ModelAnimator(mRenderable.getA, renderable);
-                    animator.start();*/
+                    //node.getRenderableInstance().animate(true).start();
 
                     node.setOnTapListener(new Node.OnTapListener() {
                             @Override
