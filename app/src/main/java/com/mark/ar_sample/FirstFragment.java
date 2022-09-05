@@ -1,5 +1,7 @@
 package com.mark.ar_sample;
 
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,6 +21,7 @@ import com.google.ar.core.Plane;
 import com.google.ar.sceneform.AnchorNode;
 import com.google.ar.sceneform.HitTestResult;
 import com.google.ar.sceneform.Node;
+import com.google.ar.sceneform.animation.ModelAnimator;
 import com.google.ar.sceneform.math.Vector3;
 import com.google.ar.sceneform.rendering.Color;
 import com.google.ar.sceneform.rendering.Material;
@@ -40,9 +43,10 @@ public class FirstFragment extends Fragment {
 
     private FragmentFirstBinding binding;
     private ArFragment arFragment;
-    private Renderable mRenderable;
+    private ModelRenderable mRenderable;
     private ModelRenderable mRedSphereRenderable;
     private ModelRenderable mBlueSphereRenderable;
+    private ModelRenderable mRedCubeRenderable;
     private ViewRenderable mTextViewRenderable;
 
 
@@ -69,6 +73,7 @@ public class FirstFragment extends Fragment {
             ModelRenderable
             .builder()
             //.setSource(view.getContext(), Uri.parse("models/tree.glb"))
+//            .setSource(view.getContext(), Uri.parse("models/test_anim.glb"))
             .setSource(view.getContext(), Uri.parse("models/halloween.glb"))
             .setIsFilamentGltf(true)    //これは上のファイルを読み込む場合は必要なよう
             .build();
@@ -101,6 +106,13 @@ public class FirstFragment extends Fragment {
                     //！ここで色を変えると、前に作成したRenderableにも影響がでる
                     //material.setFloat3( MATERIAL_COLOR , new Color(android.graphics.Color.BLUE) );
                     mBlueSphereRenderable = ShapeFactory.makeSphere(0.05f, new Vector3(0.0f, 0.0f, 0.0f), material);
+
+                    mRedCubeRenderable = ShapeFactory.makeCube(
+                            new Vector3(1.2f, 0.3f, 0.4f),
+                            new Vector3(0.1f, 0.1f, 0.1f),
+                            material);
+
+
                 });
 
 
@@ -121,7 +133,7 @@ public class FirstFragment extends Fragment {
                 public void onTapPlane(HitResult hitResult, Plane plane, MotionEvent motionEvent) {
 
                     //Renderable未生成なら、処理なし
-                    if( mRenderable == null || mRedSphereRenderable == null || mBlueSphereRenderable == null ){
+                    if( mRenderable == null || mRedSphereRenderable == null || mBlueSphereRenderable == null || mRedCubeRenderable == null ){
                         return;
                     }
 
@@ -143,6 +155,9 @@ public class FirstFragment extends Fragment {
                             break;
                     }
 
+//                    renderable = mRedCubeRenderable;
+                    renderable = mRenderable;
+
 //                    Renderable renderable = mRenderable;
                     /*Renderable renderable = mRedSphereRenderable;
                     if (renderable == null) {
@@ -156,21 +171,49 @@ public class FirstFragment extends Fragment {
                     AnchorNode anchorNode = new AnchorNode(anchor);
                     anchorNode.setParent( arFragment.getArSceneView().getScene() );
 
+                    Vector3 posa = anchorNode.getLocalPosition();
+                    Log.i("メソッド調査", "アンカーノード位置 x=" + posa.x + " y=" + posa.y + " z="  + posa.z);
+
                     //ノードに対するジェスチャ
                     TransformationSystem transformationSystem = arFragment.getTransformationSystem();
 
                     //AnchorNodeを親として、モデル情報からNodeを生成
-                    TransformableNode node = new TransformableNode( transformationSystem );
-                    node.setLocalScale( new Vector3( 0.2f, 0.2f, 0.2f ) );
+                    TestAnimationNode node = new TestAnimationNode( transformationSystem );
+                    //node.setLocalScale( new Vector3( 0.2f, 0.2f, 0.2f ) );
                     node.setParent(anchorNode);
                     node.setRenderable( renderable );
                     node.select();
+
+                    final int durationInMilliseconds = 1000;
+                    final float minimumIntensity = 0.0f;
+                    final float maximumIntensity = 1.0f;
+                    ValueAnimator intensityAnimator = ObjectAnimator.ofFloat( node, "posY", minimumIntensity, maximumIntensity);
+                    intensityAnimator.setDuration(durationInMilliseconds);
+                    intensityAnimator.setRepeatCount(ValueAnimator.INFINITE);
+                    intensityAnimator.setRepeatMode(ValueAnimator.REVERSE);
+//                    intensityAnimator.start();
+
+                    Log.i("アニメーション", "getAnimationCount()=" + node.getRenderableInstance().getAnimationCount() );
+
+/*                    ModelAnimator animator = new ModelAnimator(mRenderable.getA, renderable);
+                    animator.start();*/
 
                     node.setOnTapListener(new Node.OnTapListener() {
                             @Override
                             public void onTap(HitTestResult hitTestResult, MotionEvent motionEvent) {
                                 Log.i("onTap", "onTapを検出");
                                 //node.setLocalScale( new Vector3( 2, 3, 1 ) );
+
+                                Vector3 pos = node.getLocalPosition();
+                                Log.i("メソッド調査", "ノード位置(local) x=" + pos.x + " y=" + pos.y + " z="  + pos.z);
+                                Vector3 posw = node.getWorldScale();
+                                Log.i("メソッド調査", "ノード位置(world) x=" + posw.x + " y=" + posw.y + " z="  + posw.z);
+                                Vector3 scale = node.getLocalScale();
+                                Log.i("メソッド調査", "ノードスケール(local) x=" + scale.x + " y=" + scale.y + " z="  + scale.z);
+                                Vector3 scaleW = node.getWorldScale();
+                                Log.i("メソッド調査", "ノードスケール(world) x=" + scaleW.x + " y=" + scaleW.y + " z="  + scaleW.z);
+
+                                Log.i("メソッド調査", "ノードスケール(world) x=" + scaleW.x + " y=" + scaleW.y + " z="  + scaleW.z);
 
                                 if( mTextViewRenderable == null ){
                                     return;
@@ -182,7 +225,7 @@ public class FirstFragment extends Fragment {
                                 //テキストノードを生成して、タッチされたノードの少し上に表示させる
                                 TransformableNode textNode = new TransformableNode( transformationSystem );
                                 textNode.setParent( node );
-                                textNode.setLocalPosition( new Vector3( 0f, vector3.y + 0.0f, 0f ) );
+                                textNode.setLocalPosition( new Vector3( -0.5f, 0.3f + 0.0f, 0f ) );
                                 textNode.setRenderable(mTextViewRenderable);
                                 textNode.select();
                             }
