@@ -75,7 +75,8 @@ public class FirstFragment extends Fragment {
             .builder()
             //.setSource(view.getContext(), Uri.parse("models/tree.glb"))
 //            .setSource(view.getContext(), Uri.parse("models/halloween.glb"))
-            .setSource(view.getContext(), Uri.parse("models/steampunk_vehicle.glb"))
+//            .setSource(view.getContext(), Uri.parse("models/sample_bear.glb"))
+            .setSource(view.getContext(), Uri.parse("models/sample_bear_small.glb"))
 //            .setSource(view.getContext(), Uri.parse("models/test_anim.glb"))
 //            .setSource(view.getContext(), Uri.parse("models/steampunk_vehicle.gltf"))
             .setIsFilamentGltf(true)    //これは上のファイルを読み込む場合は必要なよう
@@ -134,6 +135,9 @@ public class FirstFragment extends Fragment {
         arFragment.setOnTapArPlaneListener(new BaseArFragment.OnTapArPlaneListener() {
                 @Override
                 public void onTapPlane(HitResult hitResult, Plane plane, MotionEvent motionEvent) {
+
+                    Log.i("AR調査", "onTapPlane");
+                    Log.i("AR調査", "mRenderable=" + mRenderable);
 
                     //Renderable未生成なら、処理なし
                     if( mRenderable == null || mRedSphereRenderable == null || mBlueSphereRenderable == null || mRedCubeRenderable == null ){
