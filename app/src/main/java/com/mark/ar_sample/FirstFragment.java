@@ -76,7 +76,7 @@ public class FirstFragment extends Fragment {
             //.setSource(view.getContext(), Uri.parse("models/tree.glb"))
 //            .setSource(view.getContext(), Uri.parse("models/halloween.glb"))
 //            .setSource(view.getContext(), Uri.parse("models/sample_bear.glb"))
-            .setSource(view.getContext(), Uri.parse("models/sample_bear_small.glb"))
+            .setSource(view.getContext(), Uri.parse("models/sample_bear_small2.glb"))
 //            .setSource(view.getContext(), Uri.parse("models/test_anim.glb"))
 //            .setSource(view.getContext(), Uri.parse("models/steampunk_vehicle.gltf"))
             .setIsFilamentGltf(true)    //これは上のファイルを読み込む場合は必要なよう
@@ -87,8 +87,7 @@ public class FirstFragment extends Fragment {
             .thenAccept( renderable -> mRenderable = renderable )
             .exceptionally(
                     throwable -> {
-                        Toast toast =
-                                Toast.makeText(view.getContext(), "Unable to load andy renderable", Toast.LENGTH_LONG);
+                        Toast toast = Toast.makeText(view.getContext(), "Unable to load andy renderable", Toast.LENGTH_LONG);
                         toast.setGravity(Gravity.CENTER, 0, 0);
                         toast.show();
 
