@@ -1,4 +1,4 @@
-package com.mark.ar_sample;
+package com.ar.ar_programming;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -9,7 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.mark.ar_sample.databinding.FragmentSecondBinding;
+import com.ar.ar_programming.databinding.FragmentSecondBinding;
 
 public class SecondFragment extends Fragment {
 
@@ -20,10 +20,8 @@ public class SecondFragment extends Fragment {
             LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState
     ) {
-
         binding = FragmentSecondBinding.inflate(inflater, container, false);
         return binding.getRoot();
-
     }
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {

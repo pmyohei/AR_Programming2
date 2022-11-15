@@ -1,4 +1,4 @@
-package com.mark.ar_sample;
+package com.ar.ar_programming;
 
 import org.junit.Test;
 

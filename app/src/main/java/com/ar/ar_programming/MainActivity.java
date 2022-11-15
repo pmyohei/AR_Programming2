@@ -1,15 +1,11 @@
-package com.mark.ar_sample;
+package com.ar.ar_programming;
 
-import android.net.Uri;
 import android.os.Bundle;
 
 import com.google.android.material.snackbar.Snackbar;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.util.Log;
-import android.view.Gravity;
-import android.view.MotionEvent;
 import android.view.View;
 
 import androidx.navigation.NavController;
@@ -17,21 +13,12 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
-import com.google.ar.core.Anchor;
-import com.google.ar.core.HitResult;
-import com.google.ar.core.Plane;
-import com.google.ar.sceneform.AnchorNode;
-import com.google.ar.sceneform.rendering.ModelRenderable;
 import com.google.ar.sceneform.rendering.Renderable;
 import com.google.ar.sceneform.ux.ArFragment;
-import com.google.ar.sceneform.ux.BaseArFragment;
-import com.google.ar.sceneform.ux.TransformableNode;
-import com.mark.ar_sample.databinding.ActivityMainBinding;
+import com.ar.ar_programming.databinding.ActivityMainBinding;
 
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.TextView;
-import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -61,51 +48,6 @@ public class MainActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
-
-/*        arFragment = (ArFragment)getSupportFragmentManager().findFragmentById(R.id.sceneform_fragment);
-
-        ModelRenderable
-            .builder()
-            .setSource(this, Uri.parse("models/halloween.glb"))
-            .build()
-            .thenAccept( renderable -> mRenderable = renderable )
-            .exceptionally(
-                        throwable -> {
-                            Toast toast =
-                                    Toast.makeText(this, "Unable to load andy renderable", Toast.LENGTH_LONG);
-                            toast.setGravity(Gravity.CENTER, 0, 0);
-                            toast.show();
-                            return null;
-                        });
-
-
-        if( arFragment == null ){
-            Log.i("test", "nullになってる？");
-            return;
-        }
-
-        arFragment.setOnTapArPlaneListener(new BaseArFragment.OnTapArPlaneListener() {
-                  @Override
-                  public void onTapPlane(HitResult hitResult, Plane plane, MotionEvent motionEvent) {
-                      if (mRenderable == null) {
-                          return;
-                      }
-
-                      // Create the Anchor.
-                      Anchor anchor = hitResult.createAnchor();
-                      AnchorNode anchorNode = new AnchorNode(anchor);
-                      anchorNode.setParent(arFragment.getArSceneView().getScene());
-
-                      // Create the transformable andy and add it to the anchor.
-                      TransformableNode andy = new TransformableNode(arFragment.getTransformationSystem());
-                      andy.setParent(anchorNode);
-                      andy.setRenderable(mRenderable);
-                      andy.select();
-                  }
-              }
-        );*/
-
-
     }
 
     @Override
