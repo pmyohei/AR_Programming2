@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="bottom"
+    android:gravity="center">
+
+    <!--  BottomSheet本体  -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_stampingMemoBottomSheet"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white_80"
+        app:layout_behavior="@string/bottom_sheet_behavior"
+        app:behavior_hideable="false"
+        app:behavior_peekHeight="80dp">
+
+        <TextView
+            android:id="@+id/tv_contents"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="8dp"
+            android:text="UI"
+            android:textAlignment="center"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/ll"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="parent" />
+
+        <LinearLayout
+            xmlns:tools="http://schemas.android.com/tools"
+            android:id="@+id/ll"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:orientation="vertical"
+            app:layout_constraintTop_toBottomOf="@+id/tv_contents"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            >
+
+            <View
+                android:id="@+id/v_removeArea"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:background="@color/purple_200"
+                />
+
+            <TextView
+                android:id="@+id/tv_start"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/teal_700"
+                android:text="Start"
+                android:textSize="20sp"
+                />
+
+            <TextView
+                android:id="@+id/tv_nodeAllClear"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/purple_700"
+                android:text="Node AllClear"
+                android:textSize="20sp"
+                />
+
+            <TextView
+                android:id="@+id/tv_chartClear"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/purple_700"
+                android:text="Chart AllClear"
+                android:textSize="20sp"
+                />
+
+<!--            <TextView
+                android:id="@+id/textView1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_marginStart="20dp"
+                android:padding="12dp"
+                android:background="@color/bg_single_process"
+                android:text="test" />
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:padding="12dp"
+                android:background="@color/bg_nest_process"
+                android:text="test" />-->
+
+            <androidx.core.widget.NestedScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:fillViewport="true">
+
+                    <LinearLayout
+                        android:id="@+id/ll_UIRoot"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginStart="20dp"
+                        android:orientation="vertical"
+                        tools:context=".UIActivity">
+
+                        <com.ar.ar_programming.process.StartBlock
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            />
+
+        <!--                <com.ar.ar_programming.process.SingleProcessBlock-->
+        <!--                    android:layout_width="wrap_content"-->
+        <!--                    android:layout_height="wrap_content"-->
+        <!--                    />-->
+
+        <!--                <com.ar.ar_programming.process.SingleProcessBlock-->
+        <!--                    android:layout_width="wrap_content"-->
+        <!--                    android:layout_height="wrap_content"-->
+        <!--                    />-->
+
+<!--                        <com.ar.ar_programming.process.NestProcessBlock
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            />-->
+
+                    </LinearLayout>
+
+                </HorizontalScrollView>
+
+            </androidx.core.widget.NestedScrollView>
+
+        </LinearLayout>
+
+        <!-- 処理ブロックリスト -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_selectBlock"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clipToPadding="false"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="20dp"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

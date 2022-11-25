@@ -19,7 +19,15 @@
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="Theme.AR_Programming.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
+    <!-- NumberPicker スタイル -->
+    <style name="NumberPickerStyle" parent="Theme.AppCompat.Light.NoActionBar" >
+        <!--    テキスト色    -->
+        <item name="android:textColorPrimary">@color/teal_700</item>
+        <!--    区切り線    -->
+        <item name="android:colorControlNormal">@color/teal_700</item>
+    </style>
+
+    <style name="Theme.AR_Programming.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
     <style name="Theme.AR_Programming.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>
