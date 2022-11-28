@@ -381,7 +381,7 @@ public class FirstFragment extends Fragment {
         Log.i("アニメーション", "duration=" + duration);
 
         //----------------------------------
-        // アニメーションの生成／開始
+        // アニメーションの生成／開始：処理ブロック用
         //----------------------------------
         // アニメーション生成
         ValueAnimator characterAnimator = ObjectAnimator.ofFloat(mCharacterNode, propertyName, volume);
@@ -407,12 +407,10 @@ public class FirstFragment extends Fragment {
             @Override
             public void onAnimationEnd(Animator animator) {
 
-                Log.i("アニメーション", "onAnimationEnd");
-
                 //-------------------------------
                 // アニメーション終了時の位置を保持
                 //-------------------------------
-                mCharacterNode.setAnimationEndValue(procKind, volume);
+                mCharacterNode.setEndProcessAnimation(procKind, volume);
 
                 //-------------------------------
                 // 次の処理へ
@@ -423,6 +421,12 @@ public class FirstFragment extends Fragment {
 
         // アニメーション開始
         characterAnimator.start();
+
+        //----------------------------------------
+        // アニメーションの開始：モデルアニメーション用
+        //----------------------------------------
+        // モデルに用意されたアニメーションを開始
+        mCharacterNode.startModelAnimation( procKind, duration );
     }
 
     /*
@@ -730,7 +734,8 @@ public class FirstFragment extends Fragment {
 //                        .setSource(context, Uri.parse("models/sample_bear_small2.glb"))
 //                        .setSource(view.getContext(), Uri.parse("models/sample_bear_ver3_born_anim.glb"))
 //                        .setSource(view.getContext(), Uri.parse("models/box_02.glb"))
-                        .setSource(context, Uri.parse("models/box_03.glb"))
+//                        .setSource(context, Uri.parse("models/box_03.glb"))
+                        .setSource(context, Uri.parse("models/sample_bear_ver3_born_anim_4num.glb"))
 //                      .setSource(view.getContext(), Uri.parse("models/steampunk_vehicle.gltf"))
                         .setIsFilamentGltf(true)    // これは上のファイルを読み込む場合は必要なよう
                         .build();
@@ -886,15 +891,14 @@ public class FirstFragment extends Fragment {
         // キャラクターに向かせる角度
         float angle = getCharacterInitFacingAngle(side);
         // キャラクターに向かせる方向のQuaternion値
-        Quaternion facingDirection = getCharacterInitFacingDirection(side, angle);
+        Quaternion facingDirection = getCharacterInitFacingDirection(angle);
 
         //------------------------
         // キャラクターの生成位置の辺
         //------------------------
         mCharacterNode = new CharacterNode(transformationSystem);
-        mCharacterNode.setName("Node2");
-        mCharacterNode.getScaleController().setMinScale(0.2f);
-        mCharacterNode.setLocalScale(new Vector3(0.2f, 0.2f, 0.2f));
+        mCharacterNode.getScaleController().setMinScale(0.01f);
+        mCharacterNode.setLocalScale(new Vector3(0.01f, 0.01f, 0.01f));
         mCharacterNode.setParent(anchorNode);
         mCharacterNode.setLocalPosition(position);
         mCharacterNode.setLocalRotation(facingDirection);
@@ -915,18 +919,13 @@ public class FirstFragment extends Fragment {
         Log.i("スケール操作", "getScaleController getMinScale()=" + cont.getMinScale());
 */
 
-        mCharacterNode.setOnTapListener(new Node.OnTapListener() {
+/*        mCharacterNode.setOnTapListener(new Node.OnTapListener() {
             @Override
             public void onTap(HitTestResult hitTestResult, MotionEvent motionEvent) {
-                        /*Quaternion q = mCharacterNode.getLocalRotation();
-                        Log.i("回転", "q.w=" + q.w + " q.x=" + q.x + " q.y=" + q.y + " q.z=" + q.z);
-                        */
-
                 Vector3 scale = mCharacterNode.getLocalScale();
                 Log.i("サイズ間", "scale x=" + scale.x + " y=" + scale.y + " z=" + scale.z);
             }
-        });
-
+        });*/
 
         // 衝突検知リスナーの設定
         mCharacterNode.setOnCollisionDetectListener(new CharacterNode.CollisionDetectListener() {
@@ -1042,9 +1041,6 @@ public class FirstFragment extends Fragment {
         position.x = posx * (-1);
         position.z = posz * (-1);
 
-        Log.i("ランダム位置生成", "side=" + side);
-        Log.i("ランダム位置生成", "x=" + position.x + " z=" + position.z);
-
         return position;
     }
 
@@ -1081,40 +1077,14 @@ public class FirstFragment extends Fragment {
     /*
      * キャラクターが配置された四辺に応じて、向きを設定するためのQuaternion値を取得
      */
-    private Quaternion getCharacterInitFacingDirection( int side, float angle ) {
+    private Quaternion getCharacterInitFacingDirection( float angle ) {
 
-        // 軸
-        Vector3 axis = new Vector3();
-        axis.x = 0.0f;
-        axis.z = 0.0f;
+        // w／y値
+        float w = CharacterNode.calcQuaternionWvalue( angle );
+        float y = CharacterNode.calcQuaternionYvalue( angle );
 
-        // 4辺毎にランダム位置を切り分け
-        switch ( side ) {
-            case STAGE_BOTTOM:
-                axis.y = CharacterNode.calcQuaternionYvalue( angle );
-                break;
-
-            case STAGE_TOP:
-                axis.y = CharacterNode.calcQuaternionYvalue( angle );
-                break;
-
-            case STAGE_LEFT:
-                axis.y = CharacterNode.calcQuaternionYvalue( angle );
-                break;
-
-            case STAGE_RIGHT:
-                axis.y = CharacterNode.calcQuaternionYvalue( angle );
-                break;
-
-            default:
-                axis.y = CharacterNode.calcQuaternionYvalue( angle );
-                break;
-        }
-
-        Log.i("ランダム位置生成", "angle=" + angle);
-
-        // 向きたい方向のQuaternion情報を返す
-        return (new Quaternion( axis , angle));
+        // 向きたい方向のQuaternion情報を生成
+        return (new Quaternion( 0.0f, y, 0.0f, w));
     }
 
     /*
