@@ -44,6 +44,7 @@ public class CharacterNode extends TransformableNode {
     private Vector3 mEndPosition;
     private float mEndDegree;
     private ValueAnimator mAnimator;
+    private int mCollisionType;
 
     // 衝突検知リスナー
     private CollisionDetectListener mCollisionDetectListenerListener;
@@ -58,6 +59,7 @@ public class CharacterNode extends TransformableNode {
         //----------------------------------------
         mEndPosition = new Vector3(0f,0f,0f);
         mEndDegree = 0f;
+        mCollisionType = COLLISION_TYPE_NONE;
     }
 
     /*
@@ -76,7 +78,7 @@ public class CharacterNode extends TransformableNode {
     /*
      * 衝突検知
      */
-    private void detectCollision() {
+    private int detectCollision() {
 
         // 衝突検知種別
         int collisionType = COLLISION_TYPE_NONE;
@@ -112,6 +114,8 @@ public class CharacterNode extends TransformableNode {
         if( collisionType != COLLISION_TYPE_NONE ){
             mCollisionDetectListenerListener.onCollisionDetect( collisionType, mAnimator );
         }
+
+        return collisionType;
     }
 
 
@@ -121,15 +125,17 @@ public class CharacterNode extends TransformableNode {
      */
     public void setWalk(float volume) {
 
+        // ブロックと衝突中は、処理なし
+        if( mCollisionType == COLLISION_TYPE_BLOCK ){
+            return;
+        }
+
         //----------------------
         // 横と奥行の位置を更新
         //----------------------
         // 前回終了位置を加味して、設定値を取得
         float setX = (float)(mEndPosition.x + calcXvolume( volume ));
         float setZ = (float)(mEndPosition.z + calcZvolume( volume ));
-
-        Log.i("移動", "volume=" + volume);
-        Log.i("移動", "setZ=" + setZ);
 
         // 位置を更新
         Vector3 vec3 = getLocalPosition();
@@ -140,7 +146,7 @@ public class CharacterNode extends TransformableNode {
         //----------------------
         // 衝突検知
         //----------------------
-        detectCollision();
+        mCollisionType = detectCollision();
     }
 
 
@@ -322,6 +328,9 @@ public class CharacterNode extends TransformableNode {
      * アニメーション終了時の変化後の値を保持
      */
     public void setAnimationEndValue( int processKind, float volume ) {
+
+        // 衝突状態をクリア
+        mCollisionType = COLLISION_TYPE_NONE;
 
         // 処理種別に応じた保存処理
         switch (processKind) {

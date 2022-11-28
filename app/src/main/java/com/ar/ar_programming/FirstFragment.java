@@ -25,6 +25,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.ar.ar_programming.process.NestProcessBlock;
 import com.ar.ar_programming.process.ProcessBlock;
 import com.ar.ar_programming.process.SingleProcessBlock;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.ar.core.Anchor;
 import com.google.ar.core.HitResult;
 import com.google.ar.core.Plane;
@@ -926,6 +927,7 @@ public class FirstFragment extends Fragment {
             }
         });
 
+
         // 衝突検知リスナーの設定
         mCharacterNode.setOnCollisionDetectListener(new CharacterNode.CollisionDetectListener() {
             @Override
@@ -938,13 +940,19 @@ public class FirstFragment extends Fragment {
                         // ゴール成功処理
                         // アニメーション終了
                         animator.cancel();
-//                        animator.end();
-
+                        Snackbar.make(binding.getRoot(), "Goal", Snackbar.LENGTH_SHORT).show();
                         break;
 
                     case CharacterNode.COLLISION_TYPE_OBSTACLE:
                         // ゴール失敗処理
+                        animator.cancel();
+                        Snackbar.make(binding.getRoot(), "失敗", Snackbar.LENGTH_SHORT).show();
+                        break;
 
+                    case CharacterNode.COLLISION_TYPE_BLOCK:
+                        // 本アニメーション終了
+//                        animator.end();
+//                        Snackbar.make(binding.getRoot(), "衝突（継続可）", Snackbar.LENGTH_SHORT).show();
                         break;
                 }
             }
