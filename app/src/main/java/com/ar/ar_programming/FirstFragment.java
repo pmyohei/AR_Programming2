@@ -936,7 +936,7 @@ public class FirstFragment extends Fragment {
 
         Scene scene = arFragment.getArSceneView().getScene();
 
-        // サイズ
+        // キャラクターサイズ
         // 「* 0.1f」は暫定処理。3Dモデルの大きさに合わせる
         float scale = getNodeScale() * NODE_SIZE_TMP_RATIO;
 
@@ -955,6 +955,9 @@ public class FirstFragment extends Fragment {
             if (nodes.size() < 1) {
                 break;
             }
+
+            // 重複していれば、そのキャラクターは削除
+            anchorNode.removeChild( characterNode );
         }
 
         // ステージ上のキャラクターとして保持
