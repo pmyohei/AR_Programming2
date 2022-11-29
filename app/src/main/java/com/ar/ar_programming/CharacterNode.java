@@ -18,7 +18,7 @@ public class CharacterNode extends TransformableNode {
 
     //---------------------------
     // 定数
-    //----------------------------
+    //---------------------------
     // アニメーションプロパティ名
     public static final String PROPERTY_WALK = "walk";
     public static final String PROPERTY_ROTATE = "rotate";
@@ -34,11 +34,12 @@ public class CharacterNode extends TransformableNode {
     public static final String MODEL_ANIMATION_STR_ROTATE_RIGHT = "rotate_right";
     public static final String MODEL_ANIMATION_STR_ERROR = "error";
 
-
     // 移動1s当たりのアニメーション移動量
-    public static final float MOVE_VOLUME_PER_SECOND = 0.08f;
-    // 回転1度当たりのアニメーション時間
-    public static final float ROTATE_TIME_PER_ANGLE = 0.01f;
+//    public static final float MOVE_VOLUME_PER_SECOND = 0.08f;
+    // 移動1cm当たりのアニメーション時間(ms)
+    public static final float WALK_TIME_PER_CM = 250f;
+    // 回転1度当たりのアニメーション時間(ms)
+    public static final float ROTATE_TIME_PER_ANGLE = 10f;
 
     // 衝突検知の種別
     public static final int COLLISION_TYPE_NONE = -1;
@@ -50,12 +51,16 @@ public class CharacterNode extends TransformableNode {
     // フィールド変数
     //---------------------------
     private Scene mScene;
+    private int mCollisionType;
+    // 初期位置の情報
+    private Vector3 mStartPosition;
+    private float mStartDegree;
+    // 処理ブロックアニメーション終了時点の情報
     private Vector3 mEndPosition;
     private float mEndDegree;
-    private ValueAnimator mAnimator;
-    private int mCollisionType;
-
-    // モデルアニメーションの開始と終了を制御するために、
+    // 処理ブロック用アニメーション
+    private ValueAnimator mProcessAnimator;
+    // モデルアニメーションの開始と終了を制御する用
     private ObjectAnimator mModelAnimator;
 
     // 衝突検知リスナー
@@ -103,8 +108,6 @@ public class CharacterNode extends TransformableNode {
 
             if (collidingNodeName.equals(FirstFragment.NODE_NAME_GOAL)) {
 
-                Log.i("startModelAnimation", "ゴール検知");
-
                 collisionType = COLLISION_TYPE_GOAL;
                 startModelAnimation(MODEL_ANIMATION_STR_GOAL, 2000);
                 break;
@@ -124,7 +127,7 @@ public class CharacterNode extends TransformableNode {
 
         // 衝突したとき、リスナーをコール
         if (collisionType != COLLISION_TYPE_NONE) {
-            mCollisionDetectListenerListener.onCollisionDetect(collisionType, mAnimator);
+            mCollisionDetectListenerListener.onCollisionDetect(collisionType, mProcessAnimator);
         }
 
         return collisionType;
@@ -388,12 +391,45 @@ public class CharacterNode extends TransformableNode {
     }
 
     /*
-     * 現在角度の初期化
+     * 開始位置の保持
      */
-    public void initCurrentData(Vector3 position, float degree) {
-        // 現在情報を設定
+    public void startPosData(Vector3 position, float degree) {
+        // 開始位置を保持
+        mStartPosition = position;
+        mStartDegree = degree;
+        // 開始位置を現在情報として設定
         mEndPosition = position;
         mEndDegree = degree;
+    }
+
+    /*
+     * 本キャラクターを初期位置にリセット
+     */
+    public void positionReset() {
+
+        //----------------------------------
+        // 位置を初期位置に戻す
+        //----------------------------------
+        setLocalPosition(mStartPosition);
+
+        //----------------------------------
+        // 角度を初期位置に戻す
+        //----------------------------------
+        // Quaternionのy/wの値を算出
+        float w = calcQuaternionWvalue(mEndDegree);
+        float y = calcQuaternionYvalue(mEndDegree);
+        // Quaternion生成
+        Quaternion q = getLocalRotation();
+        q.set(0f, y, 0f, w);
+        // 角度の設定
+        setLocalRotation(q);
+
+        //----------------------------------
+        // 終了情報をリセット
+        //----------------------------------
+        // 開始位置を現在情報として設定
+        mEndPosition = mStartPosition;
+        mEndDegree = mStartDegree;
     }
 
     /*
@@ -419,53 +455,108 @@ public class CharacterNode extends TransformableNode {
     /*
      * 処理ブロックに応じたアニメーション量を取得
      */
-    public static float getAnimationVolume(int procKind, int procVolume) {
+    public float getAnimationVolume(int procKind, int procVolume) {
+
+        //-----------------------------------------
+        // 前進／後退
+        //-----------------------------------------
+        // 単位変換：cm → m
+        if ( procKind == ProcessBlock.PROC_KIND_FORWARD ){
+            return (float) procVolume / 100f;
+        }
+        if ( procKind == ProcessBlock.PROC_KIND_BACK ){
+            return (procVolume / 100f) * -1;
+        }
+
+        //-----------------------------------------
+        // 回転
+        //-----------------------------------------
+        if (procKind == ProcessBlock.PROC_KIND_LEFT_ROTATE) {
+            return (float) procVolume;
+        }
+
+        return (float) procVolume * -1;
 
         //-----------------------------------------
         // 回転
         //-----------------------------------------
         // ブロックの処理量がそのままアニメーション量となる
-        if (procKind == ProcessBlock.PROC_KIND_LEFT_ROTATE) {
+/*        if (procKind == ProcessBlock.PROC_KIND_LEFT_ROTATE) {
             return (float) procVolume;
         }
         if (procKind == ProcessBlock.PROC_KIND_RIGHT_ROTATE) {
             return (float) procVolume * -1;
-        }
+        }*/
 
         //-----------------------------------------
         // 前進／後退
         //-----------------------------------------
-        // 処理時間からアニメーション量を算出
+        // ブロックの処理量がそのままアニメーション量となる
+/*
+        if (procKind == ProcessBlock.PROC_KIND_FORWARD) {
+            return (float) procVolume;
+        }
+        if (procKind == ProcessBlock.PROC_KIND_BACK) {
+            return (float) procVolume * -1;
+        }
+
+        return (float) procVolume;
+*/
+
+/*        // 処理時間からアニメーション量を算出
         float volume = (float) (procVolume * MOVE_VOLUME_PER_SECOND);
         if (procKind == ProcessBlock.PROC_KIND_BACK) {
             // 後退の場合、処理量はマイナス
             volume *= -1;
         }
-
         return volume;
+*/
     }
 
     /*
      * 処理ブロックに応じたアニメーション時間を取得
      */
-    public static long getAnimationDuration(int procKind, int procVolume) {
+    public long getAnimationDuration(int procKind, int procVolume) {
 
+        //-------------------
+        // 前進／後退
+        //-------------------
+        if ((procKind == ProcessBlock.PROC_KIND_FORWARD) || (procKind == ProcessBlock.PROC_KIND_BACK)) {
+            // スケールに応じた処理時間に変換
+            Vector3 scale = getLocalScale();
+            float ratio = (FirstFragment.NODE_SIZE_S * FirstFragment.NODE_SIZE_TMP_RATIO) / scale.x;
+
+            Log.i("歩行", "scale.x=" + scale.x);
+            Log.i("歩行", "ratio=" + ratio);
+            Log.i("歩行", "WALK_TIME_PER_CM=" + (WALK_TIME_PER_CM * ratio));
+
+            return (long)(procVolume * WALK_TIME_PER_CM * ratio );
+        }
+
+        //-------------------
+        // 回転
+        //-------------------
+        return (long)(procVolume * ROTATE_TIME_PER_ANGLE);
+
+/*
         // 前進／後退の場合は、ブロックの処理量がそのままアニメーション時間
         if ((procKind == ProcessBlock.PROC_KIND_FORWARD) || (procKind == ProcessBlock.PROC_KIND_BACK)) {
-            return (long) procVolume * 1000;
+//            return (long) procVolume * MILL_SECOND;
+            return (long)(procVolume * WALK_TIME_PER_ANGLE);
         }
+*/
 
         //-----------------------------------------
         // 回転の場合は、角度からアニメーション時間を算出
         //-----------------------------------------
-        return (long) (procVolume * ROTATE_TIME_PER_ANGLE * 1000);
+//        return (long)(procVolume * ROTATE_TIME_PER_ANGLE);
     }
 
     /*
      * 本NodeのアニメーションメソッドをコールするAnimatorを設定
      */
     public void setAnimator(ValueAnimator animator) {
-        mAnimator = animator;
+        mProcessAnimator = animator;
     }
 
 

@@ -53,7 +53,7 @@ public class VolumeRotateDialog extends DialogFragment {
         //----------------------------------
         // NumberPicker初期設定
         //----------------------------------
-        // 時間の範囲を設定
+        // 角度の範囲を設定
         np_degree_100.setMaxValue(3);
         np_degree_100.setMinValue(0);
         np_degree_10.setMaxValue(9);
@@ -69,16 +69,11 @@ public class VolumeRotateDialog extends DialogFragment {
 */
 
         //----------------------------------
-        // 時分秒情報をPickerに反映
+        // 角度情報をPickerに反映
         //----------------------------------
         int degree_100 = (mDegrees / 100);
         int degree_10 = (mDegrees / 10) % 10;
         int degree_1 = mDegrees - ( (degree_100 * 100) + (degree_10 * 10) );
-
-        Log.i("クリックリスナー", "mDegrees=" + mDegrees);
-        Log.i("クリックリスナー", "degree_100=" + degree_100);
-        Log.i("クリックリスナー", "degree_10=" + degree_10);
-        Log.i("クリックリスナー", "degree_1=" + degree_1);
 
         // Pickerに反映
         np_degree_100.setValue( degree_100 );

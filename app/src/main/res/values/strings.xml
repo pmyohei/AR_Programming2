@@ -13,14 +13,14 @@
     <string name="block_nest_loop">..までループ</string>
 
     <!--  処理ブロック 処理内容  -->
-    <string name="block_contents_forward">秒間前へ進む</string>
-    <string name="block_contents_back">秒間後ろに戻る</string>
+    <string name="block_contents_forward">cm 前へ進む</string>
+    <string name="block_contents_back">cm 後ろに戻る</string>
     <string name="block_contents_rorate_right">度 右に回転</string>
     <string name="block_contents_rorate_left">度 左に回転</string>
     <string name="block_contents_if">もし、、なら</string>
     <string name="block_contents_loop">..までループ</string>
     <!--  処理ブロック 処理量の単位  -->
-    <string name="block_unit_walk">秒</string>
+    <string name="block_unit_walk">cm</string>
     <string name="block_unit_rotate">度</string>
 
 

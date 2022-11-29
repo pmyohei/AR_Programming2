@@ -41,6 +41,71 @@
             app:layout_constraintEnd_toEndOf="parent"
             >
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                >
+
+                <TextView
+                    android:id="@+id/tv_start"
+                    android:layout_width="64dp"
+                    android:layout_height="28dp"
+                    android:background="@color/teal_700"
+                    android:text="Start"
+                    android:textSize="16sp"
+                    />
+
+                <TextView
+                    android:id="@+id/tv_nodeAllClear"
+                    android:layout_width="wrap_content"
+                    android:layout_height="28dp"
+                    android:background="@color/error_text"
+                    android:text="Node-C"
+                    android:textSize="16sp"
+                    />
+
+                <TextView
+                    android:id="@+id/tv_chartClear"
+                    android:layout_width="wrap_content"
+                    android:layout_height="28dp"
+                    android:background="@color/black_50"
+                    android:text="Chart-C"
+                    android:textSize="16sp"
+                    />
+
+                <TextView
+                    android:id="@+id/tv_resetCharacter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="28dp"
+                    android:background="@color/bg_nest_process_dark"
+                    android:text="ResetChar"
+                    android:textSize="16sp"
+                    />
+
+                <EditText
+                    android:id="@+id/et_stageScale"
+                    android:layout_width="64dp"
+                    android:layout_height="28dp"
+                    android:background="@color/purple_200"
+                    android:inputType="number"
+                    android:textAlignment="center"
+                    android:text="0"
+                    android:textSize="16sp"
+                    />
+
+                <EditText
+                    android:id="@+id/et_nodeScale"
+                    android:layout_width="64dp"
+                    android:layout_height="28dp"
+                    android:background="@color/teal_200"
+                    android:inputType="number"
+                    android:textAlignment="center"
+                    android:text="0"
+                    android:textSize="16sp"
+                    />
+            </LinearLayout>
+
             <View
                 android:id="@+id/v_removeArea"
                 android:layout_width="match_parent"
@@ -48,51 +113,25 @@
                 android:background="@color/purple_200"
                 />
 
-            <TextView
-                android:id="@+id/tv_start"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@color/teal_700"
-                android:text="Start"
-                android:textSize="20sp"
-                />
 
-            <TextView
-                android:id="@+id/tv_nodeAllClear"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@color/purple_700"
-                android:text="Node AllClear"
-                android:textSize="20sp"
-                />
+            <!--            <TextView
+                            android:id="@+id/textView1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="20dp"
+                            android:layout_marginStart="20dp"
+                            android:padding="12dp"
+                            android:background="@color/bg_single_process"
+                            android:text="test" />
 
-            <TextView
-                android:id="@+id/tv_chartClear"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@color/purple_700"
-                android:text="Chart AllClear"
-                android:textSize="20sp"
-                />
-
-<!--            <TextView
-                android:id="@+id/textView1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:layout_marginStart="20dp"
-                android:padding="12dp"
-                android:background="@color/bg_single_process"
-                android:text="test" />
-
-            <TextView
-                android:id="@+id/textView2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:padding="12dp"
-                android:background="@color/bg_nest_process"
-                android:text="test" />-->
+                        <TextView
+                            android:id="@+id/textView2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="20dp"
+                            android:padding="12dp"
+                            android:background="@color/bg_nest_process"
+                            android:text="test" />-->
 
             <androidx.core.widget.NestedScrollView
                 android:layout_width="match_parent"

@@ -15,35 +15,70 @@
         android:text="処理量の設定"
         android:textSize="20sp"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/np_volume"
+        app:layout_constraintBottom_toTopOf="@+id/np_100"
         app:layout_constraintStart_toStartOf="parent"/>
+
+    <TextView
+        android:id="@+id/tv_error"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="12dp"
+        android:text="@string/process_volume_degree_error"
+        android:textColor="@color/error_text"
+        android:textSize="16sp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/np_100"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/tv_dialogTitle"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <NumberPicker
         android:theme="@style/NumberPickerStyle"
-        android:id="@+id/np_volume"
+        android:id="@+id/np_100"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        app:layout_constraintHorizontal_chainStyle="packed"
+        android:layout_marginStart="32dp"
         app:layout_constraintTop_toBottomOf="@+id/tv_dialogTitle"
         app:layout_constraintBottom_toTopOf="@+id/v_border"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/tv_cm" />
+        app:layout_constraintEnd_toStartOf="@id/np_10" />
 
-    <TextView
-        android:id="@+id/tv_cm"
+
+    <NumberPicker
+        android:theme="@style/NumberPickerStyle"
+        android:id="@+id/np_10"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:text="cm"
         app:layout_constraintTop_toBottomOf="@+id/tv_dialogTitle"
         app:layout_constraintBottom_toTopOf="@+id/v_border"
-        app:layout_constraintStart_toEndOf="@id/np_volume"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintStart_toEndOf="@id/np_100"
+        app:layout_constraintEnd_toStartOf="@id/np_1" />
+
+    <NumberPicker
+        android:theme="@style/NumberPickerStyle"
+        android:id="@+id/np_1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="32dp"
+        app:layout_constraintTop_toBottomOf="@+id/tv_dialogTitle"
+        app:layout_constraintBottom_toTopOf="@+id/v_border"
+        app:layout_constraintStart_toEndOf="@+id/np_10"
+        app:layout_constraintEnd_toStartOf="@+id/tv_unit" />
+
+    <TextView
+        android:id="@+id/tv_unit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="単位(仮)"
+        app:layout_constraintTop_toBottomOf="@+id/tv_dialogTitle"
+        app:layout_constraintBottom_toTopOf="@+id/v_border"
+        app:layout_constraintStart_toEndOf="@id/np_1"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <!--    区切り線    -->
     <View

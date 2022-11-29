@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,7 +32,6 @@ import com.google.ar.core.HitResult;
 import com.google.ar.core.Plane;
 import com.google.ar.sceneform.AnchorNode;
 import com.google.ar.sceneform.ArSceneView;
-import com.google.ar.sceneform.HitTestResult;
 import com.google.ar.sceneform.Node;
 import com.google.ar.sceneform.Scene;
 import com.google.ar.sceneform.math.Quaternion;
@@ -71,21 +71,43 @@ public class FirstFragment extends Fragment {
     private final int STAGE_RIGHT = 3;
     private final int STAGE_4_SIDE = 4;
 
+    // ステージサイズ
+    private final float STAGE_SIZE_S = 0.3f;
+    private final float STAGE_SIZE_M = 0.6f;
+    private final float STAGE_SIZE_L = 1.0f;
+    // ステージサイズ倍率
+    private final float STAGE_RATIO_S = 1.0f;
+    private final float STAGE_RATIO_M = 5.0f;
+    private final float STAGE_RATIO_L = 10.0f;
+    private final float STAGE_RATIO_XL = 50.0f;
+    // ノードサイズ
+    public static final float NODE_SIZE_TMP_RATIO = 0.1f;
+    public static final float NODE_SIZE_S = 0.1f;
+    private final float NODE_SIZE_M = 0.5f;
+    private final float NODE_SIZE_L = 1.0f;
+    private final float NODE_SIZE_XL = 5.0f;
+
     //---------------------------
     // フィールド変数
     //---------------------------
     private FragmentFirstBinding binding;
     private ArFragment arFragment;
     private ModelRenderable mCharacterRenderable;
+    private ModelRenderable mBlockRenderable;
+
+    // tmp
     private ModelRenderable mRedSphereRenderable;
     private ModelRenderable mBlueSphereRenderable;
     private ModelRenderable mRedCubeRenderable;
     private ModelRenderable mBlueCubeRenderable;
     private ViewRenderable mTextViewRenderable;
+    // tmp
 
+    // tmp
     private ArrayList<ModelRenderable> mObjOnStageRenderable;
     private ArrayList<Vector3> mObjOnStagePosition;
     private ArrayList<String> mObjOnStageName;
+    // tmp
 
     private CharacterNode mCharacterNode;
     private int mDoProcIndex;
@@ -116,8 +138,10 @@ public class FirstFragment extends Fragment {
         //------------------------------------------
         // キャラクター
         createModelRenderable(view.getContext());
+        // ブロック
+        createBlocksRenderable(view.getContext());
         // ステージ上の物体
-        createObjOnStageRenderable(view.getContext());
+        createtmpObjOnStageRenderable(view.getContext());
 
         //------------------------------------------
         // お試し：平面ドットのビジュアル変更
@@ -146,11 +170,13 @@ public class FirstFragment extends Fragment {
                 //----------------------------------
                 // Node生成
                 //----------------------------------
-                // キャラクターNode生成
-                createCharacterNode(anchorNode);
-
+                // ステージ上ブロックNode生成
+                createBlocksNode(anchorNode);
                 // ステージ上オブジェクトのNode生成
                 createObjOnStageNode(anchorNode);
+                // キャラクターNode生成
+                // ！他のNode生成の後に行うこと（重複をさけて配置しているため）！
+                createCharacterNode(anchorNode);
 
 
 //                DisplayMetrics metrics = getResources().getDisplayMetrics();
@@ -225,6 +251,8 @@ public class FirstFragment extends Fragment {
         setClearStage();
         // チャートクリア設定
         setClearChart();
+        // キャラクター位置リセット
+        resetCharacterPosition();
 
         //------------------------------------------
         // 「開始ブロック」設定
@@ -325,7 +353,21 @@ public class FirstFragment extends Fragment {
                 // Startブロックより後の処理ブロックを全て削除
                 ViewGroup ll_UIRoot = root.findViewById(R.id.ll_UIRoot);
                 int lastIndex = ll_UIRoot.getChildCount() - 1;
-                ll_UIRoot.removeViews( 1, lastIndex );
+                ll_UIRoot.removeViews(1, lastIndex);
+            }
+        });
+    }
+
+    /*
+     * キャラクター位置リセット
+     */
+    private void resetCharacterPosition() {
+        ViewGroup root = binding.getRoot();
+        TextView tv_resetCharacter = root.findViewById(R.id.tv_resetCharacter);
+        tv_resetCharacter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mCharacterNode.positionReset();
             }
         });
     }
@@ -370,8 +412,8 @@ public class FirstFragment extends Fragment {
         int procVolume = block.getProcessVolume();
 
         // アニメーション量とアニメーション時間
-        float volume = CharacterNode.getAnimationVolume(procKind, procVolume);
-        long duration = CharacterNode.getAnimationDuration(procKind, procVolume);
+        float volume = mCharacterNode.getAnimationVolume(procKind, procVolume);
+        long duration = mCharacterNode.getAnimationDuration(procKind, procVolume);
 
         // 処理に対応するアニメーションプロパティ名を取得
         String propertyName = CharacterNode.getPropertyName(procKind);
@@ -426,7 +468,7 @@ public class FirstFragment extends Fragment {
         // アニメーションの開始：モデルアニメーション用
         //----------------------------------------
         // モデルに用意されたアニメーションを開始
-        mCharacterNode.startModelAnimation( procKind, duration );
+        mCharacterNode.startModelAnimation(procKind, duration);
     }
 
     /*
@@ -810,11 +852,31 @@ public class FirstFragment extends Fragment {
 
     }
 
+    /*
+     * 3Dモデルレンダリング「ブロック」の生成
+     */
+    private void createBlocksRenderable(Context context) {
+
+        ModelRenderable
+                .builder()
+                .setSource(context, Uri.parse("models/block_01.glb"))
+                .setIsFilamentGltf(true)    // glbファイルを読み込む必須
+                .build()
+                .thenAccept(renderable -> mBlockRenderable = renderable)
+                .exceptionally(
+                        throwable -> {
+                            Toast toast =
+                                    Toast.makeText(context, "Unable to load andy renderable", Toast.LENGTH_LONG);
+                            toast.setGravity(Gravity.CENTER, 0, 0);
+                            toast.show();
+                            return null;
+                        });
+    }
 
     /*
      * 3Dモデルレンダリング「ステージ上の物体」の生成
      */
-    private void createObjOnStageRenderable(Context context) {
+    private void createtmpObjOnStageRenderable(Context context) {
 
         mObjOnStageRenderable = new ArrayList<>();
         mObjOnStagePosition = new ArrayList<>();
@@ -829,7 +891,8 @@ public class FirstFragment extends Fragment {
         glbPath.add("models/cone_01.glb");
 
         //------------------------
-        // 多分変更するロジック
+        // 多分変更するロジック★★★
+        //------------------------
         mObjOnStageName.add(NODE_NAME_GOAL);
         mObjOnStageName.add(NODE_NAME_BLOCK);
         mObjOnStageName.add(NODE_NAME_OBSTACLE);
@@ -837,9 +900,11 @@ public class FirstFragment extends Fragment {
         //----------------------------
         // ステージオブジェクト位置
         //----------------------------
+        float stageScale = getStageScale();
+
         mObjOnStagePosition.add(new Vector3(-0.0f, -0.0f, -0.0f));
-        mObjOnStagePosition.add(new Vector3(-0.3f, -0.0f, -0.0f));
-        mObjOnStagePosition.add(new Vector3(-0.0f, -0.0f, -0.3f));
+        mObjOnStagePosition.add(new Vector3(-stageScale, -0.0f, -0.0f));
+        mObjOnStagePosition.add(new Vector3(-0.0f, -0.0f, -stageScale));
 
         //----------------------------
         // Renderableの生成
@@ -869,63 +934,31 @@ public class FirstFragment extends Fragment {
      */
     private void createCharacterNode(AnchorNode anchorNode) {
 
-        // AnchorNodeを親として、モデル情報からNodeを生成
-        TransformationSystem transformationSystem = arFragment.getTransformationSystem();
+        Scene scene = arFragment.getArSceneView().getScene();
 
-//                CharacterNode modelNode1 = new CharacterNode( transformationSystem );
-/*                TransformableNode modelNode1 = new TransformableNode(transformationSystem);
-                modelNode1.setName("Node1");
-                modelNode1.setParent(anchorNode);
-                modelNode1.setRenderable(mglbRenderable);
-                modelNode1.select();*/
+        // サイズ
+        // 「* 0.1f」は暫定処理。3Dモデルの大きさに合わせる
+        float scale = getNodeScale() * NODE_SIZE_TMP_RATIO;
 
-        //------------------------------
-        // キャラクターの生成位置／向く方向
-        //------------------------------
-        // 四辺の内の配置辺
-        Random random = new Random();
-        int side = random.nextInt(STAGE_4_SIDE);
+        //------------------------------------
+        // キャラクター生成と他Nodeとの重複なしの配置
+        //------------------------------------
+        CharacterNode characterNode;
 
-        // キャラクター初期位置
-        Vector3 position = getCharacterInitPosition(side);
-        // キャラクターに向かせる角度
-        float angle = getCharacterInitFacingAngle(side);
-        // キャラクターに向かせる方向のQuaternion値
-        Quaternion facingDirection = getCharacterInitFacingDirection(angle);
+        // 重複しない配置になるまで、繰り返し
+        while (true) {
+            // 生成
+            characterNode = createTmpCharacterNode( anchorNode, scale );
 
-        //------------------------
-        // キャラクターの生成位置の辺
-        //------------------------
-        mCharacterNode = new CharacterNode(transformationSystem);
-        mCharacterNode.getScaleController().setMinScale(0.01f);
-        mCharacterNode.setLocalScale(new Vector3(0.01f, 0.01f, 0.01f));
-        mCharacterNode.setParent(anchorNode);
-        mCharacterNode.setLocalPosition(position);
-        mCharacterNode.setLocalRotation(facingDirection);
-        mCharacterNode.setRenderable(mCharacterRenderable);
-        mCharacterNode.select();
-
-        // アニメーション初期化処理：必須
-        mCharacterNode.initAnimation();
-        mCharacterNode.initCurrentData( position, angle );
-
-/*
-        Log.i("ピンチ操作", "null? → getScaleController=" + mCharacterNode.getScaleController());
-        Log.i("ピンチ操作", "null? → getTranslationController=" + mCharacterNode.getTranslationController());
-        Log.i("ピンチ操作", "null? → getRotationController=" + mCharacterNode.getRotationController());
-
-        ScaleController cont = mCharacterNode.getScaleController();
-        Log.i("スケール操作", "getScaleController getMaxScale()=" + cont.getMaxScale());
-        Log.i("スケール操作", "getScaleController getMinScale()=" + cont.getMinScale());
-*/
-
-/*        mCharacterNode.setOnTapListener(new Node.OnTapListener() {
-            @Override
-            public void onTap(HitTestResult hitTestResult, MotionEvent motionEvent) {
-                Vector3 scale = mCharacterNode.getLocalScale();
-                Log.i("サイズ間", "scale x=" + scale.x + " y=" + scale.y + " z=" + scale.z);
+            // 他のNodeと重複していなければ、生成終了
+            ArrayList<Node> nodes = scene.overlapTestAll(characterNode);
+            if (nodes.size() < 1) {
+                break;
             }
-        });*/
+        }
+
+        // ステージ上のキャラクターとして保持
+        mCharacterNode = characterNode;
 
         // 衝突検知リスナーの設定
         mCharacterNode.setOnCollisionDetectListener(new CharacterNode.CollisionDetectListener() {
@@ -958,6 +991,167 @@ public class FirstFragment extends Fragment {
         });
     }
 
+    /*
+     * キャラクターノード生成：
+     */
+    private CharacterNode createTmpCharacterNode(AnchorNode anchorNode, float scale) {
+
+        //------------------------------------
+        // キャラクターの生成位置／向く方向／サイズ
+        //------------------------------------
+        // 四辺の内の配置辺
+        Random random = new Random();
+        int side = random.nextInt(STAGE_4_SIDE);
+
+        // キャラクター初期位置
+        Vector3 position = getCharacterInitPosition(side);
+        // キャラクターに向かせる角度
+        float angle = getCharacterInitFacingAngle(side);
+        // キャラクターに向かせる方向のQuaternion値
+        Quaternion facingDirection = getCharacterInitFacingDirection(angle);
+
+        //------------------------
+        // キャラクターの生成
+        //------------------------
+        TransformationSystem transformationSystem = arFragment.getTransformationSystem();
+
+        // AnchorNodeを親として、モデル情報からNodeを生成
+        CharacterNode characterNode = new CharacterNode(transformationSystem);
+        characterNode.getScaleController().setMinScale(scale);
+        characterNode.getScaleController().setMaxScale(scale * 2);
+        characterNode.setLocalScale(new Vector3(scale, scale, scale));
+        characterNode.setParent(anchorNode);
+        characterNode.setLocalPosition(position);
+        characterNode.setLocalRotation(facingDirection);
+        characterNode.setRenderable(mCharacterRenderable);
+        characterNode.select();
+
+        // アニメーション初期化処理：必須
+        characterNode.initAnimation();
+        characterNode.startPosData(position, angle);
+
+        return characterNode;
+    }
+
+    /*
+     * ステージ上のブロックNode生成
+     */
+    private void createBlocksNode(AnchorNode anchorNode) {
+
+        TransformationSystem transformationSystem = arFragment.getTransformationSystem();
+
+        // Nodeスケール
+        final float scale = getNodeScale();
+        Vector3 scaleVector = new Vector3(scale, scale, scale);
+
+        // ステージの広さ
+        float stageScale = getStageScale();
+
+        //-----------------------------
+        // ブロックNode生成
+        //-----------------------------
+        for (int i = 0; i < 10; i++) {
+            // ランダム位置を生成
+            Vector3 pos = getRandomPosition(stageScale);
+
+            // Node生成
+            CharacterNode node = new CharacterNode(transformationSystem);
+            node.setName(NODE_NAME_BLOCK);
+            node.getScaleController().setMinScale(scale);
+            node.getScaleController().setMaxScale(scale * 2);
+            node.setLocalScale(scaleVector);
+            node.setParent(anchorNode);
+            node.setLocalPosition(pos);
+            node.setRenderable(mBlockRenderable);
+            node.select();
+        }
+    }
+
+    /*
+     * ユーザー指定のNodeサイズの取得
+     */
+    private float getNodeScale() {
+
+        EditText et_nodeScale = binding.getRoot().findViewById(R.id.et_nodeScale);
+        String value = et_nodeScale.getText().toString();
+        int select = Integer.parseInt( value );
+
+        switch ( select ){
+            case 0:
+                return NODE_SIZE_S;
+            case 1:
+                return NODE_SIZE_M;
+            case 2:
+                return NODE_SIZE_L;
+            case 3:
+            default:
+                return NODE_SIZE_XL;
+        }
+    }
+
+    /*
+     * ステージ上のランダム位置の取得
+     */
+    private float getStageScaleRatio() {
+
+        EditText et_nodeScale = binding.getRoot().findViewById(R.id.et_nodeScale);
+        String value = et_nodeScale.getText().toString();
+        int select = Integer.parseInt( value );
+
+        switch ( select ){
+            case 0:
+                return STAGE_RATIO_S;
+            case 1:
+                return STAGE_RATIO_M;
+            case 2:
+                return STAGE_RATIO_L;
+            case 3:
+            default:
+                return STAGE_RATIO_XL;
+        }
+    }
+
+    /*
+     * ユーザー指定のステージサイズの取得
+     */
+    private float getStageScale() {
+
+        // ユーザー指定のNodeサイズ
+        EditText et_stageScale = binding.getRoot().findViewById(R.id.et_stageScale);
+        String value = et_stageScale.getText().toString();
+        int select = Integer.parseInt( value );
+        // ステージサイズの倍率
+        float stageRatio = getStageScaleRatio();
+
+        // ステージサイズを算出
+        switch ( select ){
+            case 0:
+                return (STAGE_SIZE_S * stageRatio);
+            case 1:
+                return (STAGE_SIZE_M * stageRatio);
+            case 2:
+            default:
+                return (STAGE_SIZE_L * stageRatio);
+        }
+    }
+
+    /*
+     * ステージ上のランダム位置の取得
+     */
+    private Vector3 getRandomPosition( float stageScale ) {
+
+        int scale = (int)(stageScale * 100f) + 1;
+
+        Random random = new Random();
+        float positionx = random.nextInt(scale) / 100f;
+        float positionz = random.nextInt(scale) / 100f;
+
+        Log.i("ランダム位置", "positionx=" + positionx );
+        Log.i("ランダム位置", "positionz=" + positionz );
+        Log.i("ランダム位置", "----------------" );
+
+        return new Vector3(-positionx, -0.0f, -positionz);
+    }
 
     /*
      * ステージ上オブジェクトのNode生成
@@ -967,8 +1161,8 @@ public class FirstFragment extends Fragment {
         TransformationSystem transformationSystem = arFragment.getTransformationSystem();
 
         // Nodeスケール
-        final float minScale = 0.10f;
-        Vector3 scaleVector = new Vector3(minScale, minScale, minScale);
+        final float scale = getNodeScale();
+        Vector3 scaleVector = new Vector3(scale, scale, scale);
 
         //------------------------------
         // ステージ上オブジェクトのNode生成
@@ -979,7 +1173,8 @@ public class FirstFragment extends Fragment {
             CharacterNode node = new CharacterNode(transformationSystem);
 
             node.setName( mObjOnStageName.get(i) );
-            node.getScaleController().setMinScale(minScale);
+            node.getScaleController().setMinScale(scale);
+            node.getScaleController().setMaxScale(scale * 2);
             node.setLocalScale(scaleVector);
             node.setParent(anchorNode);
             node.setLocalPosition(mObjOnStagePosition.get(i));
@@ -996,7 +1191,7 @@ public class FirstFragment extends Fragment {
     private Vector3 getCharacterInitPosition(int side) {
 
         // ステージサイズ
-        final float stageSize = 0.3f;
+        final float stageSize = getStageScale();
 
         // 位置
         Vector3 position = new Vector3();

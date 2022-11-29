@@ -12,6 +12,7 @@
         <entry key="..\:/Users/t.yohei/AndroidStudioProjects/AR_Programming/app/src/main/res/layout/activity_uiactivity_ll.xml" value="0.28072916666666664" />
         <entry key="..\:/Users/t.yohei/AndroidStudioProjects/AR_Programming/app/src/main/res/layout/bottom_sheet_programming_ui.xml" value="0.2" />
         <entry key="..\:/Users/t.yohei/AndroidStudioProjects/AR_Programming/app/src/main/res/layout/dialog_time_picker_mmss.xml" value="0.18385416666666668" />
+        <entry key="..\:/Users/t.yohei/AndroidStudioProjects/AR_Programming/app/src/main/res/layout/dialog_volume.xml" value="0.13496376811594202" />
         <entry key="..\:/Users/t.yohei/AndroidStudioProjects/AR_Programming/app/src/main/res/layout/dialog_volume_picker.xml" value="0.18333333333333332" />
         <entry key="..\:/Users/t.yohei/AndroidStudioProjects/AR_Programming/app/src/main/res/layout/dialog_volume_rotate.xml" value="0.23385416666666667" />
         <entry key="..\:/Users/t.yohei/AndroidStudioProjects/AR_Programming/app/src/main/res/layout/dialog_volume_rotate_picker.xml" value="0.18489583333333334" />
@@ -19,6 +20,8 @@
         <entry key="..\:/Users/t.yohei/AndroidStudioProjects/AR_Programming/app/src/main/res/layout/fragment_first.xml" value="0.1" />
         <entry key="..\:/Users/t.yohei/AndroidStudioProjects/AR_Programming/app/src/main/res/layout/fragment_second.xml" value="0.28072916666666664" />
         <entry key="..\:/Users/t.yohei/AndroidStudioProjects/AR_Programming/app/src/main/res/layout/nest_process_layout.xml" value="0.26197916666666665" />
+        <entry key="..\:/Users/t.yohei/AndroidStudioProjects/AR_Programming/app/src/main/res/layout/process_block_nest.xml" value="0.2875" />
+        <entry key="..\:/Users/t.yohei/AndroidStudioProjects/AR_Programming/app/src/main/res/layout/process_block_single.xml" value="0.2875" />
         <entry key="..\:/Users/t.yohei/AndroidStudioProjects/AR_Programming/app/src/main/res/layout/process_block_template.xml" value="0.25833333333333336" />
         <entry key="..\:/Users/t.yohei/AndroidStudioProjects/AR_Programming/app/src/main/res/layout/single_process_layout.xml" value="0.28072916666666664" />
         <entry key="..\:/Users/t.yohei/AndroidStudioProjects/AR_Programming/app/src/main/res/layout/start_process_layout.xml" value="0.24114583333333334" />

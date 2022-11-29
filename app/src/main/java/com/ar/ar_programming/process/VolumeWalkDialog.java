@@ -50,11 +50,11 @@ public class VolumeWalkDialog extends DialogFragment {
         // NumberPicker初期設定
         //----------------------------------
         // 時間の範囲を設定
-        np_volume.setMaxValue(59);
+        np_volume.setMaxValue(1000);
         np_volume.setMinValue(0);
 
         // 数値フォーマット設定
-        np_volume.setFormatter( new PickerFormatter() );
+//        np_volume.setFormatter( new PickerFormatter() );
 
         //----------------------------------
         // 時分秒情報をPickerに反映

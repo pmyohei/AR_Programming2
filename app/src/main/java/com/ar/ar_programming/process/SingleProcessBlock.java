@@ -1,5 +1,6 @@
 package com.ar.ar_programming.process;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -117,15 +118,15 @@ public class SingleProcessBlock extends ProcessBlock {
                 String volume = et_value.getText().toString();
 
                 // 処理量設定ダイアログを表示
-                VolumeWalkDialog dialog = VolumeWalkDialog.newInstance();
-                dialog.setVolume(volume);
-                dialog.setOnPositiveClickListener(new VolumeWalkDialog.PositiveClickListener() {
+                VolumeDialog dialog = VolumeDialog.newInstance();
+                dialog.setVolume( VolumeDialog.VOLUME_KIND_CM, volume );
+                dialog.setOnPositiveClickListener(new VolumeDialog.PositiveClickListener() {
                         @Override
                         public void onPositiveClick(int volume) {
                             // 入力された処理量を保持
                             mProcessVolume = volume;
                             // 入力された処理量をビューに反映
-                            et_value.setText(String.format("%02d", volume));
+                            et_value.setText(String.format("%03d", volume));
                         }
                     }
                 );
@@ -140,7 +141,7 @@ public class SingleProcessBlock extends ProcessBlock {
      */
     private void setRotateVolumeListener(TextView et_value) {
 
-        // 時間設定用のダイアログ表示をリスナーに設定
+        // 処理量設定のダイアログリスナーを設定
         et_value.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -148,9 +149,9 @@ public class SingleProcessBlock extends ProcessBlock {
                 String volume = et_value.getText().toString();
 
                 // 処理量設定ダイアログを表示
-                VolumeRotateDialog dialog = VolumeRotateDialog.newInstance();
-                dialog.setVolume( volume );
-                dialog.setOnPositiveClickListener(new VolumeRotateDialog.PositiveClickListener() {
+                VolumeDialog dialog = VolumeDialog.newInstance();
+                dialog.setVolume( VolumeDialog.VOLUME_KIND_ANGLE, volume );
+                dialog.setOnPositiveClickListener(new VolumeDialog.PositiveClickListener() {
                         @Override
                         public void onPositiveClick(int volume) {
                             // 入力された処理量を保持
