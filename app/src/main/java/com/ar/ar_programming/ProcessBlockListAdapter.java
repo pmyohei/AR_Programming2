@@ -12,9 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.ar.ar_programming.process.NestProcessBlock;
 import com.ar.ar_programming.process.ProcessBlock;
-import com.ar.ar_programming.process.SingleProcessBlock;
 
 /*
  * 処理ブロックリストアダプタ
@@ -170,7 +168,7 @@ public class ProcessBlockListAdapter extends RecyclerView.Adapter<ProcessBlockLi
                 return ProcessBlock.PROC_KIND_IF;
 
             case SELECT_PROCESS_LOOP:
-                return ProcessBlock.PROC_KIND_LOOP;
+                return ProcessBlock.PROC_KIND_LOOP_GOAL;
 
             default:
                 return ProcessBlock.PROC_KIND_FORWARD;

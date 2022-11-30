@@ -29,7 +29,7 @@ public class ProcessBlock extends ConstraintLayout {
     //----------------------------
     public final String TAG_ADD_IMAGE_VIEW = "AddImageView";
 
-    // プログラミング処理種別
+    // 処理ブロック種別
     // 単体処理
     public static final int PROC_KIND_FORWARD = 0;
     public static final int PROC_KIND_BACK = 1;
@@ -38,7 +38,17 @@ public class ProcessBlock extends ConstraintLayout {
     // ネスト処理
     public static final int PROC_KIND_IF = 4;
     public static final int PROC_KIND_IF_ELSE = 5;
-    public static final int PROC_KIND_LOOP = 6;
+    public static final int PROC_KIND_LOOP_GOAL = 6;            // ゴールするまで
+    public static final int PROC_KIND_LOOP_OBSTACLE = 7;        // 障害物と衝突するまで
+
+    // 処理ブロック内容
+    public static final int PROCESS_KIND_SIGNLE = 0;
+    public static final int PROCESS_KIND_NEST_IF = 1;
+    public static final int PROCESS_KIND_NEST_LOOP = 2;
+    public static final int PROCESS_KIND_IF = 1;
+    public static final int PROCESS_KIND_IF_ELSE = 2;
+    public static final int PROCESS_KIND_LOOP = 3;
+
 
     // ドラッグ中（選択中）状態の半透明値
     public final float DRAGGING_TRANCE = 0.6f;
@@ -48,8 +58,9 @@ public class ProcessBlock extends ConstraintLayout {
     //---------------------------
     // フィールド変数
     //----------------------------
-    public boolean mIsDrag;                     // 自身をドラッグ中かどうか（true：ドラッグ中（長押し中））
     public int mProcessKind;
+    public int mProcessContent;
+    public NestProcessBlock mParentNestBlock;        // 自身が入っている直上のネスト処理ブロック（ない場合はnull）
 
 
     public ProcessBlock(Context context) {
@@ -75,6 +86,9 @@ public class ProcessBlock extends ConstraintLayout {
         setLongClickListerner();
         // onDragリスナーの設定
 //        setDragAndDropListerner();
+
+        // 親ネストブロックを初期化
+        mParentNestBlock = null;
     }
 
     /*
@@ -404,18 +418,45 @@ public class ProcessBlock extends ConstraintLayout {
     }
 
     /*
-     * 「プログラミング処理種別」の取得
+     * 「処理ブロック種別」の取得
      */
     public int getProcessKind() {
         return mProcessKind;
     }
-
     /*
-     * 「プログラミング処理種別」の設定
+     * 「処理ブロック種別」の設定
      */
     public void setProcessKind(int processKind ) {
         // 処理種別の設定
         mProcessKind = processKind;
     }
 
+    /*
+     * 「処理ブロック内容」の取得
+     */
+    public int getProcessContent() {
+        return mProcessContent;
+    }
+
+    /*
+     * 「親ネスト処理ブロック」の設定
+     */
+    public void setParentNestBlock( NestProcessBlock block ) {
+        mParentNestBlock = block;
+    }
+    /*
+     * 「親ネスト処理ブロック」の取得
+     */
+    public NestProcessBlock getParentNestBlock() {
+        return mParentNestBlock;
+    }
+
+
+    /*
+     * 「処理ブロック内容」の設定
+     */
+    public void setProcessContent(int processContent ) {
+        // 処理種別の設定
+        mProcessContent = processContent;
+    }
 }

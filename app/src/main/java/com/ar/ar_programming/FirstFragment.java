@@ -93,6 +93,7 @@ public class FirstFragment extends Fragment {
     private FragmentFirstBinding binding;
     private ArFragment arFragment;
     private ModelRenderable mCharacterRenderable;
+    private ModelRenderable mGoalRenderable;
     private ModelRenderable mBlockRenderable;
 
     // tmp
@@ -110,7 +111,7 @@ public class FirstFragment extends Fragment {
     // tmp
 
     private CharacterNode mCharacterNode;
-    private int mDoProcIndex;
+    private int mRunProcessIndex;
 
 
     @Override
@@ -139,7 +140,7 @@ public class FirstFragment extends Fragment {
         // キャラクター
         createModelRenderable(view.getContext());
         // ブロック
-        createBlocksRenderable(view.getContext());
+        createObjOnStageNode(view.getContext());
         // ステージ上の物体
         createtmpObjOnStageRenderable(view.getContext());
 
@@ -172,8 +173,10 @@ public class FirstFragment extends Fragment {
                 //----------------------------------
                 // ステージ上ブロックNode生成
                 createBlocksNode(anchorNode);
+                // ステージ上ゴールNode生成
+                createGoalNode(anchorNode);
                 // ステージ上オブジェクトのNode生成
-                createObjOnStageNode(anchorNode);
+                createObjOnStageNode_old(anchorNode);
                 // キャラクターNode生成
                 // ！他のNode生成の後に行うこと（重複をさけて配置しているため）！
                 createCharacterNode(anchorNode);
@@ -289,7 +292,8 @@ public class FirstFragment extends Fragment {
                 // 処理ブロック数チェック
                 //----------------------
                 ViewGroup ll_UIRoot = root.findViewById(R.id.ll_UIRoot);
-                if (ll_UIRoot.getChildCount() == 0) {
+                if (ll_UIRoot.getChildCount() <= 1) {
+                    Snackbar.make(root, "処理ブロックがありません", Snackbar.LENGTH_SHORT).show();
                     return;
                 }
 
@@ -297,11 +301,12 @@ public class FirstFragment extends Fragment {
                 // 先頭の処理ブロック開始
                 //----------------------
                 // 処理ブロックの先頭を指定（子ビューの先頭はStartBlock）
-                mDoProcIndex = 1;
-                SingleProcessBlock block = (SingleProcessBlock) ll_UIRoot.getChildAt(mDoProcIndex);
+                mRunProcessIndex = 1;
+                ProcessBlock block = (ProcessBlock) ll_UIRoot.getChildAt(mRunProcessIndex);
 
                 // 処理開始
-                startNodeAnimation(block);
+                runProcessBlock(block);
+//                startNodeAnimation(block);
             }
         });
     }
@@ -372,44 +377,53 @@ public class FirstFragment extends Fragment {
         });
     }
 
+
     /*
-     * 次の処理ブロック開始
+     * 処理ブロック開始
      */
-    private void nextProcBlock() {
+    private void runProcessBlock(ProcessBlock block) {
 
-        // 開始する処理ブロックIndexを次へ
-        mDoProcIndex++;
+        //---------------------------
+        // 処理ブロック種別に応じた処理
+        //---------------------------
+        int processKind = block.getProcessKind();
+        switch (processKind) {
 
-        //-----------------------
-        // 処理ブロック数チェック
-        //-----------------------
-        // 処理をすべて実施していれば終了
-        ViewGroup ll_UIRoot = binding.getRoot().findViewById(R.id.ll_UIRoot);
-        int blockNum = ll_UIRoot.getChildCount();
-        if (blockNum <= mDoProcIndex) {
-            return;
+            // 単体処理ブロック
+            case ProcessBlock.PROC_KIND_FORWARD:
+            case ProcessBlock.PROC_KIND_BACK:
+            case ProcessBlock.PROC_KIND_RIGHT_ROTATE:
+            case ProcessBlock.PROC_KIND_LEFT_ROTATE:
+                startBlockAnimation((SingleProcessBlock) block);
+                break;
+
+            // ネスト処理ブロック：loop
+            case ProcessBlock.PROC_KIND_LOOP_GOAL:
+            case ProcessBlock.PROC_KIND_LOOP_OBSTACLE:
+                runLoopProcess((NestProcessBlock) block, processKind);
+                break;
+
+            // ネスト処理ブロック：if
+            case ProcessBlock.PROC_KIND_IF:
+            case ProcessBlock.PROC_KIND_IF_ELSE:
+                break;
         }
-
-        //-----------------------
-        // 処理ブロックの実行
-        //-----------------------
-        // 処理ブロックを取得して開始
-        SingleProcessBlock block = (SingleProcessBlock) ll_UIRoot.getChildAt(mDoProcIndex);
-        startNodeAnimation(block);
     }
 
+
+
     /*
-     * Nodeアニメーションの開始
-     *   キャラクターに処理ブロック通りの動きをさせる
+     * 処理ブロックに対応したアニメーションの開始
+     * （前進や向きの変更等、キャラクターに処理ブロック通りの動きをさせる）
      */
-    private void startNodeAnimation(SingleProcessBlock block) {
+    private void startBlockAnimation(SingleProcessBlock singleBlock ) {
 
         //------------------------------------------------------
         // 処理種別と処理量からアニメーション量とアニメーション時間を取得
         //------------------------------------------------------
         // 処理種別と処理量
-        int procKind = block.getProcessKind();
-        int procVolume = block.getProcessVolume();
+        int procKind = singleBlock.getProcessKind();
+        int procVolume = singleBlock.getProcessVolume();
 
         // アニメーション量とアニメーション時間
         float volume = mCharacterNode.getAnimationVolume(procKind, procVolume);
@@ -437,17 +451,20 @@ public class FirstFragment extends Fragment {
             @Override
             public void onAnimationCancel(Animator animator) {
             }
-
             @Override
             public void onAnimationRepeat(Animator animator) {
             }
-
             @Override
             public void onAnimationStart(Animator animator) {
             }
-
             @Override
             public void onAnimationEnd(Animator animator) {
+
+                // ゴールしているなら、チャート処理はここで終了
+                boolean isGoal = mCharacterNode.isGoaled();
+                if( isGoal ){
+                    return;
+                }
 
                 //-------------------------------
                 // アニメーション終了時の位置を保持
@@ -457,7 +474,7 @@ public class FirstFragment extends Fragment {
                 //-------------------------------
                 // 次の処理へ
                 //-------------------------------
-                nextProcBlock();
+                startNextProcess( singleBlock );
             }
         });
 
@@ -470,6 +487,149 @@ public class FirstFragment extends Fragment {
         // モデルに用意されたアニメーションを開始
         mCharacterNode.startModelAnimation(procKind, duration);
     }
+
+    /*
+     * 次の処理ブロック開始処理
+     */
+    private void startNextProcess( ProcessBlock finishBlock ) {
+
+        ProcessBlock targetBlock = finishBlock;
+
+        //------------------------------------
+        // 実行できる処理ブロックの実行処理までループ
+        //------------------------------------
+        while( true ){
+
+            // 直上ネストブロックを取得
+            NestProcessBlock parentNestBlock = targetBlock.getParentNestBlock();
+            if( parentNestBlock == null ){
+                // なければ、メインラインの処理を次へ進める
+                proceedNextMainProcess();
+                break;
+            }
+
+            // ループ条件判定
+            boolean isFinish = parentNestBlock.isFinishLoop( mCharacterNode );
+            if( !isFinish ){
+                // ループ継続なら、入れ子内の次の処理を実行
+                ProcessBlock nextBlockInNest = parentNestBlock.getProcessInNest();
+                runProcessBlock( nextBlockInNest );
+                break;
+            }
+
+            // ループ終了条件を満たしている場合、親ブロックの次の処理へ
+            targetBlock = parentNestBlock;
+        }
+    }
+
+
+    /*
+     * メインライン（Startブロックの直属ライン）の処理ブロックを次へ進める
+     */
+    private void proceedNextMainProcess() {
+
+        // 開始する処理ブロックIndexを次へ
+        mRunProcessIndex++;
+
+        //-----------------------
+        // 処理ブロック数チェック
+        //-----------------------
+        // 処理をすべて実施していれば終了
+        ViewGroup ll_UIRoot = binding.getRoot().findViewById(R.id.ll_UIRoot);
+        int blockNum = ll_UIRoot.getChildCount();
+        if (blockNum <= mRunProcessIndex) {
+            return;
+        }
+
+        //-----------------------
+        // 処理ブロックの実行
+        //-----------------------
+        // 処理ブロックを取得して開始処理へ
+        ProcessBlock block = (ProcessBlock) ll_UIRoot.getChildAt(mRunProcessIndex);
+        runProcessBlock(block);
+    }
+
+    /*
+     * ループ条件判定
+     */
+    private void runLoopProcess(NestProcessBlock block, int processKind) {
+
+        //-----------------------------
+        // ループ内処理ブロック数チェック
+        //-----------------------------
+        // ループ内に処理ブロックがなければ
+        int blockInLoopNum = block.getProcessInNestNum();
+        if( blockInLoopNum == 0 ){
+            // 次の処理ブロックへ
+            //★多分不具合
+            proceedNextMainProcess();
+            return;
+        }
+
+        //-----------------------------
+        // ループ内処理ブロックの実行
+        //-----------------------------
+        // 入れ子内の処理ブロックの親ネストブロックを、本ネストにする
+        ProcessBlock blockInLoop = block.getProcessInNest();
+        blockInLoop.setParentNestBlock( block );
+        // 実行
+        runProcessBlock( blockInLoop );
+
+
+/*        // 条件成立中はループ
+        int i = 0;
+        while(true) {
+
+            //------------------------------------------
+            // ループ条件判定
+            //------------------------------------------
+            // ループ処理開始 or ループ内処理を最後まで実行
+            if( i == 0 ){
+                // ループ条件判定
+                boolean isSatisfied = isConditionSatisfied( block, processKind );
+                if( isSatisfied ){
+                    // ループ条件がtrueなら、ループ処理終了
+                    break;
+                }
+            }
+
+            //-------------------
+            // ループ内処理の実行
+            //-------------------
+            // ループ内の処理ブロックを取得して実行
+            ProcessBlock blockInLoop = block.getProcessInNest( i );
+            runProcessBlock( blockInLoop );
+
+            // 次の処理ブロックへ
+            i++;
+            if( i >= blockInLoopNum ){
+                // ループ内の処理ブロック数を超えた場合は、先頭にリセット
+                i = 0;
+            }
+        }*/
+    }
+
+    /*
+     * 条件成立判定
+     *   @return：条件成立-true
+     *   @return：条件不成立-false
+     */
+    private boolean isConditionSatisfied(NestProcessBlock block, int processKind) {
+
+        switch (processKind) {
+            // ゴールしているかどうか
+            case ProcessBlock.PROC_KIND_LOOP_GOAL:
+                return mCharacterNode.isGoaled();
+
+            // 障害物と衝突中
+            case ProcessBlock.PROC_KIND_LOOP_OBSTACLE:
+
+                return false;
+        }
+
+        return false;
+    }
+
 
     /*
      * 開始ブロック設定
@@ -680,7 +840,7 @@ public class FirstFragment extends Fragment {
             // ネスト処理
             case ProcessBlock.PROC_KIND_IF:
             case ProcessBlock.PROC_KIND_IF_ELSE:
-            case ProcessBlock.PROC_KIND_LOOP:
+            case ProcessBlock.PROC_KIND_LOOP_OBSTACLE:
             default:
                 newBlock = new NestProcessBlock(getContext());
                 break;
@@ -853,16 +1013,37 @@ public class FirstFragment extends Fragment {
     }
 
     /*
-     * 3Dモデルレンダリング「ブロック」の生成
+     * 3Dモデルレンダリング「ステージ上オブジェクト」の生成
      */
-    private void createBlocksRenderable(Context context) {
+    private void createObjOnStageNode(Context context) {
 
+        //-------------------
+        // ブロック
+        //-------------------
         ModelRenderable
                 .builder()
                 .setSource(context, Uri.parse("models/block_01.glb"))
                 .setIsFilamentGltf(true)    // glbファイルを読み込む必須
                 .build()
                 .thenAccept(renderable -> mBlockRenderable = renderable)
+                .exceptionally(
+                        throwable -> {
+                            Toast toast =
+                                    Toast.makeText(context, "Unable to load andy renderable", Toast.LENGTH_LONG);
+                            toast.setGravity(Gravity.CENTER, 0, 0);
+                            toast.show();
+                            return null;
+                        });
+
+        //-------------------
+        // ゴール
+        //-------------------
+        ModelRenderable
+                .builder()
+                .setSource(context, Uri.parse("models/goal_01.glb"))
+                .setIsFilamentGltf(true)    // glbファイルを読み込む必須
+                .build()
+                .thenAccept(renderable -> mGoalRenderable = renderable)
                 .exceptionally(
                         throwable -> {
                             Toast toast =
@@ -886,15 +1067,15 @@ public class FirstFragment extends Fragment {
         // glbファイルpath文字列
         //----------------------------
         ArrayList<String> glbPath = new ArrayList<>();
-        glbPath.add("models/goal_01.glb");
-        glbPath.add("models/block_01.glb");
+//        glbPath.add("models/goal_01.glb");
+//        glbPath.add("models/block_01.glb");
         glbPath.add("models/cone_01.glb");
 
         //------------------------
         // 多分変更するロジック★★★
         //------------------------
-        mObjOnStageName.add(NODE_NAME_GOAL);
-        mObjOnStageName.add(NODE_NAME_BLOCK);
+//        mObjOnStageName.add(NODE_NAME_GOAL);
+//        mObjOnStageName.add(NODE_NAME_BLOCK);
         mObjOnStageName.add(NODE_NAME_OBSTACLE);
 
         //----------------------------
@@ -902,8 +1083,8 @@ public class FirstFragment extends Fragment {
         //----------------------------
         float stageScale = getStageScale();
 
-        mObjOnStagePosition.add(new Vector3(-0.0f, -0.0f, -0.0f));
-        mObjOnStagePosition.add(new Vector3(-stageScale, -0.0f, -0.0f));
+//        mObjOnStagePosition.add(new Vector3(-0.0f, -0.0f, -0.0f));
+//        mObjOnStagePosition.add(new Vector3(-stageScale, -0.0f, -0.0f));
         mObjOnStagePosition.add(new Vector3(-0.0f, -0.0f, -stageScale));
 
         //----------------------------
@@ -948,7 +1129,7 @@ public class FirstFragment extends Fragment {
         // 重複しない配置になるまで、繰り返し
         while (true) {
             // 生成
-            characterNode = createTmpCharacterNode( anchorNode, scale );
+            characterNode = createTmpCharacterNode(anchorNode, scale);
 
             // 他のNodeと重複していなければ、生成終了
             ArrayList<Node> nodes = scene.overlapTestAll(characterNode);
@@ -957,7 +1138,7 @@ public class FirstFragment extends Fragment {
             }
 
             // 重複していれば、そのキャラクターは削除
-            anchorNode.removeChild( characterNode );
+            anchorNode.removeChild(characterNode);
         }
 
         // ステージ上のキャラクターとして保持
@@ -1071,6 +1252,35 @@ public class FirstFragment extends Fragment {
     }
 
     /*
+     * ステージ上のゴールNode生成
+     */
+    private void createGoalNode(AnchorNode anchorNode) {
+
+        TransformationSystem transformationSystem = arFragment.getTransformationSystem();
+
+        // Nodeスケール
+        final float scale = getNodeScale();
+        Vector3 scaleVector = new Vector3(scale, scale, scale);
+
+        // ステージの広さ
+        float stageScale = getStageScale();
+
+        // ランダム位置を生成
+        Vector3 pos = getRandomPosition(stageScale);
+
+        // Node生成
+        CharacterNode node = new CharacterNode(transformationSystem);
+        node.setName( NODE_NAME_GOAL );
+        node.getScaleController().setMinScale(scale);
+        node.getScaleController().setMaxScale(scale * 2);
+        node.setLocalScale(scaleVector);
+        node.setParent(anchorNode);
+        node.setLocalPosition(pos);
+        node.setRenderable( mGoalRenderable );
+        node.select();
+    }
+
+    /*
      * ユーザー指定のNodeサイズの取得
      */
     private float getNodeScale() {
@@ -1159,7 +1369,7 @@ public class FirstFragment extends Fragment {
     /*
      * ステージ上オブジェクトのNode生成
      */
-    private void createObjOnStageNode(AnchorNode anchorNode) {
+    private void createObjOnStageNode_old(AnchorNode anchorNode) {
 
         TransformationSystem transformationSystem = arFragment.getTransformationSystem();
 

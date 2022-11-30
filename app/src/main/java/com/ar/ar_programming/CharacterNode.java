@@ -107,13 +107,11 @@ public class CharacterNode extends TransformableNode {
             String collidingNodeName = collidingNode.getName();
 
             if (collidingNodeName.equals(FirstFragment.NODE_NAME_GOAL)) {
-
                 collisionType = COLLISION_TYPE_GOAL;
                 startModelAnimation(MODEL_ANIMATION_STR_GOAL, 2000);
                 break;
 
             } else if (collidingNodeName.equals(FirstFragment.NODE_NAME_OBSTACLE)) {
-
                 collisionType = COLLISION_TYPE_OBSTACLE;
                 startModelAnimation(MODEL_ANIMATION_STR_ERROR, 2000);
                 break;
@@ -605,6 +603,13 @@ public class CharacterNode extends TransformableNode {
 
         // モデルアニメーション開始
         startModelAnimation( animationName, duration );
+    }
+
+    /*
+     * 衝突検知リスナーの設定
+     */
+    public boolean isGoaled() {
+        return (mCollisionType == COLLISION_TYPE_GOAL);
     }
 
     /*

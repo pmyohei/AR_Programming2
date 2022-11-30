@@ -1,9 +1,7 @@
 package com.ar.ar_programming.process;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -77,6 +75,10 @@ public class SingleProcessBlock extends ProcessBlock {
 
         // 初期処理量
         mProcessVolume = 0;
+/*
+        // 処理ブロック種別
+        mProcessContent =
+*/
 
         // onDragリスナーの設定
         setDragAndDropListerner();
@@ -177,7 +179,7 @@ public class SingleProcessBlock extends ProcessBlock {
         int unitId;
 
         // 種別に応じた文言IDを取得
-        switch ( mProcessKind ){
+        switch (mProcessKind){
             case PROC_KIND_FORWARD:
                 contentId = R.string.block_contents_forward;
                 unitId = R.string.block_unit_walk;
