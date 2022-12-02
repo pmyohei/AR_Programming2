@@ -3,12 +3,39 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/t.yohei/AndroidStudioProjects/AR_Programming/app/src/main/res/drawable-v24/baseline_arrow_upward_24.xml" value="0.1885" />
+        <entry key="..\:/Users/t.yohei/AndroidStudioProjects/AR_Programming/app/src/main/res/drawable-v24/baseline_block_if_24.xml" value="0.184" />
+        <entry key="..\:/Users/t.yohei/AndroidStudioProjects/AR_Programming/app/src/main/res/drawable-v24/baseline_block_loop_24.xml" value="0.184" />
+        <entry key="..\:/Users/t.yohei/AndroidStudioProjects/AR_Programming/app/src/main/res/drawable-v24/baseline_check_24.xml" value="0.1305" />
+        <entry key="..\:/Users/t.yohei/AndroidStudioProjects/AR_Programming/app/src/main/res/drawable-v24/frame_loop_process.xml" value="0.1915" />
+        <entry key="..\:/Users/t.yohei/AndroidStudioProjects/AR_Programming/app/src/main/res/drawable-v24/frame_nest_process.xml" value="0.1135" />
+        <entry key="..\:/Users/t.yohei/AndroidStudioProjects/AR_Programming/app/src/main/res/layout/activity_main.xml" value="0.1398176291793313" />
+        <entry key="..\:/Users/t.yohei/AndroidStudioProjects/AR_Programming/app/src/main/res/layout/activity_uiactivity_ll.xml" value="0.28072916666666664" />
+        <entry key="..\:/Users/t.yohei/AndroidStudioProjects/AR_Programming/app/src/main/res/layout/bottom_sheet_programming_ui.xml" value="0.2" />
+        <entry key="..\:/Users/t.yohei/AndroidStudioProjects/AR_Programming/app/src/main/res/layout/dialog_time_picker_mmss.xml" value="0.18385416666666668" />
+        <entry key="..\:/Users/t.yohei/AndroidStudioProjects/AR_Programming/app/src/main/res/layout/dialog_volume.xml" value="0.13496376811594202" />
+        <entry key="..\:/Users/t.yohei/AndroidStudioProjects/AR_Programming/app/src/main/res/layout/dialog_volume_picker.xml" value="0.18333333333333332" />
+        <entry key="..\:/Users/t.yohei/AndroidStudioProjects/AR_Programming/app/src/main/res/layout/dialog_volume_rotate.xml" value="0.23385416666666667" />
+        <entry key="..\:/Users/t.yohei/AndroidStudioProjects/AR_Programming/app/src/main/res/layout/dialog_volume_rotate_picker.xml" value="0.18489583333333334" />
+        <entry key="..\:/Users/t.yohei/AndroidStudioProjects/AR_Programming/app/src/main/res/layout/dialog_volume_walk.xml" value="0.15885416666666666" />
+        <entry key="..\:/Users/t.yohei/AndroidStudioProjects/AR_Programming/app/src/main/res/layout/fragment_first.xml" value="0.1" />
+        <entry key="..\:/Users/t.yohei/AndroidStudioProjects/AR_Programming/app/src/main/res/layout/fragment_second.xml" value="0.28072916666666664" />
+        <entry key="..\:/Users/t.yohei/AndroidStudioProjects/AR_Programming/app/src/main/res/layout/nest_process_layout.xml" value="0.26197916666666665" />
+        <entry key="..\:/Users/t.yohei/AndroidStudioProjects/AR_Programming/app/src/main/res/layout/process_block_if_else.xml" value="0.253125" />
+        <entry key="..\:/Users/t.yohei/AndroidStudioProjects/AR_Programming/app/src/main/res/layout/process_block_loop.xml" value="0.1838768115942029" />
+        <entry key="..\:/Users/t.yohei/AndroidStudioProjects/AR_Programming/app/src/main/res/layout/process_block_nest.xml" value="0.2875" />
+        <entry key="..\:/Users/t.yohei/AndroidStudioProjects/AR_Programming/app/src/main/res/layout/process_block_single.xml" value="0.2875" />
+        <entry key="..\:/Users/t.yohei/AndroidStudioProjects/AR_Programming/app/src/main/res/layout/process_block_template.xml" value="0.25833333333333336" />
+        <entry key="..\:/Users/t.yohei/AndroidStudioProjects/AR_Programming/app/src/main/res/layout/single_process_layout.xml" value="0.28072916666666664" />
+        <entry key="..\:/Users/t.yohei/AndroidStudioProjects/AR_Programming/app/src/main/res/layout/start_process_layout.xml" value="0.24114583333333334" />
+        <entry key="..\:/Users/t.yohei/AndroidStudioProjects/AR_Programming/app/src/main/res/menu/menu_main.xml" value="0.17395833333333333" />
+        <entry key="..\:/Users/t.yohei/AndroidStudioProjects/AR_Sample/app/src/main/res/layout/activity_main.xml" value="0.1875" />
+        <entry key="..\:/Users/t.yohei/AndroidStudioProjects/AR_Sample/app/src/main/res/layout/content_main.xml" value="0.1875" />
+        <entry key="..\:/Users/t.yohei/AndroidStudioProjects/AR_Sample/app/src/main/res/layout/fragment_first.xml" value="0.2578125" />
+        <entry key="..\:/Users/t.yohei/AndroidStudioProjects/AR_Sample/app/src/main/res/layout/fragment_second.xml" value="0.1875" />
         <entry key="..\:/Users/takahashi_yhi/AndroidStudioProjects/AR_Sample/app/src/main/res/layout/activity_main.xml" value="0.2375" />
-        <entry key="..\:/Users/takahashi_yhi/AndroidStudioProjects/AR_Sample/app/src/main/res/layout/bottom_sheet_programming_ui.xml" value="0.19322916666666667" />
         <entry key="..\:/Users/takahashi_yhi/AndroidStudioProjects/AR_Sample/app/src/main/res/layout/content_main.xml" value="0.23233695652173914" />
-        <entry key="..\:/Users/takahashi_yhi/AndroidStudioProjects/AR_Sample/app/src/main/res/layout/dialog_volume.xml" value="0.23958333333333334" />
         <entry key="..\:/Users/takahashi_yhi/AndroidStudioProjects/AR_Sample/app/src/main/res/layout/fragment_first.xml" value="0.136" />
-        <entry key="..\:/Users/takahashi_yhi/AndroidStudioProjects/AR_Sample/app/src/main/res/layout/process_block_nest.xml" value="0.29322916666666665" />
         <entry key="..\:/Users/takahashi_yhi/AndroidStudioProjects/AR_Sample/app/src/main/res/layout/sample_card.xml" value="0.23802083333333332" />
       </map>
     </option>

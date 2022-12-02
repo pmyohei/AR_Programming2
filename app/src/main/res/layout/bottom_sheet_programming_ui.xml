@@ -78,7 +78,7 @@
                     android:id="@+id/tv_resetCharacter"
                     android:layout_width="wrap_content"
                     android:layout_height="28dp"
-                    android:background="@color/bg_nest_process_dark"
+                    android:background="@color/bg_if_process_dark"
                     android:text="ResetChar"
                     android:textSize="16sp"
                     />

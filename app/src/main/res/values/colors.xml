@@ -2,8 +2,10 @@
 <resources>
     <color name="bg_single_process">#A1F0FA</color>
     <color name="bg_single_process_dark">#24B9CC</color>
-    <color name="bg_nest_process">#F3BE70</color>
-    <color name="bg_nest_process_dark">#BA7714</color>
+    <color name="bg_if_process">#F3BE70</color>
+    <color name="bg_if_process_dark">#BA7714</color>
+    <color name="bg_loop_process">#FFBB86FC</color>
+    <color name="bg_loop_process_dark">#FF6200EE</color>
     <color name="black_50">#88000000</color>
     <color name="white_80">#CCFFFFFF</color>
 

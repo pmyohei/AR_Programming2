@@ -30,6 +30,12 @@ public class ProcessBlock extends ConstraintLayout {
     public final String TAG_ADD_IMAGE_VIEW = "AddImageView";
 
     // 処理ブロック種別
+    public static final int PROCESS_TYPE_SINGLE = 0;
+    public static final int PROCESS_TYPE_IF = 1;
+    public static final int PROCESS_TYPE_IF_ELSE = 2;
+    public static final int PROCESS_TYPE_LOOP = 3;
+
+    // 処理ブロック内容
     // 単体処理
     public static final int PROC_KIND_FORWARD = 0;
     public static final int PROC_KIND_BACK = 1;
@@ -49,15 +55,14 @@ public class ProcessBlock extends ConstraintLayout {
     public static final int PROCESS_KIND_IF_ELSE = 2;
     public static final int PROCESS_KIND_LOOP = 3;
 
-
     // ドラッグ中（選択中）状態の半透明値
     public final float DRAGGING_TRANCE = 0.6f;
     public final float NOT_DRAGGING_TRANCE = 1.0f;
 
-
     //---------------------------
     // フィールド変数
     //----------------------------
+    public int mProcessType;
     public int mProcessKind;
     public int mProcessContent;
     public NestProcessBlock mParentNestBlock;        // 自身が入っている直上のネスト処理ブロック（ない場合はnull）
@@ -66,9 +71,11 @@ public class ProcessBlock extends ConstraintLayout {
     public ProcessBlock(Context context) {
         this(context, null);
     }
+
     public ProcessBlock(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
+
     public ProcessBlock(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         // 処理ブロック共通初期化処理
@@ -105,7 +112,7 @@ public class ProcessBlock extends ConstraintLayout {
                 //--------------------------
                 // 当処理ブロックを半透明にする
                 //--------------------------
-                view.setAlpha( DRAGGING_TRANCE );
+                view.setAlpha(DRAGGING_TRANCE);
 
                 //--------------------------
                 // ドロップ先へ渡すデータ生成
@@ -138,14 +145,15 @@ public class ProcessBlock extends ConstraintLayout {
         setOnDragListener(new OnDragListener() {
             @Override
             public boolean onDrag(View view, DragEvent dragEvent) {
+
                 switch (dragEvent.getAction()) {
 
                     case DragEvent.ACTION_DRAG_STARTED:
-                        Log.i("ドラッグテスト2", "ACTION_DRAG_STARTED");
+                        Log.i("ドラッグテスト block", "ACTION_DRAG_STARTED id=" + getId());
                         return true;
 
                     case DragEvent.ACTION_DRAG_ENTERED:
-                        Log.i("ドラッグテスト2", "ACTION_DRAG_ENTERED");
+                        Log.i("ドラッグテスト block", "ACTION_DRAG_ENTERED id=" + getId());
 
                         //----------------------
                         // 同一ビューチェック
@@ -163,11 +171,11 @@ public class ProcessBlock extends ConstraintLayout {
                         return true;
 
                     case DragEvent.ACTION_DRAG_LOCATION:
-                        Log.i("ドラッグテスト2", "ACTION_DRAG_LOCATION");
+                        Log.i("ドラッグテスト block", "ACTION_DRAG_LOCATION id=" + getId());
                         return true;
 
                     case DragEvent.ACTION_DRAG_EXITED:
-                        Log.i("ドラッグテスト2", "ACTION_DRAG_EXITED");
+                        Log.i("ドラッグテスト block", "ACTION_DRAG_EXITED id=" + getId());
 
                         // 処理イメージブロックの削除
                         removeAddImageView((ViewGroup) getParent());
@@ -175,7 +183,7 @@ public class ProcessBlock extends ConstraintLayout {
                         return true;
 
                     case DragEvent.ACTION_DROP:
-                        Log.i("ドラッグテスト2", "ACTION_DROP");
+                        Log.i("ドラッグテスト block", "ACTION_DROP id=" + getId());
 
                         //----------------------
                         // 同一ビューチェック
@@ -195,7 +203,7 @@ public class ProcessBlock extends ConstraintLayout {
                         return true;
 
                     case DragEvent.ACTION_DRAG_ENDED:
-                        Log.i("ドラッグテスト2", "ACTION_DRAG_ENDED");
+                        Log.i("ドラッグテスト block", "ACTION_DRAG_ENDED id=" + getId());
 
                         // ドラッグ対象のビューの半透明を解除
                         cancelDraggingState(dragEvent);
@@ -203,11 +211,11 @@ public class ProcessBlock extends ConstraintLayout {
                         return true;
 
                     default:
-                        Log.i("ドラッグテスト2", "default");
+                        Log.i("ドラッグテスト block", "default id=" + getId());
                         break;
                 }
 
-                Log.i("ドラッグ確認", "来てる？");
+                Log.i("ドラッグテスト", "来てる？");
                 return false;
             }
         });
@@ -245,8 +253,10 @@ public class ProcessBlock extends ConstraintLayout {
         imageBlock.setBackgroundColor(getResources().getColor(R.color.black_50));
         imageBlock.setTag(TAG_ADD_IMAGE_VIEW);
 
-        // 親レイアウトから見た時の自分の子ビューindexを取得
+        // 親レイアウト or 親ネストブロックから見た時の自分の子ビューとしてのindexを取得
         int myselfIndex = getMyselfChildIndex();
+
+        Log.i("ドラッグテスト block", "myselfIndex=" + myselfIndex);
 
         // 自処理ブロックサイズ
         int width = getWidth();
@@ -281,15 +291,22 @@ public class ProcessBlock extends ConstraintLayout {
         // 処理ブロックをレイアウトに追加
         //-------------------------------
         // ドラッグされてきた処理ブロックを取得
-        View processView = (View) dragEvent.getLocalState();
+        ProcessBlock processView = (ProcessBlock) dragEvent.getLocalState();
         // 処理ブロック生成
         createProcessBlock(processView);
     }
 
     /*
-     * 処理ブロックの新規生成
+     * 処理ブロックの生成
      */
-    public void createProcessBlock(View processView) {
+    public void createProcessBlock(ProcessBlock newProcessBlock) {
+
+        //-------------------------------
+        // 生成する処理ブロックの親ネスト設定
+        //-------------------------------
+        // ネスト内になければ、nullが設定される
+        NestProcessBlock nestBlock = getParentNestBlock();
+        newProcessBlock.setParentNestBlock(nestBlock);
 
         //-------------------------------
         // 処理ブロックをレイアウトに追加
@@ -299,21 +316,21 @@ public class ProcessBlock extends ConstraintLayout {
 
         // 親レイアウトに追加
         ViewGroup parentView = (ViewGroup) getParent();
-        parentView.addView(processView, myselfIndex + 1);
+        parentView.addView(newProcessBlock, myselfIndex + 1);
 
         // アニメーション付きで生成
         Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.create_block);
-        processView.startAnimation(animation);
+        newProcessBlock.startAnimation(animation);
 
         //--------------------------------------
-        // 処理イメージブロックを他の処理と左揃えにする
+        // 生成処理ブロックを他の処理ブロックと左揃えにする
         //--------------------------------------
         // 左揃えにするために、自分の左マージンを取得
         MarginLayoutParams parentMlp = (MarginLayoutParams) getLayoutParams();
         final int anchorLeft = parentMlp.leftMargin;
 
         // 処理ブロックに左マージンを設定
-        MarginLayoutParams mlp = (MarginLayoutParams) processView.getLayoutParams();
+        MarginLayoutParams mlp = (MarginLayoutParams) newProcessBlock.getLayoutParams();
         mlp.setMargins(anchorLeft, mlp.topMargin, mlp.rightMargin, mlp.bottomMargin);
     }
 
@@ -356,7 +373,7 @@ public class ProcessBlock extends ConstraintLayout {
         int myID = getId();
 
         // 子レイアウトの数
-        ViewGroup parentView = (ViewGroup) getParent();
+        ViewGroup parentView = getBlockParentView();
         int childNum = parentView.getChildCount();
 
         Log.i("処理イメージ", "追加 childNum=" + childNum);
@@ -364,14 +381,27 @@ public class ProcessBlock extends ConstraintLayout {
         // 親レイアウトの子ビュー分繰り返し
         for (int i = 0; i < childNum; i++) {
             // 自分と同じIDがあれば、その時のindexを変えす
-            View checkTarget = parentView.getChildAt(i);
-            int checkID = checkTarget.getId();
+            int checkID = parentView.getChildAt(i).getId();
             if (myID == checkID) {
+                Log.i("処理イメージ", "子index=" + i);
                 return i;
             }
         }
 
         return -1;
+    }
+
+    /*
+     * 親レイアウトor親ネストを返す
+     *   親ネストがあれば親ネスト、なければ、親レイアウトを返す
+     */
+    private ViewGroup getBlockParentView() {
+
+        NestProcessBlock parentView = getParentNestBlock();
+        if( parentView != null ){
+            return parentView;
+        }
+        return (ViewGroup)getParent();
     }
 
     /*
@@ -415,6 +445,19 @@ public class ProcessBlock extends ConstraintLayout {
 
         // ドラッグされたビューのドラッグ状態を解除
         draggedView.setAlpha( NOT_DRAGGING_TRANCE );
+    }
+
+    /*
+     * 「処理ブロック種別」の取得
+     */
+    public int getProcessType() {
+        return mProcessType;
+    }
+    /*
+     * 「処理ブロック種別」の設定
+     */
+    public void setProcessType(int type ) {
+        mProcessType = type;
     }
 
     /*

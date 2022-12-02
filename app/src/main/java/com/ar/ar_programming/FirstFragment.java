@@ -23,6 +23,9 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.ar.ar_programming.process.IfElseProcessBlock;
+import com.ar.ar_programming.process.IfProcessBlock;
+import com.ar.ar_programming.process.LoopProcessBlock;
 import com.ar.ar_programming.process.NestProcessBlock;
 import com.ar.ar_programming.process.ProcessBlock;
 import com.ar.ar_programming.process.SingleProcessBlock;
@@ -383,6 +386,9 @@ public class FirstFragment extends Fragment {
      */
     private void runProcessBlock(ProcessBlock block) {
 
+        Log.i("ループ処理", "" + (new Object() {
+        }.getClass().getEnclosingMethod().getName()));
+
         //---------------------------
         // 処理ブロック種別に応じた処理
         //---------------------------
@@ -397,26 +403,35 @@ public class FirstFragment extends Fragment {
                 startBlockAnimation((SingleProcessBlock) block);
                 break;
 
-            // ネスト処理ブロック：loop
+            // ネスト処理ブロック：if/loop
             case ProcessBlock.PROC_KIND_LOOP_GOAL:
             case ProcessBlock.PROC_KIND_LOOP_OBSTACLE:
-                runLoopProcess((NestProcessBlock) block, processKind);
+            case ProcessBlock.PROC_KIND_IF:
+                // ネスト数1の処理ブロック移行処理
+                oneNestProcessTransition((NestProcessBlock) block);
                 break;
 
-            // ネスト処理ブロック：if
-            case ProcessBlock.PROC_KIND_IF:
+            // ネスト処理ブロック：if-else
             case ProcessBlock.PROC_KIND_IF_ELSE:
+                // ネスト数2の処理ブロック移行処理
+                twoNestProcessTransition((NestProcessBlock) block);
+                break;
+
+            default:
+                // 異常値は処理なし
                 break;
         }
     }
-
 
 
     /*
      * 処理ブロックに対応したアニメーションの開始
      * （前進や向きの変更等、キャラクターに処理ブロック通りの動きをさせる）
      */
-    private void startBlockAnimation(SingleProcessBlock singleBlock ) {
+    private void startBlockAnimation(SingleProcessBlock singleBlock) {
+
+        Log.i("ループ処理", "" + (new Object() {
+        }.getClass().getEnclosingMethod().getName()));
 
         //------------------------------------------------------
         // 処理種別と処理量からアニメーション量とアニメーション時間を取得
@@ -451,20 +466,25 @@ public class FirstFragment extends Fragment {
             @Override
             public void onAnimationCancel(Animator animator) {
             }
+
             @Override
             public void onAnimationRepeat(Animator animator) {
             }
+
             @Override
             public void onAnimationStart(Animator animator) {
             }
+
             @Override
             public void onAnimationEnd(Animator animator) {
 
                 // ゴールしているなら、チャート処理はここで終了
                 boolean isGoal = mCharacterNode.isGoaled();
-                if( isGoal ){
+                if (isGoal) {
                     return;
                 }
+
+                Log.i("ループ処理", "処理アニメーション終了");
 
                 //-------------------------------
                 // アニメーション終了時の位置を保持
@@ -474,7 +494,7 @@ public class FirstFragment extends Fragment {
                 //-------------------------------
                 // 次の処理へ
                 //-------------------------------
-                startNextProcess( singleBlock );
+                startNextProcess(singleBlock);
             }
         });
 
@@ -490,34 +510,55 @@ public class FirstFragment extends Fragment {
 
     /*
      * 次の処理ブロック開始処理
+     *  @para：終了した処理ブロック
      */
-    private void startNextProcess( ProcessBlock finishBlock ) {
+    private void startNextProcess(ProcessBlock finishBlock) {
+
+        Log.i("ループ処理", "" + (new Object() {
+        }.getClass().getEnclosingMethod().getName()));
 
         ProcessBlock targetBlock = finishBlock;
 
         //------------------------------------
         // 実行できる処理ブロックの実行処理までループ
         //------------------------------------
-        while( true ){
+        while (true) {
 
             // 直上ネストブロックを取得
             NestProcessBlock parentNestBlock = targetBlock.getParentNestBlock();
-            if( parentNestBlock == null ){
+            if (parentNestBlock == null) {
                 // なければ、メインラインの処理を次へ進める
                 proceedNextMainProcess();
                 break;
             }
 
-            // ループ条件判定
-            boolean isFinish = parentNestBlock.isFinishLoop( mCharacterNode );
-            if( !isFinish ){
-                // ループ継続なら、入れ子内の次の処理を実行
-                ProcessBlock nextBlockInNest = parentNestBlock.getProcessInNest();
-                runProcessBlock( nextBlockInNest );
-                break;
+            //-----------------------
+            // ネスト内の処理ライン
+            //-----------------------
+            // ループ処理内にいれば、ループ継続確認
+            int type = parentNestBlock.getProcessType();
+            if (type == ProcessBlock.PROCESS_TYPE_LOOP) {
+
+                // 次の処理が先頭の処理ブロックでなければ
+                boolean isNextProcessTop = ((LoopProcessBlock) parentNestBlock).isNextProcessTop();
+                if( !isNextProcessTop ){
+                    // ループ継続確認せず、次の処理へ
+                    ProcessBlock nextBlockInNest = parentNestBlock.getProcessInNest();
+                    runProcessBlock(nextBlockInNest);
+                    break;
+                }
+
+                // ループ継続判定
+                boolean isContinue = ((LoopProcessBlock) parentNestBlock).isConditionTrue(mCharacterNode);
+                if (isContinue) {
+                    // ループ継続なら、ループ内の次の処理を実行
+                    ProcessBlock nextBlockInNest = parentNestBlock.getProcessInNest();
+                    runProcessBlock(nextBlockInNest);
+                    break;
+                }
             }
 
-            // ループ終了条件を満たしている場合、親ブロックの次の処理へ
+            // ループ処理内にない、or、ループ終了条件を満たしている場合、親ブロックの次の処理へ
             targetBlock = parentNestBlock;
         }
     }
@@ -527,6 +568,9 @@ public class FirstFragment extends Fragment {
      * メインライン（Startブロックの直属ライン）の処理ブロックを次へ進める
      */
     private void proceedNextMainProcess() {
+
+        Log.i("ループ処理", "" + (new Object() {
+        }.getClass().getEnclosingMethod().getName()));
 
         // 開始する処理ブロックIndexを次へ
         mRunProcessIndex++;
@@ -550,85 +594,105 @@ public class FirstFragment extends Fragment {
     }
 
     /*
-     * ループ条件判定
+     * ネスト数１のネストブロックの移行処理：if文、loop文
      */
-    private void runLoopProcess(NestProcessBlock block, int processKind) {
+    private void oneNestProcessTransition(NestProcessBlock nestBlock) {
+
+        Log.i("ループ処理", "" + (new Object() {
+        }.getClass().getEnclosingMethod().getName()));
 
         //-----------------------------
-        // ループ内処理ブロック数チェック
+        // ネスト内処理ブロック数チェック
         //-----------------------------
-        // ループ内に処理ブロックがなければ
-        int blockInLoopNum = block.getProcessInNestNum();
-        if( blockInLoopNum == 0 ){
+        // ネスト内に処理ブロックがなければ
+        int blockInNestNum = nestBlock.getProcessInNestNum();
+        if (blockInNestNum == 0) {
             // 次の処理ブロックへ
-            //★多分不具合
-            proceedNextMainProcess();
+            startNextProcess(nestBlock);
+            return;
+        }
+
+        //--------------
+        // 条件判定
+        //--------------
+        // 条件未成立の場合
+        if( !nestBlock.isConditionTrue(mCharacterNode) ){
+            // 次の処理ブロックへ
+            startNextProcess(nestBlock);
             return;
         }
 
         //-----------------------------
-        // ループ内処理ブロックの実行
+        // ネスト内処理ブロックの実行
         //-----------------------------
-        // 入れ子内の処理ブロックの親ネストブロックを、本ネストにする
-        ProcessBlock blockInLoop = block.getProcessInNest();
-        blockInLoop.setParentNestBlock( block );
-        // 実行
-        runProcessBlock( blockInLoop );
-
-
-/*        // 条件成立中はループ
-        int i = 0;
-        while(true) {
-
-            //------------------------------------------
-            // ループ条件判定
-            //------------------------------------------
-            // ループ処理開始 or ループ内処理を最後まで実行
-            if( i == 0 ){
-                // ループ条件判定
-                boolean isSatisfied = isConditionSatisfied( block, processKind );
-                if( isSatisfied ){
-                    // ループ条件がtrueなら、ループ処理終了
-                    break;
-                }
-            }
-
-            //-------------------
-            // ループ内処理の実行
-            //-------------------
-            // ループ内の処理ブロックを取得して実行
-            ProcessBlock blockInLoop = block.getProcessInNest( i );
-            runProcessBlock( blockInLoop );
-
-            // 次の処理ブロックへ
-            i++;
-            if( i >= blockInLoopNum ){
-                // ループ内の処理ブロック数を超えた場合は、先頭にリセット
-                i = 0;
-            }
-        }*/
+        // 入れ子内の処理ブロックを実行
+        ProcessBlock blockInNest = nestBlock.getProcessInNest();
+        runProcessBlock(blockInNest);
     }
 
     /*
-     * 条件成立判定
-     *   @return：条件成立-true
-     *   @return：条件不成立-false
+     * if文移行処理
      */
-    private boolean isConditionSatisfied(NestProcessBlock block, int processKind) {
+/*
+    private void ifProcessTransition(IfProcessBlock ifBlock ) {
 
-        switch (processKind) {
-            // ゴールしているかどうか
-            case ProcessBlock.PROC_KIND_LOOP_GOAL:
-                return mCharacterNode.isGoaled();
-
-            // 障害物と衝突中
-            case ProcessBlock.PROC_KIND_LOOP_OBSTACLE:
-
-                return false;
+        //-----------------------------
+        // if文内処理ブロック数チェック
+        //-----------------------------
+        // if文内に処理ブロックがなければ
+        int blockInLoopNum = ifBlock.getProcessInNestNum();
+        if (blockInLoopNum == 0) {
+            // 次の処理ブロックへ
+            startNextProcess(ifBlock);
+            return;
         }
 
-        return false;
+        //--------------
+        // 条件判定
+        //--------------
+        // 条件未成立の場合
+        if( !ifBlock.isConditionTrue(mCharacterNode) ){
+            // 次の処理ブロックへ
+            startNextProcess(ifBlock);
+            return;
+        }
+
+        //--------------
+        // ネスト内処理
+        //--------------
+        // 入れ子内の処理ブロックを実行
+        ProcessBlock blockInIf = ifBlock.getProcessInNest();
+        runProcessBlock(blockInIf);
     }
+*/
+
+    /*
+     * ネスト数２の処理ブロックの移行処理：if-else文
+     */
+    private void twoNestProcessTransition(NestProcessBlock nestBlock ) {
+
+        // 条件判定を行う
+        boolean isConditionTrue = nestBlock.isConditionTrue(mCharacterNode);
+
+        //-----------------------------
+        // 対象ネスト内の処理ブロック数チェック
+        //-----------------------------
+        // 対象ネスト内に処理ブロックがなければ
+        int blockInLoopNum = ((IfElseProcessBlock)nestBlock).getProcessInNestNum( isConditionTrue );
+        if (blockInLoopNum == 0) {
+            // 次の処理ブロックへ
+            startNextProcess(nestBlock);
+            return;
+        }
+
+        //--------------
+        // ネスト内処理
+        //--------------
+        // 入れ子内の処理ブロックを実行
+        ProcessBlock blockInIf = nestBlock.getProcessInNest();
+        runProcessBlock(blockInIf);
+    }
+
 
 
     /*
@@ -774,7 +838,7 @@ public class FirstFragment extends Fragment {
             public boolean onLongClick(View view) {
 
                 // 新規処理ブロックの生成
-                NestProcessBlock ProcessBlock = new NestProcessBlock(view.getContext());
+                NestProcessBlock ProcessBlock = new IfProcessBlock(view.getContext());
                 ProcessBlock.setProcessKind(ProcessBlock.PROC_KIND_IF);
                 // ドラッグ中の影を生成
                 View.DragShadowBuilder myShadow = new View.DragShadowBuilder(view);
@@ -813,7 +877,7 @@ public class FirstFragment extends Fragment {
         // 処理ブロッククリックリスナーの設定
         adapter.setOnProcessBlockClickListener(new ProcessBlockListAdapter.ProcessBlockClickListener() {
             @Override
-            public void onColorClick(int selectProcess) {
+            public void onBlockClick(int selectProcess) {
                 // クリックされた処理の処理ブロックを生成
                 createProcessBlock(selectProcess);
             }
@@ -826,6 +890,7 @@ public class FirstFragment extends Fragment {
     private void createProcessBlock(int processKind) {
 
         ProcessBlock newBlock;
+        Context context = getContext();
 
         // 処理種別に応じた処理ブロックの生成
         switch (processKind) {
@@ -834,17 +899,28 @@ public class FirstFragment extends Fragment {
             case ProcessBlock.PROC_KIND_BACK:
             case ProcessBlock.PROC_KIND_LEFT_ROTATE:
             case ProcessBlock.PROC_KIND_RIGHT_ROTATE:
-                newBlock = new SingleProcessBlock(getContext(), getParentFragmentManager());
+                newBlock = new SingleProcessBlock(context, getParentFragmentManager());
                 break;
 
             // ネスト処理
             case ProcessBlock.PROC_KIND_IF:
-            case ProcessBlock.PROC_KIND_IF_ELSE:
-            case ProcessBlock.PROC_KIND_LOOP_OBSTACLE:
-            default:
-                newBlock = new NestProcessBlock(getContext());
+                newBlock = new IfProcessBlock(context);
                 break;
+
+            case ProcessBlock.PROC_KIND_IF_ELSE:
+                newBlock = new IfElseProcessBlock(context);
+                break;
+
+            case ProcessBlock.PROC_KIND_LOOP_OBSTACLE:
+            case ProcessBlock.PROC_KIND_LOOP_GOAL:
+                newBlock = new LoopProcessBlock(context);
+                break;
+
+            default:
+                // 種別指定がおかしければ、何もしない
+                return;
         }
+
         // 処理種別を設定
         newBlock.setProcessKind(processKind);
 

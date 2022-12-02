@@ -6,8 +6,9 @@
         <item>@drawable/baseline_block_back_24</item>
         <item>@drawable/baseline_block_rotate_left_24</item>
         <item>@drawable/baseline_block_rotate_right_24</item>
-        <item>@drawable/baseline_block_if_24</item>
         <item>@drawable/baseline_block_loop_24</item>
+        <item>@drawable/baseline_block_if_24</item>
+        <item>@drawable/baseline_block_if_24</item>
     </array>
 
     <!--  処理ブロックタイトルリスト  -->
@@ -16,8 +17,9 @@
         <item>@string/block_back</item>
         <item>@string/block_rorate_left</item>
         <item>@string/block_rorate_right</item>
-        <item>@string/block_nest_if</item>
         <item>@string/block_nest_loop</item>
+        <item>@string/block_nest_if</item>
+        <item>@string/block_nest_if_else</item>
     </array>
 
 

@@ -28,8 +28,9 @@ public class ProcessBlockListAdapter extends RecyclerView.Adapter<ProcessBlockLi
     public static final int SELECT_PROCESS_BACK = 1;
     public static final int SELECT_PROCESS_ROTATE_LEFT = 2;
     public static final int SELECT_PROCESS_ROTATE_RIGHT = 3;
-    public static final int SELECT_PROCESS_IF = 4;
-    public static final int SELECT_PROCESS_LOOP = 5;
+    public static final int SELECT_PROCESS_LOOP = 4;
+    public static final int SELECT_PROCESS_IF = 5;
+    public static final int SELECT_PROCESS_IF_ELSE = 6;
 
     //---------------------------
     // フィールド変数
@@ -75,7 +76,7 @@ public class ProcessBlockListAdapter extends RecyclerView.Adapter<ProcessBlockLi
             cl_parent.setOnClickListener(new View.OnClickListener() {
                      @Override
                      public void onClick(View view) {
-                         mProcessBlockClickListener.onColorClick( mSelectProcess );
+                         mProcessBlockClickListener.onBlockClick( mSelectProcess );
                      }
                  }
             );
@@ -164,11 +165,14 @@ public class ProcessBlockListAdapter extends RecyclerView.Adapter<ProcessBlockLi
             case SELECT_PROCESS_ROTATE_RIGHT:
                 return ProcessBlock.PROC_KIND_RIGHT_ROTATE;
 
+            case SELECT_PROCESS_LOOP:
+                return ProcessBlock.PROC_KIND_LOOP_GOAL;
+
             case SELECT_PROCESS_IF:
                 return ProcessBlock.PROC_KIND_IF;
 
-            case SELECT_PROCESS_LOOP:
-                return ProcessBlock.PROC_KIND_LOOP_GOAL;
+            case SELECT_PROCESS_IF_ELSE:
+                return ProcessBlock.PROC_KIND_IF_ELSE;
 
             default:
                 return ProcessBlock.PROC_KIND_FORWARD;
@@ -181,6 +185,6 @@ public class ProcessBlockListAdapter extends RecyclerView.Adapter<ProcessBlockLi
      */
     public interface ProcessBlockClickListener {
         // 処理ブロッククリックリスナー
-        void onColorClick( int selectProcess );
+        void onBlockClick(int selectProcess );
     }
 }
