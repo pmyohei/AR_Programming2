@@ -55,7 +55,7 @@ public class ProcessBlockListAdapter extends RecyclerView.Adapter<ProcessBlockLi
             super(itemView);
 
             cl_parent = itemView.findViewById( R.id.cl_parent);
-            iv_blockImage = itemView.findViewById( R.id.iv_blockImage);
+            iv_blockImage = itemView.findViewById( R.id.iv_remove);
             tv_title = itemView.findViewById( R.id.tv_title);
 
             // 処理ブロック識別値
@@ -115,7 +115,7 @@ public class ProcessBlockListAdapter extends RecyclerView.Adapter<ProcessBlockLi
 
         // 1データあたりのレイアウトを生成
         LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
-        View view = inflater.inflate(R.layout.process_block_template, viewGroup, false);
+        View view = inflater.inflate(R.layout.process_block_list_item, viewGroup, false);
 
         return new ProcessBlockViewHolder(view, position);
     }

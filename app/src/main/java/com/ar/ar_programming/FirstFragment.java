@@ -14,6 +14,8 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,6 +31,7 @@ import com.ar.ar_programming.process.LoopProcessBlock;
 import com.ar.ar_programming.process.NestProcessBlock;
 import com.ar.ar_programming.process.ProcessBlock;
 import com.ar.ar_programming.process.SingleProcessBlock;
+import com.ar.ar_programming.process.TestBlock;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.ar.core.Anchor;
 import com.google.ar.core.HitResult;
@@ -56,7 +59,9 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 
-public class FirstFragment extends Fragment {
+public class FirstFragment extends Fragment implements ProcessBlock.BottomMarkerAreaClickListener,
+                                                       ProcessBlock.MoveBelowMarkerClickListener,
+                                                       ProcessBlock.RemoveBlockClickListener {
 
     //---------------------------
     // 定数
@@ -115,6 +120,7 @@ public class FirstFragment extends Fragment {
 
     private CharacterNode mCharacterNode;
     private int mRunProcessIndex;
+    private ProcessBlock mBottomMarkerBlock;        // ブロック下部追加マーカーの付与されている処理ブロック
 
 
     @Override
@@ -250,6 +256,11 @@ public class FirstFragment extends Fragment {
      * プログラミングUIの設定
      */
     private void setProgrammingUI() {
+
+        // マーカ―はスタートブロックに付与
+        mBottomMarkerBlock = binding.getRoot().findViewById(R.id.pb_start);
+        //★いまいち
+        mBottomMarkerBlock.setBottomMarkerAreaClickListener(this);
 
         // プログラミング開始設定
         setStartProgramming();
@@ -541,7 +552,7 @@ public class FirstFragment extends Fragment {
 
                 // 次の処理が先頭の処理ブロックでなければ
                 boolean isNextProcessTop = ((LoopProcessBlock) parentNestBlock).isNextProcessTop();
-                if( !isNextProcessTop ){
+                if (!isNextProcessTop) {
                     // ループ継続確認せず、次の処理へ
                     ProcessBlock nextBlockInNest = parentNestBlock.getProcessInNest();
                     runProcessBlock(nextBlockInNest);
@@ -616,7 +627,7 @@ public class FirstFragment extends Fragment {
         // 条件判定
         //--------------
         // 条件未成立の場合
-        if( !nestBlock.isConditionTrue(mCharacterNode) ){
+        if (!nestBlock.isConditionTrue(mCharacterNode)) {
             // 次の処理ブロックへ
             startNextProcess(nestBlock);
             return;
@@ -669,7 +680,7 @@ public class FirstFragment extends Fragment {
     /*
      * ネスト数２の処理ブロックの移行処理：if-else文
      */
-    private void twoNestProcessTransition(NestProcessBlock nestBlock ) {
+    private void twoNestProcessTransition(NestProcessBlock nestBlock) {
 
         // 条件判定を行う
         boolean isConditionTrue = nestBlock.isConditionTrue(mCharacterNode);
@@ -678,7 +689,7 @@ public class FirstFragment extends Fragment {
         // 対象ネスト内の処理ブロック数チェック
         //-----------------------------
         // 対象ネスト内に処理ブロックがなければ
-        int blockInLoopNum = ((IfElseProcessBlock)nestBlock).getProcessInNestNum( isConditionTrue );
+        int blockInLoopNum = ((IfElseProcessBlock) nestBlock).getProcessInNestNum(isConditionTrue);
         if (blockInLoopNum == 0) {
             // 次の処理ブロックへ
             startNextProcess(nestBlock);
@@ -692,7 +703,6 @@ public class FirstFragment extends Fragment {
         ProcessBlock blockInIf = nestBlock.getProcessInNest();
         runProcessBlock(blockInIf);
     }
-
 
 
     /*
@@ -921,8 +931,12 @@ public class FirstFragment extends Fragment {
                 return;
         }
 
-        // 処理種別を設定
+        // 処理種別
         newBlock.setProcessKind(processKind);
+        // マーカーエリアクリックリスナー
+        newBlock.setRemoveBlockClickListener(this);
+        newBlock.setMoveBelowMarkerClickListener(this);
+        newBlock.setBottomMarkerAreaClickListener(this);
 
         // チャート最下部のブロックに追加
         ProcessBlock bottomBlock = getMostBottomBlock();
@@ -1346,13 +1360,13 @@ public class FirstFragment extends Fragment {
 
         // Node生成
         CharacterNode node = new CharacterNode(transformationSystem);
-        node.setName( NODE_NAME_GOAL );
+        node.setName(NODE_NAME_GOAL);
         node.getScaleController().setMinScale(scale);
         node.getScaleController().setMaxScale(scale * 2);
         node.setLocalScale(scaleVector);
         node.setParent(anchorNode);
         node.setLocalPosition(pos);
-        node.setRenderable( mGoalRenderable );
+        node.setRenderable(mGoalRenderable);
         node.select();
     }
 
@@ -1363,9 +1377,9 @@ public class FirstFragment extends Fragment {
 
         EditText et_nodeScale = binding.getRoot().findViewById(R.id.et_nodeScale);
         String value = et_nodeScale.getText().toString();
-        int select = Integer.parseInt( value );
+        int select = Integer.parseInt(value);
 
-        switch ( select ){
+        switch (select) {
             case 0:
                 return NODE_SIZE_S;
             case 1:
@@ -1385,9 +1399,9 @@ public class FirstFragment extends Fragment {
 
         EditText et_nodeScale = binding.getRoot().findViewById(R.id.et_nodeScale);
         String value = et_nodeScale.getText().toString();
-        int select = Integer.parseInt( value );
+        int select = Integer.parseInt(value);
 
-        switch ( select ){
+        switch (select) {
             case 0:
                 return STAGE_RATIO_S;
             case 1:
@@ -1408,12 +1422,12 @@ public class FirstFragment extends Fragment {
         // ユーザー指定のNodeサイズ
         EditText et_stageScale = binding.getRoot().findViewById(R.id.et_stageScale);
         String value = et_stageScale.getText().toString();
-        int select = Integer.parseInt( value );
+        int select = Integer.parseInt(value);
         // ステージサイズの倍率
         float stageRatio = getStageScaleRatio();
 
         // ステージサイズを算出
-        switch ( select ){
+        switch (select) {
             case 0:
                 return (STAGE_SIZE_S * stageRatio);
             case 1:
@@ -1427,17 +1441,17 @@ public class FirstFragment extends Fragment {
     /*
      * ステージ上のランダム位置の取得
      */
-    private Vector3 getRandomPosition( float stageScale ) {
+    private Vector3 getRandomPosition(float stageScale) {
 
-        int scale = (int)(stageScale * 100f) + 1;
+        int scale = (int) (stageScale * 100f) + 1;
 
         Random random = new Random();
         float positionx = random.nextInt(scale) / 100f;
         float positionz = random.nextInt(scale) / 100f;
 
-        Log.i("ランダム位置", "positionx=" + positionx );
-        Log.i("ランダム位置", "positionz=" + positionz );
-        Log.i("ランダム位置", "----------------" );
+        Log.i("ランダム位置", "positionx=" + positionx);
+        Log.i("ランダム位置", "positionz=" + positionz);
+        Log.i("ランダム位置", "----------------");
 
         return new Vector3(-positionx, -0.0f, -positionz);
     }
@@ -1461,7 +1475,7 @@ public class FirstFragment extends Fragment {
 
             CharacterNode node = new CharacterNode(transformationSystem);
 
-            node.setName( mObjOnStageName.get(i) );
+            node.setName(mObjOnStageName.get(i));
             node.getScaleController().setMinScale(scale);
             node.getScaleController().setMaxScale(scale * 2);
             node.setLocalScale(scaleVector);
@@ -1531,13 +1545,13 @@ public class FirstFragment extends Fragment {
     /*
      * キャラクターが配置された四辺に応じて、向きを取得
      */
-    private float getCharacterInitFacingAngle( int side ) {
+    private float getCharacterInitFacingAngle(int side) {
 
         // 角度
         float angle;
 
         // 4辺毎にランダム位置を切り分け
-        switch ( side ) {
+        switch (side) {
             case STAGE_BOTTOM:
                 angle = 180f;
                 break;
@@ -1561,20 +1575,20 @@ public class FirstFragment extends Fragment {
     /*
      * キャラクターが配置された四辺に応じて、向きを設定するためのQuaternion値を取得
      */
-    private Quaternion getCharacterInitFacingDirection( float angle ) {
+    private Quaternion getCharacterInitFacingDirection(float angle) {
 
         // w／y値
-        float w = CharacterNode.calcQuaternionWvalue( angle );
-        float y = CharacterNode.calcQuaternionYvalue( angle );
+        float w = CharacterNode.calcQuaternionWvalue(angle);
+        float y = CharacterNode.calcQuaternionYvalue(angle);
 
         // 向きたい方向のQuaternion情報を生成
-        return (new Quaternion( 0.0f, y, 0.0f, w));
+        return (new Quaternion(0.0f, y, 0.0f, w));
     }
 
     /*
      * お試し：平面ドットのビジュアル変更
      */
-    private void setPlaneVisual( Context context ) {
+    private void setPlaneVisual(Context context) {
 
         ArSceneView arSceneView = arFragment.getArSceneView();
 
@@ -1586,7 +1600,7 @@ public class FirstFragment extends Fragment {
 
         // R.drawable.custom_texture is a .png file in src/main/res/drawable
         Texture.builder()
-                .setSource( context, R.drawable.green_square)
+                .setSource(context, R.drawable.green_square)
                 .setSampler(sampler)
                 .build()
                 .thenAccept(texture -> {
@@ -1605,5 +1619,84 @@ public class FirstFragment extends Fragment {
 //                            Log.i("平面", "平面　失敗");
                             return null;
                         });
+    }
+
+    /*
+     * マーカーブロックの変更
+     */
+    public void changeMarkerBlock(ProcessBlock newMarkerBlock) {
+
+        // 現在のマーカーを切り替え
+        mBottomMarkerBlock.setMarker( false );
+        newMarkerBlock.setMarker( true );
+
+        // 新しいマーカーブロックを保持
+        mBottomMarkerBlock = newMarkerBlock;
+    }
+
+    /*
+     * 【処理ブロック内リスナー設定】マーカー処理ブロック下への移動アイコンクリックリスナークリック処理
+     * 　指定されたブロックを、現在のマーカーブロックの下に移動させる。
+     *   また、新しいマーカーブロックを移動したブロックにする。
+     */
+    @Override
+    public void onMoveBelowMarkerClick(ProcessBlock moveBlock) {
+
+        Log.i("アイコンリスナー", "前=" + moveBlock.findViewById(R.id.iv_up).hasOnClickListeners());
+
+        //-------------
+        // ブロック移動
+        //-------------
+        // 処理ラインから削除
+        moveBlock.removeProcessBlockFromLayout();
+
+        Log.i("アイコンリスナー", "後=" + moveBlock.findViewById(R.id.iv_up).hasOnClickListeners());
+
+        // マーカーブロックの下に追加
+        ViewGroup parent = (ViewGroup)mBottomMarkerBlock.getParent();
+        int addIndex = mBottomMarkerBlock.getMyselfChildIndex() + 1;
+        moveBlock.addProcessBlockToLayout( parent, addIndex );
+
+        Log.i("アイコンリスナー", "add 後=" + moveBlock.findViewById(R.id.iv_up).hasOnClickListeners());
+
+        //-------------------
+        // マーカーブロック変更
+        //-------------------
+        changeMarkerBlock( moveBlock );
+    }
+
+    /*
+     * 【処理ブロック内リスナー設定】マーカーエリアクリック処理
+     * 　
+     */
+    @Override
+    public void onBottomMarkerAreaClick(ProcessBlock markedBlock) {
+
+        // マーカーブロックを更新
+        changeMarkerBlock( markedBlock );
+    }
+
+    /*
+     * 【処理ブロック内リスナー設定】ブロック削除クリック処理
+     *
+     */
+    @Override
+    public void onRemoveBlockClick(ProcessBlock markedBlock) {
+
+        //-------------------
+        // マーカー変更
+        //-------------------
+        // 削除ブロックがマーク中
+        if( markedBlock.isMarked() ){
+            // 削除対象の1つ上のブロックを取得
+            ProcessBlock aboveBlock = markedBlock.getOneAboveBlock();
+            // マーカー入れ替え
+            changeMarkerBlock( aboveBlock );
+        }
+
+        //-------------------
+        // ブロック削除
+        //-------------------
+        markedBlock.removeProcessBlockFromLayout();
     }
 }

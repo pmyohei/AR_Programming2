@@ -2,6 +2,7 @@ package com.ar.ar_programming.process;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -46,7 +47,7 @@ public class SingleProcessBlock extends ProcessBlock {
 
     public SingleProcessBlock(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        View.inflate(context, R.layout.process_block_single, this);
+        View.inflate(context, R.layout.process_block_single_ver2, this);
 
         // 初期化
         init();
@@ -79,6 +80,9 @@ public class SingleProcessBlock extends ProcessBlock {
         // 処理ブロック種別
         mProcessContent =
 */
+        // ブロック操作アイコンリスナーの設定
+        setBlockIconListerner();
+        setMarkAreaListerner();
 
         // onDragリスナーの設定
         setDragAndDropListerner();
@@ -87,7 +91,7 @@ public class SingleProcessBlock extends ProcessBlock {
     /*
      * 処理量リスナーの設定
      */
-    private void setVolumeListener() {
+    public void setVolumeListener() {
 
         // クリックリスナー設定
         TextView et_value = findViewById(R.id.et_value);
@@ -147,6 +151,9 @@ public class SingleProcessBlock extends ProcessBlock {
         et_value.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                Log.i("回転リスナー", "クリックされた" );
+
                 // 設定中の処理量
                 String volume = et_value.getText().toString();
 

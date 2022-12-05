@@ -3,4 +3,7 @@
 
     <dimen name="catch_drap_height">6dp</dimen>
 
+    <dimen name="block_icon_size">24dp</dimen>
+    <dimen name="block_icon_margin_start">8dp</dimen>
+
 </resources>

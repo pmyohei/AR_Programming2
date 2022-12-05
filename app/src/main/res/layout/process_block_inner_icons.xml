@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/iv_remove"
+        android:layout_width="@dimen/block_icon_size"
+        android:layout_height="@dimen/block_icon_size"
+        android:layout_marginStart="@dimen/block_icon_margin_start"
+        android:src="@drawable/baseline_block_remove_24"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <ImageView
+        android:id="@+id/iv_moveBelowMark"
+        android:layout_width="@dimen/block_icon_size"
+        android:layout_height="@dimen/block_icon_size"
+        android:layout_marginStart="@dimen/block_icon_margin_start"
+        android:src="@drawable/baseline_move_to_mark_24"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/iv_remove"/>
+
+    <ImageView
+        android:id="@+id/iv_up"
+        android:layout_width="@dimen/block_icon_size"
+        android:layout_height="@dimen/block_icon_size"
+        android:layout_marginStart="@dimen/block_icon_margin_start"
+        android:src="@drawable/baseline_block_up_24"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/iv_moveBelowMark"/>
+
+    <ImageView
+        android:id="@+id/iv_down"
+        android:layout_width="@dimen/block_icon_size"
+        android:layout_height="@dimen/block_icon_size"
+        android:layout_marginStart="@dimen/block_icon_margin_start"
+        android:src="@drawable/baseline_block_down_24"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/iv_up"/>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_bottomMarkArea"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="8dp"
+        android:background="@drawable/frame_bottom_mark"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/iv_down"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageView
+            android:id="@+id/iv_bottomMark"
+            android:layout_width="@dimen/block_icon_size"
+            android:layout_height="@dimen/block_icon_size"
+            android:visibility="gone"
+            android:src="@drawable/baseline_bottom_mark_24"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

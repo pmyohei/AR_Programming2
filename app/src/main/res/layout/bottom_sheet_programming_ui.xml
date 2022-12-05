@@ -104,6 +104,15 @@
                     android:text="0"
                     android:textSize="16sp"
                     />
+
+                <TextView
+                    android:id="@+id/kidou"
+                    android:layout_width="wrap_content"
+                    android:layout_height="28dp"
+                    android:background="@color/bg_if_process_dark"
+                    android:text="起動"
+                    android:textSize="16sp"
+                    />
             </LinearLayout>
 
             <View
@@ -152,6 +161,7 @@
                         tools:context=".UIActivity">
 
                         <com.ar.ar_programming.process.StartBlock
+                            android:id="@+id/pb_start"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             />

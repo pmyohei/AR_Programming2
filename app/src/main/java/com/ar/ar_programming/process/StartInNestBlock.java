@@ -8,9 +8,9 @@ import com.ar.ar_programming.R;
 
 
 /*
- * 開始処理ブロック
+ * ネスト内の開始処理ブロック
  */
-public class StartBlock extends ProcessBlock {
+public class StartInNestBlock extends ProcessBlock {
 
     //---------------------------
     // 定数
@@ -23,21 +23,18 @@ public class StartBlock extends ProcessBlock {
     /*
      * コンストラクタ
      */
-    public StartBlock(Context context) {
+    public StartInNestBlock(Context context) {
         this(context, (AttributeSet)null);
     }
-    public StartBlock(Context context, AttributeSet attrs) {
+    public StartInNestBlock(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
-    public StartBlock(Context context, AttributeSet attrs, int defStyle) {
+    public StartInNestBlock(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        View.inflate(context, R.layout.process_block_start_ver2, this);
+        View.inflate(context, R.layout.process_block_start_in_nest, this);
 
         // 初期化
         init();
-
-        //★問題
-        setId( R.id.pb_start );
     }
 
     /*
@@ -46,12 +43,14 @@ public class StartBlock extends ProcessBlock {
     private void init() {
         // ロングクリック無効
         setOnLongClickListener( null );
-
         // onDragリスナーの設定
-        setDragAndDropListerner();
+//        setDragAndDropListerner();
+
 
         setMarkAreaListerner();
     }
+
+
 
 
 }

@@ -52,8 +52,28 @@ public abstract class NestProcessBlock extends ProcessBlock {
         setDragAndDropFirstNestListerner();
         // onDragリスナーの設定
         setDragAndDropListerner();
+
+        setMarkAreaInNestListerner();
     }
 
+
+    /*
+     * マークエリアリスナーの設定
+     */
+    public void setMarkAreaInNestListerner() {
+
+        ProcessBlock myself = this;
+
+        ViewGroup cl_bottomMarkArea = findViewById(R.id.cl_bottomMarkArea);
+        // マークを付与
+        cl_bottomMarkArea.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // リスナーコール
+                mMarkerAreaClickListener.onBottomMarkerAreaClick(myself);
+            }
+        });
+    }
 
     /*
      * 処理文言を設定
