@@ -18,6 +18,7 @@ public class IfProcessBlock extends NestProcessBlock {
     //---------------------------
     // 定数
     //---------------------------
+    public static final int PROCESS_CONTENTS_IF_BLOCK = 0;
 
     //---------------------------
     // フィールド変数
@@ -28,19 +29,15 @@ public class IfProcessBlock extends NestProcessBlock {
     /*
      * コンストラクタ
      */
-    public IfProcessBlock(Context context) {
-        this(context, null);
+    public IfProcessBlock(Context context, int contents) {
+        this(context, null, contents);
     }
-
-    public IfProcessBlock(Context context, AttributeSet attrs) {
-        this(context, attrs, 0);
+    public IfProcessBlock(Context context, AttributeSet attrs, int contents) {
+        this(context, attrs, 0, contents);
     }
-
-    public IfProcessBlock(Context context, AttributeSet attrs, int defStyle) {
-        super(context, attrs, defStyle);
-        View.inflate(context, R.layout.process_block_if, this);
-
-        // ネスト処理ブロック初期処理
+    public IfProcessBlock(Context context, AttributeSet attrs, int defStyle, int contents) {
+        super(context, attrs, defStyle, PROCESS_TYPE_IF, contents);
+        setLayout( R.layout.process_block_if );
         init();
     }
 
@@ -48,37 +45,39 @@ public class IfProcessBlock extends NestProcessBlock {
      * 初期化処理
      */
     private void init() {
-        mProcessType = PROCESS_TYPE_IF;
-
         // ネスト内処理indexを初期化
         mBlockInNestIndex = 0;
-
-        // onDragリスナーの設定（入れ子の親レイアウト側）
-        setDragAndDropFirstNestListerner();
-        // onDragリスナーの設定
-        setDragAndDropListerner();
+        // ネスト内スタートブロック初期設定
+        initStartBlockInNest( R.layout.process_block_start_in_nest );
     }
 
     /*
-     * 処理文言を設定
+     * レイアウト設定
      */
-    private void setProcessWording() {
+    @Override
+    public void setLayout(int layoutID) {
+        super.setLayout( layoutID );
 
-        // 処理内容と単位の文言ID
+        // 処理ブロック内の内容を書き換え
+        rewriteProcessContents(mProcessContents);
+    }
+
+    /*
+     * 処理ブロック内の内容を書き換え
+     */
+    @Override
+    public void rewriteProcessContents(int contents) {
+
+        // 処理内容文字列ID
         int contentId;
 
         // 種別に応じた文言IDを取得
-        switch (mProcessKind) {
-            case PROC_KIND_IF:
-                contentId = R.string.block_contents_if;
+        switch (contents) {
+            case PROCESS_CONTENTS_IF_BLOCK:
+                contentId = R.string.block_contents_if_block;
                 break;
-
-            case PROC_KIND_IF_ELSE:
-                contentId = R.string.block_contents_if;
-                break;
-
             default:
-                contentId = R.string.block_contents_if;
+                contentId = R.string.block_contents_if_block;
                 break;
         }
 
@@ -87,16 +86,36 @@ public class IfProcessBlock extends NestProcessBlock {
         tv_contents.setText(contentId);
     }
 
-
     /*
-     * 「プログラミング処理種別」の設定
+     * ネスト内スタートブロック初期設定
      */
     @Override
-    public void setProcessKind(int processKind) {
-        super.setProcessKind(processKind);
+    public void initStartBlockInNest( int layoutID ) {
 
-        // 種別に応じた文言に変更
-        setProcessWording();
+        // レイアウト設定
+        StartBlock startBlock = findViewById( R.id.pb_start );
+        startBlock.setLayout( layoutID );
+        // マーカー無効化
+        startBlock.setMarker( false );
+        // スタートブロックにネスト情報を設定
+        startBlock.setOwnNestBlock( this );
+    }
+
+    /*
+     * マークエリアリスナーの設定
+     */
+    @Override
+    public void setMarkAreaInNestListerner(BottomMarkerAreaListener listener) {
+
+        StartBlock startBlock = findViewById( R.id.pb_start );
+        ViewGroup cl_bottomMarkArea = startBlock.findViewById(R.id.cl_bottomMarkArea);
+        cl_bottomMarkArea.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // リスナーコール
+                listener.onBottomMarkerAreaClick(startBlock);
+            }
+        });
     }
 
     /*
@@ -107,7 +126,7 @@ public class IfProcessBlock extends NestProcessBlock {
      *   ・ネスト内の処理ブロックを最後まで返した
      */
     @Override
-    public ProcessBlock getProcessInNest() {
+    public ProcessBlock getBlockInNest() {
 
         ViewGroup ll_insideRoot = findViewById(R.id.ll_firstNestRoot);
 
@@ -142,7 +161,7 @@ public class IfProcessBlock extends NestProcessBlock {
      *   @return：条件不成立- false
      */
     @Override
-    public boolean isConditionTrue(CharacterNode characterNode) {
+    public boolean isCondition(CharacterNode characterNode) {
 
         return true;
 
@@ -151,5 +170,14 @@ public class IfProcessBlock extends NestProcessBlock {
         return tmp;*/
     }
 
+    /*
+     * ネスト内の処理ブロック数を取得
+     */
+    @Override
+    public int getBlockSizeInNest() {
+        // 指定された位置の処理ブロックを返す
+        ViewGroup ll_insideRoot = findViewById(R.id.ll_firstNestRoot);
+        return ll_insideRoot.getChildCount();
+    }
 }
 

@@ -13,10 +13,20 @@
         android:id="@+id/tv_contents"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
         android:layout_marginStart="12dp"
+        android:layout_marginTop="12dp"
         android:text="もし、～～なら"
+        app:layout_constraintEnd_toStartOf="@+id/include2"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <include
+        android:id="@+id/include2"
+        layout="@layout/process_block_inner_icons"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/ll_firstNestRoot"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
@@ -45,10 +55,16 @@
         android:paddingTop="8dp"
         android:background="@drawable/frame_process_inside"
         android:orientation="vertical"
+        android:gravity="center"
         app:layout_constraintTop_toBottomOf="@+id/tv_contents"
         app:layout_constraintStart_toEndOf="@+id/tv_do"
         app:layout_constraintEnd_toEndOf="parent">
 
+        <com.ar.ar_programming.process.StartBlock
+            android:id="@+id/pb_start"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            />
     </LinearLayout>
 
     <TextView
@@ -87,11 +103,17 @@
         android:paddingTop="8dp"
         android:background="@drawable/frame_process_inside"
         android:orientation="vertical"
+        android:gravity="center"
         app:layout_constraintTop_toBottomOf="@+id/tv_elseContents"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/tv_do2"
         app:layout_constraintEnd_toEndOf="parent">
 
+        <com.ar.ar_programming.process.StartBlock
+            android:id="@+id/pb_startSecond"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            />
     </LinearLayout>
 
     <!--  ドロップリスナー（ドラッグされてきた処理ブロックをキャッチする） -->

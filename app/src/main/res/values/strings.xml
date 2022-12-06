@@ -18,8 +18,10 @@
     <string name="block_contents_back">cm 後ろに戻る</string>
     <string name="block_contents_rorate_right">度 右に回転</string>
     <string name="block_contents_rorate_left">度 左に回転</string>
-    <string name="block_contents_if">もし、、なら</string>
-    <string name="block_contents_loop">..までループ</string>
+    <string name="block_contents_if_block">もし、ブロックなら</string>
+    <string name="block_contents_if_else_block">もし、ブロックなら</string>
+    <string name="block_contents_loop_goal">ゴールまでループ</string>
+    <string name="block_contents_loop_block">ブロックまでループ</string>
     <!--  処理ブロック 処理量の単位  -->
     <string name="block_unit_walk">cm</string>
     <string name="block_unit_rotate">度</string>

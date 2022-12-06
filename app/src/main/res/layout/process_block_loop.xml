@@ -58,30 +58,11 @@
         app:layout_constraintStart_toEndOf="@+id/tv_do"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <com.ar.ar_programming.process.StartInNestBlock
-            android:id="@+id/pb_startInNest"
+        <com.ar.ar_programming.process.StartBlock
+            android:id="@+id/pb_start"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             />
-
-<!--        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/cl_bottomMarkAreaInNest"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="@drawable/frame_bottom_mark">
-
-            <ImageView
-                android:id="@+id/iv_bottomMark"
-                android:layout_width="@dimen/block_icon_size"
-                android:layout_height="@dimen/block_icon_size"
-                android:visibility="gone"
-                android:src="@drawable/baseline_bottom_mark_24"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>-->
 
     </LinearLayout>
 

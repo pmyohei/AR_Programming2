@@ -2,7 +2,6 @@ package com.ar.ar_programming.process;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -18,217 +17,99 @@ public class SingleProcessBlock extends ProcessBlock {
 
     //---------------------------
     // 定数
-    //----------------------------
-
+    //---------------------------
+    public static final int PROCESS_CONTENTS_FORWARD = 0;
+    public static final int PROCESS_CONTENTS_BACK = 1;
+    public static final int PROCESS_CONTENTS_RIGHT_ROTATE = 2;
+    public static final int PROCESS_CONTENTS_LEFT_ROTATE = 3;
 
     //---------------------------
     // フィールド変数
-    //----------------------------
+    //---------------------------
     private FragmentManager mFragmentManager;
-    //    private int mProcessKind;
     private int mProcessVolume;
 
     /*
      * コンストラクタ
      */
-    public SingleProcessBlock(Context context, FragmentManager fragmentManager) {
-        this(context, (AttributeSet) null);
-
+    public SingleProcessBlock(Context context, FragmentManager fragmentManager, int contents) {
+        this(context, (AttributeSet) null, contents);
         mFragmentManager = fragmentManager;
     }
-
     public SingleProcessBlock(Context context) {
-        this(context, (AttributeSet) null);
+        this(context, (AttributeSet) null, 0);
     }
-
-    public SingleProcessBlock(Context context, AttributeSet attrs) {
-        this(context, attrs, 0);
+    public SingleProcessBlock(Context context, AttributeSet attrs, int contents) {
+        this(context, attrs, 0, contents);
     }
-
-    public SingleProcessBlock(Context context, AttributeSet attrs, int defStyle) {
-        super(context, attrs, defStyle);
-        View.inflate(context, R.layout.process_block_single_ver2, this);
-
-        // 初期化
+    public SingleProcessBlock(Context context, AttributeSet attrs, int defStyle, int contents) {
+        super(context, attrs, defStyle, PROCESS_TYPE_SINGLE, contents);
+        setLayout( R.layout.process_block_single_ver2 );
         init();
-
-        //仮-確認用----
-//        final DateFormat df = new SimpleDateFormat("ss");
-//        final Date date = new Date(System.currentTimeMillis());
-//        final int id = getId();
-//        TextView et_value = this.findViewById(R.id.et_value);
-//        et_value.setOnClickListener(new OnClickListener() {
-//             @Override
-//             public void onClick(View view) {
-//                 Log.i("タッチチェック", "onClick");
-//             }
-//        });
-
-        //tmp
-//        mProcKind = PROC_KIND_FORWARD;
-//        mProcVolume = 2;
     }
 
     /*
-     * 初期化処理
+     * 初期化
      */
     private void init() {
-
         mProcessVolume = 0;
-        mProcessType = PROCESS_TYPE_SINGLE;
-/*
-        // 処理ブロック種別
-        mProcessContent =
-*/
-        // ブロック操作アイコンリスナーの設定
-        setBlockIconListerner();
-        setMarkAreaListerner();
-
-        // onDragリスナーの設定
-        setDragAndDropListerner();
     }
 
     /*
-     * 処理量リスナーの設定
-     */
-    public void setVolumeListener() {
-
-        // クリックリスナー設定
-        TextView et_value = findViewById(R.id.et_value);
-
-        // 処理種別に応じて表示するダイアログを切り分け
-        switch (mProcessKind) {
-
-            case PROC_KIND_FORWARD:
-            case PROC_KIND_BACK:
-                setWalkVolumeListener( et_value );
-                return;
-
-            case PROC_KIND_RIGHT_ROTATE:
-            case PROC_KIND_LEFT_ROTATE:
-                setRotateVolumeListener( et_value );
-                return;
-        }
-    }
-
-    /*
-     * 処理量（歩行）リスナーの設定
-     */
-    private void setWalkVolumeListener( TextView et_value ) {
-
-        // 時間設定用のダイアログ表示をリスナーに設定
-        et_value.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // 設定中の処理量
-                String volume = et_value.getText().toString();
-
-                // 処理量設定ダイアログを表示
-                VolumeDialog dialog = VolumeDialog.newInstance();
-                dialog.setVolume( VolumeDialog.VOLUME_KIND_CM, volume );
-                dialog.setOnPositiveClickListener(new VolumeDialog.PositiveClickListener() {
-                        @Override
-                        public void onPositiveClick(int volume) {
-                            // 入力された処理量を保持
-                            mProcessVolume = volume;
-                            // 入力された処理量をビューに反映
-                            et_value.setText(String.format("%03d", volume));
-                        }
-                    }
-                );
-                dialog.show(mFragmentManager, "SHOW");
-            }
-        });
-    }
-
-
-    /*
-     * 処理量（回転）リスナーの設定
-     */
-    private void setRotateVolumeListener(TextView et_value) {
-
-        // 処理量設定のダイアログリスナーを設定
-        et_value.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                Log.i("回転リスナー", "クリックされた" );
-
-                // 設定中の処理量
-                String volume = et_value.getText().toString();
-
-                // 処理量設定ダイアログを表示
-                VolumeDialog dialog = VolumeDialog.newInstance();
-                dialog.setVolume( VolumeDialog.VOLUME_KIND_ANGLE, volume );
-                dialog.setOnPositiveClickListener(new VolumeDialog.PositiveClickListener() {
-                        @Override
-                        public void onPositiveClick(int volume) {
-                            // 入力された処理量を保持
-                            mProcessVolume = volume;
-                            // 入力された処理量をビューに反映
-                            et_value.setText(String.format("%03d", volume));
-                        }
-                    }
-                );
-                dialog.show(mFragmentManager, "SHOW");
-            }
-        });
-    }
-
-
-    /*
-     * 処理文言を設定
-     */
-    private void setProcessWording() {
-
-        // 処理内容と単位の文言ID
-        int contentId;
-        int unitId;
-
-        // 種別に応じた文言IDを取得
-        switch (mProcessKind){
-            case PROC_KIND_FORWARD:
-                contentId = R.string.block_contents_forward;
-                unitId = R.string.block_unit_walk;
-                break;
-
-            case PROC_KIND_BACK:
-                contentId = R.string.block_contents_back;
-                unitId = R.string.block_unit_walk;
-                break;
-
-            case PROC_KIND_LEFT_ROTATE:
-                contentId = R.string.block_contents_rorate_left;
-                unitId = R.string.block_unit_rotate;
-                break;
-
-            case PROC_KIND_RIGHT_ROTATE:
-                contentId = R.string.block_contents_rorate_right;
-                unitId = R.string.block_unit_rotate;
-                break;
-
-            default:
-                contentId = R.string.block_contents_rorate_right;
-                unitId = R.string.block_unit_rotate;
-                break;
-        }
-
-        // 文言IDをレイアウトに設定
-        TextView tv_contents = findViewById(R.id.tv_contents);
-        tv_contents.setText( contentId );
-    }
-
-    /*
-     * 「プログラミング処理種別」の設定
+     * レイアウト設定
      */
     @Override
-    public void setProcessKind(int processKind ) {
-        super.setProcessKind( processKind );
+    public void setLayout(int layoutID) {
+        super.setLayout( layoutID );
 
-        // 種別に応じた文言に変更
-        setProcessWording();
-        // 処理量リスナー設定
+        // 処理ブロック内の内容を書き換え
+        rewriteProcessContents(mProcessContents);
+        // 処理量設定リスナー
         setVolumeListener();
+    }
+
+    /*
+     * 処理量設定リスナー
+     */
+    private void setVolumeListener() {
+
+        //--------------------
+        // 処理量種別種別
+        //--------------------
+        int volumeKind;
+        if ( (mProcessContents == PROCESS_CONTENTS_RIGHT_ROTATE) || (mProcessContents == PROCESS_CONTENTS_LEFT_ROTATE) ) {
+            volumeKind = VolumeDialog.VOLUME_KIND_ANGLE;
+        } else {
+            volumeKind = VolumeDialog.VOLUME_KIND_CM;
+        }
+
+        //--------------------
+        // ダイアログ表示設定
+        //--------------------
+        TextView tv_volume = findViewById(R.id.tv_volume);
+        tv_volume.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                // 設定中の処理量
+                String volume = tv_volume.getText().toString();
+
+                // 処理量設定ダイアログを表示
+                VolumeDialog dialog = VolumeDialog.newInstance();
+                dialog.setVolume(volumeKind, volume );
+                dialog.setOnPositiveClickListener(new VolumeDialog.PositiveClickListener() {
+                        @Override
+                        public void onPositiveClick(int volume) {
+                            // 入力された処理量を保持
+                            mProcessVolume = volume;
+                            // 入力された処理量をビューに反映
+                            tv_volume.setText(String.format("%03d", volume));
+                        }
+                    }
+                );
+                dialog.show(mFragmentManager, "SHOW");
+            }
+        });
     }
 
     /*
@@ -237,12 +118,37 @@ public class SingleProcessBlock extends ProcessBlock {
     public int getProcessVolume() {
         return mProcessVolume;
     }
+
     /*
-     * 「プログラミング処理量」の設定
+     * 処理ブロック内の内容を書き換え
      */
-    public void setProcessVolume(int processVolume ) {
-        mProcessVolume = processVolume;
+    @Override
+    public void rewriteProcessContents(int contents) {
+
+        // 処理内容文字列ID
+        int contentId;
+
+        // 種別に応じた文言IDを取得
+        switch (contents) {
+            case PROCESS_CONTENTS_FORWARD:
+                contentId = R.string.block_contents_forward;
+                break;
+            case PROCESS_CONTENTS_BACK:
+                contentId = R.string.block_contents_back;
+                break;
+            case PROCESS_CONTENTS_LEFT_ROTATE:
+                contentId = R.string.block_contents_rorate_left;
+                break;
+            case PROCESS_CONTENTS_RIGHT_ROTATE:
+                contentId = R.string.block_contents_rorate_right;
+                break;
+            default:
+                contentId = R.string.block_contents_rorate_right;
+                break;
+        }
+
+        // 文言IDをレイアウトに設定
+        TextView tv_contents = findViewById(R.id.tv_contents);
+        tv_contents.setText(contentId);
     }
-
-
 }

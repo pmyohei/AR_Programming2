@@ -12,7 +12,11 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.ar.ar_programming.process.IfElseProcessBlock;
+import com.ar.ar_programming.process.IfProcessBlock;
+import com.ar.ar_programming.process.LoopProcessBlock;
 import com.ar.ar_programming.process.ProcessBlock;
+import com.ar.ar_programming.process.SingleProcessBlock;
 
 /*
  * 処理ブロックリストアダプタ
@@ -49,7 +53,8 @@ public class ProcessBlockListAdapter extends RecyclerView.Adapter<ProcessBlockLi
         private final ConstraintLayout cl_parent;
         private final ImageView iv_blockImage;
         private final TextView tv_title;
-        private final int mSelectProcess;
+        private final int mSelectProcessType;
+        private final int mSelectProcessContents;
 
         public ProcessBlockViewHolder(View itemView, int position) {
             super(itemView);
@@ -59,7 +64,8 @@ public class ProcessBlockListAdapter extends RecyclerView.Adapter<ProcessBlockLi
             tv_title = itemView.findViewById( R.id.tv_title);
 
             // 処理ブロック識別値
-            mSelectProcess = getProcessKindForPosition(position);
+            mSelectProcessType = getProcessTypeAtPosition(position);
+            mSelectProcessContents = getProcessContentsAtPosition(position);
         }
 
         /*
@@ -76,7 +82,7 @@ public class ProcessBlockListAdapter extends RecyclerView.Adapter<ProcessBlockLi
             cl_parent.setOnClickListener(new View.OnClickListener() {
                      @Override
                      public void onClick(View view) {
-                         mProcessBlockClickListener.onBlockClick( mSelectProcess );
+                         mProcessBlockClickListener.onBlockClick(mSelectProcessType, mSelectProcessContents);
                      }
                  }
             );
@@ -149,33 +155,49 @@ public class ProcessBlockListAdapter extends RecyclerView.Adapter<ProcessBlockLi
     /*
      * 処理ブロックの位置に対応する処理ブロック種別を取得する
      */
-    private int getProcessKindForPosition( int position ) {
+    private int getProcessTypeAtPosition(int position ) {
 
+        // 位置に応じた処理種別
         switch ( position ){
-
             case SELECT_PROCESS_FORWARD:
-                return ProcessBlock.PROC_KIND_FORWARD;
-
             case SELECT_PROCESS_BACK:
-                return ProcessBlock.PROC_KIND_BACK;
-
             case SELECT_PROCESS_ROTATE_LEFT:
-                return ProcessBlock.PROC_KIND_LEFT_ROTATE;
-
             case SELECT_PROCESS_ROTATE_RIGHT:
-                return ProcessBlock.PROC_KIND_RIGHT_ROTATE;
-
+                return ProcessBlock.PROCESS_TYPE_SINGLE;
             case SELECT_PROCESS_LOOP:
-                return ProcessBlock.PROC_KIND_LOOP_GOAL;
-
+                return ProcessBlock.PROCESS_TYPE_LOOP;
             case SELECT_PROCESS_IF:
-                return ProcessBlock.PROC_KIND_IF;
-
+                return ProcessBlock.PROCESS_TYPE_IF;
             case SELECT_PROCESS_IF_ELSE:
-                return ProcessBlock.PROC_KIND_IF_ELSE;
-
+                return ProcessBlock.PROCESS_TYPE_IF_ELSE;
             default:
-                return ProcessBlock.PROC_KIND_FORWARD;
+                return ProcessBlock.PROCESS_TYPE_SINGLE;
+        }
+    }
+
+    /*
+     * 処理ブロックの位置に対応する処理ブロック内容を取得する
+     */
+    private int getProcessContentsAtPosition(int position ) {
+
+        // 位置に応じた処理内容
+        switch ( position ){
+            case SELECT_PROCESS_FORWARD:
+                return SingleProcessBlock.PROCESS_CONTENTS_FORWARD;
+            case SELECT_PROCESS_BACK:
+                return SingleProcessBlock.PROCESS_CONTENTS_BACK;
+            case SELECT_PROCESS_ROTATE_LEFT:
+                return SingleProcessBlock.PROCESS_CONTENTS_LEFT_ROTATE;
+            case SELECT_PROCESS_ROTATE_RIGHT:
+                return SingleProcessBlock.PROCESS_CONTENTS_RIGHT_ROTATE;
+            case SELECT_PROCESS_LOOP:
+                return LoopProcessBlock.PROCESS_CONTENTS_LOOP_GOAL;
+            case SELECT_PROCESS_IF:
+                return IfProcessBlock.PROCESS_CONTENTS_IF_BLOCK;
+            case SELECT_PROCESS_IF_ELSE:
+                return IfElseProcessBlock.PROCESS_CONTENTS_IF_ELSE_BLOCK;
+            default:
+                return SingleProcessBlock.PROCESS_CONTENTS_FORWARD;
         }
     }
 
@@ -185,6 +207,6 @@ public class ProcessBlockListAdapter extends RecyclerView.Adapter<ProcessBlockLi
      */
     public interface ProcessBlockClickListener {
         // 処理ブロッククリックリスナー
-        void onBlockClick(int selectProcess );
+        void onBlockClick(int selectProcessType, int selectProcessContents );
     }
 }

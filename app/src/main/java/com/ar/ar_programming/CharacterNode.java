@@ -5,6 +5,7 @@ import android.animation.ValueAnimator;
 import android.util.Log;
 
 import com.ar.ar_programming.process.ProcessBlock;
+import com.ar.ar_programming.process.SingleProcessBlock;
 import com.google.ar.sceneform.Node;
 import com.google.ar.sceneform.Scene;
 import com.google.ar.sceneform.math.Quaternion;
@@ -359,14 +360,14 @@ public class CharacterNode extends TransformableNode {
         // 処理種別に応じた保存処理
         switch (processKind) {
             // 移動
-            case ProcessBlock.PROC_KIND_FORWARD:
-            case ProcessBlock.PROC_KIND_BACK:
+            case SingleProcessBlock.PROCESS_CONTENTS_FORWARD:
+            case SingleProcessBlock.PROCESS_CONTENTS_BACK:
                 saveCurrentPosition();
                 return;
 
             // 回転
-            case ProcessBlock.PROC_KIND_RIGHT_ROTATE:
-            case ProcessBlock.PROC_KIND_LEFT_ROTATE:
+            case SingleProcessBlock.PROCESS_CONTENTS_RIGHT_ROTATE:
+            case SingleProcessBlock.PROCESS_CONTENTS_LEFT_ROTATE:
                 saveCurrentAngle(volume);
                 return;
         }
@@ -437,13 +438,12 @@ public class CharacterNode extends TransformableNode {
 
         // 処理種別に応じたメソッドのプロパティ名を取得
         switch (procKind) {
-
-            case ProcessBlock.PROC_KIND_FORWARD:
-            case ProcessBlock.PROC_KIND_BACK:
+            case SingleProcessBlock.PROCESS_CONTENTS_FORWARD:
+            case SingleProcessBlock.PROCESS_CONTENTS_BACK:
                 return PROPERTY_WALK;
 
-            case ProcessBlock.PROC_KIND_RIGHT_ROTATE:
-            case ProcessBlock.PROC_KIND_LEFT_ROTATE:
+            case SingleProcessBlock.PROCESS_CONTENTS_RIGHT_ROTATE:
+            case SingleProcessBlock.PROCESS_CONTENTS_LEFT_ROTATE:
                 return PROPERTY_ROTATE;
         }
 
@@ -459,17 +459,17 @@ public class CharacterNode extends TransformableNode {
         // 前進／後退
         //-----------------------------------------
         // 単位変換：cm → m
-        if ( procKind == ProcessBlock.PROC_KIND_FORWARD ){
+        if ( procKind == SingleProcessBlock.PROCESS_CONTENTS_FORWARD ){
             return (float) procVolume / 100f;
         }
-        if ( procKind == ProcessBlock.PROC_KIND_BACK ){
+        if ( procKind == SingleProcessBlock.PROCESS_CONTENTS_BACK ){
             return (procVolume / 100f) * -1;
         }
 
         //-----------------------------------------
         // 回転
         //-----------------------------------------
-        if (procKind == ProcessBlock.PROC_KIND_LEFT_ROTATE) {
+        if (procKind == SingleProcessBlock.PROCESS_CONTENTS_LEFT_ROTATE) {
             return (float) procVolume;
         }
 
@@ -519,7 +519,7 @@ public class CharacterNode extends TransformableNode {
         //-------------------
         // 前進／後退
         //-------------------
-        if ((procKind == ProcessBlock.PROC_KIND_FORWARD) || (procKind == ProcessBlock.PROC_KIND_BACK)) {
+        if ((procKind == SingleProcessBlock.PROCESS_CONTENTS_FORWARD) || (procKind == SingleProcessBlock.PROCESS_CONTENTS_BACK)) {
             // スケールに応じた処理時間に変換
             Vector3 scale = getLocalScale();
             float ratio = (FirstFragment.NODE_SIZE_S * FirstFragment.NODE_SIZE_TMP_RATIO) / scale.x;
@@ -578,7 +578,8 @@ public class CharacterNode extends TransformableNode {
     }
 
     /*
-     * モデルアニメーションの開始
+     * 3Dモデルアニメーションの開始
+     *   Blender側で命名された３Dアニメーション名を取得
      */
     public void startModelAnimation(int procKind, long duration) {
 
@@ -586,17 +587,16 @@ public class CharacterNode extends TransformableNode {
 
         // アニメーション名を取得
         switch (procKind) {
-
-            case ProcessBlock.PROC_KIND_FORWARD:
-            case ProcessBlock.PROC_KIND_BACK:
+            case SingleProcessBlock.PROCESS_CONTENTS_FORWARD:
+            case SingleProcessBlock.PROCESS_CONTENTS_BACK:
                 animationName = MODEL_ANIMATION_STR_WALK;
                 break;
 
-            case ProcessBlock.PROC_KIND_RIGHT_ROTATE:
+            case SingleProcessBlock.PROCESS_CONTENTS_RIGHT_ROTATE:
                 animationName = MODEL_ANIMATION_STR_ROTATE_RIGHT;
                 break;
 
-            case ProcessBlock.PROC_KIND_LEFT_ROTATE:
+            case SingleProcessBlock.PROCESS_CONTENTS_LEFT_ROTATE:
                 animationName = MODEL_ANIMATION_STR_ROTATE_LEFT;
                 break;
         }

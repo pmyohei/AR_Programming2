@@ -14,8 +14,6 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,13 +23,13 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.ar.ar_programming.process.Block;
 import com.ar.ar_programming.process.IfElseProcessBlock;
 import com.ar.ar_programming.process.IfProcessBlock;
 import com.ar.ar_programming.process.LoopProcessBlock;
 import com.ar.ar_programming.process.NestProcessBlock;
 import com.ar.ar_programming.process.ProcessBlock;
 import com.ar.ar_programming.process.SingleProcessBlock;
-import com.ar.ar_programming.process.TestBlock;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.ar.core.Anchor;
 import com.google.ar.core.HitResult;
@@ -59,9 +57,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 
-public class FirstFragment extends Fragment implements ProcessBlock.BottomMarkerAreaClickListener,
-                                                       ProcessBlock.MoveBelowMarkerClickListener,
-                                                       ProcessBlock.RemoveBlockClickListener {
+public class FirstFragment extends Fragment implements Block.BottomMarkerAreaListener, ProcessBlock.BlockControlListener {
 
     //---------------------------
     // 定数
@@ -120,7 +116,7 @@ public class FirstFragment extends Fragment implements ProcessBlock.BottomMarker
 
     private CharacterNode mCharacterNode;
     private int mRunProcessIndex;
-    private ProcessBlock mBottomMarkerBlock;        // ブロック下部追加マーカーの付与されている処理ブロック
+    private Block mMarkedBlock;        // ブロック下部追加マーカーの付与されている処理ブロック
 
 
     @Override
@@ -185,7 +181,7 @@ public class FirstFragment extends Fragment implements ProcessBlock.BottomMarker
                 // ステージ上ゴールNode生成
                 createGoalNode(anchorNode);
                 // ステージ上オブジェクトのNode生成
-                createObjOnStageNode_old(anchorNode);
+                createObjOnStageNode(anchorNode);
                 // キャラクターNode生成
                 // ！他のNode生成の後に行うこと（重複をさけて配置しているため）！
                 createCharacterNode(anchorNode);
@@ -258,9 +254,11 @@ public class FirstFragment extends Fragment implements ProcessBlock.BottomMarker
     private void setProgrammingUI() {
 
         // マーカ―はスタートブロックに付与
-        mBottomMarkerBlock = binding.getRoot().findViewById(R.id.pb_start);
-        //★いまいち
-        mBottomMarkerBlock.setBottomMarkerAreaClickListener(this);
+        //★メソッド化
+        Block startBlock = binding.getRoot().findViewById(R.id.pb_start);
+        startBlock.setLayout(R.layout.process_block_start_ver2);
+        startBlock.setMarkAreaListerner(this);
+        mMarkedBlock = startBlock;
 
         // プログラミング開始設定
         setStartProgramming();
@@ -369,10 +367,20 @@ public class FirstFragment extends Fragment implements ProcessBlock.BottomMarker
         tv_chartClear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                //------------------
+                // 処理ブロック全削除
+                //------------------
                 // Startブロックより後の処理ブロックを全て削除
                 ViewGroup ll_UIRoot = root.findViewById(R.id.ll_UIRoot);
                 int lastIndex = ll_UIRoot.getChildCount() - 1;
                 ll_UIRoot.removeViews(1, lastIndex);
+
+                //---------------------------
+                // マークをスタートブロックに設定
+                //---------------------------
+                mMarkedBlock = binding.getRoot().findViewById(R.id.pb_start);
+                mMarkedBlock.setMarker( true );
             }
         });
     }
@@ -403,29 +411,25 @@ public class FirstFragment extends Fragment implements ProcessBlock.BottomMarker
         //---------------------------
         // 処理ブロック種別に応じた処理
         //---------------------------
-        int processKind = block.getProcessKind();
-        switch (processKind) {
+        int processType = block.getProcessType();
+        switch (processType) {
 
             // 単体処理ブロック
-            case ProcessBlock.PROC_KIND_FORWARD:
-            case ProcessBlock.PROC_KIND_BACK:
-            case ProcessBlock.PROC_KIND_RIGHT_ROTATE:
-            case ProcessBlock.PROC_KIND_LEFT_ROTATE:
+            case ProcessBlock.PROCESS_TYPE_SINGLE:
                 startBlockAnimation((SingleProcessBlock) block);
                 break;
 
             // ネスト処理ブロック：if/loop
-            case ProcessBlock.PROC_KIND_LOOP_GOAL:
-            case ProcessBlock.PROC_KIND_LOOP_OBSTACLE:
-            case ProcessBlock.PROC_KIND_IF:
+            case ProcessBlock.PROCESS_TYPE_IF:
+            case ProcessBlock.PROCESS_TYPE_LOOP:
                 // ネスト数1の処理ブロック移行処理
                 oneNestProcessTransition((NestProcessBlock) block);
                 break;
 
             // ネスト処理ブロック：if-else
-            case ProcessBlock.PROC_KIND_IF_ELSE:
+            case ProcessBlock.PROCESS_TYPE_IF_ELSE:
                 // ネスト数2の処理ブロック移行処理
-                twoNestProcessTransition((NestProcessBlock) block);
+                twoNestProcessTransition((IfElseProcessBlock) block);
                 break;
 
             default:
@@ -448,15 +452,15 @@ public class FirstFragment extends Fragment implements ProcessBlock.BottomMarker
         // 処理種別と処理量からアニメーション量とアニメーション時間を取得
         //------------------------------------------------------
         // 処理種別と処理量
-        int procKind = singleBlock.getProcessKind();
-        int procVolume = singleBlock.getProcessVolume();
+        int contents = singleBlock.getProcessContents();
+        int setVolume = singleBlock.getProcessVolume();
 
         // アニメーション量とアニメーション時間
-        float volume = mCharacterNode.getAnimationVolume(procKind, procVolume);
-        long duration = mCharacterNode.getAnimationDuration(procKind, procVolume);
+        float volume = mCharacterNode.getAnimationVolume(contents, setVolume);
+        long duration = mCharacterNode.getAnimationDuration(contents, setVolume);
 
         // 処理に対応するアニメーションプロパティ名を取得
-        String propertyName = CharacterNode.getPropertyName(procKind);
+        String propertyName = CharacterNode.getPropertyName(contents);
 
         Log.i("アニメーション", "アニメーション開始--------------------");
         Log.i("アニメーション", "volume=" + volume);
@@ -500,7 +504,7 @@ public class FirstFragment extends Fragment implements ProcessBlock.BottomMarker
                 //-------------------------------
                 // アニメーション終了時の位置を保持
                 //-------------------------------
-                mCharacterNode.setEndProcessAnimation(procKind, volume);
+                mCharacterNode.setEndProcessAnimation(contents, volume);
 
                 //-------------------------------
                 // 次の処理へ
@@ -516,7 +520,7 @@ public class FirstFragment extends Fragment implements ProcessBlock.BottomMarker
         // アニメーションの開始：モデルアニメーション用
         //----------------------------------------
         // モデルに用意されたアニメーションを開始
-        mCharacterNode.startModelAnimation(procKind, duration);
+        mCharacterNode.startModelAnimation(contents, duration);
     }
 
     /*
@@ -536,7 +540,7 @@ public class FirstFragment extends Fragment implements ProcessBlock.BottomMarker
         while (true) {
 
             // 直上ネストブロックを取得
-            NestProcessBlock parentNestBlock = targetBlock.getParentNestBlock();
+            NestProcessBlock parentNestBlock = targetBlock.getOwnNestBlock();
             if (parentNestBlock == null) {
                 // なければ、メインラインの処理を次へ進める
                 proceedNextMainProcess();
@@ -554,16 +558,16 @@ public class FirstFragment extends Fragment implements ProcessBlock.BottomMarker
                 boolean isNextProcessTop = ((LoopProcessBlock) parentNestBlock).isNextProcessTop();
                 if (!isNextProcessTop) {
                     // ループ継続確認せず、次の処理へ
-                    ProcessBlock nextBlockInNest = parentNestBlock.getProcessInNest();
+                    ProcessBlock nextBlockInNest = parentNestBlock.getBlockInNest();
                     runProcessBlock(nextBlockInNest);
                     break;
                 }
 
                 // ループ継続判定
-                boolean isContinue = ((LoopProcessBlock) parentNestBlock).isConditionTrue(mCharacterNode);
+                boolean isContinue = ((LoopProcessBlock) parentNestBlock).isCondition(mCharacterNode);
                 if (isContinue) {
                     // ループ継続なら、ループ内の次の処理を実行
-                    ProcessBlock nextBlockInNest = parentNestBlock.getProcessInNest();
+                    ProcessBlock nextBlockInNest = parentNestBlock.getBlockInNest();
                     runProcessBlock(nextBlockInNest);
                     break;
                 }
@@ -616,7 +620,7 @@ public class FirstFragment extends Fragment implements ProcessBlock.BottomMarker
         // ネスト内処理ブロック数チェック
         //-----------------------------
         // ネスト内に処理ブロックがなければ
-        int blockInNestNum = nestBlock.getProcessInNestNum();
+        int blockInNestNum = nestBlock.getBlockSizeInNest();
         if (blockInNestNum == 0) {
             // 次の処理ブロックへ
             startNextProcess(nestBlock);
@@ -627,7 +631,7 @@ public class FirstFragment extends Fragment implements ProcessBlock.BottomMarker
         // 条件判定
         //--------------
         // 条件未成立の場合
-        if (!nestBlock.isConditionTrue(mCharacterNode)) {
+        if (!nestBlock.isCondition(mCharacterNode)) {
             // 次の処理ブロックへ
             startNextProcess(nestBlock);
             return;
@@ -637,7 +641,7 @@ public class FirstFragment extends Fragment implements ProcessBlock.BottomMarker
         // ネスト内処理ブロックの実行
         //-----------------------------
         // 入れ子内の処理ブロックを実行
-        ProcessBlock blockInNest = nestBlock.getProcessInNest();
+        ProcessBlock blockInNest = nestBlock.getBlockInNest();
         runProcessBlock(blockInNest);
     }
 
@@ -680,16 +684,16 @@ public class FirstFragment extends Fragment implements ProcessBlock.BottomMarker
     /*
      * ネスト数２の処理ブロックの移行処理：if-else文
      */
-    private void twoNestProcessTransition(NestProcessBlock nestBlock) {
+    private void twoNestProcessTransition(IfElseProcessBlock nestBlock) {
 
         // 条件判定を行う
-        boolean isConditionTrue = nestBlock.isConditionTrue(mCharacterNode);
+        nestBlock.isCondition(mCharacterNode);
 
         //-----------------------------
         // 対象ネスト内の処理ブロック数チェック
         //-----------------------------
         // 対象ネスト内に処理ブロックがなければ
-        int blockInLoopNum = ((IfElseProcessBlock) nestBlock).getProcessInNestNum(isConditionTrue);
+        int blockInLoopNum = nestBlock.getBlockSizeInNest();
         if (blockInLoopNum == 0) {
             // 次の処理ブロックへ
             startNextProcess(nestBlock);
@@ -700,7 +704,7 @@ public class FirstFragment extends Fragment implements ProcessBlock.BottomMarker
         // ネスト内処理
         //--------------
         // 入れ子内の処理ブロックを実行
-        ProcessBlock blockInIf = nestBlock.getProcessInNest();
+        ProcessBlock blockInIf = nestBlock.getBlockInNest();
         runProcessBlock(blockInIf);
     }
 
@@ -819,6 +823,7 @@ public class FirstFragment extends Fragment implements ProcessBlock.BottomMarker
     /*
      *
      */
+/*
     private void sampleDragView() {
 
         ViewGroup root = binding.getRoot();
@@ -859,6 +864,7 @@ public class FirstFragment extends Fragment implements ProcessBlock.BottomMarker
             }
         });
     }
+*/
 
     /*
      * 処理ブロックリスト設定
@@ -887,9 +893,9 @@ public class FirstFragment extends Fragment implements ProcessBlock.BottomMarker
         // 処理ブロッククリックリスナーの設定
         adapter.setOnProcessBlockClickListener(new ProcessBlockListAdapter.ProcessBlockClickListener() {
             @Override
-            public void onBlockClick(int selectProcess) {
+            public void onBlockClick( int selectProcessType, int selectProcessContents ) {
                 // クリックされた処理の処理ブロックを生成
-                createProcessBlock(selectProcess);
+                createProcessBlock(selectProcessType, selectProcessContents);
             }
         });
     }
@@ -897,33 +903,32 @@ public class FirstFragment extends Fragment implements ProcessBlock.BottomMarker
     /*
      * チャート最下部に処理ブロックを生成する
      */
-    private void createProcessBlock(int processKind) {
+    private void createProcessBlock(int processType, int processContents) {
 
         ProcessBlock newBlock;
         Context context = getContext();
 
         // 処理種別に応じた処理ブロックの生成
-        switch (processKind) {
+        switch (processType) {
             // 単体処理
-            case ProcessBlock.PROC_KIND_FORWARD:
-            case ProcessBlock.PROC_KIND_BACK:
-            case ProcessBlock.PROC_KIND_LEFT_ROTATE:
-            case ProcessBlock.PROC_KIND_RIGHT_ROTATE:
-                newBlock = new SingleProcessBlock(context, getParentFragmentManager());
+            case ProcessBlock.PROCESS_TYPE_SINGLE:
+                newBlock = new SingleProcessBlock(context, getParentFragmentManager(), processContents);
                 break;
 
             // ネスト処理
-            case ProcessBlock.PROC_KIND_IF:
-                newBlock = new IfProcessBlock(context);
+            case ProcessBlock.PROCESS_TYPE_IF:
+                newBlock = new IfProcessBlock(context, processContents);
+                ((NestProcessBlock)newBlock).setMarkAreaInNestListerner(this);
                 break;
 
-            case ProcessBlock.PROC_KIND_IF_ELSE:
-                newBlock = new IfElseProcessBlock(context);
+            case ProcessBlock.PROCESS_TYPE_IF_ELSE:
+                newBlock = new IfElseProcessBlock(context, processContents);
+                ((NestProcessBlock)newBlock).setMarkAreaInNestListerner(this);
                 break;
 
-            case ProcessBlock.PROC_KIND_LOOP_OBSTACLE:
-            case ProcessBlock.PROC_KIND_LOOP_GOAL:
-                newBlock = new LoopProcessBlock(context);
+            case ProcessBlock.PROCESS_TYPE_LOOP:
+                newBlock = new LoopProcessBlock(context, processContents);
+                ((NestProcessBlock)newBlock).setMarkAreaInNestListerner(this);
                 break;
 
             default:
@@ -931,16 +936,83 @@ public class FirstFragment extends Fragment implements ProcessBlock.BottomMarker
                 return;
         }
 
-        // 処理種別
-        newBlock.setProcessKind(processKind);
         // マーカーエリアクリックリスナー
-        newBlock.setRemoveBlockClickListener(this);
-        newBlock.setMoveBelowMarkerClickListener(this);
-        newBlock.setBottomMarkerAreaClickListener(this);
+        newBlock.setMarkAreaListerner(this);
+        newBlock.setBlockControlListener(this);
 
-        // チャート最下部のブロックに追加
-        ProcessBlock bottomBlock = getMostBottomBlock();
-        bottomBlock.createProcessBlock(newBlock);
+        // 「マークブロック」の下に追加
+        insertBlockBelowMark( newBlock );
+    }
+
+    /*
+     * 指定ブロックを「マークブロック」の下に挿入する
+     */
+    private void insertBlockBelowMark(ProcessBlock addBlock ) {
+
+        //-------------------------------
+        // マークブロックの下に追加するための情報
+        //-------------------------------
+        // マークブロックの親レイアウト
+        ViewGroup markedBlockParent = (ViewGroup) mMarkedBlock.getParent();
+        // 追加先ChildIndex（マークブロックのChildIndex + 1）
+        int insertIndex = mMarkedBlock.getOwnChildIndex() + 1;
+
+        //-------------------------------
+        // 処理ブロックをマーク下に追加
+        //-------------------------------
+        // 追加
+        markedBlockParent.addView(addBlock, insertIndex);
+
+        // アニメーションを付与
+        addBlock.setAlpha(0f);
+        addBlock.animate()
+                .alpha(1f)
+                .setDuration(200)
+                .setListener(null);
+
+        //-------------------------------
+        // ネスト情報の書き換え
+        //-------------------------------
+        addBlock.setOwnNestBlock( mMarkedBlock.getOwnNestBlock() );
+
+        //-------------------------------
+        // マーカーブロック入れ替え
+        //-------------------------------
+        changeMarkerBlock( addBlock );
+    }
+
+    /*
+     * 指定ブロックを処理ラインから削除する
+     */
+    private void removeBlockFromLine( ProcessBlock removeBlock ) {
+
+        //-------------------
+        // マーカー変更
+        //-------------------
+        // 削除ブロックがマーク中
+        if( removeBlock.isMarked() ){
+            // 削除対象の1つ上のブロックを取得
+            Block aboveBlock = getOneAboveBlock( removeBlock );
+            // マーカー入れ替え
+            changeMarkerBlock( aboveBlock );
+        }
+
+        //-------------------
+        // ブロック削除
+        //-------------------
+        ViewGroup parentView = (ViewGroup) removeBlock.getParent();
+        parentView.removeView(removeBlock);
+    }
+
+    /*
+     * 指定ブロックの１つ上にあるブロックを取得
+     */
+    public Block getOneAboveBlock( ProcessBlock block ) {
+        // 「指定ブロックのchildIndex」の１つ上のブロックを返す
+        ViewGroup parentView = (ViewGroup) block.getParent();
+        int childIndex = block.getOwnChildIndex();
+
+        return (Block)parentView.getChildAt( childIndex - 1 );
     }
 
     /*
@@ -1459,7 +1531,7 @@ public class FirstFragment extends Fragment implements ProcessBlock.BottomMarker
     /*
      * ステージ上オブジェクトのNode生成
      */
-    private void createObjOnStageNode_old(AnchorNode anchorNode) {
+    private void createObjOnStageNode(AnchorNode anchorNode) {
 
         TransformationSystem transformationSystem = arFragment.getTransformationSystem();
 
@@ -1624,14 +1696,60 @@ public class FirstFragment extends Fragment implements ProcessBlock.BottomMarker
     /*
      * マーカーブロックの変更
      */
-    public void changeMarkerBlock(ProcessBlock newMarkerBlock) {
+    public void changeMarkerBlock(Block newMarkerBlock) {
 
         // 現在のマーカーを切り替え
-        mBottomMarkerBlock.setMarker( false );
-        newMarkerBlock.setMarker( true );
+        mMarkedBlock.setMarker(false);
+        newMarkerBlock.setMarker(true);
 
         // 新しいマーカーブロックを保持
-        mBottomMarkerBlock = newMarkerBlock;
+        mMarkedBlock = newMarkerBlock;
+    }
+
+    @Override
+    public void onUpBlock(ProcessBlock moveBlock) {
+
+        // 先頭にいるなら、何もしない
+        if ( moveBlock.isTop() ) {
+            return;
+        }
+
+        //-----------------------------
+        // 上の処理ブロックと位置を入れ替え
+        //-----------------------------
+        // 現時点のindexの1つ前のindexが、追加先のindex
+        int newIndex = moveBlock.getOwnChildIndex() - 1;
+
+        ViewGroup parent = (ViewGroup) moveBlock.getParent();
+        // ブロック削除
+        parent.removeView( moveBlock );
+        // ブロック挿入
+        parent.addView( moveBlock, newIndex );
+
+        Log.i( "ブロック移動", "UP newIndex=" + newIndex );
+    }
+
+    @Override
+    public void onDownBlock(ProcessBlock moveBlock) {
+
+        // 最後尾にいるなら、何もしない
+        if ( moveBlock.isBottom() ) {
+            return;
+        }
+
+        //-----------------------------
+        // 上の処理ブロックと位置を入れ替え
+        //-----------------------------
+        // 現時点のindexの1つ後のindexが、追加先のindex
+        int newIndex = moveBlock.getOwnChildIndex() + 1;
+
+        ViewGroup parent = (ViewGroup) moveBlock.getParent();
+        // ブロック削除
+        parent.removeView( moveBlock );
+        // ブロック挿入
+        parent.addView( moveBlock, newIndex );
+
+        Log.i( "ブロック移動", "Down newIndex=" + newIndex );
     }
 
     /*
@@ -1640,40 +1758,23 @@ public class FirstFragment extends Fragment implements ProcessBlock.BottomMarker
      *   また、新しいマーカーブロックを移動したブロックにする。
      */
     @Override
-    public void onMoveBelowMarkerClick(ProcessBlock moveBlock) {
+    public void onMoveBelowMarker(ProcessBlock moveBlock) {
 
-        Log.i("アイコンリスナー", "前=" + moveBlock.findViewById(R.id.iv_up).hasOnClickListeners());
-
-        //-------------
+        //----------------
         // ブロック移動
-        //-------------
-        // 処理ラインから削除
-        moveBlock.removeProcessBlockFromLayout();
+        //----------------
+        // ブロック削除
+        ViewGroup parent = (ViewGroup) moveBlock.getParent();
+        parent.removeView( moveBlock );
 
-        Log.i("アイコンリスナー", "後=" + moveBlock.findViewById(R.id.iv_up).hasOnClickListeners());
-
-        // マーカーブロックの下に追加
-        ViewGroup parent = (ViewGroup)mBottomMarkerBlock.getParent();
-        int addIndex = mBottomMarkerBlock.getMyselfChildIndex() + 1;
-        moveBlock.addProcessBlockToLayout( parent, addIndex );
-
-        Log.i("アイコンリスナー", "add 後=" + moveBlock.findViewById(R.id.iv_up).hasOnClickListeners());
+        // マーカーブロックの下に挿入
+        insertBlockBelowMark( moveBlock );
 
         //-------------------
         // マーカーブロック変更
         //-------------------
+        // 移動したブロックをマーカーブロックとする
         changeMarkerBlock( moveBlock );
-    }
-
-    /*
-     * 【処理ブロック内リスナー設定】マーカーエリアクリック処理
-     * 　
-     */
-    @Override
-    public void onBottomMarkerAreaClick(ProcessBlock markedBlock) {
-
-        // マーカーブロックを更新
-        changeMarkerBlock( markedBlock );
     }
 
     /*
@@ -1681,22 +1782,18 @@ public class FirstFragment extends Fragment implements ProcessBlock.BottomMarker
      *
      */
     @Override
-    public void onRemoveBlockClick(ProcessBlock markedBlock) {
-
-        //-------------------
-        // マーカー変更
-        //-------------------
-        // 削除ブロックがマーク中
-        if( markedBlock.isMarked() ){
-            // 削除対象の1つ上のブロックを取得
-            ProcessBlock aboveBlock = markedBlock.getOneAboveBlock();
-            // マーカー入れ替え
-            changeMarkerBlock( aboveBlock );
-        }
-
-        //-------------------
+    public void onRemoveBlock(ProcessBlock removeBlock) {
         // ブロック削除
-        //-------------------
-        markedBlock.removeProcessBlockFromLayout();
+        removeBlockFromLine( removeBlock );
+    }
+
+    /*
+     * 【処理ブロック内リスナー設定】マーカーエリアクリック処理
+     *
+     */
+    @Override
+    public void onBottomMarkerAreaClick(Block markedBlock) {
+        // マーカーブロックを更新
+        changeMarkerBlock( markedBlock );
     }
 }

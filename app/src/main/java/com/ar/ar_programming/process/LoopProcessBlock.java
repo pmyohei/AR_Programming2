@@ -2,6 +2,7 @@ package com.ar.ar_programming.process;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -18,6 +19,8 @@ public class LoopProcessBlock extends NestProcessBlock {
     //---------------------------
     // 定数
     //---------------------------
+    public static final int PROCESS_CONTENTS_LOOP_GOAL = 0;
+    public static final int PROCESS_CONTENTS_LOOP_BLOCK = 1;
 
     //---------------------------
     // フィールド変数
@@ -28,19 +31,17 @@ public class LoopProcessBlock extends NestProcessBlock {
     /*
      * コンストラクタ
      */
-    public LoopProcessBlock(Context context) {
-        this(context, null);
+    public LoopProcessBlock(Context context, int contents) {
+        this(context, null, contents);
     }
 
-    public LoopProcessBlock(Context context, AttributeSet attrs) {
-        this(context, attrs, 0);
+    public LoopProcessBlock(Context context, AttributeSet attrs, int contents) {
+        this(context, attrs, 0, contents);
     }
 
-    public LoopProcessBlock(Context context, AttributeSet attrs, int defStyle) {
-        super(context, attrs, defStyle);
-        View.inflate(context, R.layout.process_block_loop, this);
-
-        // ネスト処理ブロック初期処理
+    public LoopProcessBlock(Context context, AttributeSet attrs, int defStyle, int contents) {
+        super(context, attrs, defStyle, PROCESS_TYPE_LOOP, contents);
+        setLayout( R.layout.process_block_loop );
         init();
     }
 
@@ -48,25 +49,44 @@ public class LoopProcessBlock extends NestProcessBlock {
      * 初期化処理
      */
     private void init() {
-        mProcessType = PROCESS_TYPE_LOOP;
-
         // ネスト内処理indexを初期化
         mBlockInLoopIndex = 0;
+
+        // ネスト内スタートブロック初期設定
+        initStartBlockInNest( R.layout.process_block_start_in_nest );
+    }
+
+
+    /*
+     * レイアウト設定
+     */
+    @Override
+    public void setLayout(int layoutID) {
+        super.setLayout( layoutID );
+
+        // 処理ブロック内の内容を書き換え
+        rewriteProcessContents(mProcessContents);
     }
 
     /*
-     * 処理文言を設定
+     * 処理ブロック内の内容を書き換え
      */
-    private void setProcessWording() {
+    @Override
+    public void rewriteProcessContents(int contents) {
 
-        // 処理内容と単位の文言ID
+        // 処理内容文字列ID
         int contentId;
 
         // 種別に応じた文言IDを取得
-        switch (mProcessKind) {
-            case PROC_KIND_LOOP_OBSTACLE:
+        switch (contents) {
+            case PROCESS_CONTENTS_LOOP_GOAL:
+                contentId = R.string.block_contents_loop_goal;
+                break;
+            case PROCESS_CONTENTS_LOOP_BLOCK:
+                contentId = R.string.block_contents_loop_block;
+                break;
             default:
-                contentId = R.string.block_contents_loop;
+                contentId = R.string.block_contents_loop_goal;
                 break;
         }
 
@@ -75,18 +95,38 @@ public class LoopProcessBlock extends NestProcessBlock {
         tv_contents.setText(contentId);
     }
 
-
     /*
-     * 「プログラミング処理種別」の設定
+     * ネスト内スタートブロック初期設定
      */
     @Override
-    public void setProcessKind(int processKind) {
-        super.setProcessKind(processKind);
+    public void initStartBlockInNest( int layoutID ) {
 
-        // 種別に応じた文言に変更
-        setProcessWording();
+        // レイアウト設定
+        StartBlock startBlock = findViewById( R.id.pb_start );
+        startBlock.setLayout( layoutID );
+        // マーカー無効化
+        startBlock.setMarker( false );
+        // スタートブロックにネスト情報を設定
+        startBlock.setOwnNestBlock( this );
     }
 
+    /*
+     * マークエリアリスナーの設定
+     */
+    @Override
+    public void setMarkAreaInNestListerner(BottomMarkerAreaListener listener) {
+
+        StartBlock startBlock = findViewById( R.id.pb_start );
+        ViewGroup cl_bottomMarkArea = startBlock.findViewById(R.id.cl_bottomMarkArea);
+        // マークを付与
+        cl_bottomMarkArea.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // リスナーコール
+                listener.onBottomMarkerAreaClick(startBlock);
+            }
+        });
+    }
 
     /*
      * ネスト内の処理ブロックを取得
@@ -94,7 +134,7 @@ public class LoopProcessBlock extends NestProcessBlock {
      * 　最後の処理ブロックまで返した場合、再度、先頭の処理ブロックから返す
      */
     @Override
-    public ProcessBlock getProcessInNest() {
+    public ProcessBlock getBlockInNest() {
 
         //--------------------
         // ネスト内処理ブロック
@@ -104,7 +144,7 @@ public class LoopProcessBlock extends NestProcessBlock {
         ProcessBlock block = (ProcessBlock) ll_insideRoot.getChildAt(mBlockInLoopIndex);
 
         //--------------------------
-        // 返す処理ブロックIndexの更新
+        // 返す処理ブロックIndexを次へ
         //--------------------------
         // 最後のindexまで到達した場合、先頭indexに戻す
         mBlockInLoopIndex++;
@@ -131,7 +171,7 @@ public class LoopProcessBlock extends NestProcessBlock {
      *   @return：ループ終了（ループ条件不成立　）- false
      */
     @Override
-    public boolean isConditionTrue(CharacterNode characterNode) {
+    public boolean isCondition(CharacterNode characterNode) {
 
         tmploopCount++;
         boolean tmp = (tmploopCount == 2);
@@ -157,6 +197,17 @@ public class LoopProcessBlock extends NestProcessBlock {
 
         return false;*/
     }
+
+    /*
+     * ネスト内の処理ブロック数を取得
+     */
+    @Override
+    public int getBlockSizeInNest() {
+        // 指定された位置の処理ブロックを返す
+        ViewGroup ll_insideRoot = findViewById(R.id.ll_firstNestRoot);
+        return ll_insideRoot.getChildCount();
+    }
+
 
 }
 
