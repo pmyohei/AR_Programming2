@@ -45,13 +45,12 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!--  ドロップリスナー（ドラッグされてきた処理ブロックをキャッチする） -->
     <View
-        android:id="@+id/v_drop"
-        android:layout_width="wrap_content"
-        android:layout_height="@dimen/catch_drap_height"
-        android:minWidth="200dp"
-        android:background="@android:color/transparent"
+        android:id="@+id/v_dropMark"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/drap_line_height"
+        android:visibility="gone"
+        android:background="@color/drop_line"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />

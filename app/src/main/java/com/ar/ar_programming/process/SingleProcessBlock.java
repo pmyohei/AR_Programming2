@@ -3,6 +3,7 @@ package com.ar.ar_programming.process;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.fragment.app.FragmentManager;
@@ -44,7 +45,7 @@ public class SingleProcessBlock extends ProcessBlock {
     }
     public SingleProcessBlock(Context context, AttributeSet attrs, int defStyle, int contents) {
         super(context, attrs, defStyle, PROCESS_TYPE_SINGLE, contents);
-        setLayout( R.layout.process_block_single_ver2 );
+        setLayout( R.layout.process_block_single_ver3 );
         init();
     }
 
@@ -66,6 +67,8 @@ public class SingleProcessBlock extends ProcessBlock {
         rewriteProcessContents(mProcessContents);
         // 処理量設定リスナー
         setVolumeListener();
+        // 処理ブロックタッチリスナー
+        setBlockTouchListerer();
     }
 
     /*

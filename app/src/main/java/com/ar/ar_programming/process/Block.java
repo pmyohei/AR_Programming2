@@ -1,19 +1,12 @@
 package com.ar.ar_programming.process;
 
-import android.content.ClipData;
-import android.content.ClipDescription;
 import android.content.Context;
-import android.os.Build;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.DragEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 
-import androidx.annotation.RequiresApi;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.ar.ar_programming.R;
@@ -48,24 +41,66 @@ public abstract class Block extends ConstraintLayout {
     /*
      * マーカ―設定
      */
-    public abstract void setMarker(boolean enable);
+    public void setMarker(boolean enable){
+        // 表示or非表示
+        int visible;
+        if (enable) {
+            visible = VISIBLE;
+        } else {
+            visible = GONE;
+        }
+
+        // マークアイコン表示設定
+        ImageView iv_bottomMark = findViewById(R.id.iv_bottomMark);
+        iv_bottomMark.setVisibility(visible);
+    }
 
     /*
      * マーカ―有無
      */
-    public abstract boolean isMarked();
+    public boolean isMarked(){
+        // マーカー表示中なら、マーク中と判断
+        ImageView iv_bottomMark = findViewById(R.id.iv_bottomMark);
+        return (iv_bottomMark.getVisibility() == VISIBLE);
+    }
 
     /*
      * マークエリアリスナー設定
      */
-    public abstract void setMarkAreaListerner(BottomMarkerAreaListener listener);
+    public void setMarkAreaListerner(MarkerAreaListener listener){
+
+        Block myself = this;
+
+        ViewGroup cl_bottomMarkArea = findViewById(R.id.cl_bottomMarkArea);
+        cl_bottomMarkArea.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // リスナーコール
+                listener.onBottomMarkerAreaClick(myself);
+            }
+        });
+    }
 
     /*
-     * マーカーエリアクリックインターフェース
+     * 処理ブロックドロップリスナーの設定
      */
-    public interface BottomMarkerAreaListener {
+    public void setDropBlockListerner(DropBlockListener listener) {
+
+        setOnDragListener(new View.OnDragListener() {
+            @Override
+            public boolean onDrag(View view, DragEvent dragEvent) {
+                return listener.onDropBlock( view, dragEvent );
+            }
+        });
+    }
+
+    public interface MarkerAreaListener {
         // マーカー処理ブロック下部への移動アイコンクリックリスナー
         void onBottomMarkerAreaClick(Block markedBlock);
+    }
+    public interface DropBlockListener {
+        // 処理ブロックドロップリスナー
+        boolean onDropBlock(View view, DragEvent dragEvent);
     }
 
     /*

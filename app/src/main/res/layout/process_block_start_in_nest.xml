@@ -28,4 +28,15 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <View
+        android:id="@+id/v_dropMark"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/drap_line_height"
+        android:minWidth="280dp"
+        android:visibility="gone"
+        android:background="@color/drop_line"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

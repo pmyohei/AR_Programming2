@@ -2,7 +2,6 @@ package com.ar.ar_programming.process;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.DragEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -100,36 +99,37 @@ public class IfElseProcessBlock extends NestProcessBlock {
      */
     @Override
     public void initStartBlockInNest( int layoutID ) {
+        super.initStartBlockInNest( layoutID );
 
+        //------------------
+        // else側のネスト設定
+        //------------------
         // レイアウト設定
-        StartBlock startBlock = findViewById( R.id.pb_start );
         StartBlock pb_startSecond = findViewById( R.id.pb_startSecond );
-
-        startBlock.setLayout( layoutID );
         pb_startSecond.setLayout( layoutID );
-
         // マーカー無効化
-        startBlock.setMarker( false );
         pb_startSecond.setMarker( false );
-
         // スタートブロックにネスト情報を設定
-        startBlock.setOwnNestBlock( this );
         pb_startSecond.setOwnNestBlock( this );
     }
 
     /*
-     * マークエリアリスナーの設定
+     * ネスト内マークエリアリスナーの設定
      */
     @Override
-    public void setMarkAreaInNestListerner(BottomMarkerAreaListener listener) {
+    public void setMarkAreaInNestListerner(MarkerAreaListener listener) {
+        super.setMarkAreaInNestListerner( listener );
 
-        StartBlock startBlock = findViewById( R.id.pb_start );
-        ViewGroup cl_bottomMarkArea = startBlock.findViewById(R.id.cl_bottomMarkArea);
+        //------------------
+        // else側のネスト設定
+        //------------------
+        StartBlock pb_startSecond = findViewById( R.id.pb_startSecond );
+        ViewGroup cl_bottomMarkArea = pb_startSecond.findViewById(R.id.cl_bottomMarkArea);
         cl_bottomMarkArea.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 // リスナーコール
-                listener.onBottomMarkerAreaClick(startBlock);
+                listener.onBottomMarkerAreaClick(pb_startSecond);
             }
         });
     }
@@ -202,4 +202,5 @@ public class IfElseProcessBlock extends NestProcessBlock {
     }
 
 }
+
 

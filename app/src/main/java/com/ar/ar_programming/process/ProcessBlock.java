@@ -1,17 +1,11 @@
 package com.ar.ar_programming.process;
 
-import static com.ar.ar_programming.process.SingleProcessBlock.PROCESS_CONTENTS_BACK;
-import static com.ar.ar_programming.process.SingleProcessBlock.PROCESS_CONTENTS_FORWARD;
-import static com.ar.ar_programming.process.SingleProcessBlock.PROCESS_CONTENTS_LEFT_ROTATE;
-import static com.ar.ar_programming.process.SingleProcessBlock.PROCESS_CONTENTS_RIGHT_ROTATE;
-
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.ar.ar_programming.R;
 
@@ -30,6 +24,11 @@ public abstract class ProcessBlock extends Block {
     public static final int PROCESS_TYPE_IF = 1;
     public static final int PROCESS_TYPE_IF_ELSE = 2;
     public static final int PROCESS_TYPE_LOOP = 3;
+
+    // ドラッグ中（選択中）状態の半透明値
+    public static final float TRANCE_DRAG = 0.6f;
+    public static final float TRANCE_NOT_DRAG = 1.0f;
+
 
     //---------------------------
     // フィールド変数
@@ -92,50 +91,40 @@ public abstract class ProcessBlock extends Block {
     }
 
     /*
-     * マーカ―設定
+     * タッチリスナー設定
+     *   本ブロックがタッチされたとき、ドラッグ移動可能にする
      */
-    @Override
-    public void setMarker(boolean enable) {
+    public void setBlockTouchListerer() {
 
-        // 表示or非表示
-        int visible;
-        if (enable) {
-            visible = VISIBLE;
-        } else {
-            visible = GONE;
-        }
-
-        // マークアイコン表示設定
-        ImageView iv_bottomMark = findViewById(R.id.iv_bottomMark);
-        iv_bottomMark.setVisibility(visible);
-    }
-
-    /*
-     * ブロック下部追加マーカーの有無
-     */
-    @Override
-    public boolean isMarked() {
-        // マーカー表示中なら、マーク中と判断
-        ImageView iv_bottomMark = findViewById(R.id.iv_bottomMark);
-        return (iv_bottomMark.getVisibility() == VISIBLE);
-    }
-
-    /*
-     * マークエリアリスナーの設定
-     */
-    @Override
-    public void setMarkAreaListerner(BottomMarkerAreaListener listener) {
-
-        Block myself = this;
-
-        ViewGroup cl_bottomMarkArea = findViewById(R.id.cl_bottomMarkArea);
-        cl_bottomMarkArea.setOnClickListener(new OnClickListener() {
+        setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View view) {
-                // リスナーコール
-                listener.onBottomMarkerAreaClick(myself);
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+
+                switch ( motionEvent.getAction() ){
+                    case MotionEvent.ACTION_DOWN:
+
+                        //--------------------------
+                        // 本処理ブロックを半透明化
+                        //--------------------------
+                        view.setAlpha(TRANCE_DRAG);
+
+                        //--------------------------
+                        // ドラッグ開始
+                        //--------------------------
+                        View.DragShadowBuilder myShadow = new View.DragShadowBuilder(view);
+                        view.startDragAndDrop(null, myShadow, view, 0);
+                        break;
+
+                    case MotionEvent.ACTION_UP:
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        break;
+                }
+                return true;
             }
         });
+
+
     }
 
     /*
