@@ -64,7 +64,7 @@ public abstract class NestProcessBlock_old extends ProcessBlock_old {
 
         ProcessBlock_old myself = this;
 
-        ViewGroup cl_bottomMarkArea = findViewById(R.id.cl_bottomMarkArea);
+        ViewGroup cl_bottomMarkArea = findViewById(R.id.cl_markArea);
         // マークを付与
         cl_bottomMarkArea.setOnClickListener(new OnClickListener() {
             @Override

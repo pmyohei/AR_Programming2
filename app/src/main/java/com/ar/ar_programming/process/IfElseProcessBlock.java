@@ -95,6 +95,15 @@ public class IfElseProcessBlock extends NestProcessBlock {
     }
 
     /*
+     * elseネスト内スタートブロックを取得
+     */
+    private StartBlock getStartBlockInSecondNest() {
+        // ネスト内の先頭のビューがStartBlock
+        ViewGroup parent = findViewById( R.id.ll_secondNestRoot );
+        return  (StartBlock)parent.getChildAt(0);
+    }
+
+    /*
      * ネスト内スタートブロック初期設定
      */
     @Override
@@ -104,8 +113,11 @@ public class IfElseProcessBlock extends NestProcessBlock {
         //------------------
         // else側のネスト設定
         //------------------
+        StartBlock pb_startSecond = getStartBlockInSecondNest();
+
+        // IDを動的に設定（他のネストブロックと重複しないようにするため）
+        pb_startSecond.setId(View.generateViewId());
         // レイアウト設定
-        StartBlock pb_startSecond = findViewById( R.id.pb_startSecond );
         pb_startSecond.setLayout( layoutID );
         // マーカー無効化
         pb_startSecond.setMarker( false );
@@ -123,13 +135,32 @@ public class IfElseProcessBlock extends NestProcessBlock {
         //------------------
         // else側のネスト設定
         //------------------
-        StartBlock pb_startSecond = findViewById( R.id.pb_startSecond );
-        ViewGroup cl_bottomMarkArea = pb_startSecond.findViewById(R.id.cl_bottomMarkArea);
-        cl_bottomMarkArea.setOnClickListener(new OnClickListener() {
+        StartBlock pb_startSecond = getStartBlockInSecondNest();
+        ViewGroup cl_markAreaInStart = pb_startSecond.findViewById(R.id.cl_markAreaInStart);
+        cl_markAreaInStart.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 // リスナーコール
                 listener.onBottomMarkerAreaClick(pb_startSecond);
+            }
+        });
+    }
+
+    /*
+     * ネスト内ドロップリスナーの設定
+     */
+    @Override
+    public void setDropInNestListerner(DropBlockListener listener) {
+        super.setDropInNestListerner( listener );
+
+        //------------------
+        // else側のネスト設定
+        //------------------
+        StartBlock pb_startSecond = getStartBlockInSecondNest();
+        pb_startSecond.setOnDragListener(new View.OnDragListener() {
+            @Override
+            public boolean onDrag(View view, DragEvent dragEvent) {
+                return listener.onDropBlock( (Block)view, dragEvent );
             }
         });
     }

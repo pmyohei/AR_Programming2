@@ -2,12 +2,12 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/ll_root"
+    android:id="@+id/ll_startRoot"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/cl_bottomMarkArea"
+        android:id="@+id/cl_markAreaInStart"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:background="@drawable/frame_bottom_mark_in_nest"
@@ -17,7 +17,7 @@
         app:layout_constraintEnd_toEndOf="parent">
 
         <ImageView
-            android:id="@+id/iv_bottomMark"
+            android:id="@+id/iv_markInStart"
             android:layout_width="@dimen/block_icon_size"
             android:layout_height="@dimen/block_icon_size"
             android:src="@drawable/baseline_bottom_mark_24"
@@ -29,11 +29,10 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <View
-        android:id="@+id/v_dropMark"
-        android:layout_width="wrap_content"
+        android:id="@+id/v_dropLineStart"
+        android:layout_width="0dp"
         android:layout_height="@dimen/drap_line_height"
-        android:minWidth="280dp"
-        android:visibility="gone"
+        android:visibility="invisible"
         android:background="@color/drop_line"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"

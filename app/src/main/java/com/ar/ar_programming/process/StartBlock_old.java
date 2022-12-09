@@ -37,7 +37,7 @@ public class StartBlock_old extends ProcessBlock_old {
         init();
 
         //★問題
-        setId( R.id.pb_start );
+//        setId( R.id.pb_start );
     }
 
     /*

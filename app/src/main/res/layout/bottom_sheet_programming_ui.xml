@@ -161,7 +161,7 @@
                         tools:context=".UIActivity">
 
                         <com.ar.ar_programming.process.StartBlock
-                            android:id="@+id/pb_start"
+                            android:id="@+id/pb_chartTop"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             />

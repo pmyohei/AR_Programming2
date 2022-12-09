@@ -2,6 +2,7 @@ package com.ar.ar_programming.process;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.DragEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,9 +30,11 @@ public abstract class NestProcessBlock extends ProcessBlock {
     public NestProcessBlock(Context context) {
         this(context, null);
     }
+
     public NestProcessBlock(Context context, AttributeSet attrs) {
         this(context, attrs, 0, 0, 0);
     }
+
     public NestProcessBlock(Context context, AttributeSet attrs, int defStyle, int type, int contents) {
         super(context, attrs, defStyle, type, contents);
     }
@@ -40,6 +43,7 @@ public abstract class NestProcessBlock extends ProcessBlock {
      * ネスト内条件判定
      */
     public abstract boolean isCondition(CharacterNode characterNode);
+
     /*
      * ネスト内処理ブロックの取得
      */
@@ -50,7 +54,7 @@ public abstract class NestProcessBlock extends ProcessBlock {
      */
     @Override
     public void setLayout(int layoutID) {
-        super.setLayout( layoutID );
+        super.setLayout(layoutID);
 
         // 処理ブロックタッチリスナー
         setBlockTouchListerer();
@@ -59,12 +63,32 @@ public abstract class NestProcessBlock extends ProcessBlock {
     }
 
     /*
+     * ネスト内にマークブロックを保持しているか
+     */
+    public boolean hasMarkedBlock( Block markedBlock ) {
+        // 同じIDがあれば保持しているとみなす
+        return (findViewById( markedBlock.getId() ) != null);
+    }
+
+    /*
+     * ネスト内スタートブロックを取得
+     */
+    private StartBlock getStartBlockInNest() {
+        // ネスト内の先頭のビューがStartBlock
+        ViewGroup parent = findViewById( R.id.ll_firstNestRoot );
+        return  (StartBlock)parent.getChildAt(0);
+    }
+
+    /*
      * ネスト内スタートブロック初期設定
      */
     public void initStartBlockInNest( int layoutID ) {
 
+        StartBlock startBlock = getStartBlockInNest();
+
+        // IDを動的に設定（他のネストブロックと重複しないようにするため）
+        startBlock.setId(View.generateViewId());
         // レイアウト設定
-        StartBlock startBlock = findViewById( R.id.pb_start );
         startBlock.setLayout( layoutID );
         // マーカー無効化
         startBlock.setMarker( false );
@@ -87,9 +111,11 @@ public abstract class NestProcessBlock extends ProcessBlock {
      */
     public void setMarkAreaInNestListerner(MarkerAreaListener listener) {
 
-        StartBlock startBlock = findViewById( R.id.pb_start );
-        ViewGroup cl_bottomMarkArea = startBlock.findViewById(R.id.cl_bottomMarkArea);
-        cl_bottomMarkArea.setOnClickListener(new OnClickListener() {
+        StartBlock startBlock = getStartBlockInNest();
+        int markAreaID = startBlock.getMarkAreaViewID();
+        ViewGroup markArea = startBlock.findViewById( markAreaID );
+
+        markArea.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 // リスナーコール
@@ -103,11 +129,12 @@ public abstract class NestProcessBlock extends ProcessBlock {
      */
     public void setDropInNestListerner(DropBlockListener listener) {
 
-        StartBlock startBlock = findViewById( R.id.pb_start );
+        // ネスト内のスタートブロックにリスナーを設定
+        StartBlock startBlock = getStartBlockInNest();
         startBlock.setOnDragListener(new View.OnDragListener() {
             @Override
             public boolean onDrag(View view, DragEvent dragEvent) {
-                return listener.onDropBlock( view, dragEvent );
+                return listener.onDropBlock( (Block)view, dragEvent );
             }
         });
     }

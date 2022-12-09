@@ -52,6 +52,7 @@ import com.google.ar.sceneform.ux.BaseArFragment;
 import com.google.ar.sceneform.ux.TransformationSystem;
 import com.ar.ar_programming.databinding.FragmentFirstBinding;
 
+import java.security.Provider;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -255,7 +256,7 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
 
         // マーカ―はスタートブロックに付与
         //★メソッド化
-        Block startBlock = binding.getRoot().findViewById(R.id.pb_start);
+        Block startBlock = binding.getRoot().findViewById(R.id.pb_chartTop);
         startBlock.setLayout(R.layout.process_block_start_ver2);
         startBlock.setMarkAreaListerner(this);
         startBlock.setDropBlockListerner(this);
@@ -282,7 +283,7 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
 //        sampleDragView();
 
         // 処理ブロック削除エリア設定
-        sampleRemoveProcessBlock();
+        setRemoveBlockArea();
 
         // 処理ブロックリストアダプタの設定
         setSelectProcessBlockList();
@@ -380,7 +381,7 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
                 //---------------------------
                 // マークをスタートブロックに設定
                 //---------------------------
-                mMarkedBlock = binding.getRoot().findViewById(R.id.pb_start);
+                mMarkedBlock = binding.getRoot().findViewById(R.id.pb_chartTop);
                 mMarkedBlock.setMarker(true);
             }
         });
@@ -909,7 +910,9 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
         ProcessBlock newBlock;
         Context context = getContext();
 
-        // 処理種別に応じた処理ブロックの生成
+        //-----------------
+        // 処理ブロック生成
+        //-----------------
         switch (processType) {
             // 単体処理
             case ProcessBlock.PROCESS_TYPE_SINGLE:
@@ -917,23 +920,16 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
                 break;
 
             // ネスト処理
-            //★リスナー設定が微妙
             case ProcessBlock.PROCESS_TYPE_IF:
                 newBlock = new IfProcessBlock(context, processContents);
-                ((NestProcessBlock) newBlock).setMarkAreaInNestListerner(this);
-                ((NestProcessBlock) newBlock).setDropInNestListerner(this);
                 break;
 
             case ProcessBlock.PROCESS_TYPE_IF_ELSE:
                 newBlock = new IfElseProcessBlock(context, processContents);
-                ((NestProcessBlock) newBlock).setMarkAreaInNestListerner(this);
-                ((NestProcessBlock) newBlock).setDropInNestListerner(this);
                 break;
 
             case ProcessBlock.PROCESS_TYPE_LOOP:
                 newBlock = new LoopProcessBlock(context, processContents);
-                ((NestProcessBlock) newBlock).setMarkAreaInNestListerner(this);
-                ((NestProcessBlock) newBlock).setDropInNestListerner(this);
                 break;
 
             default:
@@ -941,11 +937,22 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
                 return;
         }
 
-        // リスナー
+        //----------------------
+        // リスナー設定
+        //----------------------
+        // 全ブロック共通
         newBlock.setMarkAreaListerner(this);
         newBlock.setDropBlockListerner(this);
-        newBlock.setBlockControlListener(this);
 
+        // ネストブロック限定
+        if (processType != ProcessBlock.PROCESS_TYPE_SINGLE) {
+            ((NestProcessBlock) newBlock).setMarkAreaInNestListerner(this);
+            ((NestProcessBlock) newBlock).setDropInNestListerner(this);
+        }
+
+        //----------------------
+        // チャートに追加
+        //----------------------
         // 「マークブロック」の下に追加
         insertBlockBelowMark(newBlock);
     }
@@ -988,18 +995,41 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
     }
 
     /*
+     * マーカー入れ替え判定
+     *   引数に指定されたブロックを削除するとき、
+     *   マーカーを入れ替える必要があるか判定する
+     */
+    private boolean isNeedChangeMark(ProcessBlock block) {
+
+        // マーク付きなら入れ替え
+        if( block.isMarked() ){
+            return true;
+        }
+
+        //------------------
+        // ネスト処理ブロック
+        //------------------
+        int type = block.getProcessType();
+        if( type != ProcessBlock.PROCESS_TYPE_SINGLE ){
+            // ネスト内にマークブロックがあるかどうか
+            return ((NestProcessBlock)block).hasMarkedBlock( mMarkedBlock );
+        }
+
+        return false;
+    }
+
+    /*
      * 指定ブロックを処理ラインから削除する
      */
     private void removeBlockFromLine(ProcessBlock removeBlock) {
 
         //-------------------
-        // マーカー変更
+        // マーカー変更判定
         //-------------------
-        // 削除ブロックがマーク中
-        if (removeBlock.isMarked()) {
-            // 削除対象の1つ上のブロックを取得
+        // 削除ブロックがマーカー or 削除ブロック内にマーカーブロックあり
+        if ( isNeedChangeMark(removeBlock) ) {
+            // 削除対象の1つ上のブロックにマークを設定する
             Block aboveBlock = getOneAboveBlock(removeBlock);
-            // マーカー入れ替え
             changeMarkerBlock(aboveBlock);
         }
 
@@ -1024,12 +1054,12 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
     /*
      *
      */
-    private void sampleRemoveProcessBlock() {
-
-        ViewGroup root = binding.getRoot();
+    private void setRemoveBlockArea() {
 
         // 削除エリア
+        ViewGroup root = binding.getRoot();
         View v_removeArea = root.findViewById(R.id.v_removeArea);
+
         v_removeArea.setOnDragListener(new View.OnDragListener() {
             @Override
             public boolean onDrag(View view, DragEvent dragEvent) {
@@ -1043,10 +1073,8 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
                         return true;
 
                     case DragEvent.ACTION_DROP:
-                        Log.i("ドラッグテスト", "削除エリアへドロップ");
-
-                        // ドロップされたビューをレイアウトから削除
-                        removeProcessBlock(dragEvent);
+                        // ドラッグ中ブロックを処理ラインから削除
+                        removeBlockFromLine( (ProcessBlock) dragEvent.getLocalState() );
                         return true;
 
                     default:
@@ -1717,17 +1745,18 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
      * 　以下の場合、ドロップ処理は行わない
      * 　・「ドロップ先ブロック」と「ドラッグ中のブロック」が同じ
      * 　・「ドロップ先ブロック」が「ドラッグ中のブロック」の一つ上に位置する
+     * 　・（ネストブロックのみ）「ネストブロック」をネスト内にドロップしようとしている
      */
-    private boolean isDropPossible(View dropView, View dragBlock) {
-
-//        Log.i("ドロップリスナー", "ACTION_DRAG_ENTERED myID=" + myID);
-//        Log.i("ドロップリスナー", "ACTION_DRAG_ENTERED id=" + draggedView.getId());
-
+    private boolean isDropable(View dropBlock, Block dragBlock) {
 
         //------------------------------------------
         // 「ドロップ先」と「ドラッグ中」が同じ
+        //  or ネスト内のブロックにドロップしようとしている
         //------------------------------------------
-        if( dropView.getId() == dragBlock.getId() ){
+        // ドラッグブロック内に、ドロップ左記ブロックがあるか否かで判定
+        if( dragBlock.findViewById( dropBlock.getId() ) != null ){
+            // あれば、ドロップ不可
+            Log.i("ドロップリスナー", "弾1");
             return false;
         }
 
@@ -1735,21 +1764,33 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
         // 「ドロップ先」が「ドラッグ中」の１つ上かどうか
         //------------------------------------------
         // ドラッグ中ブロックの１つ上のブロック
-        int childIndex = ((Block)dragBlock).getOwnChildIndex();
+        int childIndex = dragBlock.getOwnChildIndex();
         int aboveID = ((ViewGroup)dragBlock.getParent()).getChildAt( childIndex - 1 ).getId();
-        if( dropView.getId() == aboveID ){
+        if( dropBlock.getId() == aboveID ){
             // ドロップ先がドラッグブロックの１つ上の場合は、不可
             return false;
         }
 
-        Log.i("ドロップリスナー", "ACTION_DRAG_ENTERED dropView=" + dropView.getId());
+        Log.i("ドロップリスナー", "ACTION_DRAG_ENTERED dropBlock=" + dropBlock.getId());
         Log.i("ドロップリスナー", "ACTION_DRAG_ENTERED aboveID=" + aboveID);
 
         // ドロップ可能
         return true;
     }
 
+    /*
+     * 処理ブロックのドラッグ移動
+     *   「ドラッグされたブロック」を「ドロップ先ブロック」の下に移動させる
+     */
+    public void dragMoveUnderDrop(Block dropBlock, Block dragBlock) {
 
+        // ドラッグ中ブロックを元の位置から削除
+        ((ViewGroup)dragBlock.getParent()).removeView(dragBlock);
+
+        // ドラッグ中ブロックをドロップブロックの下に生成
+        int index = dropBlock.getOwnChildIndex();
+        ((ViewGroup)dropBlock.getParent()).addView(dragBlock, index + 1);
+    }
 
     /*
      * ドラッグされたビューのドラッグ状態を解除
@@ -1859,59 +1900,73 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
 
     /*
      * 【処理ブロック内リスナー設定】処理ブロックドロップリスナー
+     *   @para1：ドロップされる可能性のあるブロック
+     *   @para2：ドラッグ中のブロック（タッチ移動されているブロック）
+     *
      */
     @Override
-    public boolean onDropBlock(View dropView, DragEvent dragEvent) {
+    public boolean onDropBlock(Block dropBlock, DragEvent dragEvent) {
 
-        int myID = dropView.getId();
+        // ドロップ予定ラインビュー
+        int dropLineID = dropBlock.getDropLineViewID();
+        View v_dropLine = dropBlock.findViewById( dropLineID );
 
-        // ドロップ予定マーク
-        View v_dropMark = dropView.findViewById( R.id.v_dropMark );
 
         switch (dragEvent.getAction()) {
             case DragEvent.ACTION_DRAG_STARTED:
-                Log.i("ドロップリスナー", "ACTION_DRAG_STARTED id=");
+            case DragEvent.ACTION_DRAG_LOCATION:
                 return true;
 
             case DragEvent.ACTION_DRAG_ENTERED:
-//                Log.i("ドロップリスナー", "ACTION_DRAG_ENTERED id=");
+                Log.i("ドロップリスナー", "弾 ACTION_DRAG_ENTERED dropBlock=" + dropBlock);
+                Log.i("ドロップリスナー", "弾 ACTION_DRAG_ENTERED dropBlock ID=" + dropBlock.getId());
 
                 //------------------
                 // ドロップ可能判定
                 //------------------
-                if( !isDropPossible( dropView, (View)dragEvent.getLocalState() ) ){
+                if( !isDropable( dropBlock, (Block)dragEvent.getLocalState() ) ){
                     // ドロップ対象外なら何もしない
                     return true;
                 }
 
                 // ドロップラインを表示
-                v_dropMark.setVisibility( View.VISIBLE );
+                v_dropLine.setVisibility( View.VISIBLE );
 
-                return true;
-
-            case DragEvent.ACTION_DRAG_LOCATION:
-                Log.i("ドロップリスナー", "ACTION_DRAG_LOCATION id=");
                 return true;
 
             case DragEvent.ACTION_DRAG_EXITED:
                 Log.i("ドロップリスナー", "ACTION_DRAG_EXITED id=");
 
-                v_dropMark.setVisibility( View.GONE );
+                // ブロック追加ラインを非表示
+                v_dropLine.setVisibility( View.INVISIBLE );
 
                 return true;
 
             case DragEvent.ACTION_DROP:
-                Log.i("ドロップリスナー", "ACTION_DROP id=");
+                Log.i("ドロップリスナー", "ACTION_DROP dropBlock=" + dropBlock);
 
-                v_dropMark.setVisibility( View.GONE );
+                // ブロック追加ラインを非表示
+                v_dropLine.setVisibility( View.INVISIBLE );
+
+                //------------------
+                // ドロップ可能判定
+                //------------------
+                if( !isDropable( dropBlock, (Block)dragEvent.getLocalState() ) ){
+                    // ドロップ対象外なら何もしない
+                    return true;
+                }
+
+                //---------------
+                // ブロック移動処理
+                //---------------
+                dragMoveUnderDrop( dropBlock, (Block)dragEvent.getLocalState() );
 
                 return true;
 
             case DragEvent.ACTION_DRAG_ENDED:
-                Log.i("ドロップリスナー", "ACTION_DRAG_ENDED id=");
 
-                v_dropMark.setVisibility( View.GONE );
-
+                // ブロック追加ラインを非表示
+                v_dropLine.setVisibility( View.INVISIBLE );
                 // ドラッグされてきたブロックの半透明化を解除
                 dragBlockTranceOff(dragEvent);
 
@@ -1922,7 +1977,6 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
                 break;
         }
 
-        Log.i("ドロップリスナー", "来てる？");
         return false;
     }
 }

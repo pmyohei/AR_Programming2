@@ -2,6 +2,7 @@ package com.ar.ar_programming.process;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,6 +36,7 @@ public abstract class ProcessBlock extends Block {
     //---------------------------
     public int mProcessType;
     public int mProcessContents;
+    private boolean mDragFlg;
 
 
     public ProcessBlock(Context context) {
@@ -51,6 +53,11 @@ public abstract class ProcessBlock extends Block {
     }
 
     /*
+     * 処理ブロックの内容を書き換え
+     */
+    public abstract void rewriteProcessContents(int contents);
+
+    /*
      * 処理ブロックタイプ設定
      */
     public int getProcessType() {
@@ -64,9 +71,37 @@ public abstract class ProcessBlock extends Block {
     }
 
     /*
-     * 処理ブロックの内容を書き換え
+     * レイアウト最上位ビューIDを取得
      */
-    public abstract void rewriteProcessContents(int contents);
+    @Override
+    public View getLayoutRootView(){
+        return findViewById( R.id.ll_root );
+    }
+
+    /*
+     * マークエリアビューIDを取得
+     */
+    @Override
+    public int getMarkAreaViewID(){
+        return R.id.cl_markArea;
+    }
+
+    /*
+     * マークエリアのマークイメージIDを取得
+     */
+    @Override
+    public int getMarkImageViewID(){
+        return R.id.iv_mark;
+    }
+
+    /*
+     * ドロップラインビューIDを取得
+     */
+    @Override
+    public int getDropLineViewID(){
+        Log.i("ドロップリスナー", "getDropLineViewID Process側取得");
+        return R.id.v_dropLine;
+    }
 
     /*
      * 処理ラインの先頭判定
@@ -96,35 +131,48 @@ public abstract class ProcessBlock extends Block {
      */
     public void setBlockTouchListerer() {
 
-        setOnTouchListener(new View.OnTouchListener() {
+        // 本ブロック
+        Block selfBlock = this;
+
+        getLayoutRootView().setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
 
                 switch ( motionEvent.getAction() ){
                     case MotionEvent.ACTION_DOWN:
+                        // フラグon
+                        mDragFlg = true;
+                        break;
 
-                        //--------------------------
-                        // 本処理ブロックを半透明化
-                        //--------------------------
-                        view.setAlpha(TRANCE_DRAG);
+                    case MotionEvent.ACTION_MOVE:
 
-                        //--------------------------
-                        // ドラッグ開始
-                        //--------------------------
-                        View.DragShadowBuilder myShadow = new View.DragShadowBuilder(view);
-                        view.startDragAndDrop(null, myShadow, view, 0);
+                        // フラグon の場合
+                        if( mDragFlg ){
+                            //--------------------------
+                            // 本処理ブロックを半透明化
+                            //--------------------------
+                            selfBlock.setAlpha(TRANCE_DRAG);
+
+                            //--------------------------
+                            // ドラッグ開始
+                            //--------------------------
+                            // ドラッグ中のビューとして本ブロックを設定
+                            View.DragShadowBuilder myShadow = new View.DragShadowBuilder(view);
+                            view.startDragAndDrop(null, myShadow, selfBlock, 0);
+
+                            // フラグoff
+                            mDragFlg = false;
+                        }
+
                         break;
 
                     case MotionEvent.ACTION_UP:
-                        break;
-                    case MotionEvent.ACTION_MOVE:
+                        // do nothing
                         break;
                 }
                 return true;
             }
         });
-
-
     }
 
     /*

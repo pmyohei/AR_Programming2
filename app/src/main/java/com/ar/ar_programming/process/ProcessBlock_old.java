@@ -168,7 +168,7 @@ public class ProcessBlock_old extends ConstraintLayout {
 
         ProcessBlock_old myself = this;
 
-        ViewGroup cl_bottomMarkArea = findViewById(R.id.cl_bottomMarkArea);
+        ViewGroup cl_bottomMarkArea = findViewById(R.id.cl_markArea);
         // マークを付与
         cl_bottomMarkArea.setOnClickListener(new OnClickListener() {
             @Override
@@ -700,7 +700,7 @@ public class ProcessBlock_old extends ConstraintLayout {
         }
 
         // マークアイコン表示設定
-        ImageView iv_bottomMark = findViewById(R.id.iv_bottomMark);
+        ImageView iv_bottomMark = findViewById(R.id.iv_mark);
         iv_bottomMark.setVisibility(visible);
     }
 
@@ -709,7 +709,7 @@ public class ProcessBlock_old extends ConstraintLayout {
      */
     public boolean isMarked() {
         // マーカー表示中なら、マーク中と判断
-        ImageView iv_bottomMark = findViewById(R.id.iv_bottomMark);
+        ImageView iv_bottomMark = findViewById(R.id.iv_mark);
         return (iv_bottomMark.getVisibility() == VISIBLE);
     }
 

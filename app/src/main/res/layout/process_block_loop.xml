@@ -2,7 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/ll_UIRoot"
+    android:id="@+id/ll_root"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:minHeight="72dp"
@@ -19,17 +19,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <include
-        layout="@layout/process_block_inner_icons"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:visibility="gone"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/ll_firstNestRoot"
-        app:layout_constraintEnd_toEndOf="parent"/>
-
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/cl_bottomMarkArea"
+        android:id="@+id/cl_markArea"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_marginStart="12dp"
@@ -40,7 +31,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
-            android:id="@+id/iv_bottomMark"
+            android:id="@+id/iv_mark"
             android:layout_width="@dimen/block_icon_size"
             android:layout_height="@dimen/block_icon_size"
             android:visibility="gone"
@@ -70,10 +61,10 @@
         android:id="@+id/ll_firstNestRoot"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:minWidth="260dp"
+        android:minWidth="240dp"
         android:minHeight="40dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginBottom="12dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="32dp"
         android:layout_marginStart="12dp"
         android:background="@drawable/frame_process_inside"
         android:orientation="vertical"
@@ -83,20 +74,20 @@
         app:layout_constraintStart_toEndOf="@+id/tv_do"
         app:layout_constraintEnd_toEndOf="parent">
 
+        <!-- IDは動的に設定 -->
         <com.ar.ar_programming.process.StartBlock
-            android:id="@+id/pb_start"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             />
 
     </LinearLayout>
 
-    <!--  ドロップリスナー（ドラッグされてきた処理ブロックをキャッチする） -->
     <View
-        android:id="@+id/v_drop"
-        android:layout_width="1dp"
-        android:layout_height="@dimen/catch_drap_height"
-        android:background="@android:color/transparent"
+        android:id="@+id/v_dropLine"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/drap_line_height"
+        android:visibility="invisible"
+        android:background="@color/drop_line"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />

@@ -2,6 +2,7 @@ package com.ar.ar_programming.process;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.DragEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,6 +40,23 @@ public abstract class Block extends ConstraintLayout {
     }
 
     /*
+     * レイアウト最上位ビューを取得
+     */
+    public abstract View getLayoutRootView();
+    /*
+     * マークエリアビューIDを取得
+     */
+    public abstract int getMarkAreaViewID();
+    /*
+     * マークエリアのマークイメージIDを取得
+     */
+    public abstract int getMarkImageViewID();
+    /*
+     * ブロック追加ラインビューIDを取得
+     */
+    public abstract int getDropLineViewID();
+
+    /*
      * マーカ―設定
      */
     public void setMarker(boolean enable){
@@ -51,7 +69,8 @@ public abstract class Block extends ConstraintLayout {
         }
 
         // マークアイコン表示設定
-        ImageView iv_bottomMark = findViewById(R.id.iv_bottomMark);
+        int markImageID = getMarkImageViewID();
+        ImageView iv_bottomMark = findViewById( markImageID );
         iv_bottomMark.setVisibility(visible);
     }
 
@@ -60,7 +79,7 @@ public abstract class Block extends ConstraintLayout {
      */
     public boolean isMarked(){
         // マーカー表示中なら、マーク中と判断
-        ImageView iv_bottomMark = findViewById(R.id.iv_bottomMark);
+        ImageView iv_bottomMark = findViewById(R.id.iv_mark);
         return (iv_bottomMark.getVisibility() == VISIBLE);
     }
 
@@ -69,14 +88,16 @@ public abstract class Block extends ConstraintLayout {
      */
     public void setMarkAreaListerner(MarkerAreaListener listener){
 
-        Block myself = this;
+        // 本ブロック
+        Block selfBlock = this;
 
-        ViewGroup cl_bottomMarkArea = findViewById(R.id.cl_bottomMarkArea);
-        cl_bottomMarkArea.setOnClickListener(new OnClickListener() {
+        int markAreaID = getMarkAreaViewID();
+        ViewGroup markArea = getLayoutRootView().findViewById( markAreaID );
+        markArea.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 // リスナーコール
-                listener.onBottomMarkerAreaClick(myself);
+                listener.onBottomMarkerAreaClick(selfBlock);
             }
         });
     }
@@ -86,10 +107,13 @@ public abstract class Block extends ConstraintLayout {
      */
     public void setDropBlockListerner(DropBlockListener listener) {
 
-        setOnDragListener(new View.OnDragListener() {
+        // 本ブロック
+        Block selfBlock = this;
+
+        getLayoutRootView().setOnDragListener(new View.OnDragListener() {
             @Override
             public boolean onDrag(View view, DragEvent dragEvent) {
-                return listener.onDropBlock( view, dragEvent );
+                return listener.onDropBlock( selfBlock, dragEvent );
             }
         });
     }
@@ -100,7 +124,7 @@ public abstract class Block extends ConstraintLayout {
     }
     public interface DropBlockListener {
         // 処理ブロックドロップリスナー
-        boolean onDropBlock(View view, DragEvent dragEvent);
+        boolean onDropBlock(Block dropBlock, DragEvent dragEvent);
     }
 
     /*
