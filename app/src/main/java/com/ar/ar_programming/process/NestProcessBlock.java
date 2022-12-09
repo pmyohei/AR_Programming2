@@ -2,7 +2,6 @@ package com.ar.ar_programming.process;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.DragEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -63,11 +62,11 @@ public abstract class NestProcessBlock extends ProcessBlock {
     }
 
     /*
-     * ネスト内にマークブロックを保持しているか
+     * ネスト内に指定されたブロックがあるか
      */
-    public boolean hasMarkedBlock( Block markedBlock ) {
+    public boolean hasBlock(Block block ) {
         // 同じIDがあれば保持しているとみなす
-        return (findViewById( markedBlock.getId() ) != null);
+        return (findViewById( block.getId() ) != null);
     }
 
     /*

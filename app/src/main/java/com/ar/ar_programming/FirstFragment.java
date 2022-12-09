@@ -52,7 +52,6 @@ import com.google.ar.sceneform.ux.BaseArFragment;
 import com.google.ar.sceneform.ux.TransformationSystem;
 import com.ar.ar_programming.databinding.FragmentFirstBinding;
 
-import java.security.Provider;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -1012,7 +1011,7 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
         int type = block.getProcessType();
         if( type != ProcessBlock.PROCESS_TYPE_SINGLE ){
             // ネスト内にマークブロックがあるかどうか
-            return ((NestProcessBlock)block).hasMarkedBlock( mMarkedBlock );
+            return ((NestProcessBlock)block).hasBlock( mMarkedBlock );
         }
 
         return false;
@@ -1755,8 +1754,7 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
         //------------------------------------------
         // ドラッグブロック内に、ドロップ左記ブロックがあるか否かで判定
         if( dragBlock.findViewById( dropBlock.getId() ) != null ){
-            // あれば、ドロップ不可
-            Log.i("ドロップリスナー", "弾1");
+            // あればドロップ不可
             return false;
         }
 
@@ -1771,8 +1769,8 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
             return false;
         }
 
-        Log.i("ドロップリスナー", "ACTION_DRAG_ENTERED dropBlock=" + dropBlock.getId());
-        Log.i("ドロップリスナー", "ACTION_DRAG_ENTERED aboveID=" + aboveID);
+//        Log.i("ドロップリスナー", "ACTION_DRAG_ENTERED dropBlock=" + dropBlock.getId());
+//        Log.i("ドロップリスナー", "ACTION_DRAG_ENTERED aboveID=" + aboveID);
 
         // ドロップ可能
         return true;
@@ -1808,6 +1806,8 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
         draggedView.setAlpha(ProcessBlock.TRANCE_NOT_DRAG);
     }
 
+
+    //★削除予定
     @Override
     public void onUpBlock(ProcessBlock moveBlock) {
 
@@ -1831,6 +1831,8 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
         Log.i( "ブロック移動", "UP newIndex=" + newIndex );
     }
 
+
+    //★削除予定
     @Override
     public void onDownBlock(ProcessBlock moveBlock) {
 
@@ -1883,6 +1885,7 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
      * 【処理ブロック内リスナー設定】ブロック削除クリック処理
      *
      */
+    //★削除予定
     @Override
     public void onRemoveBlock(ProcessBlock removeBlock) {
         // ブロック削除
