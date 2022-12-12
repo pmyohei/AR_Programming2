@@ -57,7 +57,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 
-public class FirstFragment extends Fragment implements Block.MarkerAreaListener, Block.DropBlockListener, ProcessBlock.BlockControlListener {
+public class FirstFragment extends Fragment implements Block.MarkerAreaListener, Block.DropBlockListener/*, ProcessBlock.BlockControlListener*/ {
 
     //---------------------------
     // 定数
@@ -1808,7 +1808,7 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
 
 
     //★削除予定
-    @Override
+/*    @Override
     public void onUpBlock(ProcessBlock moveBlock) {
 
         // 先頭にいるなら、何もしない
@@ -1829,11 +1829,11 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
         parent.addView( moveBlock, newIndex );
 
         Log.i( "ブロック移動", "UP newIndex=" + newIndex );
-    }
+    }*/
 
 
     //★削除予定
-    @Override
+    /*@Override
     public void onDownBlock(ProcessBlock moveBlock) {
 
         // 最後尾にいるなら、何もしない
@@ -1854,14 +1854,14 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
         parent.addView( moveBlock, newIndex );
 
         Log.i( "ブロック移動", "Down newIndex=" + newIndex );
-    }
+    }*/
 
     /*
      * 【処理ブロック内リスナー設定】マーカー処理ブロック下への移動アイコンクリックリスナークリック処理
      * 　指定されたブロックを、現在のマーカーブロックの下に移動させる。
      *   また、新しいマーカーブロックを移動したブロックにする。
      */
-    @Override
+/*    @Override
     public void onMoveBelowMarker(ProcessBlock moveBlock) {
 
         //----------------
@@ -1879,18 +1879,18 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
         //-------------------
         // 移動したブロックをマーカーブロックとする
         changeMarkerBlock( moveBlock );
-    }
+    }*/
 
     /*
      * 【処理ブロック内リスナー設定】ブロック削除クリック処理
      *
      */
     //★削除予定
-    @Override
+/*    @Override
     public void onRemoveBlock(ProcessBlock removeBlock) {
         // ブロック削除
         removeBlockFromLine( removeBlock );
-    }
+    }*/
 
     /*
      * 【処理ブロック内リスナー設定】マーカーエリアクリック処理

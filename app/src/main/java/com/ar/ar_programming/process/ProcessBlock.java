@@ -178,7 +178,7 @@ public abstract class ProcessBlock extends Block {
     /*
      * 本ブロック位置を１つ上げるリスナー設定
      */
-    public void setBlockControlListener( BlockControlListener listerner ){
+/*    public void setBlockControlListener( BlockControlListener listerner ){
         // 本ブロック
         ProcessBlock myself = this;
 
@@ -220,8 +220,7 @@ public abstract class ProcessBlock extends Block {
                 listerner.onMoveBelowMarker(myself);
             }
         });
-
-    }
+    }*/
 
 /*    *//*
      * 本ブロック位置を１つ上げるリスナー設定
@@ -275,7 +274,7 @@ public abstract class ProcessBlock extends Block {
     /*
      * 本ブロック操作インターフェース
      */
-    public interface BlockControlListener {
+/*    public interface BlockControlListener {
         // 本ブロック位置変更（１つ上に移動）
         void onUpBlock( ProcessBlock markedBlock );
         // 本ブロック位置変更（１つ下に移動）
@@ -284,7 +283,7 @@ public abstract class ProcessBlock extends Block {
         void onRemoveBlock( ProcessBlock markedBlock );
         // 本ブロック位置を「マークブロック」下に移動
         void onMoveBelowMarker( ProcessBlock markedBlock );
-    }
+    }*/
 
 /*    *//*
      * 本ブロック位置を１つ上げるインターフェース
