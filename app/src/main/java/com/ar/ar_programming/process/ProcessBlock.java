@@ -6,7 +6,6 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import com.ar.ar_programming.R;
 
@@ -20,21 +19,11 @@ public abstract class ProcessBlock extends Block {
     //---------------------------
     // 定数
     //---------------------------
-    // 処理ブロック種別
-    public static final int PROCESS_TYPE_SINGLE = 0;
-    public static final int PROCESS_TYPE_IF = 1;
-    public static final int PROCESS_TYPE_IF_ELSE = 2;
-    public static final int PROCESS_TYPE_LOOP = 3;
-
-    // ドラッグ中（選択中）状態の半透明値
-    public static final float TRANCE_DRAG = 0.6f;
-    public static final float TRANCE_NOT_DRAG = 1.0f;
 
 
     //---------------------------
     // フィールド変数
     //---------------------------
-    public int mProcessType;
     public int mProcessContents;
     private boolean mDragFlg;
 
@@ -46,8 +35,7 @@ public abstract class ProcessBlock extends Block {
         this(context, attrs, 0, 0, 0);
     }
     public ProcessBlock(Context context, AttributeSet attrs, int defStyle, int type, int contents) {
-        super(context, attrs, defStyle);
-        mProcessType = type;
+        super(context, attrs, defStyle, type);
         mProcessContents = contents;
         setId(View.generateViewId());
     }
@@ -57,12 +45,6 @@ public abstract class ProcessBlock extends Block {
      */
     public abstract void rewriteProcessContents(int contents);
 
-    /*
-     * 処理ブロックタイプ設定
-     */
-    public int getProcessType() {
-        return mProcessType;
-    }
     /*
      * 処理ブロック内容取得
      */
@@ -151,7 +133,8 @@ public abstract class ProcessBlock extends Block {
                             //--------------------------
                             // 本処理ブロックを半透明化
                             //--------------------------
-                            selfBlock.setAlpha(TRANCE_DRAG);
+//                            tranceBlock(selfBlock);
+                            tranceDrag();
 
                             //--------------------------
                             // ドラッグ開始
@@ -174,6 +157,8 @@ public abstract class ProcessBlock extends Block {
             }
         });
     }
+
+
 
     /*
      * 本ブロック位置を１つ上げるリスナー設定

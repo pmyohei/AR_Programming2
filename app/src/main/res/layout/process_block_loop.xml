@@ -75,10 +75,10 @@
         app:layout_constraintEnd_toEndOf="parent">
 
         <!-- IDは動的に設定 -->
-        <com.ar.ar_programming.process.StartBlock
+<!--        <com.ar.ar_programming.process.StartBlock
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            />
+            />-->
 
     </LinearLayout>
 

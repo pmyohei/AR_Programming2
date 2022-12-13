@@ -2,6 +2,7 @@ package com.ar.ar_programming.process;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.DragEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,10 +19,13 @@ public abstract class NestProcessBlock extends ProcessBlock {
     //---------------------------
     // 定数
     //---------------------------
+    public static int NEST_EXPAND = 0;
+    public static int NEST_SHRINK = 1;
 
     //---------------------------
     // フィールド変数
     //---------------------------
+    private StartBlock mNestStartBlock;
 
     /*
      * コンストラクタ
@@ -62,20 +66,147 @@ public abstract class NestProcessBlock extends ProcessBlock {
     }
 
     /*
-     * ネスト内に指定されたブロックがあるか
+     * ブロック半透明化
      */
-    public boolean hasBlock(Block block ) {
-        // 同じIDがあれば保持しているとみなす
-        return (findViewById( block.getId() ) != null);
+    @Override
+    public void tranceDrag() {
+        super.tranceDrag();
+
+        //------------------------
+        // ネスト内ブロックを半透明化
+        //------------------------
+        Block block = getNestStartBlock();
+        while (block != null) {
+            block.tranceDrag();
+            block = block.getBelowBlock();
+        }
     }
 
     /*
-     * ネスト内スタートブロックを取得
+     * ブロック位置移動：上
      */
-    private StartBlock getStartBlockInNest() {
-        // ネスト内の先頭のビューがStartBlock
-        ViewGroup parent = findViewById( R.id.ll_firstNestRoot );
-        return  (StartBlock)parent.getChildAt(0);
+    @Override
+    public void upChartPosition(int trancelate) {
+        super.upChartPosition(trancelate);
+
+        //------------------------
+        // ネスト内ブロックを移動
+        //------------------------
+        Block block = getNestStartBlock();
+        while (block != null) {
+            block.upChartPosition(trancelate);
+            block = block.getBelowBlock();
+        }
+    }
+
+    /*
+     * ブロック位置移動：下
+     */
+    @Override
+    public void downChartPosition(int trancelate) {
+        super.downChartPosition(trancelate);
+
+        //------------------------
+        // ネスト内ブロックを移動
+        //------------------------
+        Block block = getNestStartBlock();
+        while (block != null) {
+            block.downChartPosition(trancelate);
+            block = block.getBelowBlock();
+        }
+    }
+
+    /*
+     * ブロック削除
+     */
+    @Override
+    public void removeOnChart() {
+        super.removeOnChart();
+
+        //---------------------
+        // ネスト内ブロックを削除
+        //---------------------
+        Block block = getNestStartBlock();
+        while (block != null) {
+            block.removeOnChart();
+            block = block.getBelowBlock();
+        }
+    }
+
+    /*
+     * ネストサイズの変更
+     */
+    public void resizeNestHeight(Block block, int scaling) {
+
+        // 変更量
+        int size = block.getHeight();
+        if( scaling == NEST_SHRINK ){
+            size *= -1;
+        }
+
+        // ネストサイズの変更
+        ViewGroup nestView = getResizeNest( block );
+        ViewGroup.LayoutParams lp = nestView.getLayoutParams();
+        lp.height += size;
+        nestView.setLayoutParams(lp);
+
+        // 自身がネスト内にあれば、そのネストもサイズ変更
+        NestProcessBlock nestBlock = getOwnNestBlock();
+        if (nestBlock != null) {
+            nestBlock.resizeNestHeight(block, scaling);
+        }
+    }
+
+    /*
+     * ネストサイズ変更対象のネスト
+     */
+    public ViewGroup getResizeNest( Block block ){
+        return findViewById( R.id.ll_firstNestRoot );
+    }
+
+
+    /*
+     * ネスト内に指定されたブロックがあるか
+     */
+    public boolean hasBlock(Block block ) {
+
+        Block nestBlock = getNestStartBlock();
+        while( nestBlock != null ){
+            if( nestBlock == block ){
+                return true;
+            }
+            nestBlock = nestBlock.getBelowBlock();
+        }
+
+        return false;
+    }
+
+    /*
+     * ネスト内スタートブロックの設定
+     */
+    public void setNestStartBlock(StartBlock block ) {
+        mNestStartBlock = block;
+    }
+    /*
+     * ネスト内スタートブロックの取得
+     */
+    public StartBlock getNestStartBlock() {
+        return mNestStartBlock;
+    }
+
+    /*
+     * ネスト内の先頭ブロック（スタートブロックの次のブロック）
+     */
+    public Block getNestTopBlock() {
+        // ネスト内の先頭ブロック
+        return mNestStartBlock.getBelowBlock();
+    }
+
+    /*
+     * ネストビューの取得
+     */
+    public ViewGroup getNestView() {
+        return findViewById( R.id.ll_firstNestRoot );
     }
 
     /*
@@ -83,7 +214,7 @@ public abstract class NestProcessBlock extends ProcessBlock {
      */
     public void initStartBlockInNest( int layoutID ) {
 
-        StartBlock startBlock = getStartBlockInNest();
+        StartBlock startBlock = mNestStartBlock;
 
         // IDを動的に設定（他のネストブロックと重複しないようにするため）
         startBlock.setId(View.generateViewId());
@@ -110,7 +241,7 @@ public abstract class NestProcessBlock extends ProcessBlock {
      */
     public void setMarkAreaInNestListerner(MarkerAreaListener listener) {
 
-        StartBlock startBlock = getStartBlockInNest();
+        StartBlock startBlock = mNestStartBlock;
         int markAreaID = startBlock.getMarkAreaViewID();
         ViewGroup markArea = startBlock.findViewById( markAreaID );
 
@@ -129,7 +260,7 @@ public abstract class NestProcessBlock extends ProcessBlock {
     public void setDropInNestListerner(DropBlockListener listener) {
 
         // ネスト内のスタートブロックにリスナーを設定
-        StartBlock startBlock = getStartBlockInNest();
+        StartBlock startBlock = mNestStartBlock;
         startBlock.setOnDragListener(new View.OnDragListener() {
             @Override
             public boolean onDrag(View view, DragEvent dragEvent) {

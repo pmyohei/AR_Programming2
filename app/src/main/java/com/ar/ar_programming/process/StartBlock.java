@@ -34,7 +34,7 @@ public class StartBlock extends Block {
         this(context, attrs, 0);
     }
     public StartBlock(Context context, AttributeSet attrs, int defStyle) {
-        super(context, attrs, defStyle);
+        super(context, attrs, defStyle, PROCESS_TYPE_START);
     }
 
     /*

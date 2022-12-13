@@ -15,6 +15,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,6 +31,7 @@ import com.ar.ar_programming.process.LoopProcessBlock;
 import com.ar.ar_programming.process.NestProcessBlock;
 import com.ar.ar_programming.process.ProcessBlock;
 import com.ar.ar_programming.process.SingleProcessBlock;
+import com.ar.ar_programming.process.StartBlock;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.ar.core.Anchor;
 import com.google.ar.core.HitResult;
@@ -255,11 +257,7 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
 
         // マーカ―はスタートブロックに付与
         //★メソッド化
-        Block startBlock = binding.getRoot().findViewById(R.id.pb_chartTop);
-        startBlock.setLayout(R.layout.process_block_start_ver2);
-        startBlock.setMarkAreaListerner(this);
-        startBlock.setDropBlockListerner(this);
-        mMarkedBlock = startBlock;
+        initStartBlock();
 
         // プログラミング開始設定
         setStartProgramming();
@@ -286,6 +284,21 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
 
         // 処理ブロックリストアダプタの設定
         setSelectProcessBlockList();
+    }
+
+    /*
+     * スタートブロック初期化処理
+     */
+    private void initStartBlock() {
+
+        Block startBlock = binding.getRoot().findViewById(R.id.pb_chartTop);
+        startBlock.setLayout(R.layout.process_block_start_ver2);
+        startBlock.setMarkAreaListerner(this);
+        startBlock.setDropBlockListerner(this);
+
+        mMarkedBlock = startBlock;
+
+        Log.i("クラスメソッド", "StartBlock   ID=" + startBlock.getId());
     }
 
     /*
@@ -945,53 +958,320 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
 
         // ネストブロック限定
         if (processType != ProcessBlock.PROCESS_TYPE_SINGLE) {
-            ((NestProcessBlock) newBlock).setMarkAreaInNestListerner(this);
-            ((NestProcessBlock) newBlock).setDropInNestListerner(this);
+//            ((NestProcessBlock) newBlock).setMarkAreaInNestListerner(this);
+//            ((NestProcessBlock) newBlock).setDropInNestListerner(this);
         }
 
         //----------------------
         // チャートに追加
         //----------------------
         // 「マークブロック」の下に追加
-        insertBlockBelowMark(newBlock);
+        insertBlockBelowMark(mMarkedBlock, newBlock);
     }
 
     /*
-     * 指定ブロックを「マークブロック」の下に挿入する
+     * 指定ブロックを「aboveBlock」の下に挿入する
      */
-    private void insertBlockBelowMark(ProcessBlock addBlock) {
+    private void insertBlockBelowMark(Block aboveBlock, ProcessBlock newBlock) {
+
+        FrameLayout ll_UIRoot = binding.getRoot().findViewById(R.id.ll_UIRoot);
 
         //-------------------------------
-        // マークブロックの下に追加するための情報
+        // ブロックをレイアウトに追加
         //-------------------------------
-        // マークブロックの親レイアウト
-        ViewGroup markedBlockParent = (ViewGroup) mMarkedBlock.getParent();
-        // 追加先ChildIndex（マークブロックのChildIndex + 1）
-        int insertIndex = mMarkedBlock.getOwnChildIndex() + 1;
-
-        //-------------------------------
-        // 処理ブロックをマーク下に追加
-        //-------------------------------
-        // 追加
-        markedBlockParent.addView(addBlock, insertIndex);
+        ViewGroup.MarginLayoutParams mlp = getNewBlockMlp(aboveBlock);
+        ll_UIRoot.addView(newBlock, mlp);
 
         // アニメーションを付与
-        addBlock.setAlpha(0f);
-        addBlock.animate()
+        newBlock.setAlpha(0f);
+        newBlock.animate()
                 .alpha(1f)
                 .setDuration(200)
                 .setListener(null);
 
+        //-------------------------
+        // 上下ブロックの保持情報更新
+        //-------------------------
+        rewriteAboveBelowBlockOnInsert( aboveBlock, newBlock);
+
+
+        // 新ブロックレイアウト確定後
+        newBlock.post(() -> {
+
+            //-----------------------------------------------
+            // 生成ブロックがネストブロックなら、スタートブロックを配置
+            //-----------------------------------------------
+            createNestStartBlock(newBlock);
+
+            //----------------------------------
+            // 新ブロックより下のブロックの位置を下げる
+            //----------------------------------
+            int newBlockHeight = newBlock.getHeight();
+            Block belowBlock = newBlock.getBelowBlock();
+//            downBelowBlock(belowBlock, newBlockHeight);
+            if( belowBlock != null ){
+                belowBlock.downChartPosition( newBlockHeight );
+            }
+
+            // 追加先がネストブロック内の場合
+            NestProcessBlock nestBlock = aboveBlock.getOwnNestBlock();
+            if( nestBlock != null ){
+                // ネストブロックの下にあるブロックも下げる
+                Block nestBelowBlock = nestBlock.getBelowBlock();
+                if( nestBelowBlock != null ){
+                    nestBelowBlock.downChartPosition( newBlockHeight );
+                }
+
+                // ネストブロックサイズを変更
+                nestBlock.resizeNestHeight( newBlock, NestProcessBlock.NEST_EXPAND );
+            }
+
+/*            // 追加先がネストブロック内の場合
+            NestProcessBlock nestBlock = aboveBlock.getOwnNestBlock();
+            while (nestBlock != null) {
+
+                // ネストブロックの下のブロックを下げる
+                Block nestBelowBlock = nestBlock.getBelowBlock();
+                downBelowBlock(nestBelowBlock, newBlockHeight);
+
+                // ネストサイズの拡張
+                ViewGroup nestView = nestBlock.getNestView();
+                ViewGroup.LayoutParams lp = nestView.getLayoutParams();
+                lp.height += newBlockHeight;
+                nestView.setLayoutParams(lp);
+
+                nestBlock = nestBlock.getOwnNestBlock();
+            }*/
+        });
+
         //-------------------------------
         // ネスト情報の書き換え
         //-------------------------------
-        addBlock.setOwnNestBlock(mMarkedBlock.getOwnNestBlock());
+        NestProcessBlock nestBlock = aboveBlock.getOwnNestBlock();
+        newBlock.setOwnNestBlock(nestBlock);
 
         //-------------------------------
-        // マーカーブロック入れ替え
+        // マーカーブロック変更
         //-------------------------------
-        changeMarkerBlock(addBlock);
+        // マーカーブロックを新ブロックに変更
+        changeMarkerBlock(newBlock);
     }
+
+
+    /*
+     * 上下ブロック保持情報の更新（ブロック挿入時）
+     */
+    private void rewriteAboveBelowBlockOnInsert(Block aboveBlock, Block insertBlock) {
+
+        // 挿入前の「挿入ブロックの上ブロック」の下ブロック
+        Block belowBlock = aboveBlock.getBelowBlock();
+
+        // 挿入ブロックの保持情報を更新
+        insertBlock.setAboveBlock(aboveBlock);
+        insertBlock.setBelowBlock(belowBlock);
+
+        // 「新規ブロックの上のブロック」の下ブロックを「新規ブロック」にする
+        aboveBlock.setBelowBlock(insertBlock);
+
+        // 「新規ブロックの１つ下ブロック（あれば）」の上ブロックを「新規ブロック」にする
+        if (belowBlock != null) {
+            belowBlock.setAboveBlock(insertBlock);
+        }
+    }
+
+    /*
+     * 上下ブロック保持情報の更新（ブロック削除時）
+     */
+    private void rewriteAboveBelowBlockOnRemove(Block removeBlock) {
+
+        // 削除ブロックの上下ブロック
+        Block aboveBlock = removeBlock.getAboveBlock();
+        Block belowBlock = removeBlock.getBelowBlock();
+
+        // 上下ブロックの保持情報を更新
+        aboveBlock.setBelowBlock( belowBlock );
+        if( belowBlock != null ){
+            belowBlock.setAboveBlock( aboveBlock );
+        }
+    }
+
+    /*
+     * ネスト内スタートブロックの生成と配置
+     */
+    private void createNestStartBlock(ProcessBlock newBlock) {
+
+        // 生成ブロックが単体処理ブロックなら、何もしない
+        if (newBlock.getProcessType() == Block.PROCESS_TYPE_SINGLE) {
+            return;
+        }
+
+        FrameLayout ll_UIRoot = binding.getRoot().findViewById(R.id.ll_UIRoot);
+
+        //------------------------------
+        // スタートブロック生成（ネスト１つ目）
+        //------------------------------
+        // スタートブロック生成
+        StartBlock startBlock = createNestStartBlock( (NestProcessBlock) newBlock );
+        // レイアウトに配置
+        ViewGroup nestView = ((NestProcessBlock) newBlock).getNestView();
+        ViewGroup.MarginLayoutParams startMlp = getNestStartBlockMlp((NestProcessBlock) newBlock, nestView);
+        ll_UIRoot.addView(startBlock, startMlp);
+
+        // ネストブロックにスタートブロックを保持させる
+        ((NestProcessBlock)newBlock).setNestStartBlock(startBlock);
+
+        //---------------------
+        // ネストサイズ設定
+        //---------------------
+        // レイアウト確定後、ネスト高さをスタートブロックの高さにする
+        startBlock.post(() -> {
+            ViewGroup targetNest = ((NestProcessBlock) newBlock).getNestView();
+            ViewGroup.LayoutParams lp = targetNest.getLayoutParams();
+            lp.height = startBlock.getHeight();
+            targetNest.setLayoutParams(lp);
+        });
+
+
+        // if-else 以外はここで終了
+        if (newBlock.getProcessType() != Block.PROCESS_TYPE_IF_ELSE) {
+            return;
+        }
+
+        //------------------------------
+        // スタートブロック生成（ネスト２つ目）
+        //------------------------------
+        // スタートブロック生成
+        StartBlock startBlockSecond = createNestStartBlock( (NestProcessBlock) newBlock );
+        // レイアウトに配置
+        ViewGroup secondNestView = ((IfElseProcessBlock) newBlock).getSecondNestView();
+        startMlp = getNestStartBlockMlp((NestProcessBlock) newBlock, secondNestView);
+        ll_UIRoot.addView(startBlockSecond, startMlp);
+
+        // ネストブロックにスタートブロックを保持させる
+        ((IfElseProcessBlock) newBlock).setSecondNestStartBlock(startBlockSecond);
+
+        //---------------------
+        // ネストサイズ設定
+        //---------------------
+        // レイアウト確定後、ネスト高さをスタートブロックの高さにする
+        startBlockSecond.post(() -> {
+            ViewGroup targetSecondNest = ((IfElseProcessBlock) newBlock).getSecondNestView();
+            ViewGroup.LayoutParams lp = targetSecondNest.getLayoutParams();
+            lp.height = startBlockSecond.getHeight();
+            targetSecondNest.setLayoutParams(lp);
+        });
+    }
+
+    /*
+     * 新ブロックのMarginLayoutParamsの算出・取得
+     */
+    private StartBlock createNestStartBlock( NestProcessBlock parentNestBlock ) {
+
+        StartBlock startBlock = new StartBlock(getContext());
+        startBlock.setId(View.generateViewId());
+        startBlock.setLayout(R.layout.process_block_start_in_nest);
+        startBlock.setMarkAreaListerner(this);
+        startBlock.setDropBlockListerner(this);
+        startBlock.setOwnNestBlock( parentNestBlock );
+
+        return startBlock;
+    }
+
+    /*
+     * 新ブロックのMarginLayoutParamsの算出・取得
+     */
+    private ViewGroup.MarginLayoutParams getNewBlockMlp(Block aboveBlock ) {
+
+        ViewGroup.MarginLayoutParams mlp = new ViewGroup.MarginLayoutParams( ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT );
+
+        int top = aboveBlock.getTop() + aboveBlock.getHeight();
+        int left = mlp.leftMargin;
+
+        NestProcessBlock nest = aboveBlock.getOwnNestBlock();
+        if (nest != null) {
+            left = aboveBlock.getLeft();
+            Log.i("位置更新", "ネスト内スタートブロック getLeft()=" + left);
+        }
+
+        mlp.setMargins(left, top, 0, 0);
+        return mlp;
+    }
+
+    /*
+     * ネスト内スタートブロックのMarginLayoutParamsの算出・取得
+     */
+    private ViewGroup.MarginLayoutParams getNestStartBlockMlp(NestProcessBlock nestBlock, ViewGroup nestView ) {
+
+        ViewGroup.MarginLayoutParams mlp = new ViewGroup.MarginLayoutParams( ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT );
+
+        // トップマージン：「」＋「」＋「」＋「」
+        int nestBlockTop = nestBlock.getTop();
+        int nestViewTop = nestView.getTop();
+
+        int top = nestBlockTop + nestViewTop;
+
+        // 左マージン：「」＋「」
+        int nestBlockLeft = nestBlock.getLeft();
+        int nestViewLeft = nestView.getLeft();
+        int left = nestBlockLeft + nestViewLeft;
+
+        Log.i("位置更新", "nestBlockTop=" + nestBlockTop);
+        Log.i("位置更新", "nestViewTop=" + nestViewTop);
+        Log.i("位置更新", "nestBlockLeft=" + nestBlockLeft);
+        Log.i("位置更新", "nestViewLeft=" + nestViewLeft);
+
+        mlp.setMargins(left, top, 0, 0);
+        return mlp;
+    }
+
+
+    /*
+     * 指定ブロックから下にあるブロックを、全て下げる
+     */
+    private void downBelowBlock(Block downStartBlock, int downSize) {
+
+        //---------------------
+        // 下ブロックがなくなるまで
+        //---------------------
+        while (downStartBlock != null) {
+
+            //---------------
+            // ブロックを移動
+            //---------------
+            // 移動させる位置（「上ブロックの上マージン」＋「上ブロックの高さ」＋「下げる量」）
+            int top = downStartBlock.getTop() + downSize;
+            // マージンを再設定し、位置を下げる
+            ViewGroup.MarginLayoutParams belowMlp = (ViewGroup.MarginLayoutParams) downStartBlock.getLayoutParams();
+            belowMlp.setMargins(belowMlp.leftMargin, top, belowMlp.rightMargin, belowMlp.bottomMargin);
+
+            //------------------------
+            // ネスト内ブロック移動
+            //------------------------
+            // ネストブロックの場合
+            int type = downStartBlock.getProcessType();
+            if( (type == Block.PROCESS_TYPE_IF) || (type == Block.PROCESS_TYPE_IF_ELSE) || (type == Block.PROCESS_TYPE_LOOP) ){
+
+                // ネスト内のブロックを下げる（ネスト１つ目）
+                Block nestStartBlock = ((NestProcessBlock)downStartBlock).getNestStartBlock();
+                downBelowBlock( nestStartBlock, downSize );
+
+                // ネスト内のブロックを下げる（ネスト２つ目）
+                if( type == Block.PROCESS_TYPE_IF_ELSE ){
+                    Block secondStartBlock = ((IfElseProcessBlock)downStartBlock).getSecondNestStartBlock();
+                    downBelowBlock( secondStartBlock, downSize );
+                }
+            }
+
+            // 下げる対象のブロックを次へ
+            downStartBlock = downStartBlock.getBelowBlock();
+        }
+
+        FrameLayout ll_UIRoot = binding.getRoot().findViewById(R.id.ll_UIRoot);
+        ll_UIRoot.invalidate();
+    }
+
 
     /*
      * マーカー入れ替え判定
@@ -1028,15 +1308,27 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
         // 削除ブロックがマーカー or 削除ブロック内にマーカーブロックあり
         if ( isNeedChangeMark(removeBlock) ) {
             // 削除対象の1つ上のブロックにマークを設定する
-            Block aboveBlock = getOneAboveBlock(removeBlock);
+//            Block aboveBlock = getOneAboveBlock(removeBlock);
+            Block aboveBlock = removeBlock.getAboveBlock();
             changeMarkerBlock(aboveBlock);
         }
 
         //-------------------
         // ブロック削除
         //-------------------
-        ViewGroup parentView = (ViewGroup) removeBlock.getParent();
-        parentView.removeView(removeBlock);
+//        ViewGroup parentView = (ViewGroup) removeBlock.getParent();
+//        parentView.removeView(removeBlock);
+        removeBlock.removeOnChart();
+
+        // 上下ブロック保持情報の更新
+        rewriteAboveBelowBlockOnRemove( removeBlock );
+
+        // ネスト内ブロックの削除の場合
+        NestProcessBlock nestBlock = removeBlock.getOwnNestBlock();
+        if( nestBlock != null ){
+            // 削除ブロック分、ネストを縮める
+            nestBlock.resizeNestHeight( nestBlock, NestProcessBlock.NEST_EXPAND );
+        }
     }
 
     /*
@@ -1780,14 +2072,16 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
      * 処理ブロックのドラッグ移動
      *   「ドラッグされたブロック」を「ドロップ先ブロック」の下に移動させる
      */
-    public void dragMoveUnderDrop(Block dropBlock, Block dragBlock) {
+    public void dragMoveUnderDrop(Block dropBlock, ProcessBlock dragBlock) {
 
         // ドラッグ中ブロックを元の位置から削除
-        ((ViewGroup)dragBlock.getParent()).removeView(dragBlock);
+        removeBlockFromLine( dragBlock );
+//        ((ViewGroup)dragBlock.getParent()).removeView(dragBlock);
 
         // ドラッグ中ブロックをドロップブロックの下に生成
-        int index = dropBlock.getOwnChildIndex();
-        ((ViewGroup)dropBlock.getParent()).addView(dragBlock, index + 1);
+        insertBlockBelowMark( dropBlock, dragBlock );
+//        int index = dropBlock.getOwnChildIndex();
+//        ((ViewGroup)dropBlock.getParent()).addView(dragBlock, index + 1);
     }
 
     /*
@@ -1921,9 +2215,6 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
                 return true;
 
             case DragEvent.ACTION_DRAG_ENTERED:
-                Log.i("ドロップリスナー", "弾 ACTION_DRAG_ENTERED dropBlock=" + dropBlock);
-                Log.i("ドロップリスナー", "弾 ACTION_DRAG_ENTERED dropBlock ID=" + dropBlock.getId());
-
                 //------------------
                 // ドロップ可能判定
                 //------------------
@@ -1938,16 +2229,12 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
                 return true;
 
             case DragEvent.ACTION_DRAG_EXITED:
-                Log.i("ドロップリスナー", "ACTION_DRAG_EXITED id=");
-
                 // ブロック追加ラインを非表示
                 v_dropLine.setVisibility( View.INVISIBLE );
 
                 return true;
 
             case DragEvent.ACTION_DROP:
-                Log.i("ドロップリスナー", "ACTION_DROP dropBlock=" + dropBlock);
-
                 // ブロック追加ラインを非表示
                 v_dropLine.setVisibility( View.INVISIBLE );
 
@@ -1962,7 +2249,7 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
                 //---------------
                 // ブロック移動処理
                 //---------------
-                dragMoveUnderDrop( dropBlock, (Block)dragEvent.getLocalState() );
+                dragMoveUnderDrop( dropBlock, (ProcessBlock)dragEvent.getLocalState() );
 
                 return true;
 
@@ -1976,7 +2263,6 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
                 return true;
 
             default:
-                Log.i("ドロップリスナー", "default id=");
                 break;
         }
 

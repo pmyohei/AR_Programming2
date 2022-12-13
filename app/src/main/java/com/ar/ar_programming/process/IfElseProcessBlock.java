@@ -29,6 +29,8 @@ public class IfElseProcessBlock extends NestProcessBlock {
     private boolean isConditionState;
     private ViewGroup mNestRoot;
 
+    private StartBlock mNestStartBlockSecond;
+
 
     /*
      * コンストラクタ
@@ -95,12 +97,142 @@ public class IfElseProcessBlock extends NestProcessBlock {
     }
 
     /*
+     * ブロック半透明化
+     */
+    @Override
+    public void tranceDrag(){
+        super.tranceDrag();
+
+        //------------------------------
+        // ネスト(2つ目)内ブロックを半透明化
+        //------------------------------
+        Block block = getSecondNestStartBlock();
+        while( block != null ){
+            block.tranceDrag();
+            block = block.getBelowBlock();
+        }
+    }
+
+    /*
+     * ブロック位置移動：上
+     */
+    @Override
+    public void upChartPosition( int trancelate ){
+        super.upChartPosition( trancelate );
+
+        //------------------------
+        // ネスト内ブロックを移動
+        //------------------------
+        Block block = getSecondNestStartBlock();
+        while( block != null ){
+            block.upChartPosition( trancelate );
+            block = block.getBelowBlock();
+        }
+    }
+
+    /*
+     * ブロック位置移動：下
+     */
+    @Override
+    public void downChartPosition( int trancelate ){
+        super.downChartPosition( trancelate );
+
+        //------------------------
+        // ネスト内ブロックを移動
+        //------------------------
+        Block block = getSecondNestStartBlock();
+        while( block != null ){
+            block.downChartPosition( trancelate );
+            block = block.getBelowBlock();
+        }
+    }
+
+    /*
+     * ブロック削除
+     */
+    @Override
+    public void removeOnChart(){
+        super.removeOnChart();
+
+        //------------------------
+        // elseネスト内ブロックを削除
+        //------------------------
+        Block block = getSecondNestStartBlock();
+        while( block != null ){
+            block.removeOnChart();
+            block = block.getBelowBlock();
+        }
+    }
+
+    /*
+     * ネスト内に指定されたブロックがあるか
+     */
+    @Override
+    public boolean hasBlock(Block block ) {
+        boolean firstNest = super.hasBlock( block );
+        if( firstNest ){
+            return true;
+        }
+
+        //---------------------
+        // else側のネストをチェック
+        //---------------------
+        Block nestBlock = getSecondNestStartBlock();
+        while( nestBlock != null ){
+            if( nestBlock == block ){
+                return true;
+            }
+            nestBlock = nestBlock.getBelowBlock();
+        }
+
+        return false;
+    }
+
+    /*
+     * ネストサイズ変更対象のネスト
+     */
+    @Override
+    public ViewGroup getResizeNest( Block block ){
+
+        // １つ目のネストをチェック
+        Block nestBlock = getNestStartBlock();
+        while( nestBlock != null ){
+            if( nestBlock == block ){
+                return findViewById( R.id.ll_firstNestRoot );
+            }
+            nestBlock = nestBlock.getBelowBlock();
+        }
+
+        // １つ目になければ２つ目のネスト
+        return findViewById( R.id.ll_secondNestRoot );
+    }
+
+
+    /*
+     * ネストビューの取得
+     */
+    public ViewGroup getSecondNestView() {
+        return findViewById( R.id.ll_secondNestRoot );
+    }
+
+    /*
+     * ネスト内スタートブロックの設定
+     */
+    public void setSecondNestStartBlock(StartBlock block ) {
+        mNestStartBlockSecond = block;
+    }
+    /*
+     * ネスト内スタートブロックの取得
+     */
+    public StartBlock getSecondNestStartBlock() {
+        return mNestStartBlockSecond;
+    }
+
+    /*
      * elseネスト内スタートブロックを取得
      */
     private StartBlock getStartBlockInSecondNest() {
-        // ネスト内の先頭のビューがStartBlock
-        ViewGroup parent = findViewById( R.id.ll_secondNestRoot );
-        return  (StartBlock)parent.getChildAt(0);
+        return mNestStartBlockSecond;
     }
 
     /*

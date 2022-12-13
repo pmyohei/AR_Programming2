@@ -55,7 +55,7 @@ public class LoopProcessBlock extends NestProcessBlock {
         mBlockInLoopIndex = 0;
 
         // ネスト内スタートブロック初期設定
-        initStartBlockInNest( R.layout.process_block_start_in_nest );
+//        initStartBlockInNest( R.layout.process_block_start_in_nest );
     }
 
 
