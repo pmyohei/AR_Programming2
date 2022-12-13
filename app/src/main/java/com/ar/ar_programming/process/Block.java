@@ -176,6 +176,14 @@ public abstract class Block extends ConstraintLayout {
     }
 
     /*
+     * ネスト内に指定されたブロックがあるか
+     * ※Blockクラスは入れ子を持たないため、必ずfalseを返す
+     */
+    public boolean hasBlock(Block checkBlock ) {
+        return false;
+    }
+
+    /*
      * マーカ―設定
      */
     public void setMarker(boolean enable){

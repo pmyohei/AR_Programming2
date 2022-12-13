@@ -49,7 +49,7 @@ public class IfProcessBlock extends NestProcessBlock {
         // ネスト内処理indexを初期化
         mBlockInNestIndex = 0;
         // ネスト内スタートブロック初期設定
-        initStartBlockInNest( R.layout.process_block_start_in_nest );
+//        initStartBlockInNest( R.layout.process_block_start_in_nest );
     }
 
     /*

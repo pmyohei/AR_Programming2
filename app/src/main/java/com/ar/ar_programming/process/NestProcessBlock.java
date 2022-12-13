@@ -93,10 +93,11 @@ public abstract class NestProcessBlock extends ProcessBlock {
         // ネスト内ブロックを移動
         //------------------------
         Block block = getNestStartBlock();
-        while (block != null) {
+        block.upChartPosition(trancelate);
+        /*while (block != null) {
             block.upChartPosition(trancelate);
             block = block.getBelowBlock();
-        }
+        }*/
     }
 
     /*
@@ -110,10 +111,11 @@ public abstract class NestProcessBlock extends ProcessBlock {
         // ネスト内ブロックを移動
         //------------------------
         Block block = getNestStartBlock();
-        while (block != null) {
+        block.downChartPosition(trancelate);
+/*        while (block != null) {
             block.downChartPosition(trancelate);
             block = block.getBelowBlock();
-        }
+        }*/
     }
 
     /*
@@ -136,7 +138,7 @@ public abstract class NestProcessBlock extends ProcessBlock {
     /*
      * ネストサイズの変更
      */
-    public void resizeNestHeight(Block block, int scaling) {
+    public int resizeNestHeight(Block block, int scaling) {
 
         // 変更量
         int size = block.getHeight();
@@ -155,29 +157,44 @@ public abstract class NestProcessBlock extends ProcessBlock {
         if (nestBlock != null) {
             nestBlock.resizeNestHeight(block, scaling);
         }
+
+        return size;
     }
 
     /*
      * ネストサイズ変更対象のネスト
+     *   ※本クラスのネストは１つであるため、firstネスト固定で返す
+     *   ※本クラスを継承し、ネストを複数用意する場合、本メソッドをOverrideすること
      */
     public ViewGroup getResizeNest( Block block ){
         return findViewById( R.id.ll_firstNestRoot );
     }
 
-
     /*
      * ネスト内に指定されたブロックがあるか
      */
-    public boolean hasBlock(Block block ) {
+    @Override
+    public boolean hasBlock(Block checkBlock ) {
 
         Block nestBlock = getNestStartBlock();
         while( nestBlock != null ){
-            if( nestBlock == block ){
+            // ネスト内ブロックが指定ブロックの場合
+            if( nestBlock == checkBlock ){
+                // ありとして終了
                 return true;
             }
+
+            // 「ネスト内ブロックの中のブロック」をチェック
+            if( nestBlock.hasBlock( checkBlock ) ){
+                // あれば終了
+                return true;
+            }
+
+            // 次のネスト内ブロックへ
             nestBlock = nestBlock.getBelowBlock();
         }
 
+        // 見つからないルート
         return false;
     }
 
@@ -235,11 +252,10 @@ public abstract class NestProcessBlock extends ProcessBlock {
         return ll_insideRoot.getChildCount();
     }
 
-
     /*
      * ネスト内マークエリアリスナーの設定
      */
-    public void setMarkAreaInNestListerner(MarkerAreaListener listener) {
+/*    public void setMarkAreaInNestListerner(MarkerAreaListener listener) {
 
         StartBlock startBlock = mNestStartBlock;
         int markAreaID = startBlock.getMarkAreaViewID();
@@ -252,12 +268,12 @@ public abstract class NestProcessBlock extends ProcessBlock {
                 listener.onBottomMarkerAreaClick(startBlock);
             }
         });
-    }
+    }*/
 
     /*
      * ネスト内ドロップリスナーの設定
      */
-    public void setDropInNestListerner(DropBlockListener listener) {
+/*    public void setDropInNestListerner(DropBlockListener listener) {
 
         // ネスト内のスタートブロックにリスナーを設定
         StartBlock startBlock = mNestStartBlock;
@@ -267,7 +283,7 @@ public abstract class NestProcessBlock extends ProcessBlock {
                 return listener.onDropBlock( (Block)view, dragEvent );
             }
         });
-    }
+    }*/
 
 }
 
