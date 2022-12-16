@@ -142,8 +142,14 @@ public abstract class Block extends ConstraintLayout {
     public void downChartPosition(int trancelate) {
 
         // マージンを再設定し、位置を下げる
-        ViewGroup.MarginLayoutParams belowMlp = (ViewGroup.MarginLayoutParams) getLayoutParams();
-        belowMlp.setMargins(belowMlp.leftMargin, belowMlp.topMargin + trancelate, belowMlp.rightMargin, belowMlp.bottomMargin);
+        ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) getLayoutParams();
+        mlp.setMargins(mlp.leftMargin, mlp.topMargin + trancelate, mlp.rightMargin, mlp.bottomMargin);
+        setLayoutParams( mlp );
+
+        // アニメーションを付与
+/*        animate().translationY(1f)
+                 .setDuration(300)
+                 .setListener(null);*/
 
         // 本ブロックの下ブロックも下げる
         Block belowBlock = getBelowBlock();
@@ -181,6 +187,23 @@ public abstract class Block extends ConstraintLayout {
      */
     public boolean hasBlock(Block checkBlock ) {
         return false;
+    }
+
+    /*
+     * 自身がネスト内にあるかどうか
+     */
+    public boolean inNest() {
+        // 親ネストブロックを保持しているかどうかで判定
+        return (getOwnNestBlock() != null);
+    }
+
+    /*
+     * 自身の下にブロックがあるかどうか
+     * ※ネスト内であれば、ネスト内において自身の下にブロックがあるかどうか
+     */
+    public boolean hasBelowBlock() {
+        // 下にブロックがあるかどうかで判定
+        return (getBelowBlock() != null);
     }
 
     /*

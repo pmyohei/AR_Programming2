@@ -1,21 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_gravity="bottom"
-    android:gravity="center">
+
 
     <!--  BottomSheet本体  -->
     <androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/cl_stampingMemoBottomSheet"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/white_80"
-        app:layout_behavior="@string/bottom_sheet_behavior"
-        app:behavior_hideable="false"
-        app:behavior_peekHeight="80dp">
+        android:background="@color/white_80">
 
         <TextView
             android:id="@+id/tv_contents"
@@ -24,6 +17,7 @@
             android:paddingTop="8dp"
             android:text="UI"
             android:textAlignment="center"
+            android:background="@color/black"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toTopOf="@+id/ll"
             app:layout_constraintStart_toStartOf="parent"
@@ -35,7 +29,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             app:layout_constraintTop_toBottomOf="@+id/tv_contents"
-            app:layout_constraintBottom_toTopOf="@+id/nsv_UIRoot"
+            app:layout_constraintBottom_toTopOf="@+id/ll_UIRoot"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             >
@@ -143,40 +137,29 @@
 
         </LinearLayout>
 
-        <androidx.core.widget.NestedScrollView
-            android:id="@+id/nsv_UIRoot"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:fillViewport="true"
-            android:clipToPadding="false"
-            android:paddingBottom="320dp"
+        <FrameLayout
+            android:id="@+id/ll_UIRoot"
+            android:layout_width="@dimen/chart_area_width"
+            android:layout_height="@dimen/chart_area_height"
+            android:paddingStart="0dp"
             app:layout_constraintTop_toBottomOf="@+id/ll"
-            app:layout_constraintBottom_toBottomOf="@+id/rv_selectBlock"
-            app:layout_constraintStart_toStartOf="parent" >
+            app:layout_constraintStart_toStartOf="parent">
 
-            <HorizontalScrollView
+            <com.ar.ar_programming.process.StartBlock
+                android:id="@+id/pb_chartTop"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:clipToPadding="false"
-                android:paddingEnd="280dp"
-                android:fillViewport="true">
+                android:layout_height="wrap_content" />
 
-                <FrameLayout
-                    android:id="@+id/ll_UIRoot"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingStart="0dp">
+        </FrameLayout>
 
-                    <com.ar.ar_programming.process.StartBlock
-                        android:id="@+id/pb_chartTop"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
+        <View
+            android:id="@+id/vvv"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@color/error_text"
+            app:layout_constraintTop_toBottomOf="@+id/ll"
+            app:layout_constraintStart_toStartOf="parent" />
 
-                </FrameLayout>
-
-            </HorizontalScrollView>
-
-        </androidx.core.widget.NestedScrollView>
 
         <!-- 処理ブロックリスト -->
         <androidx.recyclerview.widget.RecyclerView
@@ -193,5 +176,3 @@
             app:layout_constraintEnd_toEndOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-</androidx.coordinatorlayout.widget.CoordinatorLayout>

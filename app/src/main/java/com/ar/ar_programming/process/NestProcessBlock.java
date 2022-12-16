@@ -152,7 +152,7 @@ public abstract class NestProcessBlock extends ProcessBlock {
         lp.height += size;
         nestView.setLayoutParams(lp);
 
-        // 自身がネスト内にあれば、そのネストもサイズ変更
+        // 自身がネスト内にあれば、親ネストもサイズ変更
         NestProcessBlock nestBlock = getOwnNestBlock();
         if (nestBlock != null) {
             nestBlock.resizeNestHeight(block, scaling);
@@ -209,6 +209,43 @@ public abstract class NestProcessBlock extends ProcessBlock {
      */
     public StartBlock getNestStartBlock() {
         return mNestStartBlock;
+    }
+
+
+    /*
+     * 本ネストブロックの下にあるブロックを下げる。
+     * また、親ネストがある場合、親ネストにも本メソッドをコールし同じ事をさせる
+     */
+    public void downNestBelowBlock( int trancelate ) {
+        // 本ブロックの下のブロックを下げる
+        if( hasBelowBlock() ){
+            Block nestBelowBlock = getBelowBlock();
+            nestBelowBlock.downChartPosition( trancelate );
+        }
+
+        // 「"本ブロックの親ネストブロック"の下のブロック」を下げる
+        if( inNest() ){
+            NestProcessBlock parentNest = getOwnNestBlock();
+            parentNest.downNestBelowBlock( trancelate );
+        }
+    }
+
+    /*
+     * 本ネストブロックの下にあるブロックを上げる。
+     * また、親ネストがある場合、親ネストにも本メソッドをコールし同じ事をさせる
+     */
+    public void upNestBelowBlock( int trancelate ) {
+        // 本ブロックの下のブロックを下げる
+        if( hasBelowBlock() ){
+            Block nestBelowBlock = getBelowBlock();
+            nestBelowBlock.upChartPosition( trancelate );
+        }
+
+        // 「"本ブロックの親ネストブロック"の下のブロック」を上げる
+        if( inNest() ){
+            NestProcessBlock parentNest = getOwnNestBlock();
+            parentNest.upNestBelowBlock( trancelate );
+        }
     }
 
     /*

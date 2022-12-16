@@ -3,23 +3,28 @@ package com.ar.ar_programming;
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.DragEvent;
+import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.Scroller;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -121,6 +126,16 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
     private Block mMarkedBlock;        // ブロック下部追加マーカーの付与されている処理ブロック
 
 
+    //フリング用Scroller
+    private Scroller mFlingScroller;
+    private GestureDetector mScrollGestureDetector;
+    //スクロール前チャートエリア位置
+    private float mPreTouchPosX;
+    private float mPreTouchPosY;
+    //最大チャートエリア移動距離
+    private float mMaxChartAreaScaleX;
+    private float mMaxChartAreaScaleY;
+
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container,
@@ -155,6 +170,27 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
         // お試し：平面ドットのビジュアル変更
         //------------------------------------------
         setPlaneVisual(view.getContext());
+
+
+        //お試し
+        TextView kidou = binding.getRoot().findViewById(R.id.kidou);
+        kidou.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                NestedScrollView nsv_UIRoot = binding.getRoot().findViewById(R.id.nsv_UIRoot);
+//                nsv_UIRoot.set
+
+                StartBlock pb_chartTop = binding.getRoot().findViewById(R.id.pb_chartTop);
+                pb_chartTop.setTranslationY( pb_chartTop.getTop() + 100 );
+
+                Log.i( "描画不具合", "pb_chartTop.getHeight()=" + pb_chartTop.getHeight() );
+                Log.i( "描画不具合", "nsv_UIRoot.getHeight()=" + nsv_UIRoot.getHeight() );
+
+            }
+        });
+        //お試し
+
 
         //------------------------------------------
         // 平面タップリスナーの設定
@@ -284,6 +320,9 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
 
         // 処理ブロックリストアダプタの設定
         setSelectProcessBlockList();
+
+        // プログラミングチャートエリアのスクロール設定
+        setChartAreaScroll();
     }
 
     /*
@@ -495,15 +534,12 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
             @Override
             public void onAnimationCancel(Animator animator) {
             }
-
             @Override
             public void onAnimationRepeat(Animator animator) {
             }
-
             @Override
             public void onAnimationStart(Animator animator) {
             }
-
             @Override
             public void onAnimationEnd(Animator animator) {
 
@@ -915,6 +951,106 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
     }
 
     /*
+     * プログラミングチャートエリアのスクロール設定
+     */
+    @SuppressLint("ClickableViewAccessibility")
+    private void setChartAreaScroll() {
+
+        float density = getResources().getDisplayMetrics().density;
+
+        // レイアウトに設定されているチャートサイズ：px→dp
+        float scaleX = getResources().getDimension(R.dimen.chart_area_width) / density;
+        float scaleY = getResources().getDimension(R.dimen.chart_area_height) / density;
+
+        // 最大マップ移動距離は、チャートエリアの半分
+//        mMaxChartAreaScaleX = scaleX / 2f;
+//        mMaxChartAreaScaleY = scaleY / 2f;
+        mMaxChartAreaScaleX = scaleX;
+        mMaxChartAreaScaleY = scaleY;
+
+        // フリング用スクロール生成
+        Context context = getContext();
+        mFlingScroller = new Scroller(context, new DecelerateInterpolator());
+        mScrollGestureDetector = new GestureDetector(context, new ScrollListener());
+
+        Log.i("スクロール値", "mMaxChartAreaScaleX=" + (mMaxChartAreaScaleX) + " mMaxChartAreaScaleY=" + (mMaxChartAreaScaleY));
+
+        ViewGroup root = binding.getRoot();
+        FrameLayout ll_UIRoot = root.findViewById(R.id.ll_UIRoot);
+        ll_UIRoot.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+
+                Log.i("スクロールテスト", "setOnTouchListener()コール確認");
+
+                //現在のスクロールを停止
+                mFlingScroller.forceFinished(true);
+
+                switch (motionEvent.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+
+                        //タッチ開始時のタッチ位置
+                        mPreTouchPosX = motionEvent.getX();
+                        mPreTouchPosY = motionEvent.getY();
+                        break;
+
+                    case MotionEvent.ACTION_MOVE:
+
+                        float distanceX = motionEvent.getX() - mPreTouchPosX;
+                        float distanceY = motionEvent.getY() - mPreTouchPosY;
+
+                        //Log.i("MotionEvent", "preX=" + mPreTouchPosX + " preY=" + mPreTouchPosY);
+                        //Log.i("MotionEvent", "getX=" + motionEvent.getX() + " getY=" + motionEvent.getY());
+
+                        //移動先座標
+                        float x = ll_UIRoot.getTranslationX() + distanceX;
+                        float y = ll_UIRoot.getTranslationY() + distanceY;
+
+                        Log.i("スクロール値", "予定 移動先X=" + (x) + " 移動先Y=" + (y));
+
+                        //マップサイズを超えて移動しようとした場合、最大サイズに丸める（最大移動距離を超えて移動させない）
+                        x = ( x >= 0 ?
+                                Math.min( x, mMaxChartAreaScaleX ):
+                                Math.max( x, -mMaxChartAreaScaleX )
+                        );
+                        y = ( y >= 0 ?
+                                Math.min( y, mMaxChartAreaScaleY ):
+                                Math.max( y, -mMaxChartAreaScaleY )
+                        );
+
+                        Log.i("スクロール値", "実際 移動先X=" + (x) + " 移動先Y=" + (y));
+
+                        //前回からの移動量を反映
+                        ll_UIRoot.setTranslationX(x);
+                        ll_UIRoot.setTranslationY(y);
+
+                        //Log.i("マップ移動対応", "実際 移動先X=" + (x) + " 移動先Y=" + (y));
+                        //Log.i("マップ移動対応", "-----------------");
+                        //Log.i("サイズチェック", "map_max_size(px)=" + (int)getResources().getDimension(R.dimen.map_max_size_x));
+                        //Log.i("サイズチェック", "map_max_size(dp)=" + (getResources().getDimension(R.dimen.map_max_size_x) / getResources().getDisplayMetrics().density));
+
+                        mPreTouchPosX = motionEvent.getX();
+                        mPreTouchPosY = motionEvent.getY();
+
+                        break;
+
+                    case MotionEvent.ACTION_CANCEL:
+                        // something to do
+                        break;
+                }
+
+                //スクロール操作リスナーをコール
+                mScrollGestureDetector.onTouchEvent(motionEvent);
+
+                return true;
+            }
+        });
+
+
+    }
+
+
+    /*
      * チャート最下部に処理ブロックを生成する
      */
     private void createProcessBlock(int processType, int processContents) {
@@ -960,7 +1096,7 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
         // チャートに追加
         //----------------------
         // 「マークブロック」の下に追加
-        insertBlockBelowMark(mMarkedBlock, newBlock);
+        preparationInsertBlock(mMarkedBlock, newBlock);
 
         // 生成ブロックがネストブロックなら
         if (processType != Block.PROCESS_TYPE_SINGLE) {
@@ -977,28 +1113,39 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
     /*
      * 指定ブロックを「aboveBlock」の下に挿入する
      */
-    private void insertBlockBelowMark(Block aboveBlock, ProcessBlock newBlock) {
+    private void preparationInsertBlock(Block aboveBlock, ProcessBlock newBlock) {
+
+        // 挿入先の上ブロックのレイアウト確定待ち
+        aboveBlock.post(() -> {
+            // 挿入位置を計算し、チャートに挿入
+            ViewGroup.MarginLayoutParams mlp = getNewBlockMlp(aboveBlock);
+            insertBlockBelowMark( aboveBlock, newBlock, mlp );
+        });
+    }
+
+    /*
+     * 指定ブロックを「aboveBlock」の下に挿入する
+     */
+    private void insertBlockBelowMark(Block aboveBlock, ProcessBlock newBlock, ViewGroup.MarginLayoutParams mlp) {
 
         FrameLayout ll_UIRoot = binding.getRoot().findViewById(R.id.ll_UIRoot);
 
         //-------------------------------
         // ブロックをレイアウトに追加
         //-------------------------------
-        ViewGroup.MarginLayoutParams mlp = getNewBlockMlp(aboveBlock);
         ll_UIRoot.addView(newBlock, mlp);
 
         // アニメーションを付与
         newBlock.setAlpha(0f);
         newBlock.animate()
                 .alpha(1f)
-                .setDuration(200)
+                .setDuration(300)
                 .setListener(null);
 
         //-------------------------
         // 上下ブロックの保持情報更新
         //-------------------------
         rewriteAboveBelowBlockOnInsert( aboveBlock, newBlock);
-
 
         // 新ブロックレイアウト確定後
         newBlock.post(() -> {
@@ -1007,19 +1154,15 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
             // 新ブロックより下のブロックの位置を下げる
             //----------------------------------
             int newBlockHeight = newBlock.getHeight();
-            Block belowBlock = newBlock.getBelowBlock();
-            if( belowBlock != null ){
+            if( newBlock.hasBelowBlock() ){
+                Block belowBlock = newBlock.getBelowBlock();
                 belowBlock.downChartPosition( newBlockHeight );
             }
 
             // 追加先がネストブロック内の場合
-            NestProcessBlock nestBlock = aboveBlock.getOwnNestBlock();
-            if( nestBlock != null ){
-                // ネストブロックの下にあるブロックも下げる
-                Block nestBelowBlock = nestBlock.getBelowBlock();
-                if( nestBelowBlock != null ){
-                    nestBelowBlock.downChartPosition( newBlockHeight );
-                }
+            if( aboveBlock.inNest() ){
+                NestProcessBlock nestBlock = aboveBlock.getOwnNestBlock();
+                nestBlock.downNestBelowBlock( newBlockHeight );
 
                 // ネストブロックサイズを変更
                 nestBlock.resizeNestHeight( newBlock, NestProcessBlock.NEST_EXPAND );
@@ -1164,8 +1307,7 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
         int top = aboveBlock.getTop() + aboveBlock.getHeight();
         int left = mlp.leftMargin;
 
-        NestProcessBlock nest = aboveBlock.getOwnNestBlock();
-        if (nest != null) {
+        if ( aboveBlock.inNest() ) {
             left = aboveBlock.getLeft();
             Log.i("位置更新", "ネスト内スタートブロック getLeft()=" + left);
         }
@@ -1291,24 +1433,30 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
         //-------------------
         // ブロック削除
         //-------------------
-        removeBlock.removeOnChart();
-
-        // 上下ブロック保持情報の更新
-        rewriteAboveBelowBlockOnRemove( removeBlock );
-
         // ネスト内ブロックの削除の場合
-        NestProcessBlock nestBlock = removeBlock.getOwnNestBlock();
-        if( nestBlock != null ){
+        if( removeBlock.inNest() ){
+            // ネストブロック下のブロックを上に移動させる
+            NestProcessBlock nestBlock = removeBlock.getOwnNestBlock();
+            nestBlock.upNestBelowBlock( removeBlock.getHeight() );
+
             // 削除ブロック分、ネストを縮める
             nestBlock.resizeNestHeight( removeBlock, NestProcessBlock.NEST_SHRINK );
 
-            // ネストブロック下のブロックを上に移動させる
-            Block belowBlock = nestBlock.getBelowBlock();
-            if( belowBlock != null ){
-                belowBlock.upChartPosition( removeBlock.getHeight() );
-            }
+//            // ネストブロック下のブロックを上に移動させる
+//            if( nestBlock.hasBelowBlock() ){
+//                Block belowBlock = nestBlock.getBelowBlock();
+//                belowBlock.upChartPosition( removeBlock.getHeight() );
+//            }
         }
+
+        // チャートから削除
+        // ！ネストの縮小処理の後に行うこと（if-elseの場合、どちらのネストにいたか不明になるため）！
+        removeBlock.removeOnChart();
+        // 上下ブロック保持情報の更新
+        // ！ネストの縮小処理の後に行うこと（if-elseの場合、どちらのネストにいたか不明になるため）！
+        rewriteAboveBelowBlockOnRemove( removeBlock );
     }
+
 
     /*
      * 指定ブロックの１つ上にあるブロックを取得
@@ -2071,12 +2219,9 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
 
         // ドラッグ中ブロックを元の位置から削除
         removeBlockFromLine( dragBlock );
-//        ((ViewGroup)dragBlock.getParent()).removeView(dragBlock);
 
         // ドラッグ中ブロックをドロップブロックの下に生成
-        insertBlockBelowMark( dropBlock, dragBlock );
-//        int index = dropBlock.getOwnChildIndex();
-//        ((ViewGroup)dropBlock.getParent()).addView(dragBlock, index + 1);
+        preparationInsertBlock( dropBlock, dragBlock );
     }
 
     /*
@@ -2263,4 +2408,63 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
 
         return false;
     }
+
+    /*
+     * スワイプ操作リスナー
+     *   ・スクロール
+     *   ・フリング
+     */
+    private class ScrollListener extends GestureDetector.SimpleOnGestureListener {
+
+        @Override
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+
+//            ViewGroup root = binding.getRoot();
+            FrameLayout ll_UIRoot = binding.getRoot().findViewById(R.id.ll_UIRoot);
+
+            float nowx = ll_UIRoot.getTranslationX();
+            float nowy = ll_UIRoot.getTranslationY();
+
+            Log.i("スクロール", "nowx=" + nowx + " nowy=" + nowy);
+
+            // スクローラー
+            final float SCALE = 2.5f;
+            final int MOVE_DURATION = 5000;
+
+            // アニメーションを開始
+            mFlingScroller.fling(
+                    (int) nowx,                    //scroll の開始位置 (X)
+                    (int) nowy,                    //scroll の開始位置 (Y)
+                    (int) (velocityX / SCALE),     //初速
+                    (int) (velocityY / SCALE),     //初速
+                    -(int)mMaxChartAreaScaleX,
+                    (int)mMaxChartAreaScaleX,
+                    -(int)mMaxChartAreaScaleY,
+                    (int)mMaxChartAreaScaleY
+            );
+
+            // フリング操作時、加速度をスクロールに反映
+            ValueAnimator scrollAnimator = ValueAnimator.ofFloat(0, 1).setDuration(MOVE_DURATION);
+            scrollAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                @Override
+                public void onAnimationUpdate(ValueAnimator valueAnimator) {
+
+                    if (!mFlingScroller.isFinished()) {
+                        mFlingScroller.computeScrollOffset();
+
+                        ll_UIRoot.setTranslationX(mFlingScroller.getCurrX());
+                        ll_UIRoot.setTranslationY(mFlingScroller.getCurrY());
+
+                    } else {
+                        scrollAnimator.cancel();
+                    }
+                }
+            });
+            scrollAnimator.start();
+
+            return false;
+        }
+
+    }
+
 }

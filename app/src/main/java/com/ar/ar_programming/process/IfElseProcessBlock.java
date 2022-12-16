@@ -2,6 +2,7 @@ package com.ar.ar_programming.process;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
@@ -213,11 +214,15 @@ public class IfElseProcessBlock extends NestProcessBlock {
         // リサイズネストが１つ目の場合
         if ( isBlockInFirstNest(block) ) {
             Block seocndStartBlock = getSecondNestStartBlock();
-            seocndStartBlock.downChartPosition( trancelate );
-            /*while( seocndStartBlock != null ){
+
+            // 変化量を絶対値にする
+            trancelate = Math.abs(trancelate);
+
+            if( scaling == NEST_EXPAND ){
                 seocndStartBlock.downChartPosition( trancelate );
-                seocndStartBlock = seocndStartBlock.getBelowBlock();
-            }*/
+            } else {
+                seocndStartBlock.upChartPosition( trancelate );
+            }
         }
 
         return trancelate;

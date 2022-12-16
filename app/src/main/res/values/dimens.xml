@@ -1,11 +1,17 @@
 <resources>
     <dimen name="fab_margin">16dp</dimen>
 
+    <dimen name="chart_area_width">2000dp</dimen>
+    <dimen name="chart_area_height">2000dp</dimen>
+
+
     <dimen name="catch_drap_height">6dp</dimen>
     <dimen name="drap_line_height">6dp</dimen>
     <dimen name="drap_line_minwidth">0dp</dimen>
 
     <dimen name="block_icon_size">24dp</dimen>
     <dimen name="block_icon_margin_start">8dp</dimen>
+
+
 
 </resources>
