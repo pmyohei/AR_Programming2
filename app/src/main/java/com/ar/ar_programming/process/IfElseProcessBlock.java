@@ -413,7 +413,17 @@ public class IfElseProcessBlock extends NestProcessBlock {
     @Override
     public boolean isCondition(CharacterNode characterNode) {
 
-        tmploopCount++;
+        int i = 0;
+
+        Block below = mNestStartBlock.getBelowBlock();
+        while( below != null ){
+            below = below.getBelowBlock();
+            i++;
+        }
+
+        return ( i % 2 != 0 );
+
+/*        tmploopCount++;
 //        boolean tmp = (tmploopCount == 2);
         boolean tmp = true;
 
@@ -426,7 +436,41 @@ public class IfElseProcessBlock extends NestProcessBlock {
 
         // 判定結果を保持
         isConditionState = tmp;
-        return isConditionState;
+        return isConditionState;*/
+    }
+
+    /*
+     * 処理開始
+     */
+    @Override
+    public void startProcess(CharacterNode characterNode) {
+
+        // 条件判定
+        boolean isFirstNest = isCondition(characterNode);
+
+        //-----------------------------
+        // ネスト内処理ブロック数チェック
+        //-----------------------------
+        Block passNestStartBlock;
+        if( isFirstNest ){
+            passNestStartBlock = mNestStartBlock;
+        } else {
+            passNestStartBlock = mNestStartBlockSecond;
+        }
+
+        // ネスト内ブロックがなければ、次の処理へ
+        if( !passNestStartBlock.hasBelowBlock() ){
+            // 次の処理ブロックへ
+            tranceNextBlock(characterNode);
+            return;
+        }
+
+        //-----------------------------
+        // ネスト内処理ブロックの実行
+        //-----------------------------
+        // ネスト内の処理ブロックを実行
+        ProcessBlock nextBlock = (ProcessBlock)passNestStartBlock.getBelowBlock();
+        nextBlock.startProcess( characterNode );
     }
 
 }

@@ -7,6 +7,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.ar.ar_programming.CharacterNode;
 import com.ar.ar_programming.R;
 
 
@@ -26,14 +27,17 @@ public abstract class ProcessBlock extends Block {
     //---------------------------
     public int mProcessContents;
     private boolean mDragFlg;
+    private ProcessListener mProcessListener;
 
 
     public ProcessBlock(Context context) {
         this(context, null);
     }
+
     public ProcessBlock(Context context, AttributeSet attrs) {
         this(context, attrs, 0, 0, 0);
     }
+
     public ProcessBlock(Context context, AttributeSet attrs, int defStyle, int type, int contents) {
         super(context, attrs, defStyle, type);
         mProcessContents = contents;
@@ -56,15 +60,15 @@ public abstract class ProcessBlock extends Block {
      * レイアウト最上位ビューIDを取得
      */
     @Override
-    public View getLayoutRootView(){
-        return findViewById( R.id.ll_root );
+    public View getLayoutRootView() {
+        return findViewById(R.id.ll_root);
     }
 
     /*
      * マークエリアビューIDを取得
      */
     @Override
-    public int getMarkAreaViewID(){
+    public int getMarkAreaViewID() {
         return R.id.cl_markArea;
     }
 
@@ -72,7 +76,7 @@ public abstract class ProcessBlock extends Block {
      * マークエリアのマークイメージIDを取得
      */
     @Override
-    public int getMarkImageViewID(){
+    public int getMarkImageViewID() {
         return R.id.iv_mark;
     }
 
@@ -80,7 +84,7 @@ public abstract class ProcessBlock extends Block {
      * ドロップラインビューIDを取得
      */
     @Override
-    public int getDropLineViewID(){
+    public int getDropLineViewID() {
         Log.i("ドロップリスナー", "getDropLineViewID Process側取得");
         return R.id.v_dropLine;
     }
@@ -101,7 +105,7 @@ public abstract class ProcessBlock extends Block {
 
         // 自身のChildIndexとブロック数
         int childIndex = getOwnChildIndex();
-        int childNum = ((ViewGroup)getParent()).getChildCount();
+        int childNum = ((ViewGroup) getParent()).getChildCount();
 
         // 最後尾にいるなら、真を返す
         return (childIndex == (childNum - 1));
@@ -120,7 +124,7 @@ public abstract class ProcessBlock extends Block {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
 
-                switch ( motionEvent.getAction() ){
+                switch (motionEvent.getAction()) {
                     case MotionEvent.ACTION_DOWN:
                         // フラグon
                         mDragFlg = true;
@@ -129,7 +133,7 @@ public abstract class ProcessBlock extends Block {
                     case MotionEvent.ACTION_MOVE:
 
                         // フラグon の場合
-                        if( mDragFlg ){
+                        if (mDragFlg) {
                             //--------------------------
                             // 本処理ブロックを半透明化
                             //--------------------------
@@ -158,7 +162,64 @@ public abstract class ProcessBlock extends Block {
         });
     }
 
+    /*
+     * 処理開始
+     */
+    public abstract void startProcess(CharacterNode characterNode);
 
+    /*
+     * 次の処理ブロック遷移処理
+     */
+    public void tranceNextBlock(CharacterNode characterNode) {
+
+        //------------------
+        // 下ブロックチェック
+        //------------------
+        if (hasBelowBlock()) {
+            // 下ブロックがあれば、そのブロックの処理を開始
+            ProcessBlock nextBlock = (ProcessBlock) getBelowBlock();
+            nextBlock.startProcess(characterNode);
+
+            return;
+        }
+
+        //--------------------------
+        // 下ブロックなし。親ネスト判定
+        //--------------------------
+        // 本ブロックがネスト内にあり、最後の処理であった場合
+        if (inNest()) {
+            NestProcessBlock parentNest = getOwnNestBlock();
+
+            if (parentNest.getProcessType() == PROCESS_TYPE_LOOP) {
+                // ループの場合は、開始処理から
+                parentNest.startProcess(characterNode);
+            } else {
+                parentNest.tranceNextBlock(characterNode);
+            }
+
+            return;
+        }
+
+        //--------------------------
+        // 下ブロックなし／親ネストなし
+        //--------------------------
+        // 終了リスナーをコール
+        mProcessListener.onProcessEnd();
+    }
+
+    /*
+     * ブロック処理リスナーの設定
+     */
+    public void setProcessListener(ProcessListener listener ) {
+        mProcessListener = listener;
+    }
+
+    /*
+     * ブロック処理リスナー
+     */
+    public interface ProcessListener {
+        void onProcessEnd();
+    }
 
     /*
      * 本ブロック位置を１つ上げるリスナー設定

@@ -3,9 +3,6 @@ package com.ar.ar_programming.process;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.DragEvent;
-import android.view.MotionEvent;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
@@ -43,7 +40,7 @@ public class LoopProcessBlock extends NestProcessBlock {
 
     public LoopProcessBlock(Context context, AttributeSet attrs, int defStyle, int contents) {
         super(context, attrs, defStyle, PROCESS_TYPE_LOOP, contents);
-        setLayout( R.layout.process_block_loop );
+        setLayout(R.layout.process_block_loop);
         init();
     }
 
@@ -64,7 +61,7 @@ public class LoopProcessBlock extends NestProcessBlock {
      */
     @Override
     public void setLayout(int layoutID) {
-        super.setLayout( layoutID );
+        super.setLayout(layoutID);
 
         // 処理ブロック内の内容を書き換え
         rewriteProcessContents(mProcessContents);
@@ -97,6 +94,28 @@ public class LoopProcessBlock extends NestProcessBlock {
         tv_contents.setText(contentId);
     }
 
+    /*
+     * 次の処理ブロック遷移処理
+     *   ループの場合は、継続条件が成立していた場合、再度先頭ブロックを開始させる
+     */
+/*    @Override
+    public void tranceNextBlock(CharacterNode characterNode ) {
+
+        //-----------------------------
+        // 条件判定
+        //-----------------------------
+        // 条件成立中
+        if ( isCondition(characterNode) ) {
+            // 先頭処理ブロックを開始
+            ProcessBlock nextBlock = (ProcessBlock)mNestStartBlock.getBelowBlock();
+            nextBlock.startProcess( characterNode );
+
+            return;
+        }
+
+        // 条件未成立
+        super.tranceNextBlock( characterNode );
+    }*/
 
 
     /*
@@ -145,28 +164,10 @@ public class LoopProcessBlock extends NestProcessBlock {
     public boolean isCondition(CharacterNode characterNode) {
 
         tmploopCount++;
-        boolean tmp = (tmploopCount == 2);
-        return tmp;
 
-/*        // 条件成立判定は、ネストindexが先頭を指している時のみ行う
-        if( mBlockInNestIndex > 0 ){
-            return false;
-        }
+        Log.i("チャート動作チェック", "tmploopCount=" + tmploopCount);
+        return (tmploopCount <= 2);
 
-        //----------------
-        // 条件成立判定
-        //----------------
-        switch ( mProcessKind ) {
-            // ゴールしているかどうか
-            case ProcessBlock.PROC_KIND_LOOP_GOAL:
-                return !characterNode.isGoaled();
-
-            // 障害物と衝突中
-            case ProcessBlock.PROC_KIND_LOOP_OBSTACLE:
-                return false;
-        }
-
-        return false;*/
     }
 
 }

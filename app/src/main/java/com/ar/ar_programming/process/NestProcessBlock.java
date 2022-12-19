@@ -2,9 +2,6 @@ package com.ar.ar_programming.process;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
-import android.view.DragEvent;
-import android.view.View;
 import android.view.ViewGroup;
 
 import com.ar.ar_programming.CharacterNode;
@@ -25,7 +22,7 @@ public abstract class NestProcessBlock extends ProcessBlock {
     //---------------------------
     // フィールド変数
     //---------------------------
-    private StartBlock mNestStartBlock;
+    public StartBlock mNestStartBlock;
 
     /*
      * コンストラクタ
@@ -264,23 +261,6 @@ public abstract class NestProcessBlock extends ProcessBlock {
     }
 
     /*
-     * ネスト内スタートブロック初期設定
-     */
-    public void initStartBlockInNest( int layoutID ) {
-
-        StartBlock startBlock = mNestStartBlock;
-
-        // IDを動的に設定（他のネストブロックと重複しないようにするため）
-        startBlock.setId(View.generateViewId());
-        // レイアウト設定
-        startBlock.setLayout( layoutID );
-        // マーカー無効化
-        startBlock.setMarker( false );
-        // スタートブロックにネスト情報を設定
-        startBlock.setOwnNestBlock( this );
-    }
-
-    /*
      * ネスト内処理ブロック数の取得
      */
     public int getBlockSizeInNest() {
@@ -290,37 +270,45 @@ public abstract class NestProcessBlock extends ProcessBlock {
     }
 
     /*
-     * ネスト内マークエリアリスナーの設定
+     * ネスト内処理ブロックの有無
      */
-/*    public void setMarkAreaInNestListerner(MarkerAreaListener listener) {
-
-        StartBlock startBlock = mNestStartBlock;
-        int markAreaID = startBlock.getMarkAreaViewID();
-        ViewGroup markArea = startBlock.findViewById( markAreaID );
-
-        markArea.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // リスナーコール
-                listener.onBottomMarkerAreaClick(startBlock);
-            }
-        });
-    }*/
+    public boolean hasNestBlock() {
+        return mNestStartBlock.hasBelowBlock();
+    }
 
     /*
-     * ネスト内ドロップリスナーの設定
+     * 処理開始
      */
-/*    public void setDropInNestListerner(DropBlockListener listener) {
+    @Override
+    public void startProcess(CharacterNode characterNode) {
 
-        // ネスト内のスタートブロックにリスナーを設定
-        StartBlock startBlock = mNestStartBlock;
-        startBlock.setOnDragListener(new View.OnDragListener() {
-            @Override
-            public boolean onDrag(View view, DragEvent dragEvent) {
-                return listener.onDropBlock( (Block)view, dragEvent );
-            }
-        });
-    }*/
+        //-----------------------------
+        // ネスト内処理ブロック数チェック
+        //-----------------------------
+        // ネスト内に処理ブロックがなければ
+        if( !hasNestBlock() ){
+            // 次の処理ブロックへ
+            tranceNextBlock(characterNode);
+            return;
+        }
+
+        //-----------------------------
+        // 条件判定
+        //-----------------------------
+        // 条件未成立の場合
+        if ( !isCondition(characterNode) ) {
+            // 次の処理ブロックへ
+            tranceNextBlock(characterNode);
+            return;
+        }
+
+        //-----------------------------
+        // ネスト内処理ブロックの実行
+        //-----------------------------
+        // ネスト内の処理ブロックを実行
+        ProcessBlock nextBlock = (ProcessBlock)mNestStartBlock.getBelowBlock();
+        nextBlock.startProcess( characterNode );
+    }
 
 }
 

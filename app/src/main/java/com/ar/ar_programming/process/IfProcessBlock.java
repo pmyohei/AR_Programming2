@@ -133,7 +133,15 @@ public class IfProcessBlock extends NestProcessBlock {
     @Override
     public boolean isCondition(CharacterNode characterNode) {
 
-        return true;
+        int i = 0;
+
+        Block below = mNestStartBlock.getBelowBlock();
+        while( below != null ){
+            below = below.getBelowBlock();
+            i++;
+        }
+
+        return ( i % 2 != 0 );
 
 /*        tmploopCount++;
         boolean tmp = (tmploopCount == 2);
