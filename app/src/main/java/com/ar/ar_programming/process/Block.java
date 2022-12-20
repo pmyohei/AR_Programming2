@@ -29,8 +29,8 @@ public abstract class Block extends ConstraintLayout {
     public static final int PROCESS_TYPE_LOOP = 4;
 
     // ドラッグ中（選択中）状態の半透明値
-    public static final float TRANCE_DRAG = 0.6f;
-    public static final float TRANCE_NOT_DRAG = 1.0f;
+    public static final float TRANCE_ON_DRAG = 0.6f;
+    public static final float TRANCE_OFF_DRAG = 1.0f;
 
 
     //---------------------------
@@ -116,8 +116,39 @@ public abstract class Block extends ConstraintLayout {
     /*
      * ブロック半透明化
      */
-    public void tranceDrag() {
-        setAlpha(TRANCE_DRAG);
+    public void tranceOnDrag() {
+        setAlpha(TRANCE_ON_DRAG);
+    }
+
+    /*
+     * ブロック半透明化解除
+     */
+    public void tranceOffDrag() {
+        setAlpha(TRANCE_OFF_DRAG);
+    }
+
+    /*
+     * チャート上で、指定ブロックが自身よりも下にあるかどうか
+     */
+    public boolean existsBelow(Block checkBlock) {
+
+        int i = 0;
+
+        // 下ブロックを検索
+        Block belowBlock = getBelowBlock();
+        while (belowBlock != null) {
+
+            Log.i("チャート確定問題", "existsBelow i=" + i);
+
+            if (belowBlock == checkBlock) {
+                return true;
+            }
+            belowBlock = belowBlock.getBelowBlock();
+
+            i++;
+        }
+
+        return false;
     }
 
     /*
@@ -126,8 +157,9 @@ public abstract class Block extends ConstraintLayout {
     public void upChartPosition(int trancelate) {
 
         // マージンを再設定し、位置を下げる
-        ViewGroup.MarginLayoutParams belowMlp = (ViewGroup.MarginLayoutParams) getLayoutParams();
-        belowMlp.setMargins(belowMlp.leftMargin, belowMlp.topMargin - trancelate, belowMlp.rightMargin, belowMlp.bottomMargin);
+        ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) getLayoutParams();
+        mlp.setMargins(mlp.leftMargin, mlp.topMargin - trancelate, mlp.rightMargin, mlp.bottomMargin);
+        setLayoutParams(mlp);
 
         // 本ブロックの上ブロックも上げる
         Block aboveBlock = getBelowBlock();
@@ -144,7 +176,7 @@ public abstract class Block extends ConstraintLayout {
         // マージンを再設定し、位置を下げる
         ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) getLayoutParams();
         mlp.setMargins(mlp.leftMargin, mlp.topMargin + trancelate, mlp.rightMargin, mlp.bottomMargin);
-        setLayoutParams( mlp );
+        setLayoutParams(mlp);
 
         // アニメーションを付与
 /*        animate().translationY(1f)
@@ -159,26 +191,115 @@ public abstract class Block extends ConstraintLayout {
     }
 
     /*
+     * ブロック位置更新
+     */
+    public void updatePosition() {
+
+        Block aboveBlock = getAboveBlock();
+        aboveBlock.post(() -> {
+            setPositionMlp( aboveBlock );
+
+            // アニメーションを付与
+            setTranslationY(-40f);
+            animate().translationY(0f)
+                     .setDuration(200)
+                     .setListener(null);
+
+            if( hasBelowBlock() ){
+                getBelowBlock().updatePosition();
+            }
+        });
+    }
+
+    /*
      * ブロック削除
      */
-    public void removeOnChart(){
-
-        Log.i("クラスメソッド", "removeOnChart   ID=" + this.getId());
+    public void removeOnChart() {
 
         int height = getHeight();
 
         // 自身をチャートから削除
         ViewGroup chart = (ViewGroup) getParent();
-        chart.removeView( this );
+        chart.removeView(this);
 
         // 下ブロックを上に移動させる
         Block belowBlock = getBelowBlock();
         if (belowBlock != null) {
             belowBlock.upChartPosition(height);
-            Log.i("クラスメソッド", "上に移動 type=" + belowBlock.getProcessType());
-            Log.i("クラスメソッド", "上に移動   ID=" + belowBlock.getId());
-            Log.i("クラスメソッド", "=======================");
         }
+    }
+
+    /*
+     * 下ブロックを上に移動
+     */
+    public void upBelowBlock() {
+
+        int height = getHeight();
+
+        // 下ブロックを上に移動させる
+        Block belowBlock = getBelowBlock();
+        if (belowBlock != null) {
+            belowBlock.upChartPosition(height);
+        }
+    }
+
+    /*
+     *
+     */
+    public void setChartPosition(int left, int top) {
+
+        ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) getLayoutParams();
+        mlp.setMargins(left, top, mlp.rightMargin, mlp.bottomMargin);
+        setLayoutParams( mlp );
+    }
+
+    /*
+     *
+     */
+    public void setChartPosition( Block aboveBlock ) {
+
+        Log.i("ネスト移動", "setChartPosition()　コール ブロック側");
+
+        ViewGroup.MarginLayoutParams mlp = getMlp( aboveBlock );
+//        mlp.setMargins(mlp.leftMargin, mlp.topMargin, mlp.rightMargin, mlp.bottomMargin);
+        setLayoutParams( mlp );
+    }
+
+    /*
+     *
+     */
+    private void setPositionMlp(Block aboveBlock) {
+
+        int top = aboveBlock.getTop() + aboveBlock.getHeight();
+        int left = aboveBlock.getLeft();
+
+        ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) getLayoutParams();
+/*        mlp.topMargin = top;
+        mlp.leftMargin = left;*/
+        mlp.setMargins(left, top, mlp.rightMargin, mlp.bottomMargin);
+
+        setLayoutParams( mlp );
+    }
+
+
+    /*
+     *
+     */
+    private ViewGroup.MarginLayoutParams getMlp(Block aboveBlock) {
+
+        ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) getLayoutParams();
+
+        int top = aboveBlock.getTop() + aboveBlock.getHeight();
+        int left = aboveBlock.getLeft();
+
+        if (aboveBlock.inNest()) {
+            left = aboveBlock.getLeft();
+        }
+
+        mlp.topMargin = top;
+        mlp.leftMargin = left;
+
+        return mlp;
     }
 
     /*

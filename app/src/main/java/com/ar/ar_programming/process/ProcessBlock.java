@@ -111,6 +111,261 @@ public abstract class ProcessBlock extends Block {
         return (childIndex == (childNum - 1));
     }
 
+
+    /*
+     * 現在位置から指定ブロックの下に移動する
+     */
+    public void moveToUnderBlock(Block aboveBlock ) {
+
+        int height = getHeight();
+
+        boolean moveDown = existsBelow( aboveBlock );
+
+        Log.i("チャート確定問題", "moveDown=" + moveDown);
+
+        Block moveStartBlock;
+        Block moveEndBlock;
+        if( moveDown ){
+            moveStartBlock = getBelowBlock();
+            moveEndBlock = aboveBlock;
+        } else {
+            moveStartBlock = aboveBlock.getBelowBlock();
+            moveEndBlock = getAboveBlock();
+        }
+        Block tmpbelow = aboveBlock.getBelowBlock();
+        moveEndBlock.setBelowBlock( null );
+
+        if( moveDown ){
+            moveStartBlock.upChartPosition(height);
+        } else {
+            moveStartBlock.downChartPosition(height);
+        }
+
+        Log.i("チャート確定問題", "aboveBlock.getTop()=" + aboveBlock.getTop());
+
+        // 自分の位置を変更
+        setInsertMLB( aboveBlock, moveDown );
+
+
+
+//        Block aboveBelowBlock = aboveBlock.getBelowBlock();
+        Block aboveBelowBlock = tmpbelow;
+        Block selfAbove = getAboveBlock();
+        Block selfBelow = getBelowBlock();
+
+        selfAbove.setBelowBlock( selfBelow );
+        if( selfBelow != null ){
+            selfBelow.setAboveBlock( selfAbove );
+        }
+
+        aboveBlock.setBelowBlock( this );
+        if( aboveBelowBlock != null ){
+            aboveBelowBlock.setAboveBlock( this );
+        }
+
+        setAboveBlock( aboveBlock );
+        setBelowBlock( aboveBelowBlock );
+
+//        Log.i("チャート確定問題", "" + aboveBlock.getId() + "の上は" + aboveBlock.getAboveBlock().getId());
+//        Log.i("チャート確定問題", "" + aboveBlock.getId() + "の下は" + aboveBlock.getBelowBlock().getId());
+
+        if( getAboveBlock() != null ){
+            Log.i("チャート確定問題", "" + getId() + "の上は" + getAboveBlock().getId());
+        } else {
+            Log.i("チャート確定問題", "" + getId() + "の上はなし");
+        }
+        //おかしい
+        if( getBelowBlock() != null ){
+            Log.i("チャート確定問題", "" + getId() + "の下は" + getBelowBlock().getId());
+        } else {
+            Log.i("チャート確定問題", "" + getId() + "の下はなし");
+        }
+        if( aboveBelowBlock != null ){
+            if( aboveBelowBlock.getBelowBlock() != null ){
+                Log.i("チャート確定問題", "" + aboveBelowBlock.getId() + "の下は" + aboveBelowBlock.getBelowBlock().getId());
+            } else {
+                Log.i("チャート確定問題", "" + aboveBelowBlock.getId() + "の下はなし");
+            }
+        }
+        if( selfBelow != null ){
+            if( selfBelow.getBelowBlock() != null ){
+                Log.i("チャート確定問題", "" + selfBelow.getId() + "の下は" + selfBelow.getBelowBlock().getId());
+            } else {
+                Log.i("チャート確定問題", "" + selfBelow.getId() + "の下はなし");
+            }
+        }
+
+/*
+        Log.i("チャート確定問題", "aboveBlock=" + aboveBlock.getId());
+        Log.i("チャート確定問題", "selfAbove=" + selfAbove.getId());
+
+        if( selfBelow != null ){
+            Log.i("チャート確定問題", "selfBelow=" + selfBelow.getId());
+        }
+        if( tmpbelow != null ){
+            Log.i("チャート確定問題", "tmpbelow=" + tmpbelow.getId());
+        }
+        Log.i("チャート確定問題", "============");
+*/
+
+
+/*        if( moveDown ){
+            rewriteAboveBelowBlockOnRemove();
+        } else {
+            rewriteAboveBelowBlockOnInsert( aboveBlock );
+        }*/
+
+/*        if( moveDown ){
+            aboveBlock.post(() -> {
+                Log.i("チャート確定問題", "aboveBlock.getTop()=" + aboveBlock.getTop());
+                // 自分の位置を変更
+                setInsertMLB( aboveBlock );
+            });
+
+        } else {
+            aboveBlock.post(() -> {
+                Log.i("チャート確定問題", "aboveBlock.getTop()=" + aboveBlock.getTop());
+                // 自分の位置を変更
+                setInsertMLB( aboveBlock );
+            });
+        }*/
+    }
+
+    /*
+     * 現在位置から指定ブロックの下に移動する
+     */
+    public void moveToUnderBlock_old(Block aboveBlock ) {
+
+        int height = getHeight();
+
+        // 自分の位置を変更
+        setInsertMLB_old( aboveBlock );
+
+        // 本ブロックの下にあるブロックを上げる
+        if( hasBelowBlock() ){
+            Block belowBlock = getBelowBlock();
+            belowBlock.upChartPosition( height );
+        }
+
+        // 移動前に自分がネスト内にいた場合
+        if( inNest() ){
+            // ネストブロック下のブロックを上に移動させる
+            NestProcessBlock preNestBlock = getOwnNestBlock();
+            preNestBlock.upNestBelowBlock( height );
+
+            // 削除ブロック分、ネストを縮める
+            preNestBlock.resizeNestHeight(this, NestProcessBlock.NEST_SHRINK);
+        }
+
+        rewriteAboveBelowBlockOnRemove();
+
+        // 挿入先の上ブロックのレイアウト確定待ち
+        aboveBlock.post(() -> {
+
+            rewriteAboveBelowBlockOnInsert( aboveBlock );
+
+            // 挿入先ブロックの下ブロックを下げる
+            if( aboveBlock.hasBelowBlock() ){
+                Block insertBelowBlock = aboveBlock.getBelowBlock();
+                insertBelowBlock.downChartPosition( height );
+            }
+
+            // 移動先がネスト内の場合
+            if( aboveBlock.inNest() ){
+                NestProcessBlock newNestBlock = aboveBlock.getOwnNestBlock();
+                newNestBlock.downNestBelowBlock(height);
+
+                // ネストブロックサイズを変更
+                newNestBlock.resizeNestHeight(this, NestProcessBlock.NEST_EXPAND);
+            }
+
+            // 親ネスト情報の書き換え
+            setOwnNestBlock( aboveBlock.getOwnNestBlock() );
+
+
+        });
+
+    }
+
+    /*
+     * 指定ブロック下に挿入する際のmlbを取得
+     */
+    public void setInsertMLB( Block block, boolean moveDown ) {
+
+        int height = 0;
+        if( moveDown ){
+            height = getHeight();
+        }
+
+        // マージン設定
+        ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) getLayoutParams();
+
+        int top = block.getTop() + block.getHeight() - height;
+        int left = mlp.leftMargin;
+        if (block.inNest()) {
+            left = block.getLeft();
+        }
+
+        mlp.setMargins(left, top, mlp.rightMargin, mlp.bottomMargin);
+        setLayoutParams( mlp );
+    }
+
+    /*
+     * 指定ブロック下に挿入する際のmlbを取得
+     */
+    public void setInsertMLB_old( Block block ) {
+
+        // マージン設定
+        ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) getLayoutParams();
+
+        int top = block.getTop() + block.getHeight() - getHeight();
+        int left = mlp.leftMargin;
+        if (block.inNest()) {
+            left = block.getLeft();
+        }
+
+        mlp.setMargins(left, top, mlp.rightMargin, mlp.bottomMargin);
+        setLayoutParams( mlp );
+    }
+
+    /*
+     * 上下ブロック保持情報の更新（ブロック削除時）
+     */
+    private void rewriteAboveBelowBlockOnRemove() {
+
+        // 削除ブロックの上下ブロック
+        Block aboveBlock = getAboveBlock();
+        Block belowBlock = getBelowBlock();
+
+        // 上下ブロックの保持情報を更新
+        aboveBlock.setBelowBlock(belowBlock);
+        if (belowBlock != null) {
+            belowBlock.setAboveBlock(aboveBlock);
+        }
+    }
+
+    /*
+     * 上下ブロック保持情報の更新（ブロック挿入時）
+     */
+    private void rewriteAboveBelowBlockOnInsert(Block aboveBlock) {
+
+        // 挿入前の「挿入ブロックの上ブロック」の下ブロック
+        Block belowBlock = aboveBlock.getBelowBlock();
+
+        // 挿入ブロックの保持情報を更新
+        setAboveBlock(aboveBlock);
+        setBelowBlock(belowBlock);
+
+        // 「新規ブロックの上のブロック」の下ブロックを「新規ブロック」にする
+        aboveBlock.setBelowBlock(this);
+
+        // 「新規ブロックの１つ下ブロック（あれば）」の上ブロックを「新規ブロック」にする
+        if (belowBlock != null) {
+            belowBlock.setAboveBlock(this);
+        }
+    }
+
+
     /*
      * タッチリスナー設定
      *   本ブロックがタッチされたとき、ドラッグ移動可能にする
@@ -138,12 +393,12 @@ public abstract class ProcessBlock extends Block {
                             // 本処理ブロックを半透明化
                             //--------------------------
 //                            tranceBlock(selfBlock);
-                            tranceDrag();
+                            tranceOnDrag();
 
                             //--------------------------
                             // ドラッグ開始
                             //--------------------------
-                            // ドラッグ中のビューとして本ブロックを設定
+                            // 本ブロックをドラッグ中のビューとする
                             View.DragShadowBuilder myShadow = new View.DragShadowBuilder(view);
                             view.startDragAndDrop(null, myShadow, selfBlock, 0);
 

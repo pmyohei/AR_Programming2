@@ -76,4 +76,5 @@ public class StartBlock extends Block {
         Log.i("ドロップリスナー", "getDropLineViewID Start側取得");
         return R.id.v_dropLineStart;
     }
+
 }

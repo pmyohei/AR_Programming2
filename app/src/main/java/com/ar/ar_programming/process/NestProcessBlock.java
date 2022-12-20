@@ -2,7 +2,9 @@ package com.ar.ar_programming.process;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import com.ar.ar_programming.CharacterNode;
 import com.ar.ar_programming.R;
@@ -66,18 +68,36 @@ public abstract class NestProcessBlock extends ProcessBlock {
      * ブロック半透明化
      */
     @Override
-    public void tranceDrag() {
-        super.tranceDrag();
+    public void tranceOnDrag() {
+        super.tranceOnDrag();
 
         //------------------------
         // ネスト内ブロックを半透明化
         //------------------------
-        Block block = getNestStartBlock();
+        Block block = mNestStartBlock;
         while (block != null) {
-            block.tranceDrag();
+            block.tranceOnDrag();
             block = block.getBelowBlock();
         }
     }
+
+    /*
+     * ブロック半透明化解除
+     */
+    @Override
+    public void tranceOffDrag() {
+        super.tranceOffDrag();
+
+        //--------------------------
+        // ネスト内ブロックの透明化を解除
+        //--------------------------
+        Block block = mNestStartBlock;
+        while (block != null) {
+            block.tranceOffDrag();
+            block = block.getBelowBlock();
+        }
+    }
+
 
     /*
      * ブロック位置移動：上
@@ -131,6 +151,140 @@ public abstract class NestProcessBlock extends ProcessBlock {
             block = block.getBelowBlock();
         }
     }
+
+    /*
+     * ブロック位置更新
+     */
+    @Override
+    public void updatePosition() {
+        super.updatePosition();
+
+        // 自身のレイアウトが確定したとき
+        post(() -> {
+            // ネストスタート前なら、処理なし
+            if( mNestStartBlock == null ){
+                return;
+            }
+
+            // ネスト内スタートブロックの位置を更新
+            updateStartBlockPosition();
+
+            // ネスト内スタートブロックに続くブロック位置を更新
+            mNestStartBlock.post(() -> {
+                if (mNestStartBlock.hasBelowBlock()) {
+                    mNestStartBlock.getBelowBlock().updatePosition();
+                }
+            });
+
+            // ネストリサイズ
+            resizeNestHeight();
+        });
+    }
+
+    /*
+     * ネスト内スタートブロックの付与
+     */
+    public void addStartBlock(StartBlock startBlock, ViewGroup chartRoot) {
+
+        // 保持
+        mNestStartBlock = startBlock;
+
+        //---------------
+        // マージンの算出
+        //---------------
+        post(() -> {
+            ViewGroup.MarginLayoutParams mlp = new ViewGroup.MarginLayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT);
+
+            int left = getStartBlockLeftMargin();
+            int top = getStartBlockTopMargin();
+
+            mlp.setMargins(left, top, 0,0);
+
+            Log.i("ネスト問題", "初期位置() top=" + top);
+
+            // チャートに追加
+            chartRoot.addView(startBlock, mlp);
+        });
+    }
+
+    /*
+     *
+     */
+    private int getStartBlockTopMargin() {
+        return getTop() + getNestView().getTop();
+    }
+
+    /*
+     *
+     */
+    private int getStartBlockLeftMargin() {
+        return getLeft() + getNestView().getLeft();
+    }
+
+    /*
+     *
+     */
+    public void updateStartBlockPosition() {
+
+        // 上と左マージンを取得
+        int left = getStartBlockLeftMargin();
+        int top = getStartBlockTopMargin();
+
+        Log.i("ネスト問題", "更新位置() top=" + top);
+
+        // スタートブロック位置を更新
+        ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) mNestStartBlock.getLayoutParams();
+        mlp.setMargins(left, top, mlp.rightMargin, mlp.bottomMargin);
+        mNestStartBlock.setLayoutParams( mlp );
+    }
+
+    /*
+     *
+     */
+    @Override
+    public void setChartPosition( Block aboveBlock ) {
+
+        Log.i("ネスト移動", "setChartPosition()　コール ネスト側");
+
+        int top = aboveBlock.getTop() + aboveBlock.getHeight();
+        int left = aboveBlock.getLeft();
+
+        ViewGroup.MarginLayoutParams currentMlp = (ViewGroup.MarginLayoutParams) getLayoutParams();
+        int diffLeft = left - currentMlp.leftMargin;
+        int diffTop = top - currentMlp.topMargin;
+
+        super.setChartPosition( aboveBlock );
+
+        Block block = getNestStartBlock();
+        while (block != null) {
+            ViewGroup.MarginLayoutParams setMlp = (ViewGroup.MarginLayoutParams) block.getLayoutParams();
+            block.setChartPosition(setMlp.leftMargin + diffLeft, setMlp.topMargin + diffTop);
+            block = block.getBelowBlock();
+        }
+    }
+
+    /*
+     * ネストサイズの変更
+     */
+    public void resizeNestHeight() {
+
+        int height = 0;
+
+        // ネストサイズの計算
+        Block block = mNestStartBlock;
+        while (block != null) {
+            height += block.getHeight();
+            block = block.getBelowBlock();
+        }
+
+        // ネストサイズの変更
+        ViewGroup nestView = getNestView();
+        ViewGroup.LayoutParams lp = nestView.getLayoutParams();
+        lp.height = height;
+        nestView.setLayoutParams(lp);
+    }
+
 
     /*
      * ネストサイズの変更

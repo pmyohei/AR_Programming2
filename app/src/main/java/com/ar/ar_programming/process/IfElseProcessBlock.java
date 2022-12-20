@@ -2,7 +2,6 @@ package com.ar.ar_programming.process;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
@@ -100,15 +99,32 @@ public class IfElseProcessBlock extends NestProcessBlock {
      * ブロック半透明化
      */
     @Override
-    public void tranceDrag(){
-        super.tranceDrag();
+    public void tranceOnDrag(){
+        super.tranceOnDrag();
 
         //------------------------------
         // ネスト(2つ目)内ブロックを半透明化
         //------------------------------
         Block block = getSecondNestStartBlock();
         while( block != null ){
-            block.tranceDrag();
+            block.tranceOnDrag();
+            block = block.getBelowBlock();
+        }
+    }
+
+    /*
+     * ブロック半透明化解除
+     */
+    @Override
+    public void tranceOffDrag() {
+        super.tranceOffDrag();
+
+        //--------------------------
+        // ネスト内ブロックの透明化を解除
+        //--------------------------
+        Block block = getSecondNestStartBlock();
+        while (block != null) {
+            block.tranceOffDrag();
             block = block.getBelowBlock();
         }
     }
