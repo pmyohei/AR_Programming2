@@ -195,6 +195,35 @@ public abstract class Block extends ConstraintLayout {
      */
     public void updatePosition() {
 
+        // 位置に変化がなければ何もしない
+        Block aboveBlock = getAboveBlock();
+        if( !shouldUpdate(aboveBlock) ){
+            return;
+        }
+
+        // 位置更新
+        setPositionMlp( aboveBlock );
+        startUpdatePositionAnimation();
+
+        post(() -> {
+            // 下ブロック位置を更新
+            if (hasBelowBlock()) {
+                getBelowBlock().updatePosition();
+            }
+
+            // ネスト内にいれば、親ネストのリサイズ
+            if( inNest() ){
+                getOwnNestBlock().resizeNestHeight();
+            }
+        });
+    }
+
+    /*
+     * ブロック位置更新
+     */
+/*
+    public void updatePosition() {
+
         Block aboveBlock = getAboveBlock();
         aboveBlock.post(() -> {
             setPositionMlp( aboveBlock );
@@ -207,6 +236,7 @@ public abstract class Block extends ConstraintLayout {
                 }
             });
         });
+*/
 
 
 /*        // 更新判定
@@ -238,7 +268,7 @@ public abstract class Block extends ConstraintLayout {
                 getBelowBlock().updatePosition();
             }
         });*/
-    }
+    //}
 
     /*
      *
@@ -256,7 +286,7 @@ public abstract class Block extends ConstraintLayout {
      */
     public void startUpdatePositionAnimation() {
         // アニメーションを付与
-        setTranslationY(-40f);
+        setTranslationY(-20f);
         animate().translationY(0f)
                 .setDuration(200)
                 .setListener(null);
@@ -495,20 +525,27 @@ public abstract class Block extends ConstraintLayout {
         return mOwnNestBlock;
     }
 
-    @Override
+/*    @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
 
-        Log.i("ネスト移動", "onLayout()　コール id" + getId());
+        Log.i("ネスト移動", "onLayout()　Block コール id" + getId());
 
         // 下ブロック位置を更新
-/*        if (hasBelowBlock()) {
+        if (hasBelowBlock()) {
             getBelowBlock().updatePosition();
         }
 
         // ネスト内にいれば、親ネストのリサイズ
         if( inNest() ){
             getOwnNestBlock().resizeNestHeight();
-        }*/
+        }
     }
+
+    @Override
+    public void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure( widthMeasureSpec, heightMeasureSpec );
+
+        Log.i("ネスト移動", "onMeasure()　Block コール id" + getId());
+    }*/
 }

@@ -152,6 +152,21 @@ public abstract class NestProcessBlock extends ProcessBlock {
         }
     }
 
+    /*
+     *
+     */
+    @Override
+    public void updatePosition() {
+        super.updatePosition();
+
+        post(() -> {
+            // 下ブロック位置を更新
+            if ( mNestStartBlock != null ) {
+                mNestStartBlock.updatePosition();
+            }
+        });
+    }
+
 /*    @Override
     public void updatePosition() {
 //        super.updatePosition();
@@ -229,7 +244,7 @@ public abstract class NestProcessBlock extends ProcessBlock {
     /*
      * ブロック位置更新
      */
-    @Override
+/*    @Override
     public void updatePosition() {
 
         Block aboveBlock = getAboveBlock();
@@ -267,32 +282,7 @@ public abstract class NestProcessBlock extends ProcessBlock {
 
         });
 
-
-/*        super.updatePosition();
-
-        // 自身のレイアウトが確定したとき
-        post(() -> {
-            // ネストスタート前なら、処理なし
-            if( mNestStartBlock == null ){
-                return;
-            }
-
-            // ネスト内スタートブロックの位置を更新
-            Log.i("位置更新", "id=" + getId() + " updateStartBlockPosition()のコール");
-            updateStartBlockPosition();
-//            mNestStartBlock.updatePosition();
-
-            // ネスト内スタートブロックに続くブロック位置を更新
-            mNestStartBlock.post(() -> {
-                if (mNestStartBlock.hasBelowBlock()) {
-                    mNestStartBlock.getBelowBlock().updatePosition();
-                }
-            });
-
-            // ネストリサイズ
-            resizeNestHeight();
-        });*/
-    }
+    }*/
 
     /*
      * ネスト内スタートブロックの付与
@@ -396,15 +386,21 @@ public abstract class NestProcessBlock extends ProcessBlock {
             block = block.getBelowBlock();
         }
 
-        // ネストサイズの変更
+        // 更新チェック
         ViewGroup nestView = getNestView();
         ViewGroup.LayoutParams lp = nestView.getLayoutParams();
+        if( lp.height == height ){
+            Log.i("ブロック更新", "リサイズなし　サイズ同じ");
+            return;
+        }
+
+        // ネストサイズの変更
         lp.height = height;
         nestView.setLayoutParams(lp);
 
-        //-------------------
+        //----------------------
         // 親ネストのリサイズ処理
-        //-------------------
+        //----------------------
         post(() -> {
             // 親ネストのリサイズ処理
             if( inNest() ){
@@ -413,16 +409,10 @@ public abstract class NestProcessBlock extends ProcessBlock {
 
             // 下ブロック位置を更新
             // ★がたがた状態になる
-/*            if (hasBelowBlock()) {
+            if (hasBelowBlock()) {
                 getBelowBlock().updatePosition();
-            }*/
+            }
         });
-
-/*        if( inNest() ){
-            post(() -> {
-                getOwnNestBlock().resizeNestHeight();
-            });
-        }*/
     }
 
 
@@ -603,6 +593,18 @@ public abstract class NestProcessBlock extends ProcessBlock {
         ProcessBlock nextBlock = (ProcessBlock)mNestStartBlock.getBelowBlock();
         nextBlock.startProcess( characterNode );
     }
+
+/*    @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        super.onLayout(changed, left, top, right, bottom);
+
+        Log.i("ネスト移動", "onLayout()　Nest コール id" + getId());
+
+        // 下ブロック位置を更新
+        if ( mNestStartBlock != null ) {
+            mNestStartBlock.updatePosition();
+        }
+    }*/
 
 }
 

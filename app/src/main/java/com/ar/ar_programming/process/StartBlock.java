@@ -83,9 +83,9 @@ public class StartBlock extends Block {
     @Override
     public void updatePosition() {
 
-/*        if( !shouldUpdate() ){
+        if( !shouldUpdate(null) ){
             return;
-        }*/
+        }
 
         // 現在位置を更新
         setPositionMlp();
@@ -103,7 +103,8 @@ public class StartBlock extends Block {
     /*
      *
      */
-    public boolean shouldUpdate() {
+    @Override
+    public boolean shouldUpdate( Block aboveBlock ) {
         // 現在位置と更新位置
         int currentTop = getTop();
 
@@ -127,8 +128,10 @@ public class StartBlock extends Block {
 
         // スタートブロック位置を更新
         ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) getLayoutParams();
+        if( mlp == null ){
+            return;
+        }
         mlp.setMargins(left, top, mlp.rightMargin, mlp.bottomMargin);
-
         setLayoutParams( mlp );
     }
 
