@@ -1123,6 +1123,36 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
         ll_UIRoot.addView(newBlock, mlp);
 
+        if (newBlock.getProcessType() == Block.PROCESS_TYPE_SINGLE) {
+
+            if (newBlock.inNest()) {
+                updatePositionFromTop();
+            } else {
+                newBlock.updatePosition();
+            }
+
+        } else {
+
+            // 新ブロック確定
+            newBlock.post(() -> {
+                // ネストスタートブロック配置
+                StartBlock startBlock = deployNestStartBlock_ver2(newBlock);
+
+                // ネストスタートブロック確定
+                startBlock.post(() -> {
+
+                    if (newBlock.inNest()) {
+                        updatePositionFromTop();
+                    } else {
+                        newBlock.updatePosition();
+                    }
+                });
+            });
+
+        }
+
+
+/*
         if (newBlock.inNest()) {
             updatePositionFromTop();
         } else {
@@ -1131,6 +1161,7 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
 
         // ネストスタートブロック配置
         deployNestStartBlock_ver2(newBlock);
+*/
 
 
         // アニメーションを付与
@@ -1319,11 +1350,11 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
     /*
      *
      */
-    private void deployNestStartBlock_ver2(ProcessBlock newBlock) {
+    private StartBlock deployNestStartBlock_ver2(ProcessBlock newBlock) {
 
         // 生成ブロックが単体処理ブロックなら、何もしない
         if (newBlock.getProcessType() == Block.PROCESS_TYPE_SINGLE) {
-            return;
+            return null;
         }
 
         FrameLayout ll_UIRoot = binding.getRoot().findViewById(R.id.ll_UIRoot);
@@ -1331,10 +1362,14 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
         //------------------------------
         // スタートブロック生成（ネスト１つ目）
         //------------------------------
-        newBlock.post(() -> {
+        StartBlock startBlock = createNestStartBlock((NestProcessBlock) newBlock);
+        ((NestProcessBlock) newBlock).addStartBlock( startBlock, ll_UIRoot );
+/*        newBlock.post(() -> {
             StartBlock startBlock = createNestStartBlock((NestProcessBlock) newBlock);
             ((NestProcessBlock) newBlock).addStartBlock( startBlock, ll_UIRoot );
-        });
+        });*/
+
+        return startBlock;
     }
 
     /*

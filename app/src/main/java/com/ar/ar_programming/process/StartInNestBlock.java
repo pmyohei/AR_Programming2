@@ -49,8 +49,4 @@ public class StartInNestBlock extends ProcessBlock_old {
 
         setMarkAreaListerner();
     }
-
-
-
-
 }

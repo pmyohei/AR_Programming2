@@ -199,6 +199,35 @@ public abstract class Block extends ConstraintLayout {
         aboveBlock.post(() -> {
             setPositionMlp( aboveBlock );
 
+            startUpdatePositionAnimation();
+
+            post(() -> {
+                if (hasBelowBlock()) {
+                    getBelowBlock().updatePosition();
+                }
+            });
+        });
+
+
+/*        // 更新判定
+        Block aboveBlock = getAboveBlock();
+        // 位置更新
+        setPositionMlp(aboveBlock);
+
+        // アニメーションを付与
+        startUpdatePositionAnimation();
+
+        if (hasBelowBlock()) {
+            post(() -> {
+                getBelowBlock().updatePosition();
+            });
+        }*/
+
+/*        Block aboveBlock = getAboveBlock();
+        aboveBlock.post(() -> {
+            Log.i("位置更新", "id=" + getId() + " setPositionMlp()のコール");
+            setPositionMlp( aboveBlock );
+
             // アニメーションを付与
             setTranslationY(-40f);
             animate().translationY(0f)
@@ -208,7 +237,29 @@ public abstract class Block extends ConstraintLayout {
             if( hasBelowBlock() ){
                 getBelowBlock().updatePosition();
             }
-        });
+        });*/
+    }
+
+    /*
+     *
+     */
+    public boolean shouldUpdate( Block aboveBlock ) {
+        // 現在位置と更新位置
+        int currentTop = getTop();
+        int updateTop = aboveBlock.getTop() + aboveBlock.getHeight();
+        // 現在位置と更新位置が違えば、更新する
+        return ( currentTop != updateTop );
+    }
+
+    /*
+     *
+     */
+    public void startUpdatePositionAnimation() {
+        // アニメーションを付与
+        setTranslationY(-40f);
+        animate().translationY(0f)
+                .setDuration(200)
+                .setListener(null);
     }
 
     /*
@@ -268,7 +319,7 @@ public abstract class Block extends ConstraintLayout {
     /*
      *
      */
-    private void setPositionMlp(Block aboveBlock) {
+    public void setPositionMlp(Block aboveBlock) {
 
         int top = aboveBlock.getTop() + aboveBlock.getHeight();
         int left = aboveBlock.getLeft();
@@ -442,5 +493,22 @@ public abstract class Block extends ConstraintLayout {
      */
     public NestProcessBlock getOwnNestBlock() {
         return mOwnNestBlock;
+    }
+
+    @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        super.onLayout(changed, left, top, right, bottom);
+
+        Log.i("ネスト移動", "onLayout()　コール id" + getId());
+
+        // 下ブロック位置を更新
+/*        if (hasBelowBlock()) {
+            getBelowBlock().updatePosition();
+        }
+
+        // ネスト内にいれば、親ネストのリサイズ
+        if( inNest() ){
+            getOwnNestBlock().resizeNestHeight();
+        }*/
     }
 }

@@ -77,4 +77,60 @@ public class StartBlock extends Block {
         return R.id.v_dropLineStart;
     }
 
+    /*
+     *
+     */
+    @Override
+    public void updatePosition() {
+
+/*        if( !shouldUpdate() ){
+            return;
+        }*/
+
+        // 現在位置を更新
+        setPositionMlp();
+
+        // アニメーションを付与
+        startUpdatePositionAnimation();
+
+        if( hasBelowBlock() ){
+            post(() -> {
+                getBelowBlock().updatePosition();
+            });
+        }
+    }
+
+    /*
+     *
+     */
+    public boolean shouldUpdate() {
+        // 現在位置と更新位置
+        int currentTop = getTop();
+
+        NestProcessBlock parentNest = getOwnNestBlock();
+        int updateTop = parentNest.getStartBlockTopMargin();
+
+        // 現在位置と更新位置が違えば、更新する
+        return ( currentTop != updateTop );
+    }
+
+    /*
+     *
+     */
+    public void setPositionMlp() {
+
+        NestProcessBlock parentNest = getOwnNestBlock();
+
+        // 上と左マージンを取得
+        int left = parentNest.getStartBlockLeftMargin();
+        int top = parentNest.getStartBlockTopMargin();
+
+        // スタートブロック位置を更新
+        ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) getLayoutParams();
+        mlp.setMargins(left, top, mlp.rightMargin, mlp.bottomMargin);
+
+        setLayoutParams( mlp );
+    }
+
+
 }
