@@ -196,6 +196,30 @@ public abstract class Block extends ConstraintLayout {
 
         // 位置に変化がなければ
         Block aboveBlock = getAboveBlock();
+        if( shouldUpdate(aboveBlock) ){
+            // 位置更新
+            setPositionMlp( aboveBlock );
+            startUpdatePositionAnimation();
+
+            // ブロック標高設定
+            updateBlockElevation();
+        }
+
+        post(() -> {
+            // 下ブロック位置を更新
+            if (hasBelowBlock()) {
+                getBelowBlock().updatePosition();
+            }
+
+            // ネスト内にいれば、親ネストのリサイズ
+            if( inNest() ){
+                getOwnNestBlock().resizeNestHeight();
+            }
+        });
+
+
+/*        // 位置に変化がなければ
+        Block aboveBlock = getAboveBlock();
         if( !shouldUpdate(aboveBlock) ){
             // 親ネストのリサイズだけする
             if( inNest() ){
@@ -218,7 +242,7 @@ public abstract class Block extends ConstraintLayout {
             if( inNest() ){
                 getOwnNestBlock().resizeNestHeight();
             }
-        });
+        });*/
     }
 
     /*
@@ -291,14 +315,36 @@ public abstract class Block extends ConstraintLayout {
         // アニメーションを付与
         setTranslationY(-20f);
         animate().translationY(0f)
-                .setDuration(200)
+                .setDuration(400)
                 .setListener(null);
+    }
+
+    /*
+     * 重なり値の設定
+     */
+    public void updateBlockElevation() {
+
+        float elevation = 0f;
+        if( inNest()  ){
+            elevation = getOwnNestBlock().getElevation() + 1f;
+        }
+
+        setElevation( elevation );
     }
 
     /*
      * ブロック削除
      */
     public void removeOnChart() {
+        // 自身をチャートから削除
+        ViewGroup chart = (ViewGroup) getParent();
+        chart.removeView(this);
+    }
+
+    /*
+     * ブロック削除
+     */
+/*    public void removeOnChart() {
 
         int height = getHeight();
 
@@ -311,7 +357,7 @@ public abstract class Block extends ConstraintLayout {
         if (belowBlock != null) {
             belowBlock.upChartPosition(height);
         }
-    }
+    }*/
 
     /*
      * 下ブロックを上に移動
@@ -358,8 +404,6 @@ public abstract class Block extends ConstraintLayout {
         int left = aboveBlock.getLeft();
 
         ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) getLayoutParams();
-/*        mlp.topMargin = top;
-        mlp.leftMargin = left;*/
         mlp.setMargins(left, top, mlp.rightMargin, mlp.bottomMargin);
 
         setLayoutParams( mlp );

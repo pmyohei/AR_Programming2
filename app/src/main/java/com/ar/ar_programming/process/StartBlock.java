@@ -83,7 +83,34 @@ public class StartBlock extends Block {
     @Override
     public void updatePosition() {
 
-        // 位置に変化がなければ
+        // 位置に変化があれば
+        if( shouldUpdate(null) ){
+            // 現在位置を更新
+            setPositionMlp();
+            startUpdatePositionAnimation();
+
+            // ブロック標高設定
+            updateBlockElevation();
+
+            // 非表示状態なら、表示させる
+            if( getVisibility() == INVISIBLE ){
+                setVisibility( VISIBLE );
+            }
+        }
+
+        post(() -> {
+            // 下ブロック位置を更新
+            if (hasBelowBlock()) {
+                getBelowBlock().updatePosition();
+            }
+            // ネスト内にいれば、親ネストのリサイズ
+            if( inNest() ){
+                getOwnNestBlock().resizeNestHeight();
+            }
+        });
+
+
+/*        // 位置に変化がなければ
         if( !shouldUpdate(null) ){
             // 親ネストのリサイズだけする
             if( inNest() ){
@@ -107,7 +134,7 @@ public class StartBlock extends Block {
                 Log.i("チャート最新", "親ネストリサイズコール");
                 getOwnNestBlock().resizeNestHeight();
             }
-        });
+        });*/
 
     }
 

@@ -1123,58 +1123,14 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
         ll_UIRoot.addView(newBlock, mlp);
 
-        if (newBlock.getProcessType() == Block.PROCESS_TYPE_SINGLE) {
-
-            newBlock.updatePosition();
-
-/*            if (newBlock.inNest()) {
-                updatePositionFromTop();
-            } else {
-                newBlock.updatePosition();
-            }*/
-
-        } else {
-
-            // 新ブロック確定
-            newBlock.post(() -> {
-                // ネストスタートブロック配置
-                StartBlock startBlock = deployNestStartBlock_ver2(newBlock);
-
-                // ネストスタートブロック確定
-                startBlock.post(() -> {
-                    newBlock.updatePosition();
-
-/*                    if (newBlock.inNest()) {
-                        updatePositionFromTop();
-                    } else {
-                        newBlock.updatePosition();
-                    }*/
-                });
-            });
-
+        // スタートブロックの配置
+        if (newBlock.getProcessType() != Block.PROCESS_TYPE_SINGLE) {
+            StartBlock startBlock = ((NestProcessBlock)newBlock).getNestStartBlock();
+            ll_UIRoot.addView(startBlock, mlp);
         }
 
-
-/*
-        if (newBlock.inNest()) {
-            updatePositionFromTop();
-        } else {
-            newBlock.updatePosition();
-        }
-
-        // ネストスタートブロック配置
-        deployNestStartBlock_ver2(newBlock);
-*/
-
-
-        // アニメーションを付与
-        newBlock.setAlpha(0f);
-        newBlock.animate()
-                .alpha(1f)
-                .setDuration(300)
-                .setListener(null);
-
-
+        // 生成ブロックの位置を更新
+        newBlock.updatePosition();
     }
 
 
@@ -1616,9 +1572,6 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
      */
     private void moveBlockFromLine(Block dropBlock, ProcessBlock moveBlock) {
 
-        // 更新前の位置関係を保持
-        boolean moveUnderDrop = dropBlock.existsBelow( moveBlock );
-
         //-------------------
         // 上下情報の更新
         //-------------------
@@ -1651,20 +1604,7 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
         //-------------------
         // 位置を更新
         //-------------------
-        moveAboveBlock.updatePosition();        // ！ネストから出た場合があるため、元上ブロックを更新してネストサイズを縮める
-
-        // 移動した結果、上に位置するブロックを更新
-        if( moveUnderDrop ){
-            Log.i("チャート最新", "更新対象 drop");
-//            moveBelowBlock.updatePosition();
-            moveBlock.updatePosition();
-        } else {
-            Log.i("チャート最新", "更新対象 move");
-//            moveBlock.updatePosition();
-            moveBelowBlock.updatePosition();
-        }
-
-
+        updatePositionFromTop();
     }
 
     /*
@@ -1691,7 +1631,7 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
     /*
      * 指定ブロックを処理ラインから削除する
      */
-    private void removeBlockFromLine(ProcessBlock removeBlock, boolean remove) {
+    private void removeBlockFromLine(ProcessBlock removeBlock) {
 
         //-------------------
         // マーカー変更判定
@@ -1706,7 +1646,18 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
         //-------------------
         // ブロック削除
         //-------------------
-        // ネスト内ブロックの削除の場合
+        // 上下ブロック保持情報の更新
+        rewriteAboveBelowBlockOnRemove(removeBlock);
+
+        // 自身をチャートから削除
+        removeBlock.removeOnChart();
+
+        // 削除ブロックの上ブロックから更新
+        Block aboveBlock = removeBlock.getAboveBlock();
+        aboveBlock.updatePosition();
+
+
+/*        // ネスト内ブロックの削除の場合
         if (removeBlock.inNest()) {
             // ネストブロック下のブロックを上に移動させる
             NestProcessBlock nestBlock = removeBlock.getOwnNestBlock();
@@ -1726,7 +1677,7 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
 
         // 上下ブロック保持情報の更新
         // ！ネストの縮小処理の後に行うこと（if-elseの場合、どちらのネストにいたか不明になるため）！
-        rewriteAboveBelowBlockOnRemove(removeBlock);
+        rewriteAboveBelowBlockOnRemove(removeBlock);*/
     }
 
 
@@ -1764,7 +1715,7 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
 
                     case DragEvent.ACTION_DROP:
                         // ドラッグ中ブロックを処理ラインから削除
-                        removeBlockFromLine((ProcessBlock) dragEvent.getLocalState(), true);
+                        removeBlockFromLine((ProcessBlock) dragEvent.getLocalState());
                         return true;
 
                     default:
