@@ -83,21 +83,32 @@ public class StartBlock extends Block {
     @Override
     public void updatePosition() {
 
+        // 位置に変化がなければ
         if( !shouldUpdate(null) ){
+            // 親ネストのリサイズだけする
+            if( inNest() ){
+                getOwnNestBlock().resizeNestHeight();
+            }
             return;
         }
 
         // 現在位置を更新
         setPositionMlp();
-
-        // アニメーションを付与
         startUpdatePositionAnimation();
 
-        if( hasBelowBlock() ){
-            post(() -> {
+
+        post(() -> {
+            // 下ブロック位置を更新
+            if (hasBelowBlock()) {
                 getBelowBlock().updatePosition();
-            });
-        }
+            }
+            // ネスト内にいれば、親ネストのリサイズ
+            if( inNest() ){
+                Log.i("チャート最新", "親ネストリサイズコール");
+                getOwnNestBlock().resizeNestHeight();
+            }
+        });
+
     }
 
     /*
@@ -105,10 +116,15 @@ public class StartBlock extends Block {
      */
     @Override
     public boolean shouldUpdate( Block aboveBlock ) {
+
+        // チャートスタートブロックの場合は、位置固定のため更新なし
+        NestProcessBlock parentNest = getOwnNestBlock();
+        if( parentNest == null ){
+            return false;
+        }
+
         // 現在位置と更新位置
         int currentTop = getTop();
-
-        NestProcessBlock parentNest = getOwnNestBlock();
         int updateTop = parentNest.getStartBlockTopMargin();
 
         // 現在位置と更新位置が違えば、更新する

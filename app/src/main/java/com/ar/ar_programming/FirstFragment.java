@@ -1125,11 +1125,13 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
 
         if (newBlock.getProcessType() == Block.PROCESS_TYPE_SINGLE) {
 
-            if (newBlock.inNest()) {
+            newBlock.updatePosition();
+
+/*            if (newBlock.inNest()) {
                 updatePositionFromTop();
             } else {
                 newBlock.updatePosition();
-            }
+            }*/
 
         } else {
 
@@ -1140,12 +1142,13 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
 
                 // ネストスタートブロック確定
                 startBlock.post(() -> {
+                    newBlock.updatePosition();
 
-                    if (newBlock.inNest()) {
+/*                    if (newBlock.inNest()) {
                         updatePositionFromTop();
                     } else {
                         newBlock.updatePosition();
-                    }
+                    }*/
                 });
             });
 
@@ -1613,6 +1616,9 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
      */
     private void moveBlockFromLine(Block dropBlock, ProcessBlock moveBlock) {
 
+        // 更新前の位置関係を保持
+        boolean moveUnderDrop = dropBlock.existsBelow( moveBlock );
+
         //-------------------
         // 上下情報の更新
         //-------------------
@@ -1638,9 +1644,27 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
         }
 
         //-------------------
+        // 親ネストの更新
+        //-------------------
+        moveBlock.setOwnNestBlock( dropBlock.getOwnNestBlock() );
+
+        //-------------------
         // 位置を更新
         //-------------------
-        updatePositionFromTop();
+        moveAboveBlock.updatePosition();        // ！ネストから出た場合があるため、元上ブロックを更新してネストサイズを縮める
+
+        // 移動した結果、上に位置するブロックを更新
+        if( moveUnderDrop ){
+            Log.i("チャート最新", "更新対象 drop");
+//            moveBelowBlock.updatePosition();
+            moveBlock.updatePosition();
+        } else {
+            Log.i("チャート最新", "更新対象 move");
+//            moveBlock.updatePosition();
+            moveBelowBlock.updatePosition();
+        }
+
+
     }
 
     /*

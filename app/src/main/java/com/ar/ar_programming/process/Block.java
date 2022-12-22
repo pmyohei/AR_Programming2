@@ -132,22 +132,21 @@ public abstract class Block extends ConstraintLayout {
      */
     public boolean existsBelow(Block checkBlock) {
 
-        int i = 0;
+        int checkID = checkBlock.getId();
+
+        Log.i("チャート確定問題", "更新対象 existsBelow checkID=" + checkID);
 
         // 下ブロックを検索
         Block belowBlock = getBelowBlock();
         while (belowBlock != null) {
 
-            Log.i("チャート確定問題", "existsBelow i=" + i);
+            Log.i("チャート確定問題", "更新対象 existsBelow belowBlock.getId()=" + belowBlock.getId());
 
-            if (belowBlock == checkBlock) {
+            if (belowBlock.getId() == checkID) {
                 return true;
             }
             belowBlock = belowBlock.getBelowBlock();
-
-            i++;
         }
-
         return false;
     }
 
@@ -195,9 +194,13 @@ public abstract class Block extends ConstraintLayout {
      */
     public void updatePosition() {
 
-        // 位置に変化がなければ何もしない
+        // 位置に変化がなければ
         Block aboveBlock = getAboveBlock();
         if( !shouldUpdate(aboveBlock) ){
+            // 親ネストのリサイズだけする
+            if( inNest() ){
+                getOwnNestBlock().resizeNestHeight();
+            }
             return;
         }
 

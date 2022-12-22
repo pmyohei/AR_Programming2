@@ -383,6 +383,7 @@ public abstract class NestProcessBlock extends ProcessBlock {
         Block block = mNestStartBlock;
         while (block != null) {
             height += block.getHeight();
+            Log.i("チャート最新", "リサイズ height=" + height);
             block = block.getBelowBlock();
         }
 
@@ -390,9 +391,11 @@ public abstract class NestProcessBlock extends ProcessBlock {
         ViewGroup nestView = getNestView();
         ViewGroup.LayoutParams lp = nestView.getLayoutParams();
         if( lp.height == height ){
-            Log.i("ブロック更新", "リサイズなし　サイズ同じ");
+            Log.i("チャート最新", "リサイズなし　サイズ同じ");
             return;
         }
+
+        Log.i("チャート最新", "リサイズ前　lp.height=" + lp.height);
 
         // ネストサイズの変更
         lp.height = height;
@@ -401,14 +404,13 @@ public abstract class NestProcessBlock extends ProcessBlock {
         //----------------------
         // 親ネストのリサイズ処理
         //----------------------
-        post(() -> {
+        nestView.post(() -> {
             // 親ネストのリサイズ処理
             if( inNest() ){
                 getOwnNestBlock().resizeNestHeight();
             }
 
             // 下ブロック位置を更新
-            // ★がたがた状態になる
             if (hasBelowBlock()) {
                 getBelowBlock().updatePosition();
             }
