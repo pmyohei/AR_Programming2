@@ -227,25 +227,8 @@ public class IfElseProcessBlock extends NestProcessBlock {
         //---------------------
         // else側のネストをチェック
         //---------------------
-        Block nestBlock = getStartBlockForNest( NEST_SECOND );
-        while( nestBlock != null ){
-
-            // ネスト内ブロックが指定ブロックの場合、ありとして終了
-            if( nestBlock == checkBlock ){
-                return true;
-            }
-
-            // ネスト内ブロックの中に対象ブロックがあれば、ありとして終了
-            if( nestBlock.hasBlock( checkBlock ) ){
-                return true;
-            }
-
-            // 次のブロックへ
-            nestBlock = nestBlock.getBelowBlock();
-        }
-
-        // なし
-        return false;
+        // else側のネストを検索
+        return searchBlockInNest( NEST_SECOND, checkBlock );
     }
 
     /*
