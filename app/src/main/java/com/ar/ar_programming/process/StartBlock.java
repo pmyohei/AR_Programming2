@@ -3,10 +3,8 @@ package com.ar.ar_programming.process;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.DragEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import com.ar.ar_programming.R;
 
@@ -72,19 +70,19 @@ public class StartBlock extends Block {
      */
     @Override
     public int getDropLineViewID(){
-
-        Log.i("ドロップリスナー", "getDropLineViewID Start側取得");
         return R.id.v_dropLineStart;
     }
 
     /*
-     *
+     * ブロック位置更新
      */
     @Override
     public void updatePosition() {
 
-        // 位置に変化があれば
-        if( shouldUpdate(null) ){
+        //----------------
+        // 位置変化判定
+        //----------------
+        if( shouldUpdatePosition() ){
             // 現在位置を更新
             setPositionMlp();
             startUpdatePositionAnimation();
@@ -92,57 +90,31 @@ public class StartBlock extends Block {
             // ブロック標高設定
             updateBlockElevation();
 
-            // 非表示状態なら、表示させる
+            // 非表示状態（初位置更新）なら、表示させる
             if( getVisibility() == INVISIBLE ){
                 setVisibility( VISIBLE );
             }
         }
 
+        //--------------------
+        // 本ブロックレイアウト確定
+        //--------------------
         post(() -> {
             // 下ブロック位置を更新
             if (hasBelowBlock()) {
                 getBelowBlock().updatePosition();
             }
-            // ネスト内にいれば、親ネストのリサイズ
+            // 親ネストのリサイズ
             if( inNest() ){
                 getOwnNestBlock().resizeNestHeight( this );
             }
         });
-
-
-/*        // 位置に変化がなければ
-        if( !shouldUpdate(null) ){
-            // 親ネストのリサイズだけする
-            if( inNest() ){
-                getOwnNestBlock().resizeNestHeight();
-            }
-            return;
-        }
-
-        // 現在位置を更新
-        setPositionMlp();
-        startUpdatePositionAnimation();
-
-
-        post(() -> {
-            // 下ブロック位置を更新
-            if (hasBelowBlock()) {
-                getBelowBlock().updatePosition();
-            }
-            // ネスト内にいれば、親ネストのリサイズ
-            if( inNest() ){
-                Log.i("チャート最新", "親ネストリサイズコール");
-                getOwnNestBlock().resizeNestHeight();
-            }
-        });*/
-
     }
 
     /*
-     *
+     * 位置更新すべきか判定
      */
-    @Override
-    public boolean shouldUpdate( Block aboveBlock ) {
+    public boolean shouldUpdatePosition() {
 
         // 親ネストなし（チャートのスタートブロック）の場合は、位置固定のため更新なし
         NestProcessBlock parentNest = getOwnNestBlock();
@@ -160,14 +132,15 @@ public class StartBlock extends Block {
     }
 
     /*
-     *
+     * MarginLayoutParams設定
+     *  ネスト内右上に位置するようにパラメータを設定する
      */
     public void setPositionMlp() {
 
         NestProcessBlock parentNest = getOwnNestBlock();
-
-        // 上と左マージンを取得
         int targetNest = parentNest.inWhichNest( this );
+
+        // 上左マージンを取得
         int left = parentNest.getStartBlockLeftMargin( targetNest );
         int top = parentNest.getStartBlockTopMargin( targetNest );
 
@@ -179,6 +152,4 @@ public class StartBlock extends Block {
         mlp.setMargins(left, top, mlp.rightMargin, mlp.bottomMargin);
         setLayoutParams( mlp );
     }
-
-
 }

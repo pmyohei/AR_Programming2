@@ -24,8 +24,6 @@ public class IfProcessBlock extends NestProcessBlock {
     //---------------------------
     // フィールド変数
     //---------------------------
-    private int mBlockInNestIndex;
-    private int tmploopCount = 0;
 
     /*
      * コンストラクタ
@@ -39,17 +37,6 @@ public class IfProcessBlock extends NestProcessBlock {
     public IfProcessBlock(Context context, AttributeSet attrs, int defStyle, int contents) {
         super(context, attrs, defStyle, PROCESS_TYPE_IF, contents);
         setLayout( R.layout.process_block_if );
-        init();
-    }
-
-    /*
-     * 初期化処理
-     */
-    private void init() {
-        // ネスト内処理indexを初期化
-        mBlockInNestIndex = 0;
-        // ネスト内スタートブロック初期設定
-//        initStartBlockInNest( R.layout.process_block_start_in_nest );
     }
 
     /*
@@ -87,44 +74,6 @@ public class IfProcessBlock extends NestProcessBlock {
         tv_contents.setText(contentId);
     }
 
-
-    /*
-     * ネスト内の処理ブロックを取得
-     * 　返す対象は、先頭から順番に行う。
-     * 　ただし、以下の状況にある場合、nullを返す
-     *   ・ネスト内の処理ブロック数が0
-     *   ・ネスト内の処理ブロックを最後まで返した
-     */
-    @Override
-    public ProcessBlock getBlockInNest() {
-
-        ViewGroup ll_insideRoot = findViewById(R.id.ll_firstNestRoot);
-
-        //--------------------
-        // 取得処理ブロックチェック
-        //--------------------
-        int blockInNestNum = ll_insideRoot.getChildCount();
-        if( blockInNestNum == 0 ){
-            // 処理ブロックなし
-            return null;
-        }
-        if( mBlockInNestIndex >= blockInNestNum ){
-            // 処理ブロック最後まで取得
-            return null;
-        }
-
-        //--------------------
-        // ネスト内処理ブロック
-        //--------------------
-        // ネスト内処理ブロックをコールされた順に応じて返す
-        ProcessBlock block = (ProcessBlock)ll_insideRoot.getChildAt( mBlockInNestIndex );
-        // 次回コールでは次の処理ブロックを返すために、indexを進める
-        mBlockInNestIndex++;
-
-        return block;
-    }
-
-
     /*
      * 条件成立判定
      *   @return：条件成立- true
@@ -142,12 +91,5 @@ public class IfProcessBlock extends NestProcessBlock {
         }
 
         return ( i % 2 != 0 );
-
-/*        tmploopCount++;
-        boolean tmp = (tmploopCount == 2);
-        return tmp;*/
     }
-
-
 }
-

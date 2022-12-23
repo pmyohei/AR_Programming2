@@ -5,7 +5,6 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 
 import com.ar.ar_programming.CharacterNode;
 import com.ar.ar_programming.R;
@@ -21,9 +20,6 @@ public abstract class NestProcessBlock extends ProcessBlock {
     //---------------------------
     public static final int NEST_FIRST = 0;
     public static final int NEST_SECOND = 1;
-
-    public static int NEST_EXPAND = 0;
-    public static int NEST_SHRINK = 1;
 
     //---------------------------
     // フィールド変数
@@ -49,11 +45,6 @@ public abstract class NestProcessBlock extends ProcessBlock {
      * ネスト内条件判定
      */
     public abstract boolean isCondition(CharacterNode characterNode);
-
-    /*
-     * ネスト内処理ブロックの取得
-     */
-    public abstract ProcessBlock getBlockInNest();
 
     /*
      * レイアウト設定
@@ -102,43 +93,6 @@ public abstract class NestProcessBlock extends ProcessBlock {
         }
     }
 
-
-    /*
-     * ブロック位置移動：上
-     */
-    @Override
-    public void upChartPosition(int trancelate) {
-        super.upChartPosition(trancelate);
-
-        //------------------------
-        // ネスト内ブロックを移動
-        //------------------------
-        Block block = getNestStartBlock();
-        block.upChartPosition(trancelate);
-        /*while (block != null) {
-            block.upChartPosition(trancelate);
-            block = block.getBelowBlock();
-        }*/
-    }
-
-    /*
-     * ブロック位置移動：下
-     */
-    @Override
-    public void downChartPosition(int trancelate) {
-        super.downChartPosition(trancelate);
-
-        //------------------------
-        // ネスト内ブロックを移動
-        //------------------------
-        Block block = getNestStartBlock();
-        block.downChartPosition(trancelate);
-/*        while (block != null) {
-            block.downChartPosition(trancelate);
-            block = block.getBelowBlock();
-        }*/
-    }
-
     /*
      * ブロック削除
      */
@@ -149,7 +103,7 @@ public abstract class NestProcessBlock extends ProcessBlock {
         //---------------------
         // ネスト内ブロックを削除
         //---------------------
-        Block block = getNestStartBlock();
+        Block block = getStartBlockForNest( NEST_FIRST );
         while (block != null) {
             block.removeOnChart();
             block = block.getBelowBlock();
@@ -186,45 +140,14 @@ public abstract class NestProcessBlock extends ProcessBlock {
     public void updatePosition() {
         super.updatePosition();
 
+        // 自身の位置が確定したら、ネスト内スタートブロックを更新
         post(() -> {
             mNestStartBlock.updatePosition();
-
-/*            // 下ブロック位置を更新
-            if (mNestStartBlock != null) {
-                mNestStartBlock.updatePosition();
-            }*/
         });
     }
 
     /*
-     * ネスト内スタートブロックの付与
-     */
-    public void addStartBlock(StartBlock startBlock, ViewGroup chartRoot) {
-
-/*        // 保持
-        mNestStartBlock = startBlock;
-
-        //---------------
-        // マージンの算出
-        //---------------
-        post(() -> {
-            ViewGroup.MarginLayoutParams mlp = new ViewGroup.MarginLayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT);
-
-            int left = getStartBlockLeftMargin( this );
-            int top = getStartBlockTopMargin( this );
-
-            mlp.setMargins(left, top, 0, 0);
-
-            Log.i("ネスト問題", "初期位置() top=" + top);
-
-            // チャートに追加
-            chartRoot.addView(startBlock, mlp);
-        });*/
-    }
-
-    /*
-     *
+     * ネスト内スタートブロックを配置するためのTopマージンを取得
      */
     public int getStartBlockTopMargin( int nest ) {
         ViewGroup nestView = getNestViewForNest( nest );
@@ -232,42 +155,17 @@ public abstract class NestProcessBlock extends ProcessBlock {
     }
 
     /*
-     *
+     * ネスト内スタートブロックを配置するためのLeftマージンを取得
      */
     public int getStartBlockLeftMargin( int nest ) {
         ViewGroup nestView = getNestViewForNest( nest );
-
         return getLeft() + nestView.getLeft();
-    }
-
-
-    /*
-     *
-     */
-    @Override
-    public void setChartPosition(Block aboveBlock) {
-
-        Log.i("ネスト移動", "setChartPosition()　コール ネスト側");
-
-        int top = aboveBlock.getTop() + aboveBlock.getHeight();
-        int left = aboveBlock.getLeft();
-
-        ViewGroup.MarginLayoutParams currentMlp = (ViewGroup.MarginLayoutParams) getLayoutParams();
-        int diffLeft = left - currentMlp.leftMargin;
-        int diffTop = top - currentMlp.topMargin;
-
-        super.setChartPosition(aboveBlock);
-
-        Block block = getNestStartBlock();
-        while (block != null) {
-            ViewGroup.MarginLayoutParams setMlp = (ViewGroup.MarginLayoutParams) block.getLayoutParams();
-            block.setChartPosition(setMlp.leftMargin + diffLeft, setMlp.topMargin + diffTop);
-            block = block.getBelowBlock();
-        }
     }
 
     /*
      * ネストサイズの変更
+     *   @para1：本メソッドをコールしたブロック
+     * 　　　　　　（リサイズするネストを識別するために必要）
      */
     public void resizeNestHeight(Block calledBlock) {
 
@@ -317,6 +215,7 @@ public abstract class NestProcessBlock extends ProcessBlock {
     /*
      * 指定ブロックがどのネストにいるか
      * ！本クラスでは、ネスト１を固定で返す
+     * ！ネストを複数持つクラス実装時は、実装に合わせてOverrideが必要
      */
     public int inWhichNest( Block calledBlock ) {
         return NEST_FIRST;
@@ -325,6 +224,7 @@ public abstract class NestProcessBlock extends ProcessBlock {
     /*
      * 指定ネストのスタートブロックを取得
      * ！本クラスでは、ネスト１を固定で返す
+     * ！ネストを複数持つクラス実装時は、実装に合わせてOverrideが必要
      */
     public Block getStartBlockForNest( int nest ) {
         return mNestStartBlock;
@@ -333,151 +233,47 @@ public abstract class NestProcessBlock extends ProcessBlock {
     /*
      * 指定ネストのネストviewを取得
      * ！本クラスでは、ネスト１を固定で返す
+     * ！ネストを複数持つクラス実装時は、実装に合わせてOverrideが必要
      */
     public ViewGroup getNestViewForNest( int nest ) {
         return findViewById(R.id.ll_firstNestRoot);
     }
 
     /*
-     * ネストサイズの変更
-     */
-    public int resizeNestHeight(Block block, int scaling) {
-
-        // 変更量
-        int size = block.getHeight();
-        if (scaling == NEST_SHRINK) {
-            size *= -1;
-        }
-
-        // ネストサイズの変更
-        ViewGroup nestView = getResizeNest(block);
-        ViewGroup.LayoutParams lp = nestView.getLayoutParams();
-        lp.height += size;
-        nestView.setLayoutParams(lp);
-
-        // 自身がネスト内にあれば、親ネストもサイズ変更
-        NestProcessBlock nestBlock = getOwnNestBlock();
-        if (nestBlock != null) {
-            nestBlock.resizeNestHeight(block, scaling);
-        }
-
-        return size;
-    }
-
-    /*
-     * ネストサイズ変更対象のネスト
-     *   ※本クラスのネストは１つであるため、firstネスト固定で返す
-     *   ※本クラスを継承し、ネストを複数用意する場合、本メソッドをOverrideすること
-     */
-    public ViewGroup getResizeNest(Block block) {
-        return findViewById(R.id.ll_firstNestRoot);
-    }
-
-    /*
      * ネスト内に指定されたブロックがあるか
+     * ！本クラスでは、ネスト１内を検索
+     * ！ネストを複数持つクラス実装時は、実装に合わせてOverrideが必要
      */
     @Override
     public boolean hasBlock(Block checkBlock) {
 
-        Block nestBlock = getNestStartBlock();
-        while (nestBlock != null) {
-            // ネスト内ブロックが指定ブロックの場合
-            if (nestBlock == checkBlock) {
-                // ありとして終了
+        //---------------------
+        // ネスト１内の検索
+        //---------------------
+        Block block = getStartBlockForNest( NEST_FIRST );
+        while (block != null) {
+            // ネスト内ブロックが指定ブロックの場合、ありとして終了
+            if (block == checkBlock) {
                 return true;
             }
 
-            // 「ネスト内ブロックの中のブロック」をチェック
-            if (nestBlock.hasBlock(checkBlock)) {
-                // あれば終了
+            // ネスト内ブロックの中に対象ブロックがあれば、ありとして終了
+            if (block.hasBlock(checkBlock)) {
                 return true;
             }
 
-            // 次のネスト内ブロックへ
-            nestBlock = nestBlock.getBelowBlock();
+            // 次のブロックへ
+            block = block.getBelowBlock();
         }
 
-        // 見つからないルート
+        // なし
         return false;
     }
 
     /*
-     * ネスト内スタートブロックの設定
-     */
-    public void setNestStartBlock(StartBlock block) {
-        mNestStartBlock = block;
-    }
-
-    /*
-     * ネスト内スタートブロックの取得
-     */
-    public StartBlock getNestStartBlock() {
-        return mNestStartBlock;
-    }
-
-
-    /*
-     * 本ネストブロックの下にあるブロックを下げる。
-     * また、親ネストがある場合、親ネストにも本メソッドをコールし同じ事をさせる
-     */
-    public void downNestBelowBlock(int trancelate) {
-        // 本ブロックの下のブロックを下げる
-        if (hasBelowBlock()) {
-            Block nestBelowBlock = getBelowBlock();
-            nestBelowBlock.downChartPosition(trancelate);
-        }
-
-        // 「"本ブロックの親ネストブロック"の下のブロック」を下げる
-        if (inNest()) {
-            NestProcessBlock parentNest = getOwnNestBlock();
-            parentNest.downNestBelowBlock(trancelate);
-        }
-    }
-
-    /*
-     * 本ネストブロックの下にあるブロックを上げる。
-     * また、親ネストがある場合、親ネストにも本メソッドをコールし同じ事をさせる
-     */
-    public void upNestBelowBlock(int trancelate) {
-        // 本ブロックの下のブロックを下げる
-        if (hasBelowBlock()) {
-            Block nestBelowBlock = getBelowBlock();
-            nestBelowBlock.upChartPosition(trancelate);
-        }
-
-        // 「"本ブロックの親ネストブロック"の下のブロック」を上げる
-        if (inNest()) {
-            NestProcessBlock parentNest = getOwnNestBlock();
-            parentNest.upNestBelowBlock(trancelate);
-        }
-    }
-
-    /*
-     * ネスト内の先頭ブロック（スタートブロックの次のブロック）
-     */
-    public Block getNestTopBlock() {
-        // ネスト内の先頭ブロック
-        return mNestStartBlock.getBelowBlock();
-    }
-
-    /*
-     * ネストビューの取得
-     */
-    public ViewGroup getNestView() {
-        return findViewById(R.id.ll_firstNestRoot);
-    }
-
-    /*
-     * ネスト内処理ブロック数の取得
-     */
-    public int getBlockSizeInNest() {
-        // 指定された位置の処理ブロックを返す
-        ViewGroup ll_insideRoot = findViewById(R.id.ll_firstNestRoot);
-        return ll_insideRoot.getChildCount();
-    }
-
-    /*
-     * ネスト内処理ブロックの有無
+     * ネスト内ブロックの有無
+     * ！本クラスでは、ネスト１内を判定
+     * ！ネストを複数持つクラス実装時は、実装に合わせてOverrideが必要
      */
     public boolean hasNestBlock() {
         return mNestStartBlock.hasBelowBlock();

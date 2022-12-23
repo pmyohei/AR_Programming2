@@ -103,9 +103,9 @@ public class IfElseProcessBlock extends NestProcessBlock {
         super.tranceOnDrag();
 
         //------------------------------
-        // ネスト(2つ目)内ブロックを半透明化
+        // else内ブロックを半透明化
         //------------------------------
-        Block block = getSecondNestStartBlock();
+        Block block = getStartBlockForNest( NEST_SECOND );
         while (block != null) {
             block.tranceOnDrag();
             block = block.getBelowBlock();
@@ -120,9 +120,9 @@ public class IfElseProcessBlock extends NestProcessBlock {
         super.tranceOffDrag();
 
         //--------------------------
-        // ネスト内ブロックの透明化を解除
+        // else内ブロックの透明化を解除
         //--------------------------
-        Block block = getSecondNestStartBlock();
+        Block block = getStartBlockForNest( NEST_SECOND );
         while (block != null) {
             block.tranceOffDrag();
             block = block.getBelowBlock();
@@ -194,42 +194,6 @@ public class IfElseProcessBlock extends NestProcessBlock {
     }
 
     /*
-     * ブロック位置移動：上
-     */
-    @Override
-    public void upChartPosition( int trancelate ){
-        super.upChartPosition( trancelate );
-
-        //------------------------
-        // ネスト内ブロックを移動
-        //------------------------
-        Block block = getSecondNestStartBlock();
-        block.upChartPosition( trancelate );
-        /*while( block != null ){
-            block.upChartPosition( trancelate );
-            block = block.getBelowBlock();
-        }*/
-    }
-
-    /*
-     * ブロック位置移動：下
-     */
-    @Override
-    public void downChartPosition( int trancelate ){
-        super.downChartPosition( trancelate );
-
-        //------------------------
-        // elseネスト内ブロックを移動
-        //------------------------
-        Block block = getSecondNestStartBlock();
-        block.downChartPosition( trancelate );
-        /*while( block != null ){
-            block.downChartPosition( trancelate );
-            block = block.getBelowBlock();
-        }*/
-    }
-
-    /*
      * ブロック削除
      */
     @Override
@@ -239,7 +203,7 @@ public class IfElseProcessBlock extends NestProcessBlock {
         //------------------------
         // elseネスト内ブロックを削除
         //------------------------
-        Block block = getSecondNestStartBlock();
+        Block block = getStartBlockForNest( NEST_SECOND );
         while( block != null ){
             block.removeOnChart();
             block = block.getBelowBlock();
@@ -251,6 +215,10 @@ public class IfElseProcessBlock extends NestProcessBlock {
      */
     @Override
     public boolean hasBlock(Block checkBlock ) {
+        //---------------------
+        // if側のネストをチェック
+        //---------------------
+        // あれば判定終了
         boolean firstNest = super.hasBlock( checkBlock );
         if( firstNest ){
             return true;
@@ -259,125 +227,26 @@ public class IfElseProcessBlock extends NestProcessBlock {
         //---------------------
         // else側のネストをチェック
         //---------------------
-        Block nestBlock = getSecondNestStartBlock();
+        Block nestBlock = getStartBlockForNest( NEST_SECOND );
         while( nestBlock != null ){
-            // ネスト内ブロックが指定ブロックの場合
+
+            // ネスト内ブロックが指定ブロックの場合、ありとして終了
             if( nestBlock == checkBlock ){
-                // ありとして終了
                 return true;
             }
 
-            // 「ネスト内ブロックの中のブロック」をチェック
+            // ネスト内ブロックの中に対象ブロックがあれば、ありとして終了
             if( nestBlock.hasBlock( checkBlock ) ){
-                // あれば終了
                 return true;
             }
 
-            // 次のネスト内ブロックへ
+            // 次のブロックへ
             nestBlock = nestBlock.getBelowBlock();
         }
 
-        // 見つからないルート
+        // なし
         return false;
     }
-
-    /*
-     * ネストサイズの変更
-     */
-    @Override
-    public int resizeNestHeight(Block block, int scaling) {
-        int trancelate = super.resizeNestHeight( block, scaling );
-
-        //------------------------
-        // elseネスト内ブロックを移動
-        //------------------------
-        // リサイズネストが１つ目の場合
-        if ( isBlockInFirstNest(block) ) {
-            Block seocndStartBlock = getSecondNestStartBlock();
-
-            // 変化量を絶対値にする
-            trancelate = Math.abs(trancelate);
-
-            if( scaling == NEST_EXPAND ){
-                seocndStartBlock.downChartPosition( trancelate );
-            } else {
-                seocndStartBlock.upChartPosition( trancelate );
-            }
-        }
-
-        return trancelate;
-    }
-
-    /*
-     * ネストサイズ変更対象のネスト
-     */
-    @Override
-    public ViewGroup getResizeNest( Block block ){
-
-        if( isBlockInFirstNest(block) ){
-            return findViewById( R.id.ll_firstNestRoot );
-        } else {
-            return findViewById( R.id.ll_secondNestRoot );
-        }
-
-/*        // １つ目のネストをチェック
-        Block nestBlock = getNestStartBlock();
-        while( nestBlock != null ){
-            if( nestBlock == block ){
-                return findViewById( R.id.ll_firstNestRoot );
-            }
-            nestBlock = nestBlock.getBelowBlock();
-        }
-
-        // １つ目になければ２つ目のネスト
-        return findViewById( R.id.ll_secondNestRoot );*/
-    }
-
-    /*
-     * 指定ブロックがFirstネストにあるかどうか
-     */
-    private boolean isBlockInFirstNest(Block block ){
-
-        // １つ目のネストをチェック
-        Block nestBlock = getNestStartBlock();
-        while( nestBlock != null ){
-            if( nestBlock == block ){
-                return true;
-            }
-            nestBlock = nestBlock.getBelowBlock();
-        }
-
-        // １つ目になければ２つ目のネスト
-        return false;
-    }
-
-    /*
-     * ネストビューの取得
-     */
-    public ViewGroup getSecondNestView() {
-        return findViewById( R.id.ll_secondNestRoot );
-    }
-
-    /*
-     * ネスト内スタートブロックの設定
-     */
-    public void setSecondNestStartBlock(StartBlock block ) {
-        mNestStartBlockSecond = block;
-    }
-    /*
-     * ネスト内スタートブロックの取得
-     */
-    public StartBlock getSecondNestStartBlock() {
-        return mNestStartBlockSecond;
-    }
-
-    /*
-     * elseネスト内スタートブロックを取得
-     */
-    private StartBlock getStartBlockInSecondNest() {
-        return mNestStartBlockSecond;
-    }
-
 
     /*
      * 指定ブロックがどのネストにいるか
@@ -419,113 +288,6 @@ public class IfElseProcessBlock extends NestProcessBlock {
     }
 
     /*
-     * ネスト内スタートブロック初期設定
-     */
-/*
-    @Override
-    public void initStartBlockInNest( int layoutID ) {
-        super.initStartBlockInNest( layoutID );
-
-        //------------------
-        // else側のネスト設定
-        //------------------
-        StartBlock pb_startSecond = getStartBlockInSecondNest();
-
-        // IDを動的に設定（他のネストブロックと重複しないようにするため）
-        pb_startSecond.setId(View.generateViewId());
-        // レイアウト設定
-        pb_startSecond.setLayout( layoutID );
-        // マーカー無効化
-        pb_startSecond.setMarker( false );
-        // スタートブロックにネスト情報を設定
-        pb_startSecond.setOwnNestBlock( this );
-    }
-*/
-
-    /*
-     * ネスト内マークエリアリスナーの設定
-     */
-/*    @Override
-    public void setMarkAreaInNestListerner(MarkerAreaListener listener) {
-        super.setMarkAreaInNestListerner( listener );
-
-        //------------------
-        // else側のネスト設定
-        //------------------
-        StartBlock pb_startSecond = getStartBlockInSecondNest();
-        ViewGroup cl_markAreaInStart = pb_startSecond.findViewById(R.id.cl_markAreaInStart);
-        cl_markAreaInStart.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // リスナーコール
-                listener.onBottomMarkerAreaClick(pb_startSecond);
-            }
-        });
-    }*/
-
-    /*
-     * ネスト内ドロップリスナーの設定
-     */
-/*    @Override
-    public void setDropInNestListerner(DropBlockListener listener) {
-        super.setDropInNestListerner( listener );
-
-        //------------------
-        // else側のネスト設定
-        //------------------
-        StartBlock pb_startSecond = getStartBlockInSecondNest();
-        pb_startSecond.setOnDragListener(new View.OnDragListener() {
-            @Override
-            public boolean onDrag(View view, DragEvent dragEvent) {
-                return listener.onDropBlock( (Block)view, dragEvent );
-            }
-        });
-    }*/
-
-    /*
-     * ネスト内の処理ブロック数を取得
-     */
-    @Override
-    public int getBlockSizeInNest() {
-        return mNestRoot.getChildCount();
-    }
-
-    /*
-     * ネスト内の処理ブロックを取得
-     * 　返す対象は、先頭から順番に行う。
-     * 　ただし、以下の状況にある場合、nullを返す
-     *   ・ネスト内の処理ブロック数が0
-     *   ・ネスト内の処理ブロックを最後まで返した
-     */
-    @Override
-    public ProcessBlock getBlockInNest() {
-
-        //--------------------
-        // 取得処理ブロックチェック
-        //--------------------
-        int blockInNestNum = mNestRoot.getChildCount();
-        if( blockInNestNum == 0 ){
-            // 処理ブロックなし
-            return null;
-        }
-        if( mBlockInNestIndex >= blockInNestNum ){
-            // 処理ブロック最後まで取得
-            return null;
-        }
-
-        //--------------------
-        // ネスト内処理ブロック
-        //--------------------
-        // ネスト内処理ブロックをコールされた順に応じて返す
-        ProcessBlock block = (ProcessBlock) mNestRoot.getChildAt( mBlockInNestIndex );
-        // 次回コールでは次の処理ブロックを返すために、indexを進める
-        mBlockInNestIndex++;
-
-        return block;
-    }
-
-
-    /*
      * 条件成立判定
      *   @return：条件成立- true
      *   @return：条件不成立- false
@@ -533,6 +295,9 @@ public class IfElseProcessBlock extends NestProcessBlock {
     @Override
     public boolean isCondition(CharacterNode characterNode) {
 
+        //-----------------
+        // 仮置き中
+        //-----------------
         int i = 0;
 
         Block below = mNestStartBlock.getBelowBlock();
@@ -542,25 +307,10 @@ public class IfElseProcessBlock extends NestProcessBlock {
         }
 
         return ( i % 2 != 0 );
-
-/*        tmploopCount++;
-//        boolean tmp = (tmploopCount == 2);
-        boolean tmp = true;
-
-        // 条件の真偽値に応じたネストルートレイアウトを取得
-        if( tmp ){
-            mNestRoot = findViewById(R.id.ll_firstNestRoot);
-        } else{
-            mNestRoot = findViewById(R.id.ll_secondNestRoot);
-        }
-
-        // 判定結果を保持
-        isConditionState = tmp;
-        return isConditionState;*/
     }
 
     /*
-     * 処理開始
+     * ブロック処理開始
      */
     @Override
     public void startProcess(CharacterNode characterNode) {
