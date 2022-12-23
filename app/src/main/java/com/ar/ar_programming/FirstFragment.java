@@ -276,7 +276,6 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
     private void setProgrammingUI() {
 
         // マーカ―はスタートブロックに付与
-        //★メソッド化
         initStartBlock();
 
         // プログラミング開始設定
@@ -313,15 +312,13 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
      * スタートブロック初期化処理
      */
     private void initStartBlock() {
-
         Block startBlock = binding.getRoot().findViewById(R.id.pb_chartTop);
         startBlock.setLayout(R.layout.process_block_start_ver2);
         startBlock.setMarkAreaListerner(this);
         startBlock.setDropBlockListerner(this);
 
+        // マーカ―ブロック設定
         mMarkedBlock = startBlock;
-
-        Log.i("クラスメソッド", "StartBlock   ID=" + startBlock.getId());
     }
 
     /*
@@ -421,6 +418,41 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
     }
 
     /*
+     * ブロック削除エリア設定
+     */
+    private void setRemoveBlockArea() {
+
+        // 削除エリア
+        ViewGroup root = binding.getRoot();
+        View v_removeArea = root.findViewById(R.id.v_removeArea);
+
+        v_removeArea.setOnDragListener(new View.OnDragListener() {
+            @Override
+            public boolean onDrag(View view, DragEvent dragEvent) {
+
+                switch (dragEvent.getAction()) {
+                    case DragEvent.ACTION_DRAG_STARTED:
+                    case DragEvent.ACTION_DRAG_ENTERED:
+                    case DragEvent.ACTION_DRAG_LOCATION:
+                    case DragEvent.ACTION_DRAG_EXITED:
+                    case DragEvent.ACTION_DRAG_ENDED:
+                        return true;
+
+                    case DragEvent.ACTION_DROP:
+                        // ドラッグ中ブロックを処理ラインから削除
+                        removeBlockFromLine((ProcessBlock) dragEvent.getLocalState());
+                        return true;
+
+                    default:
+                        break;
+                }
+
+                return false;
+            }
+        });
+    }
+
+    /*
      * キャラクター位置リセット
      */
     private void resetCharacterPosition() {
@@ -434,7 +466,6 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
         });
     }
 
-
     /*
      * 処理ブロック開始
      */
@@ -445,459 +476,7 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
 
         // ブロック処理を開始
         block.startProcess(mCharacterNode);
-
-        //---------------------------
-        // 処理ブロック種別に応じた処理
-        //---------------------------
-/*        int processType = block.getProcessType();
-        switch (processType) {
-
-            // 単体処理ブロック
-            case ProcessBlock.PROCESS_TYPE_SINGLE:
-                startBlockAnimation((SingleProcessBlock) block);
-                block.startProcess(mCharacterNode);
-                break;
-
-            // ネスト処理ブロック：if/loop
-            case ProcessBlock.PROCESS_TYPE_IF:
-            case ProcessBlock.PROCESS_TYPE_LOOP:
-                // ネスト数1の処理ブロック移行処理
-                oneNestProcessTransition((NestProcessBlock) block);
-                break;
-
-            // ネスト処理ブロック：if-else
-            case ProcessBlock.PROCESS_TYPE_IF_ELSE:
-                // ネスト数2の処理ブロック移行処理
-                twoNestProcessTransition((IfElseProcessBlock) block);
-                break;
-
-            default:
-                // 異常値は処理なし
-                break;
-        }*/
     }
-
-
-    /*
-     * 処理ブロックに対応したアニメーションの開始
-     * （前進や向きの変更等、キャラクターに処理ブロック通りの動きをさせる）
-     */
-    private void startBlockAnimation(SingleProcessBlock singleBlock) {
-
-        Log.i("ループ処理", "" + (new Object() {
-        }.getClass().getEnclosingMethod().getName()));
-
-        //------------------------------------------------------
-        // 処理種別と処理量からアニメーション量とアニメーション時間を取得
-        //------------------------------------------------------
-        // 処理種別と処理量
-        int contents = singleBlock.getProcessContents();
-        int setVolume = singleBlock.getProcessVolume();
-
-        // アニメーション量とアニメーション時間
-        float volume = mCharacterNode.getAnimationVolume(contents, setVolume);
-        long duration = mCharacterNode.getAnimationDuration(contents, setVolume);
-
-        // 処理に対応するアニメーションプロパティ名を取得
-        String propertyName = CharacterNode.getPropertyName(contents);
-
-        Log.i("アニメーション", "アニメーション開始--------------------");
-        Log.i("アニメーション", "volume=" + volume);
-        Log.i("アニメーション", "duration=" + duration);
-
-        //----------------------------------
-        // アニメーションの生成／開始：処理ブロック用
-        //----------------------------------
-        // アニメーション生成
-        ValueAnimator characterAnimator = ObjectAnimator.ofFloat(mCharacterNode, propertyName, volume);
-        characterAnimator.setDuration(duration);
-
-        // 今回の処理用のアニメーターを保持させる
-        mCharacterNode.setAnimator(characterAnimator);
-
-        // リスナ―設定：アニメーション終了のみ
-        characterAnimator.addListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationCancel(Animator animator) {
-            }
-
-            @Override
-            public void onAnimationRepeat(Animator animator) {
-            }
-
-            @Override
-            public void onAnimationStart(Animator animator) {
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animator) {
-
-                // ゴールしているなら、チャート処理はここで終了
-                boolean isGoal = mCharacterNode.isGoaled();
-                if (isGoal) {
-                    return;
-                }
-
-                Log.i("ループ処理", "処理アニメーション終了");
-
-                //-------------------------------
-                // アニメーション終了時の位置を保持
-                //-------------------------------
-                mCharacterNode.setEndProcessAnimation(contents, volume);
-
-                //-------------------------------
-                // 次の処理へ
-                //-------------------------------
-                startNextProcess(singleBlock);
-            }
-        });
-
-        // アニメーション開始
-        characterAnimator.start();
-
-        //----------------------------------------
-        // アニメーションの開始：モデルアニメーション用
-        //----------------------------------------
-        // モデルに用意されたアニメーションを開始
-        mCharacterNode.startModelAnimation(contents, duration);
-    }
-
-    /*
-     * 次の処理ブロック開始処理
-     *  @para：終了した処理ブロック
-     */
-    private void startNextProcess(ProcessBlock finishBlock) {
-
-        Log.i("ループ処理", "" + (new Object() {
-        }.getClass().getEnclosingMethod().getName()));
-
-        ProcessBlock targetBlock = finishBlock;
-
-        //------------------------------------
-        // 実行できる処理ブロックの実行処理までループ
-        //------------------------------------
-        while (true) {
-
-            // 直上ネストブロックを取得
-            NestProcessBlock parentNestBlock = targetBlock.getOwnNestBlock();
-            if (parentNestBlock == null) {
-                // なければ、メインラインの処理を次へ進める
-                proceedNextMainProcess(finishBlock);
-                break;
-            }
-
-            //-----------------------
-            // ネスト内の処理ライン
-            //-----------------------
-            // ループ処理内にいれば、ループ継続確認
-            int type = parentNestBlock.getProcessType();
-            if (type == ProcessBlock.PROCESS_TYPE_LOOP) {
-
-                // 次の処理が先頭の処理ブロックでなければ
-                boolean isNextProcessTop = ((LoopProcessBlock) parentNestBlock).isNextProcessTop();
-                if (!isNextProcessTop) {
-                    // ループ継続確認せず、次の処理へ
-                    ProcessBlock nextBlockInNest = parentNestBlock.getBlockInNest();
-                    runProcessBlock(nextBlockInNest);
-                    break;
-                }
-
-                // ループ継続判定
-                boolean isContinue = ((LoopProcessBlock) parentNestBlock).isCondition(mCharacterNode);
-                if (isContinue) {
-                    // ループ継続なら、ループ内の次の処理を実行
-                    ProcessBlock nextBlockInNest = parentNestBlock.getBlockInNest();
-                    runProcessBlock(nextBlockInNest);
-                    break;
-                }
-            }
-
-            // ループ処理内にない、or、ループ終了条件を満たしている場合、親ブロックの次の処理へ
-            targetBlock = parentNestBlock;
-        }
-    }
-
-
-    /*
-     * メインライン（Startブロックの直属ライン）の処理ブロックを次へ進める
-     */
-    private void proceedNextMainProcess(ProcessBlock finishBlock) {
-
-        Log.i("ループ処理", "" + (new Object() {
-        }.getClass().getEnclosingMethod().getName()));
-
-        //-----------------------
-        // 処理ブロック数チェック
-        //-----------------------
-        // 処理をすべて実施していれば終了
-        if (!finishBlock.hasBelowBlock()) {
-            return;
-        }
-
-        //-----------------------
-        // 処理ブロックの実行
-        //-----------------------
-        // 処理ブロックを取得して開始処理へ
-        ProcessBlock block = (ProcessBlock) finishBlock.getBelowBlock();
-        runProcessBlock(block);
-    }
-
-    /*
-     * ネスト数１のネストブロックの移行処理：if文、loop文
-     */
-    private void oneNestProcessTransition(NestProcessBlock nestBlock) {
-
-        Log.i("ループ処理", "" + (new Object() {
-        }.getClass().getEnclosingMethod().getName()));
-
-        //-----------------------------
-        // ネスト内処理ブロック数チェック
-        //-----------------------------
-        // ネスト内に処理ブロックがなければ
-        if (!nestBlock.hasNestBlock()) {
-            // 次の処理ブロックへ
-            startNextProcess(nestBlock);
-            return;
-        }
-
-        //-----------------------------
-        // 条件判定
-        //-----------------------------
-        // 条件未成立の場合
-        if (!nestBlock.isCondition(mCharacterNode)) {
-            // 次の処理ブロックへ
-            startNextProcess(nestBlock);
-            return;
-        }
-
-        //-----------------------------
-        // ネスト内処理ブロックの実行
-        //-----------------------------
-        // 入れ子内の処理ブロックを実行
-        ProcessBlock blockInNest = nestBlock.getBlockInNest();
-        runProcessBlock(blockInNest);
-    }
-
-    /*
-     * if文移行処理
-     */
-/*
-    private void ifProcessTransition(IfProcessBlock ifBlock ) {
-
-        //-----------------------------
-        // if文内処理ブロック数チェック
-        //-----------------------------
-        // if文内に処理ブロックがなければ
-        int blockInLoopNum = ifBlock.getProcessInNestNum();
-        if (blockInLoopNum == 0) {
-            // 次の処理ブロックへ
-            startNextProcess(ifBlock);
-            return;
-        }
-
-        //--------------
-        // 条件判定
-        //--------------
-        // 条件未成立の場合
-        if( !ifBlock.isConditionTrue(mCharacterNode) ){
-            // 次の処理ブロックへ
-            startNextProcess(ifBlock);
-            return;
-        }
-
-        //--------------
-        // ネスト内処理
-        //--------------
-        // 入れ子内の処理ブロックを実行
-        ProcessBlock blockInIf = ifBlock.getProcessInNest();
-        runProcessBlock(blockInIf);
-    }
-*/
-
-    /*
-     * ネスト数２の処理ブロックの移行処理：if-else文
-     */
-    private void twoNestProcessTransition(IfElseProcessBlock nestBlock) {
-
-        // 条件判定を行う
-        nestBlock.isCondition(mCharacterNode);
-
-        //-----------------------------
-        // 対象ネスト内の処理ブロック数チェック
-        //-----------------------------
-        // 対象ネスト内に処理ブロックがなければ
-        int blockInLoopNum = nestBlock.getBlockSizeInNest();
-        if (blockInLoopNum == 0) {
-            // 次の処理ブロックへ
-            startNextProcess(nestBlock);
-            return;
-        }
-
-        //--------------
-        // ネスト内処理
-        //--------------
-        // 入れ子内の処理ブロックを実行
-        ProcessBlock blockInIf = nestBlock.getBlockInNest();
-        runProcessBlock(blockInIf);
-    }
-
-
-    /*
-     * 開始ブロック設定
-     */
-    private void setStartBlock() {
-
-        ViewGroup root = binding.getRoot();
-
-        // ドロップリスナーの設定
-//        TextView tv_startBlock = root.findViewById(R.id.tv_startBlock);
-//        tv_startBlock.setOnDragListener(new View.OnDragListener() {
-//            @Override
-//            public boolean onDrag(View view, DragEvent dragEvent) {
-//
-//                switch (dragEvent.getAction()) {
-//                    case DragEvent.ACTION_DRAG_STARTED:
-//                    case DragEvent.ACTION_DRAG_ENTERED:
-//                    case DragEvent.ACTION_DRAG_LOCATION:
-//                    case DragEvent.ACTION_DRAG_EXITED:
-//                    case DragEvent.ACTION_DRAG_ENDED:
-//                        return true;
-//
-//                    case DragEvent.ACTION_DROP:
-//                        return true;
-//
-//                    default:
-//                        break;
-//                }
-//
-//                return false;
-//            }
-//        });
-    }
-
-    /*
-     * 処理チャートの中で、一番下の処理ブロックを取得
-     */
-    private ProcessBlock getMostBottomBlock() {
-
-        ViewGroup root = binding.getRoot();
-        ViewGroup ll_UIRoot = root.findViewById(R.id.ll_UIRoot);
-
-        int lastIndex = ll_UIRoot.getChildCount() - 1;
-        return (ProcessBlock) ll_UIRoot.getChildAt(lastIndex);
-    }
-
-
-
-    /*
-     *
-     */
-/*
-    private void sampleCreateBlock() {
-
-        ViewGroup root = binding.getRoot();
-
-        // ドラッグ用
-        TextView tx_1 = root.findViewById(R.id.textView1);
-        tx_1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                // チャート最下部のブロックを取得
-                ProcessBlock bottomBlock = getMostBottomBlock();
-
-                // 本処理ブロックをチャート最下部のブロックに追加
-                SingleProcessBlock ProcessBlock = new SingleProcessBlock(view.getContext(), getParentFragmentManager());
-                ProcessBlock.setProcessKind( ProcessBlock.PROC_KIND_FORWARD);
-                bottomBlock.createProcessBlock(ProcessBlock);
-
-*/
-/*                // 新規処理ブロックの生成
-                SingleProcessBlock ProcessBlock = new SingleProcessBlock(view.getContext(), getParentFragmentManager());
-                ProcessBlock.setProcKind( ProcessBlock.PROC_KIND_FORWARD );
-                // ドラッグ中の影を生成
-                View.DragShadowBuilder myShadow = new View.DragShadowBuilder(view);
-
-                // ドラッグ開始
-                view.startDragAndDrop(null, myShadow, ProcessBlock, 0);*//*
-
-            }
-        });
-
-        // ドラッグ用
-        TextView tx_2 = root.findViewById(R.id.textView2);
-        tx_2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                // チャート最下部のブロックを取得
-                ProcessBlock bottomBlock = getMostBottomBlock();
-
-                // 本処理ブロックをチャート最下部のブロックに追加
-                NestProcessBlock ProcessBlock = new NestProcessBlock(view.getContext());
-                ProcessBlock.setProcessKind(ProcessBlock.PROC_KIND_IF);
-                bottomBlock.createProcessBlock(ProcessBlock);
-
-*/
-/*                // 新規処理ブロックの生成
-                NestProcessBlock ProcessBlock = new NestProcessBlock(view.getContext());
-                ProcessBlock.setProcKind( ProcessBlock.PROC_KIND_IF );
-                // ドラッグ中の影を生成
-                View.DragShadowBuilder myShadow = new View.DragShadowBuilder(view);
-
-                // ドラッグ開始
-                view.startDragAndDrop(null, myShadow, ProcessBlock, 0);*//*
-
-            }
-        });
-    }
-*/
-
-    /*
-     *
-     */
-/*
-    private void sampleDragView() {
-
-        ViewGroup root = binding.getRoot();
-
-        // ドラッグ用
-        TextView tx_1 = root.findViewById(R.id.textView1);
-        tx_1.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-
-                // 新規処理ブロックの生成
-                SingleProcessBlock ProcessBlock = new SingleProcessBlock(view.getContext(), getParentFragmentManager());
-                ProcessBlock.setProcessKind(ProcessBlock.PROC_KIND_FORWARD);
-                // ドラッグ中の影を生成
-                View.DragShadowBuilder myShadow = new View.DragShadowBuilder(view);
-
-                // ドラッグ開始
-                view.startDragAndDrop(null, myShadow, ProcessBlock, 0);
-                return false;
-            }
-        });
-
-        // ドラッグ用
-        TextView tx_2 = root.findViewById(R.id.textView2);
-        tx_2.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-
-                // 新規処理ブロックの生成
-                NestProcessBlock ProcessBlock = new IfProcessBlock(view.getContext());
-                ProcessBlock.setProcessKind(ProcessBlock.PROC_KIND_IF);
-                // ドラッグ中の影を生成
-                View.DragShadowBuilder myShadow = new View.DragShadowBuilder(view);
-
-                // ドラッグ開始
-                view.startDragAndDrop(null, myShadow, ProcessBlock, 0);
-                return false;
-            }
-        });
-    }
-*/
 
     /*
      * 処理ブロックリスト設定
@@ -932,107 +511,6 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
             }
         });
     }
-
-    /*
-     * プログラミングチャートエリアのスクロール設定
-     */
-/*
-    private void setChartAreaScroll() {
-
-        float density = getResources().getDisplayMetrics().density;
-
-        // レイアウトに設定されているチャートサイズ：px→dp
-        float scaleX = getResources().getDimension(R.dimen.chart_area_width) / density;
-        float scaleY = getResources().getDimension(R.dimen.chart_area_height) / density;
-
-        // 最大マップ移動距離は、チャートエリアの半分
-//        mMaxChartAreaScaleX = scaleX / 2f;
-//        mMaxChartAreaScaleY = scaleY / 2f;
-        mMaxChartAreaScaleX = scaleX;
-        mMaxChartAreaScaleY = scaleY;
-
-        // フリング用スクロール生成
-        Context context = getContext();
-        mFlingScroller = new Scroller(context, new DecelerateInterpolator());
-        mScrollGestureDetector = new GestureDetector(context, new ScrollListener());
-
-        Log.i("スクロール値", "mMaxChartAreaScaleX=" + (mMaxChartAreaScaleX) + " mMaxChartAreaScaleY=" + (mMaxChartAreaScaleY));
-
-        ViewGroup root = binding.getRoot();
-        FrameLayout ll_UIRoot = root.findViewById(R.id.ll_UIRoot);
-        ll_UIRoot.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-
-                Log.i("スクロールテスト", "setOnTouchListener()コール確認");
-
-                //現在のスクロールを停止
-                mFlingScroller.forceFinished(true);
-
-                switch (motionEvent.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-
-                        //タッチ開始時のタッチ位置
-                        mPreTouchPosX = motionEvent.getX();
-                        mPreTouchPosY = motionEvent.getY();
-                        break;
-
-                    case MotionEvent.ACTION_MOVE:
-
-                        float distanceX = motionEvent.getX() - mPreTouchPosX;
-                        float distanceY = motionEvent.getY() - mPreTouchPosY;
-
-                        //Log.i("MotionEvent", "preX=" + mPreTouchPosX + " preY=" + mPreTouchPosY);
-                        //Log.i("MotionEvent", "getX=" + motionEvent.getX() + " getY=" + motionEvent.getY());
-
-                        //移動先座標
-                        float x = ll_UIRoot.getTranslationX() + distanceX;
-                        float y = ll_UIRoot.getTranslationY() + distanceY;
-
-                        Log.i("スクロール値", "予定 移動先X=" + (x) + " 移動先Y=" + (y));
-
-                        //マップサイズを超えて移動しようとした場合、最大サイズに丸める（最大移動距離を超えて移動させない）
-                        x = ( x >= 0 ?
-                                Math.min( x, mMaxChartAreaScaleX ):
-                                Math.max( x, -mMaxChartAreaScaleX )
-                        );
-                        y = ( y >= 0 ?
-                                Math.min( y, mMaxChartAreaScaleY ):
-                                Math.max( y, -mMaxChartAreaScaleY )
-                        );
-
-                        Log.i("スクロール値", "実際 移動先X=" + (x) + " 移動先Y=" + (y));
-
-                        //前回からの移動量を反映
-                        ll_UIRoot.setTranslationX(x);
-                        ll_UIRoot.setTranslationY(y);
-
-                        //Log.i("マップ移動対応", "実際 移動先X=" + (x) + " 移動先Y=" + (y));
-                        //Log.i("マップ移動対応", "-----------------");
-                        //Log.i("サイズチェック", "map_max_size(px)=" + (int)getResources().getDimension(R.dimen.map_max_size_x));
-                        //Log.i("サイズチェック", "map_max_size(dp)=" + (getResources().getDimension(R.dimen.map_max_size_x) / getResources().getDisplayMetrics().density));
-
-                        mPreTouchPosX = motionEvent.getX();
-                        mPreTouchPosY = motionEvent.getY();
-
-                        break;
-
-                    case MotionEvent.ACTION_CANCEL:
-                        // something to do
-                        break;
-                }
-
-                //スクロール操作リスナーをコール
-                mScrollGestureDetector.onTouchEvent(motionEvent);
-
-                return true;
-            }
-        });
-
-
-    }
-*/
-
 
     /*
      * チャート最下部に処理ブロックを生成する
@@ -1087,25 +565,16 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
         // チャートに追加
         //----------------------
         // 「マークブロック」の下に追加
-//        preparationInsertBlock(mMarkedBlock, newBlock);
         insertNewBlock(mMarkedBlock, newBlock);
-
-        // 生成ブロックがネストブロックなら
-        if (processType != Block.PROCESS_TYPE_SINGLE) {
-            newBlock.post(() -> {
-                // スタートブロックを配置
-                //★ネストクラスに移動
-//                deployNestStartBlock(newBlock);
-//                deployNestStartBlock_ver2(newBlock);
-            });
-        }
 
         // マーカーブロックを新ブロックに変更
         changeMarkerBlock(newBlock);
     }
 
     /*
-     *
+     * ブロックの下に指定されたブロックを挿入する
+     *   @para1:挿入先ブロック（本ブロックの下にブロックが挿入される）
+     *   @para2:挿入ブロック
      */
     private void insertNewBlock(Block aboveBlock, ProcessBlock newBlock) {
 
@@ -1123,154 +592,15 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
         ll_UIRoot.addView(newBlock, mlp);
 
-        // スタートブロックの配置
-//        if (newBlock.getProcessType() != Block.PROCESS_TYPE_SINGLE) {
-        if ( newBlock instanceof NestProcessBlock ) {
-/*            StartBlock startBlock = ((NestProcessBlock)newBlock).getNestStartBlock();
-            ll_UIRoot.addView(startBlock, mlp);*/
-
-            ((NestProcessBlock)newBlock).deployStartBlock( ll_UIRoot );
+        // 生成するブロックがネストブロックの場合
+        if (newBlock instanceof NestProcessBlock) {
+            // ネスト内スタートブロックの配置
+            ((NestProcessBlock) newBlock).deployStartBlock(ll_UIRoot);
         }
 
-        // 生成ブロックの位置を更新
+        // 生成ブロック位置を更新
         newBlock.updatePosition();
     }
-
-
-    /*
-     * 指定ブロックを「aboveBlock」の下に挿入する
-     */
-    private void preparationInsertBlock(Block aboveBlock, ProcessBlock newBlock) {
-
-        // 挿入先の上ブロックのレイアウト確定待ち
-        aboveBlock.post(() -> {
-            // 挿入位置を計算し、チャートに挿入
-            ViewGroup.MarginLayoutParams mlp = getNewBlockMlp(aboveBlock);
-            insertBlockBelowMark(aboveBlock, newBlock, mlp);
-        });
-    }
-
-    /*
-     * 指定ブロックを「aboveBlock」の下に挿入する
-     */
-    private void preparationTrancelateBlock(Block aboveBlock, ProcessBlock newBlock) {
-
-        // 挿入先の上ブロックのレイアウト確定待ち
-        aboveBlock.post(() -> {
-            // 挿入位置を計算し、チャートに挿入
-//            ViewGroup.MarginLayoutParams mlp = getNewBlockMlpForTrance(newBlock, aboveBlock);
-//            insertBlockBelowMark(aboveBlock, newBlock, mlp);
-            trancelateBlockBelowMark(aboveBlock, newBlock);
-        });
-    }
-
-    /*
-     * 指定ブロックを「aboveBlock」の下に挿入する
-     */
-    private void trancelateBlockBelowMark(Block aboveBlock, ProcessBlock newBlock) {
-
-        //-------------------------------
-        // ブロックをレイアウトに追加
-        //-------------------------------
-//        newBlock.setLayoutParams( mlp );
-//        newBlock.setChartPosition( mlp );
-        newBlock.setChartPosition(aboveBlock);
-
-        // アニメーションを付与
-        newBlock.setAlpha(0f);
-        newBlock.animate()
-                .alpha(1f)
-                .setDuration(300)
-                .setListener(null);
-
-        //-------------------------
-        // 上下ブロックの保持情報更新
-        //-------------------------
-        rewriteAboveBelowBlockOnInsert(aboveBlock, newBlock);
-
-        // 新ブロックレイアウト確定後
-        newBlock.post(() -> {
-
-            //----------------------------------
-            // 新ブロックより下のブロックの位置を下げる
-            //----------------------------------
-            int newBlockHeight = newBlock.getHeight();
-            if (newBlock.hasBelowBlock()) {
-                Block belowBlock = newBlock.getBelowBlock();
-                belowBlock.downChartPosition(newBlockHeight);
-            }
-
-            // 追加先がネストブロック内の場合
-            if (aboveBlock.inNest()) {
-                NestProcessBlock nestBlock = aboveBlock.getOwnNestBlock();
-                nestBlock.downNestBelowBlock(newBlockHeight);
-
-                // ネストブロックサイズを変更
-                nestBlock.resizeNestHeight(newBlock, NestProcessBlock.NEST_EXPAND);
-            }
-        });
-
-        //-------------------------------
-        // ネスト情報の書き換え
-        //-------------------------------
-        NestProcessBlock nestBlock = aboveBlock.getOwnNestBlock();
-        newBlock.setOwnNestBlock(nestBlock);
-    }
-
-
-    /*
-     * 指定ブロックを「aboveBlock」の下に挿入する
-     */
-    private void insertBlockBelowMark(Block aboveBlock, ProcessBlock newBlock, ViewGroup.MarginLayoutParams mlp) {
-
-        FrameLayout ll_UIRoot = binding.getRoot().findViewById(R.id.ll_UIRoot);
-
-        //-------------------------------
-        // ブロックをレイアウトに追加
-        //-------------------------------
-        ll_UIRoot.addView(newBlock, mlp);
-
-        // アニメーションを付与
-        newBlock.setAlpha(0f);
-        newBlock.animate()
-                .alpha(1f)
-                .setDuration(300)
-                .setListener(null);
-
-        //-------------------------
-        // 上下ブロックの保持情報更新
-        //-------------------------
-        rewriteAboveBelowBlockOnInsert(aboveBlock, newBlock);
-
-        // 新ブロックレイアウト確定後
-        newBlock.post(() -> {
-
-            //----------------------------------
-            // 新ブロックより下のブロックの位置を下げる
-            //----------------------------------
-            int newBlockHeight = newBlock.getHeight();
-            if (newBlock.hasBelowBlock()) {
-                Block belowBlock = newBlock.getBelowBlock();
-                belowBlock.downChartPosition(newBlockHeight);
-            }
-
-            // 追加先がネストブロック内の場合
-            if (aboveBlock.inNest()) {
-                NestProcessBlock nestBlock = aboveBlock.getOwnNestBlock();
-                nestBlock.downNestBelowBlock(newBlockHeight);
-
-                // ネストブロックサイズを変更
-                nestBlock.resizeNestHeight(newBlock, NestProcessBlock.NEST_EXPAND);
-            }
-        });
-
-        //-------------------------------
-        // ネスト情報の書き換え
-        //-------------------------------
-        NestProcessBlock nestBlock = aboveBlock.getOwnNestBlock();
-        newBlock.setOwnNestBlock(nestBlock);
-    }
-
 
     /*
      * 上下ブロック保持情報の更新（ブロック挿入時）
@@ -1310,241 +640,34 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
     }
 
     /*
-     *
+     * 上下ブロック保持情報の更新（ブロック移動時）
      */
-    private StartBlock deployNestStartBlock_ver2(ProcessBlock newBlock) {
+    private void rewriteAboveBelowBlockOnDrop(Block dropBlock, Block moveBlock) {
 
-        // 生成ブロックが単体処理ブロックなら、何もしない
-        if (newBlock.getProcessType() == Block.PROCESS_TYPE_SINGLE) {
-            return null;
+        //-------------------
+        // 上下情報の更新
+        //-------------------
+        // 移動先の下ブロック
+        Block dropBelowBlock = dropBlock.getBelowBlock();
+
+        // 移動ブロックの上下ブロック
+        Block moveAboveBlock = moveBlock.getAboveBlock();
+        Block moveBelowBlock = moveBlock.getBelowBlock();
+
+        // 移動ブロックを移動先に差し込む
+        dropBlock.setBelowBlock(moveBlock);
+        moveBlock.setAboveBlock(dropBlock);
+        moveBlock.setBelowBlock(dropBelowBlock);
+        if (dropBelowBlock != null) {
+            dropBelowBlock.setAboveBlock(moveBlock);
         }
 
-        FrameLayout ll_UIRoot = binding.getRoot().findViewById(R.id.ll_UIRoot);
-
-        //------------------------------
-        // スタートブロック生成（ネスト１つ目）
-        //------------------------------
-        StartBlock startBlock = createNestStartBlock((NestProcessBlock) newBlock);
-        ((NestProcessBlock) newBlock).addStartBlock( startBlock, ll_UIRoot );
-/*        newBlock.post(() -> {
-            StartBlock startBlock = createNestStartBlock((NestProcessBlock) newBlock);
-            ((NestProcessBlock) newBlock).addStartBlock( startBlock, ll_UIRoot );
-        });*/
-
-        return startBlock;
-    }
-
-    /*
-     * ネスト内スタートブロックの生成と配置
-     */
-    private void deployNestStartBlock(ProcessBlock newBlock) {
-
-        // 生成ブロックが単体処理ブロックなら、何もしない
-        if (newBlock.getProcessType() == Block.PROCESS_TYPE_SINGLE) {
-            return;
+        // 移動ブロックの移動前の上下ブロックを繋げる
+        moveAboveBlock.setBelowBlock(moveBelowBlock);
+        if (moveBelowBlock != null) {
+            moveBelowBlock.setAboveBlock(moveAboveBlock);
         }
-
-        FrameLayout ll_UIRoot = binding.getRoot().findViewById(R.id.ll_UIRoot);
-
-        //------------------------------
-        // スタートブロック生成（ネスト１つ目）
-        //------------------------------
-        // スタートブロック生成
-        StartBlock startBlock = createNestStartBlock((NestProcessBlock) newBlock);
-        // レイアウトに配置
-        ViewGroup nestView = ((NestProcessBlock) newBlock).getNestView();
-        ViewGroup.MarginLayoutParams startMlp = getNestStartBlockMlp((NestProcessBlock) newBlock, nestView);
-        ll_UIRoot.addView(startBlock, startMlp);
-
-        // ネストブロックにスタートブロックを保持させる
-        ((NestProcessBlock) newBlock).setNestStartBlock(startBlock);
-
-        //---------------------
-        // ネストサイズ設定
-        //---------------------
-        // レイアウト確定後、ネスト高さをスタートブロックの高さにする
-        startBlock.post(() -> {
-            ViewGroup targetNest = ((NestProcessBlock) newBlock).getNestView();
-            ViewGroup.LayoutParams lp = targetNest.getLayoutParams();
-            lp.height = startBlock.getHeight();
-            targetNest.setLayoutParams(lp);
-        });
-
-        // マーカーブロックをネスト内のスタートブロックに変更
-        changeMarkerBlock(startBlock);
-
-        //-------------------------
-        // if-else 以外はここで終了
-        //-------------------------
-        if (newBlock.getProcessType() != Block.PROCESS_TYPE_IF_ELSE) {
-            return;
-        }
-
-        //------------------------------
-        // スタートブロック生成（ネスト２つ目）
-        //------------------------------
-        // スタートブロック生成
-        StartBlock startBlockSecond = createNestStartBlock((NestProcessBlock) newBlock);
-        // レイアウトに配置
-        ViewGroup secondNestView = ((IfElseProcessBlock) newBlock).getSecondNestView();
-        startMlp = getNestStartBlockMlp((NestProcessBlock) newBlock, secondNestView);
-        ll_UIRoot.addView(startBlockSecond, startMlp);
-
-        // ネストブロックにスタートブロックを保持させる
-        ((IfElseProcessBlock) newBlock).setSecondNestStartBlock(startBlockSecond);
-
-        //---------------------
-        // ネストサイズ設定
-        //---------------------
-        // レイアウト確定後、ネスト高さをスタートブロックの高さにする
-        startBlockSecond.post(() -> {
-            ViewGroup targetSecondNest = ((IfElseProcessBlock) newBlock).getSecondNestView();
-            ViewGroup.LayoutParams lp = targetSecondNest.getLayoutParams();
-            lp.height = startBlockSecond.getHeight();
-            targetSecondNest.setLayoutParams(lp);
-        });
     }
-
-    /*
-     * ネストスタートブロックの生成
-     */
-    private StartBlock createNestStartBlock(NestProcessBlock parentNestBlock) {
-
-        StartBlock startBlock = new StartBlock(getContext());
-        startBlock.setId(View.generateViewId());
-        startBlock.setLayout(R.layout.process_block_start_in_nest);
-        startBlock.setMarkAreaListerner(this);
-        startBlock.setDropBlockListerner(this);
-        startBlock.setOwnNestBlock(parentNestBlock);
-
-        return startBlock;
-    }
-
-    /*
-     * 新ブロックのMarginLayoutParamsの算出・取得
-     */
-    private ViewGroup.MarginLayoutParams getNewBlockMlp(Block aboveBlock) {
-
-        ViewGroup.MarginLayoutParams mlp = new ViewGroup.MarginLayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT);
-
-        int top = aboveBlock.getTop() + aboveBlock.getHeight();
-        int left = mlp.leftMargin;
-
-        if (aboveBlock.inNest()) {
-            left = aboveBlock.getLeft();
-            Log.i("位置更新", "ネスト内スタートブロック getLeft()=" + left);
-        }
-
-        Log.i("ネスト移動", "新規生成ブロック top()=" + top);
-
-        mlp.setMargins(left, top, 0, 0);
-        return mlp;
-    }
-
-    private ViewGroup.MarginLayoutParams getNewBlockMlpForTrance(Block newBlock, Block aboveBlock) {
-
-        ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) newBlock.getLayoutParams();
-        ViewGroup.MarginLayoutParams mlp2 = new ViewGroup.MarginLayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT);
-
-        int top = aboveBlock.getTop() + aboveBlock.getHeight();
-        int left = mlp.leftMargin;
-
-        Log.i("ネスト移動", "top=" + top);
-        Log.i("ネスト移動", "mlp.topMargin=" + mlp.topMargin);
-
-        if (aboveBlock.inNest()) {
-            left = aboveBlock.getLeft();
-            Log.i("位置更新", "ネスト内スタートブロック getLeft()=" + left);
-        }
-
-//        mlp.setMargins(left, top, 0, 0);
-        mlp.topMargin = top;
-        mlp.leftMargin = left;
-
-        mlp2.topMargin = top;
-        mlp2.leftMargin = left;
-        mlp2.rightMargin = mlp.rightMargin;
-        mlp2.bottomMargin = mlp.bottomMargin;
-
-        return mlp;
-    }
-
-    /*
-     * ネスト内スタートブロックのMarginLayoutParamsの算出・取得
-     */
-    private ViewGroup.MarginLayoutParams getNestStartBlockMlp(NestProcessBlock nestBlock, ViewGroup nestView) {
-
-        ViewGroup.MarginLayoutParams mlp = new ViewGroup.MarginLayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT);
-
-        // トップマージン：「」＋「」＋「」＋「」
-        int nestBlockTop = nestBlock.getTop();
-        int nestViewTop = nestView.getTop();
-
-        int top = nestBlockTop + nestViewTop;
-
-        // 左マージン：「」＋「」
-        int nestBlockLeft = nestBlock.getLeft();
-        int nestViewLeft = nestView.getLeft();
-        int left = nestBlockLeft + nestViewLeft;
-
-        Log.i("位置更新", "nestBlockTop=" + nestBlockTop);
-        Log.i("位置更新", "nestViewTop=" + nestViewTop);
-        Log.i("位置更新", "nestBlockLeft=" + nestBlockLeft);
-        Log.i("位置更新", "nestViewLeft=" + nestViewLeft);
-
-        mlp.setMargins(left, top, 0, 0);
-        return mlp;
-    }
-
-
-    /*
-     * 指定ブロックから下にあるブロックを、全て下げる
-     */
-    private void downBelowBlock(Block downStartBlock, int downSize) {
-
-        //---------------------
-        // 下ブロックがなくなるまで
-        //---------------------
-        while (downStartBlock != null) {
-
-            //---------------
-            // ブロックを移動
-            //---------------
-            // 移動させる位置（「上ブロックの上マージン」＋「上ブロックの高さ」＋「下げる量」）
-            int top = downStartBlock.getTop() + downSize;
-            // マージンを再設定し、位置を下げる
-            ViewGroup.MarginLayoutParams belowMlp = (ViewGroup.MarginLayoutParams) downStartBlock.getLayoutParams();
-            belowMlp.setMargins(belowMlp.leftMargin, top, belowMlp.rightMargin, belowMlp.bottomMargin);
-
-            //------------------------
-            // ネスト内ブロック移動
-            //------------------------
-            // ネストブロックの場合
-            int type = downStartBlock.getProcessType();
-            if ((type == Block.PROCESS_TYPE_IF) || (type == Block.PROCESS_TYPE_IF_ELSE) || (type == Block.PROCESS_TYPE_LOOP)) {
-
-                // ネスト内のブロックを下げる（ネスト１つ目）
-                Block nestStartBlock = ((NestProcessBlock) downStartBlock).getNestStartBlock();
-                downBelowBlock(nestStartBlock, downSize);
-
-                // ネスト内のブロックを下げる（ネスト２つ目）
-                if (type == Block.PROCESS_TYPE_IF_ELSE) {
-                    Block secondStartBlock = ((IfElseProcessBlock) downStartBlock).getSecondNestStartBlock();
-                    downBelowBlock(secondStartBlock, downSize);
-                }
-            }
-
-            // 下げる対象のブロックを次へ
-            downStartBlock = downStartBlock.getBelowBlock();
-        }
-
-        FrameLayout ll_UIRoot = binding.getRoot().findViewById(R.id.ll_UIRoot);
-        ll_UIRoot.invalidate();
-    }
-
 
     /*
      * マーカー入れ替え判定
@@ -1571,63 +694,32 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
     }
 
     /*
-     *
+     * 処理ブロックのドラッグ移動
+     *   「ドラッグされたブロック」を「ドロップ先ブロック」の下に移動させる
      */
-    private void moveBlockFromLine(Block dropBlock, ProcessBlock moveBlock) {
-
-        //-------------------
+    private void dragMoveUnderDrop(Block dropBlock, ProcessBlock moveBlock) {
         // 上下情報の更新
-        //-------------------
-        // 移動先の下ブロック
-        Block dropBelowBlock = dropBlock.getBelowBlock();
-
-        // 移動ブロックの上下ブロック
-        Block moveAboveBlock = moveBlock.getAboveBlock();
-        Block moveBelowBlock = moveBlock.getBelowBlock();
-
-        // 移動ブロックを移動先に差し込む
-        dropBlock.setBelowBlock(moveBlock);
-        moveBlock.setAboveBlock(dropBlock);
-        moveBlock.setBelowBlock(dropBelowBlock);
-        if (dropBelowBlock != null) {
-            dropBelowBlock.setAboveBlock(moveBlock);
-        }
-
-        // 移動ブロックの移動前の上下ブロックを繋げる
-        moveAboveBlock.setBelowBlock(moveBelowBlock);
-        if (moveBelowBlock != null) {
-            moveBelowBlock.setAboveBlock(moveAboveBlock);
-        }
-
-        //-------------------
+        rewriteAboveBelowBlockOnDrop( dropBlock, moveBlock );
         // 親ネストの更新
-        //-------------------
         moveBlock.setOwnNestBlock( dropBlock.getOwnNestBlock() );
-
-        //-------------------
-        // 位置を更新
-        //-------------------
+        // ブロック位置をチャート先頭から更新
         updatePositionFromTop();
     }
 
     /*
-     *
+     * チャート先頭ブロック位置更新
      */
     private void updatePositionFromTop() {
+
+        // チャートスタートブロックの下ブロックを取得
         StartBlock pb_chartTop = binding.getRoot().findViewById(R.id.pb_chartTop);
         Block updateStart = pb_chartTop.getBelowBlock();
-
-/*
-        //---
-        while( updateStart != null ){
-            Log.i("再実装", "全更新前位置確認 ID=" + updateStart.getId() + " getTop()" + updateStart.getTop());
-
-            updateStart = updateStart.getBelowBlock();
+        if( updateStart == null ){
+            // ブロックなしなら処理なし
+            return;
         }
-        updateStart = pb_chartTop.getBelowBlock();
-        //---
-*/
 
+        // 位置更新
         updateStart.updatePosition();
     }
 
@@ -1651,114 +743,23 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
         //-------------------
         // 上下ブロック保持情報の更新
         rewriteAboveBelowBlockOnRemove(removeBlock);
-
         // 自身をチャートから削除
         removeBlock.removeOnChart();
-
         // 削除ブロックの上ブロックから更新
         Block aboveBlock = removeBlock.getAboveBlock();
         aboveBlock.updatePosition();
-
-
-/*        // ネスト内ブロックの削除の場合
-        if (removeBlock.inNest()) {
-            // ネストブロック下のブロックを上に移動させる
-            NestProcessBlock nestBlock = removeBlock.getOwnNestBlock();
-            nestBlock.upNestBelowBlock(removeBlock.getHeight());
-
-            // 削除ブロック分、ネストを縮める
-            nestBlock.resizeNestHeight(removeBlock, NestProcessBlock.NEST_SHRINK);
-        }
-
-        // チャートから削除
-        // ！ネストの縮小処理の後に行うこと（if-elseの場合、どちらのネストにいたか不明になるため）！
-        if( remove ){
-            removeBlock.removeOnChart();
-        } else {
-            removeBlock.upBelowBlock();
-        }
-
-        // 上下ブロック保持情報の更新
-        // ！ネストの縮小処理の後に行うこと（if-elseの場合、どちらのネストにいたか不明になるため）！
-        rewriteAboveBelowBlockOnRemove(removeBlock);*/
-    }
-
-
-    /*
-     * 指定ブロックの１つ上にあるブロックを取得
-     */
-    public Block getOneAboveBlock(ProcessBlock block) {
-        // 「指定ブロックのchildIndex」の１つ上のブロックを返す
-        ViewGroup parentView = (ViewGroup) block.getParent();
-        int childIndex = block.getOwnChildIndex();
-
-        return (Block) parentView.getChildAt(childIndex - 1);
     }
 
     /*
-     *
+     * マーカーブロックの変更
      */
-    private void setRemoveBlockArea() {
+    public void changeMarkerBlock(Block newMarkerBlock) {
+        // 現在のマーカーを切り替え
+        mMarkedBlock.setMarker(false);
+        newMarkerBlock.setMarker(true);
 
-        // 削除エリア
-        ViewGroup root = binding.getRoot();
-        View v_removeArea = root.findViewById(R.id.v_removeArea);
-
-        v_removeArea.setOnDragListener(new View.OnDragListener() {
-            @Override
-            public boolean onDrag(View view, DragEvent dragEvent) {
-
-                switch (dragEvent.getAction()) {
-                    case DragEvent.ACTION_DRAG_STARTED:
-                    case DragEvent.ACTION_DRAG_ENTERED:
-                    case DragEvent.ACTION_DRAG_LOCATION:
-                    case DragEvent.ACTION_DRAG_EXITED:
-                    case DragEvent.ACTION_DRAG_ENDED:
-                        return true;
-
-                    case DragEvent.ACTION_DROP:
-                        // ドラッグ中ブロックを処理ラインから削除
-                        removeBlockFromLine((ProcessBlock) dragEvent.getLocalState());
-                        return true;
-
-                    default:
-                        break;
-                }
-
-                return false;
-            }
-        });
-    }
-
-    /*
-     * ドラッグビューをレイアウトから削除
-     */
-    private void removeProcessBlock(DragEvent dragEvent) {
-
-        // 削除対象（ドラッグされてきたビュー）のID
-        View draggedView = (View) dragEvent.getLocalState();
-        int draggedID = draggedView.getId();
-
-        // 削除対象（ドラッグされてきたビュー）の親レイアウト
-        ViewGroup parent = (ViewGroup) draggedView.getParent();
-
-        //---------------------------
-        // 検索してレイアウトから削除
-        //---------------------------
-        // 子ビューを全て検索
-        int childNum = parent.getChildCount();
-        for (int i = 0; i < childNum; i++) {
-            // 検索対象の子ビューのID
-            View target = parent.getChildAt(i);
-            int id = target.getId();
-
-            // IDの一致するビューがあれば
-            if (id == draggedID) {
-                // レイアウトから削除
-                parent.removeView(target);
-                return;
-            }
-        }
+        // 新しいマーカーブロックを保持
+        mMarkedBlock = newMarkerBlock;
     }
 
     /*
@@ -2372,19 +1373,6 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
     }
 
     /*
-     * マーカーブロックの変更
-     */
-    public void changeMarkerBlock(Block newMarkerBlock) {
-
-        // 現在のマーカーを切り替え
-        mMarkedBlock.setMarker(false);
-        newMarkerBlock.setMarker(true);
-
-        // 新しいマーカーブロックを保持
-        mMarkedBlock = newMarkerBlock;
-    }
-
-    /*
      * ドロップ必要判定
      * 　以下の場合、ドロップ処理は行わない
      * 　・「ドロップ先ブロック」と「ドラッグ中のブロック」が同じ
@@ -2407,12 +1395,6 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
             return false;
         }
 
-/*        // ドラッグブロック内に、ドロップ先ブロックがあるか否かで判定
-        if( dragBlock.findViewById( dropBlock.getId() ) != null ){
-            // あればドロップ不可
-            return false;
-        }*/
-
         //------------------------------------------
         // 「ドロップ先」が「ドラッグ中」の１つ上かどうか
         //------------------------------------------
@@ -2423,36 +1405,8 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
             return false;
         }
 
-/*        int childIndex = dragBlock.getOwnChildIndex();
-        int aboveID = ((ViewGroup)dragBlock.getParent()).getChildAt( childIndex - 1 ).getId();
-        if( dropBlock.getId() == aboveID ){
-            // ドロップ先がドラッグブロックの１つ上の場合は、不可
-            return false;
-        }*/
-
-//        Log.i("ドロップリスナー", "ACTION_DRAG_ENTERED dropBlock=" + dropBlock.getId());
-//        Log.i("ドロップリスナー", "ACTION_DRAG_ENTERED aboveID=" + aboveID);
-
         // ドロップ可能
         return true;
-    }
-
-    /*
-     * 処理ブロックのドラッグ移動
-     *   「ドラッグされたブロック」を「ドロップ先ブロック」の下に移動させる
-     */
-    public void dragMoveUnderDrop(Block dropBlock, ProcessBlock dragBlock) {
-
-        Log.i("チャート確定問題", "dropBlock.getTop()=" + dropBlock.getTop());
-//        dragBlock.moveToUnderBlock( dropBlock );
-
-        moveBlockFromLine( dropBlock, dragBlock );
-
-/*        // ドラッグ中ブロックを元の位置から削除
-        removeBlockFromLine(dragBlock, false);
-
-        // ドラッグ中ブロックをドロップブロックの下に生成
-        preparationTrancelateBlock(dropBlock, dragBlock);*/
     }
 
     /*
@@ -2470,92 +1424,6 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
         // ドラッグされたビューのドラッグ状態を解除
         draggedView.tranceOffDrag();
     }
-
-
-    //★削除予定
-/*    @Override
-    public void onUpBlock(ProcessBlock moveBlock) {
-
-        // 先頭にいるなら、何もしない
-        if ( moveBlock.isTop() ) {
-            return;
-        }
-
-        //-----------------------------
-        // 上の処理ブロックと位置を入れ替え
-        //-----------------------------
-        // 現時点のindexの1つ前のindexが、追加先のindex
-        int newIndex = moveBlock.getOwnChildIndex() - 1;
-
-        ViewGroup parent = (ViewGroup) moveBlock.getParent();
-        // ブロック削除
-        parent.removeView( moveBlock );
-        // ブロック挿入
-        parent.addView( moveBlock, newIndex );
-
-        Log.i( "ブロック移動", "UP newIndex=" + newIndex );
-    }*/
-
-
-    //★削除予定
-    /*@Override
-    public void onDownBlock(ProcessBlock moveBlock) {
-
-        // 最後尾にいるなら、何もしない
-        if ( moveBlock.isBottom() ) {
-            return;
-        }
-
-        //-----------------------------
-        // 上の処理ブロックと位置を入れ替え
-        //-----------------------------
-        // 現時点のindexの1つ後のindexが、追加先のindex
-        int newIndex = moveBlock.getOwnChildIndex() + 1;
-
-        ViewGroup parent = (ViewGroup) moveBlock.getParent();
-        // ブロック削除
-        parent.removeView( moveBlock );
-        // ブロック挿入
-        parent.addView( moveBlock, newIndex );
-
-        Log.i( "ブロック移動", "Down newIndex=" + newIndex );
-    }*/
-
-    /*
-     * 【処理ブロック内リスナー設定】マーカー処理ブロック下への移動アイコンクリックリスナークリック処理
-     * 　指定されたブロックを、現在のマーカーブロックの下に移動させる。
-     *   また、新しいマーカーブロックを移動したブロックにする。
-     */
-/*    @Override
-    public void onMoveBelowMarker(ProcessBlock moveBlock) {
-
-        //----------------
-        // ブロック移動
-        //----------------
-        // ブロック削除
-        ViewGroup parent = (ViewGroup) moveBlock.getParent();
-        parent.removeView( moveBlock );
-
-        // マーカーブロックの下に挿入
-        insertBlockBelowMark( moveBlock );
-
-        //-------------------
-        // マーカーブロック変更
-        //-------------------
-        // 移動したブロックをマーカーブロックとする
-        changeMarkerBlock( moveBlock );
-    }*/
-
-    /*
-     * 【処理ブロック内リスナー設定】ブロック削除クリック処理
-     *
-     */
-    //★削除予定
-/*    @Override
-    public void onRemoveBlock(ProcessBlock removeBlock) {
-        // ブロック削除
-        removeBlockFromLine( removeBlock );
-    }*/
 
     /*
      * 【処理ブロック内リスナー設定】マーカーエリアクリック処理
@@ -2578,7 +1446,6 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
         // ドロップ予定ラインビュー
         int dropLineID = dropBlock.getDropLineViewID();
         View v_dropLine = dropBlock.findViewById(dropLineID);
-
 
         switch (dragEvent.getAction()) {
             case DragEvent.ACTION_DRAG_STARTED:
@@ -2646,68 +1513,5 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
     @Override
     public void onProcessEnd() {
 
-
-
     }
-
-    /*
-     * スワイプ操作リスナー
-     *   ・スクロール
-     *   ・フリング
-     */
-/*
-    private class ScrollListener extends GestureDetector.SimpleOnGestureListener {
-
-        @Override
-        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-
-//            ViewGroup root = binding.getRoot();
-            FrameLayout ll_UIRoot = binding.getRoot().findViewById(R.id.ll_UIRoot);
-
-            float nowx = ll_UIRoot.getTranslationX();
-            float nowy = ll_UIRoot.getTranslationY();
-
-            Log.i("スクロール", "nowx=" + nowx + " nowy=" + nowy);
-
-            // スクローラー
-            final float SCALE = 2.5f;
-            final int MOVE_DURATION = 5000;
-
-            // アニメーションを開始
-            mFlingScroller.fling(
-                    (int) nowx,                    //scroll の開始位置 (X)
-                    (int) nowy,                    //scroll の開始位置 (Y)
-                    (int) (velocityX / SCALE),     //初速
-                    (int) (velocityY / SCALE),     //初速
-                    -(int)mMaxChartAreaScaleX,
-                    (int)mMaxChartAreaScaleX,
-                    -(int)mMaxChartAreaScaleY,
-                    (int)mMaxChartAreaScaleY
-            );
-
-            // フリング操作時、加速度をスクロールに反映
-            ValueAnimator scrollAnimator = ValueAnimator.ofFloat(0, 1).setDuration(MOVE_DURATION);
-            scrollAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                @Override
-                public void onAnimationUpdate(ValueAnimator valueAnimator) {
-
-                    if (!mFlingScroller.isFinished()) {
-                        mFlingScroller.computeScrollOffset();
-
-                        ll_UIRoot.setTranslationX(mFlingScroller.getCurrX());
-                        ll_UIRoot.setTranslationY(mFlingScroller.getCurrY());
-
-                    } else {
-                        scrollAnimator.cancel();
-                    }
-                }
-            });
-            scrollAnimator.start();
-
-            return false;
-        }
-
-    }
-*/
-
 }
