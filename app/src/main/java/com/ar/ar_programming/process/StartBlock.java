@@ -105,7 +105,7 @@ public class StartBlock extends Block {
             }
             // ネスト内にいれば、親ネストのリサイズ
             if( inNest() ){
-                getOwnNestBlock().resizeNestHeight();
+                getOwnNestBlock().resizeNestHeight( this );
             }
         });
 
@@ -144,15 +144,16 @@ public class StartBlock extends Block {
     @Override
     public boolean shouldUpdate( Block aboveBlock ) {
 
-        // チャートスタートブロックの場合は、位置固定のため更新なし
+        // 親ネストなし（チャートのスタートブロック）の場合は、位置固定のため更新なし
         NestProcessBlock parentNest = getOwnNestBlock();
         if( parentNest == null ){
             return false;
         }
 
         // 現在位置と更新位置
+        int targetNest = parentNest.inWhichNest( this );
         int currentTop = getTop();
-        int updateTop = parentNest.getStartBlockTopMargin();
+        int updateTop = parentNest.getStartBlockTopMargin( targetNest );
 
         // 現在位置と更新位置が違えば、更新する
         return ( currentTop != updateTop );
@@ -166,8 +167,9 @@ public class StartBlock extends Block {
         NestProcessBlock parentNest = getOwnNestBlock();
 
         // 上と左マージンを取得
-        int left = parentNest.getStartBlockLeftMargin();
-        int top = parentNest.getStartBlockTopMargin();
+        int targetNest = parentNest.inWhichNest( this );
+        int left = parentNest.getStartBlockLeftMargin( targetNest );
+        int top = parentNest.getStartBlockTopMargin( targetNest );
 
         // スタートブロック位置を更新
         ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) getLayoutParams();

@@ -1124,9 +1124,12 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
         ll_UIRoot.addView(newBlock, mlp);
 
         // スタートブロックの配置
-        if (newBlock.getProcessType() != Block.PROCESS_TYPE_SINGLE) {
-            StartBlock startBlock = ((NestProcessBlock)newBlock).getNestStartBlock();
-            ll_UIRoot.addView(startBlock, mlp);
+//        if (newBlock.getProcessType() != Block.PROCESS_TYPE_SINGLE) {
+        if ( newBlock instanceof NestProcessBlock ) {
+/*            StartBlock startBlock = ((NestProcessBlock)newBlock).getNestStartBlock();
+            ll_UIRoot.addView(startBlock, mlp);*/
+
+            ((NestProcessBlock)newBlock).deployStartBlock( ll_UIRoot );
         }
 
         // 生成ブロックの位置を更新

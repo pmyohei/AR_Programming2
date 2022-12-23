@@ -213,7 +213,7 @@ public abstract class Block extends ConstraintLayout {
 
             // ネスト内にいれば、親ネストのリサイズ
             if( inNest() ){
-                getOwnNestBlock().resizeNestHeight();
+                getOwnNestBlock().resizeNestHeight( this );
             }
         });
 
@@ -313,7 +313,7 @@ public abstract class Block extends ConstraintLayout {
      */
     public void startUpdatePositionAnimation() {
         // アニメーションを付与
-        setTranslationY(-20f);
+        setTranslationY(-10f);
         animate().translationY(0f)
                 .setDuration(400)
                 .setListener(null);

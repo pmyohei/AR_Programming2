@@ -2,6 +2,7 @@ package com.ar.ar_programming.process;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
@@ -23,8 +24,6 @@ public class IfElseProcessBlock extends NestProcessBlock {
     // フィールド変数
     //---------------------------
     private int mBlockInNestIndex;
-    private int tmploopCount = 0;
-    private boolean isConditionState;
     private ViewGroup mNestRoot;
 
     private StartBlock mNestStartBlockSecond;
@@ -36,12 +35,14 @@ public class IfElseProcessBlock extends NestProcessBlock {
     public IfElseProcessBlock(Context context, int contents) {
         this(context, null, contents);
     }
+
     public IfElseProcessBlock(Context context, AttributeSet attrs, int contents) {
         this(context, attrs, 0, contents);
     }
+
     public IfElseProcessBlock(Context context, AttributeSet attrs, int defStyle, int contents) {
         super(context, attrs, defStyle, PROCESS_TYPE_IF_ELSE, contents);
-        setLayout( R.layout.process_block_if_else );
+        setLayout(R.layout.process_block_if_else);
         init();
     }
 
@@ -54,7 +55,6 @@ public class IfElseProcessBlock extends NestProcessBlock {
         // ネスト親レイアウト
         // ※初期状態では、ifルートにしておく
         mNestRoot = findViewById(R.id.ll_firstNestRoot);
-        isConditionState = true;
 
         // ネスト内スタートブロック初期設定
 //        initStartBlockInNest( R.layout.process_block_start_in_nest );
@@ -65,7 +65,7 @@ public class IfElseProcessBlock extends NestProcessBlock {
      */
     @Override
     public void setLayout(int layoutID) {
-        super.setLayout( layoutID );
+        super.setLayout(layoutID);
 
         // 処理ブロック内の内容を書き換え
         rewriteProcessContents(mProcessContents);
@@ -99,14 +99,14 @@ public class IfElseProcessBlock extends NestProcessBlock {
      * ブロック半透明化
      */
     @Override
-    public void tranceOnDrag(){
+    public void tranceOnDrag() {
         super.tranceOnDrag();
 
         //------------------------------
         // ネスト(2つ目)内ブロックを半透明化
         //------------------------------
         Block block = getSecondNestStartBlock();
-        while( block != null ){
+        while (block != null) {
             block.tranceOnDrag();
             block = block.getBelowBlock();
         }
@@ -127,6 +127,70 @@ public class IfElseProcessBlock extends NestProcessBlock {
             block.tranceOffDrag();
             block = block.getBelowBlock();
         }
+    }
+
+    /*
+     * ネストスタートブロック生成
+     */
+    @Override
+    public void createStartBlock() {
+        super.createStartBlock();
+
+        mNestStartBlockSecond = new StartBlock(getContext());
+        mNestStartBlockSecond.setId(View.generateViewId());
+        mNestStartBlockSecond.setLayout(R.layout.process_block_start_in_nest);
+        mNestStartBlockSecond.setOwnNestBlock(this);
+
+        // 位置配置のタイミングで可視化
+        mNestStartBlockSecond.setVisibility(View.INVISIBLE);
+    }
+
+    /*
+     * ネストスタートブロック配置
+     */
+    @Override
+    public void deployStartBlock(ViewGroup chartRoot) {
+        super.deployStartBlock(chartRoot);
+
+        // チャートに追加
+        ViewGroup.MarginLayoutParams mlp = new ViewGroup.MarginLayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        chartRoot.addView(mNestStartBlockSecond, mlp);
+    }
+
+    /*
+     * ブロック位置更新
+     */
+    @Override
+    public void updatePosition() {
+        super.updatePosition();
+
+        post(() -> {
+            mNestStartBlockSecond.updatePosition();
+        });
+    }
+
+    /*
+     * ネストサイズの変更
+     */
+    @Override
+    public void resizeNestHeight(Block calledBlock) {
+        super.resizeNestHeight( calledBlock );
+
+        //------------------------
+        // ネスト２内ブロック位置更新
+        //------------------------
+        // リサイズがネスト２でなければ何もしない
+        int targetNest = inWhichNest( calledBlock );
+        if( targetNest != NEST_FIRST ){
+            return;
+        }
+
+        // ネストview確定時、ネスト２位置を更新
+        ViewGroup nestView = getNestViewForNest( targetNest );
+        nestView.post(() -> {
+            mNestStartBlockSecond.updatePosition();
+        });
     }
 
     /*
@@ -314,6 +378,46 @@ public class IfElseProcessBlock extends NestProcessBlock {
         return mNestStartBlockSecond;
     }
 
+
+    /*
+     * 指定ブロックがどのネストにいるか
+     */
+    @Override
+    public int inWhichNest( Block calledBlock ) {
+
+        //----------------
+        // ネスト１内を検索
+        //----------------
+        Block block = mNestStartBlock;
+        while( block != null ){
+            if( block == calledBlock ){
+                // 指定ブロックがあれば、ネスト１を返す
+                return NEST_FIRST;
+            }
+            block = block.getBelowBlock();
+        }
+
+        // ネスト１内で見つからなければ、ネスト２を返す
+        return NEST_SECOND;
+    }
+
+    /*
+     * 指定ネストのスタートブロックを取得
+     */
+    @Override
+    public Block getStartBlockForNest( int nest ) {
+        return ( nest == NEST_FIRST ? mNestStartBlock : mNestStartBlockSecond );
+    }
+
+    /*
+     * 指定ネストのネストviewを取得
+     */
+    @Override
+    public ViewGroup getNestViewForNest( int nest ) {
+        int id = ( nest == NEST_FIRST ? R.id.ll_firstNestRoot : R.id.ll_secondNestRoot );
+        return findViewById( id );
+    }
+
     /*
      * ネスト内スタートブロック初期設定
      */
@@ -489,6 +593,27 @@ public class IfElseProcessBlock extends NestProcessBlock {
         nextBlock.startProcess( characterNode );
     }
 
+    /*
+     * 処理ブロックドロップリスナーの設定
+     */
+    @Override
+    public void setDropBlockListerner(DropBlockListener listener) {
+        super.setDropBlockListerner(listener);
+
+        // ネストスタートブロックにも設定
+        mNestStartBlockSecond.setDropBlockListerner(listener);
+    }
+
+    /*
+     * マークエリアリスナー設定
+     */
+    @Override
+    public void setMarkAreaListerner(MarkerAreaListener listener){
+        super.setMarkAreaListerner(listener);
+
+        // ネストスタートブロックにも設定
+        mNestStartBlockSecond.setMarkAreaListerner(listener);
+    }
 }
 
 
