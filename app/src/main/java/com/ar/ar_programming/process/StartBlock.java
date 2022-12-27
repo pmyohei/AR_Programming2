@@ -84,8 +84,8 @@ public class StartBlock extends Block {
         //----------------
         if( shouldUpdatePosition() ){
             // 現在位置を更新
-            setPositionMlp();
-            startUpdatePositionAnimation();
+            int direction = setPositionMlp();
+            startUpdatePositionAnimation( direction );
 
             // ブロック標高設定
             updateBlockElevation();
@@ -135,7 +135,7 @@ public class StartBlock extends Block {
      * MarginLayoutParams設定
      *  ネスト内右上に位置するようにパラメータを設定する
      */
-    public void setPositionMlp() {
+    public int setPositionMlp() {
 
         NestProcessBlock parentNest = getOwnNestBlock();
         int targetNest = parentNest.inWhichNest( this );
@@ -147,9 +147,14 @@ public class StartBlock extends Block {
         // スタートブロック位置を更新
         ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) getLayoutParams();
         if( mlp == null ){
-            return;
+            return BLOCK_POSITION_DOWN;
         }
+
+        int currentTop = mlp.topMargin;
         mlp.setMargins(left, top, mlp.rightMargin, mlp.bottomMargin);
         setLayoutParams( mlp );
+
+        // 位置更新の方向が上か下か
+        return ((top - currentTop) > 0 ? BLOCK_POSITION_DOWN : BLOCK_POSITION_UP );
     }
 }

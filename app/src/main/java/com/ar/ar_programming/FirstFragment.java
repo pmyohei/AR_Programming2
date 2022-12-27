@@ -1385,6 +1385,7 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
         // 「ドロップ先」と「ドラッグ中」が同じ
         //------------------------------------------
         if (dropBlock.getId() == dragBlock.getId()) {
+            Log.i("isDropable", "getId()一致");
             return false;
         }
 
@@ -1392,6 +1393,7 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
         //  ネスト内のブロックにドロップしようとしている
         //------------------------------------------
         if (dragBlock.hasBlock(dropBlock)) {
+            Log.i("isDropable", "hasBlock()");
             return false;
         }
 
@@ -1401,6 +1403,7 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
         // ドラッグ中ブロックの１つ上のブロック
         Block aboveBlock = dragBlock.getAboveBlock();
         if (dropBlock.getId() == aboveBlock.getId()) {
+            Log.i("isDropable", "aboveBlock");
             // ドロップ先がドラッグブロックの１つ上の場合は、不可
             return false;
         }

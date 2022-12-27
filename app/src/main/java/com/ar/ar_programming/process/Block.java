@@ -32,6 +32,9 @@ public abstract class Block extends ConstraintLayout {
     public static final float TRANCE_ON_DRAG = 0.6f;
     public static final float TRANCE_OFF_DRAG = 1.0f;
 
+    // ブロック位置更新方向
+    public static final int BLOCK_POSITION_UP = 0;
+    public static final int BLOCK_POSITION_DOWN = 1;
 
     //---------------------------
     // フィールド変数
@@ -137,9 +140,8 @@ public abstract class Block extends ConstraintLayout {
         Block aboveBlock = getAboveBlock();
         if( shouldUpdatePosition(aboveBlock) ){
             // 位置更新
-            setPositionMlp( aboveBlock );
-            startUpdatePositionAnimation();
-
+            int direction = setPositionMlp( aboveBlock );
+            startUpdatePositionAnimation( direction );
             // ブロック標高設定
             updateBlockElevation();
         }
@@ -176,9 +178,18 @@ public abstract class Block extends ConstraintLayout {
     /*
      * 位置更新アニメーションを開始
      */
-    public void startUpdatePositionAnimation() {
+    public void startUpdatePositionAnimation( int trancelationDirection ) {
+
+        //アニメーションのためのY初期値（ブロックの移動方向にあわせる）
+        float translationY;
+        if( trancelationDirection == BLOCK_POSITION_UP ){
+            translationY = 4;
+        }else{
+            translationY = -10;
+        }
+
         // アニメーションを付与
-        setTranslationY(-10f);
+        setTranslationY( translationY );
         animate().translationY(0f)
                 .setDuration(400)
                 .setListener(null);
@@ -211,7 +222,7 @@ public abstract class Block extends ConstraintLayout {
      * MarginLayoutParams設定
      *  指定ブロックの下に位置するようにパラメータを設定する
      */
-    public void setPositionMlp(Block aboveBlock) {
+    public int setPositionMlp(Block aboveBlock) {
 
         // 上ブロックの左下に位置できる値を取得
         int top = aboveBlock.getTop() + aboveBlock.getHeight();
@@ -219,8 +230,12 @@ public abstract class Block extends ConstraintLayout {
 
         // 本ブロックのマージンを変更し、位置更新
         ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) getLayoutParams();
+        int currentTop = mlp.topMargin;
         mlp.setMargins(left, top, mlp.rightMargin, mlp.bottomMargin);
         setLayoutParams( mlp );
+
+        // 位置更新の方向が上か下か
+        return ((top - currentTop) > 0 ? BLOCK_POSITION_DOWN : BLOCK_POSITION_UP );
     }
 
     /*
