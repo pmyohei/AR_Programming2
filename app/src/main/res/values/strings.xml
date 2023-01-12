@@ -11,6 +11,7 @@
     <string name="block_rorate_left">左に回転</string>
     <string name="block_nest_if">もし、、なら</string>
     <string name="block_nest_if_else">もし、、でそうでなければ</string>
+    <string name="block_nest_if_elseif_else">もし、、もし、、それ以外</string>
     <string name="block_nest_loop">..までループ</string>
 
     <!--  処理ブロック 処理内容  -->

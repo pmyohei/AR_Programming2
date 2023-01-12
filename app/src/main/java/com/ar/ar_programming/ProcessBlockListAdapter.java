@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.ar.ar_programming.process.IfElseIfElseProcessBlock;
 import com.ar.ar_programming.process.IfElseProcessBlock;
 import com.ar.ar_programming.process.IfProcessBlock;
 import com.ar.ar_programming.process.LoopProcessBlock;
@@ -35,6 +36,7 @@ public class ProcessBlockListAdapter extends RecyclerView.Adapter<ProcessBlockLi
     public static final int SELECT_PROCESS_LOOP = 4;
     public static final int SELECT_PROCESS_IF = 5;
     public static final int SELECT_PROCESS_IF_ELSE = 6;
+    public static final int SELECT_PROCESS_IF_ELSEIF_ELSE = 7;
 
     //---------------------------
     // フィールド変数
@@ -170,6 +172,8 @@ public class ProcessBlockListAdapter extends RecyclerView.Adapter<ProcessBlockLi
                 return ProcessBlock.PROCESS_TYPE_IF;
             case SELECT_PROCESS_IF_ELSE:
                 return ProcessBlock.PROCESS_TYPE_IF_ELSE;
+            case SELECT_PROCESS_IF_ELSEIF_ELSE:
+                return ProcessBlock.PROCESS_TYPE_IF_ELSEIF_ELSE;
             default:
                 return ProcessBlock.PROCESS_TYPE_SINGLE;
         }
@@ -196,6 +200,8 @@ public class ProcessBlockListAdapter extends RecyclerView.Adapter<ProcessBlockLi
                 return IfProcessBlock.PROCESS_CONTENTS_IF_BLOCK;
             case SELECT_PROCESS_IF_ELSE:
                 return IfElseProcessBlock.PROCESS_CONTENTS_IF_ELSE_BLOCK;
+            case SELECT_PROCESS_IF_ELSEIF_ELSE:
+                return IfElseIfElseProcessBlock.PROCESS_CONTENTS_IF_ELSEIF_ELSE_BLOCK;
             default:
                 return SingleProcessBlock.PROCESS_CONTENTS_FORWARD;
         }

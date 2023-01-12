@@ -26,7 +26,8 @@ public abstract class Block extends ConstraintLayout {
     public static final int PROCESS_TYPE_SINGLE = 1;
     public static final int PROCESS_TYPE_IF = 2;
     public static final int PROCESS_TYPE_IF_ELSE = 3;
-    public static final int PROCESS_TYPE_LOOP = 4;
+    public static final int PROCESS_TYPE_IF_ELSEIF_ELSE = 4;
+    public static final int PROCESS_TYPE_LOOP = 5;
 
     // ドラッグ中（選択中）状態の半透明値
     public static final float TRANCE_ON_DRAG = 0.6f;

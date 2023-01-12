@@ -2,7 +2,6 @@ package com.ar.ar_programming.process;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -20,11 +19,12 @@ public abstract class NestProcessBlock extends ProcessBlock {
     //---------------------------
     public static final int NEST_FIRST = 0;
     public static final int NEST_SECOND = 1;
+    public static final int NEST_THIRD = 2;
 
     //---------------------------
     // フィールド変数
     //---------------------------
-    public StartBlock mNestStartBlock;
+    public StartBlock mNestStartBlockFirst;
 
     /*
      * コンストラクタ
@@ -32,14 +32,11 @@ public abstract class NestProcessBlock extends ProcessBlock {
     public NestProcessBlock(Context context) {
         this(context, null);
     }
-
     public NestProcessBlock(Context context, AttributeSet attrs) {
         this(context, attrs, 0, 0, 0);
     }
-
     public NestProcessBlock(Context context, AttributeSet attrs, int defStyle, int type, int contents) {
         super(context, attrs, defStyle, type, contents);
-
         createStartBlock();
     }
 
@@ -71,7 +68,7 @@ public abstract class NestProcessBlock extends ProcessBlock {
         //------------------------
         // ネスト内ブロックを半透明化
         //------------------------
-        Block block = mNestStartBlock;
+        Block block = mNestStartBlockFirst;
         while (block != null) {
             block.tranceOnDrag();
             block = block.getBelowBlock();
@@ -88,7 +85,7 @@ public abstract class NestProcessBlock extends ProcessBlock {
         //--------------------------
         // ネスト内ブロックの透明化を解除
         //--------------------------
-        Block block = mNestStartBlock;
+        Block block = mNestStartBlockFirst;
         while (block != null) {
             block.tranceOffDrag();
             block = block.getBelowBlock();
@@ -116,13 +113,13 @@ public abstract class NestProcessBlock extends ProcessBlock {
      * ネストスタートブロック生成
      */
     public void createStartBlock() {
-        mNestStartBlock = new StartBlock(getContext());
-        mNestStartBlock.setId(View.generateViewId());
-        mNestStartBlock.setLayout(R.layout.process_block_start_in_nest);
-        mNestStartBlock.setOwnNestBlock(this);
+        mNestStartBlockFirst = new StartBlock(getContext());
+        mNestStartBlockFirst.setId(View.generateViewId());
+        mNestStartBlockFirst.setLayout(R.layout.process_block_start_in_nest);
+        mNestStartBlockFirst.setOwnNestBlock(this);
 
         // 位置配置のタイミングで可視化
-        mNestStartBlock.setVisibility(View.INVISIBLE);
+        mNestStartBlockFirst.setVisibility(View.INVISIBLE);
     }
 
     /*
@@ -132,7 +129,7 @@ public abstract class NestProcessBlock extends ProcessBlock {
         // チャートに追加
         ViewGroup.MarginLayoutParams mlp = new ViewGroup.MarginLayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
-        chartRoot.addView(mNestStartBlock, mlp);
+        chartRoot.addView(mNestStartBlockFirst, mlp);
     }
 
     /*
@@ -144,7 +141,7 @@ public abstract class NestProcessBlock extends ProcessBlock {
 
         // 自身の位置が確定したら、ネスト内スタートブロックを更新
         post(() -> {
-            mNestStartBlock.updatePosition();
+            mNestStartBlockFirst.updatePosition();
         });
     }
 
@@ -171,8 +168,8 @@ public abstract class NestProcessBlock extends ProcessBlock {
      */
     public void resizeNestHeight(Block calledBlock) {
 
-        // 対象ネスト
-        int targetNest = inWhichNest(calledBlock);
+        // 対象ネストview
+        int targetNest = whichInNest(calledBlock);
         ViewGroup nestView = getNestViewForNest(targetNest);
 
         //----------------------
@@ -236,7 +233,7 @@ public abstract class NestProcessBlock extends ProcessBlock {
      * ！本クラスでは、ネスト１を固定で返す
      * ！ネストを複数持つクラス実装時は、実装に合わせてOverrideが必要
      */
-    public int inWhichNest(Block calledBlock) {
+    public int whichInNest(Block calledBlock) {
         return NEST_FIRST;
     }
 
@@ -246,7 +243,7 @@ public abstract class NestProcessBlock extends ProcessBlock {
      * ！ネストを複数持つクラス実装時は、実装に合わせてOverrideが必要
      */
     public Block getStartBlockForNest(int nest) {
-        return mNestStartBlock;
+        return mNestStartBlockFirst;
     }
 
     /*
@@ -303,7 +300,7 @@ public abstract class NestProcessBlock extends ProcessBlock {
      * ！ネストを複数持つクラス実装時は、実装に合わせてOverrideが必要
      */
     public boolean hasNestBlock() {
-        return mNestStartBlock.hasBelowBlock();
+        return mNestStartBlockFirst.hasBelowBlock();
     }
 
     /*
@@ -336,7 +333,7 @@ public abstract class NestProcessBlock extends ProcessBlock {
         // ネスト内処理ブロックの実行
         //-----------------------------
         // ネスト内の処理ブロックを実行
-        ProcessBlock nextBlock = (ProcessBlock) mNestStartBlock.getBelowBlock();
+        ProcessBlock nextBlock = (ProcessBlock) mNestStartBlockFirst.getBelowBlock();
         nextBlock.startProcess(characterNode);
     }
 
@@ -348,7 +345,7 @@ public abstract class NestProcessBlock extends ProcessBlock {
         super.setDropBlockListerner(listener);
 
         // ネストスタートブロックにも設定
-        mNestStartBlock.setDropBlockListerner(listener);
+        mNestStartBlockFirst.setDropBlockListerner(listener);
     }
 
     /*
@@ -359,7 +356,7 @@ public abstract class NestProcessBlock extends ProcessBlock {
         super.setMarkAreaListerner(listener);
 
         // ネストスタートブロックにも設定
-        mNestStartBlock.setMarkAreaListerner(listener);
+        mNestStartBlockFirst.setMarkAreaListerner(listener);
     }
 }
 

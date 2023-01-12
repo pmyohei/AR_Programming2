@@ -9,6 +9,7 @@
         <item>@drawable/baseline_block_loop_24</item>
         <item>@drawable/baseline_block_if_24</item>
         <item>@drawable/baseline_block_if_24</item>
+        <item>@drawable/baseline_block_if_24</item>
     </array>
 
     <!--  処理ブロックタイトルリスト  -->
@@ -20,6 +21,7 @@
         <item>@string/block_nest_loop</item>
         <item>@string/block_nest_if</item>
         <item>@string/block_nest_if_else</item>
+        <item>@string/block_nest_if_elseif_else</item>
     </array>
 
 

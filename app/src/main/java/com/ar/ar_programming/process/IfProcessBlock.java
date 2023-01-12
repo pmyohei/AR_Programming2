@@ -2,9 +2,6 @@ package com.ar.ar_programming.process;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.view.DragEvent;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.ar.ar_programming.CharacterNode;
@@ -84,7 +81,7 @@ public class IfProcessBlock extends NestProcessBlock {
 
         int i = 0;
 
-        Block below = mNestStartBlock.getBelowBlock();
+        Block below = mNestStartBlockFirst.getBelowBlock();
         while( below != null ){
             below = below.getBelowBlock();
             i++;

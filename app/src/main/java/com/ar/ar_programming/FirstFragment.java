@@ -26,6 +26,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ar.ar_programming.process.Block;
+import com.ar.ar_programming.process.IfElseIfElseProcessBlock;
 import com.ar.ar_programming.process.IfElseProcessBlock;
 import com.ar.ar_programming.process.IfProcessBlock;
 import com.ar.ar_programming.process.LoopProcessBlock;
@@ -536,6 +537,10 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
 
             case Block.PROCESS_TYPE_IF_ELSE:
                 newBlock = new IfElseProcessBlock(context, processContents);
+                break;
+
+            case Block.PROCESS_TYPE_IF_ELSEIF_ELSE:
+                newBlock = new IfElseIfElseProcessBlock(context, processContents);
                 break;
 
             case Block.PROCESS_TYPE_LOOP:

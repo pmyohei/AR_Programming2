@@ -2,7 +2,6 @@ package com.ar.ar_programming.process;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -123,7 +122,7 @@ public class StartBlock extends Block {
         }
 
         // 現在位置と更新位置
-        int targetNest = parentNest.inWhichNest( this );
+        int targetNest = parentNest.whichInNest( this );
         int currentTop = getTop();
         int updateTop = parentNest.getStartBlockTopMargin( targetNest );
 
@@ -138,7 +137,7 @@ public class StartBlock extends Block {
     public int setPositionMlp() {
 
         NestProcessBlock parentNest = getOwnNestBlock();
-        int targetNest = parentNest.inWhichNest( this );
+        int targetNest = parentNest.whichInNest( this );
 
         // 上左マージンを取得
         int left = parentNest.getStartBlockLeftMargin( targetNest );
