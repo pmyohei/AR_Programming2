@@ -2,6 +2,7 @@ package com.ar.ar_programming.process;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -42,6 +43,9 @@ public abstract class NestProcessBlock extends ProcessBlock {
 
     /*
      * ネスト内条件判定
+     *   @return：条件成立　 - true
+     *          　条件不成立 - false
+     *          　とすること！
      */
     public abstract boolean isCondition(CharacterNode characterNode);
 
@@ -322,19 +326,21 @@ public abstract class NestProcessBlock extends ProcessBlock {
         //-----------------------------
         // 条件判定
         //-----------------------------
-        // 条件未成立の場合
-        if (!isCondition(characterNode)) {
-            // 次の処理ブロックへ
-            tranceNextBlock(characterNode);
+        // 条件成立の場合
+        if ( isCondition(characterNode) ) {
+
+            Log.i("向いている方向ロジック", "ネスト内処理ブロックへ");
+
+            // ネスト内の処理ブロックを実行
+            ProcessBlock nextBlock = (ProcessBlock) mNestStartBlockFirst.getBelowBlock();
+            nextBlock.startProcess(characterNode);
             return;
         }
 
-        //-----------------------------
-        // ネスト内処理ブロックの実行
-        //-----------------------------
-        // ネスト内の処理ブロックを実行
-        ProcessBlock nextBlock = (ProcessBlock) mNestStartBlockFirst.getBelowBlock();
-        nextBlock.startProcess(characterNode);
+        Log.i("向いている方向ロジック", "ネスト処理終了：条件未成立");
+
+        // 条件成立の場合、ネストブロックの下のブロックへ
+        tranceNextBlock(characterNode);
     }
 
     /*

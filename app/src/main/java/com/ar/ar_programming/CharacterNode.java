@@ -4,7 +4,6 @@ import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.util.Log;
 
-import com.ar.ar_programming.process.ProcessBlock;
 import com.ar.ar_programming.process.SingleProcessBlock;
 import com.google.ar.sceneform.Node;
 import com.google.ar.sceneform.Scene;
@@ -57,15 +56,17 @@ public class CharacterNode extends TransformableNode {
     private Vector3 mStartPosition;
     private float mStartDegree;
     // 処理ブロックアニメーション終了時点の情報
-    private Vector3 mEndPosition;
-    private float mEndDegree;
+    private Vector3 mCurrentPosition;
+    private float mCurrentDegree;           // ※キャラクターが下を向いている角度（一般的には２７０度方向）を０度とする
     // 処理ブロック用アニメーション
     private ValueAnimator mProcessAnimator;
     // モデルアニメーションの開始と終了を制御する用
     private ObjectAnimator mModelAnimator;
-
     // 衝突検知リスナー
     private CollisionDetectListener mCollisionDetectListenerListener;
+
+    //tmp
+    Node mptGoal;
 
 
     public CharacterNode(TransformationSystem transformationSystem) {
@@ -74,8 +75,8 @@ public class CharacterNode extends TransformableNode {
         //----------------------------------------
         // アニメーション終了時の処理用保持用変数を初期化
         //----------------------------------------
-        mEndPosition = new Vector3(0f, 0f, 0f);
-        mEndDegree = 0f;
+        mCurrentPosition = new Vector3(0f, 0f, 0f);
+        mCurrentDegree = 0f;
         mCollisionType = COLLISION_TYPE_NONE;
     }
 
@@ -91,6 +92,14 @@ public class CharacterNode extends TransformableNode {
         }
         mScene = getScene();
     }
+
+    /*
+     * tmp ゴールノード取得
+     */
+    public void tmpsetGoalNode(Node goal) {
+        mptGoal = goal;
+    }
+
 
     /*
      * 衝突検知
@@ -148,8 +157,8 @@ public class CharacterNode extends TransformableNode {
         // 横と奥行の位置を更新
         //----------------------
         // 前回終了位置を加味して、設定値を取得
-        float setX = (float) (mEndPosition.x + calcXvolume(volume));
-        float setZ = (float) (mEndPosition.z + calcZvolume(volume));
+        float setX = (float) (mCurrentPosition.x + calcXvolume(volume));
+        float setZ = (float) (mCurrentPosition.z + calcZvolume(volume));
 
         // 位置を更新
         Vector3 vec3 = getLocalPosition();
@@ -185,7 +194,7 @@ public class CharacterNode extends TransformableNode {
         // 設定情報の算出
         //----------------------------------
         // 設定角：前回の終了時の角度を加味
-        float setDegree = calcQuaternionLapDegree(mEndDegree, volume);
+        float setDegree = calcQuaternionLapDegree(mCurrentDegree, volume);
         // Quaternionのy/wの値を算出
         float w = calcQuaternionWvalue(setDegree);
         float y = calcQuaternionYvalue(setDegree);
@@ -230,10 +239,10 @@ public class CharacterNode extends TransformableNode {
     /*
      * 90度を0度したときのラジアンを取得
      */
-    public double getFrontRadian() {
+    private double getFrontRadian() {
 
         // 正面を向いている状態が0度であるため、調整のために90度加算
-        double degree = (mEndDegree + 90) % 360;
+        double degree = (mCurrentDegree + 90) % 360;
         return Math.toRadians(degree);
     }
 
@@ -349,7 +358,7 @@ public class CharacterNode extends TransformableNode {
         Log.i("startModelAnimation", "処理ブロックアニメーション終了処理");
 
         // アニメーション終了時の変化後の値を保持
-        setAnimationEndValue( processKind, volume );
+        setAnimationEndValue(processKind, volume);
     }
 
     /*
@@ -378,15 +387,15 @@ public class CharacterNode extends TransformableNode {
      */
     public void saveCurrentPosition() {
         // 現在位置情報を保持する
-        mEndPosition = getLocalPosition();
+        mCurrentPosition = getLocalPosition();
     }
 
     /*
      * 現在角度の設定
      */
-    public void saveCurrentAngle(float angle) {
-        // 現在角度を設定
-        mEndDegree = calcQuaternionLapDegree(mEndDegree, angle);
+    private void saveCurrentAngle(float angle) {
+        // 現在角度を保持
+        mCurrentDegree = calcQuaternionLapDegree(mCurrentDegree, angle);
     }
 
     /*
@@ -397,8 +406,8 @@ public class CharacterNode extends TransformableNode {
         mStartPosition = position;
         mStartDegree = degree;
         // 開始位置を現在情報として設定
-        mEndPosition = position;
-        mEndDegree = degree;
+        mCurrentPosition = position;
+        mCurrentDegree = degree;
     }
 
     /*
@@ -415,8 +424,8 @@ public class CharacterNode extends TransformableNode {
         // 角度を初期位置に戻す
         //----------------------------------
         // Quaternionのy/wの値を算出
-        float w = calcQuaternionWvalue(mEndDegree);
-        float y = calcQuaternionYvalue(mEndDegree);
+        float w = calcQuaternionWvalue(mCurrentDegree);
+        float y = calcQuaternionYvalue(mCurrentDegree);
         // Quaternion生成
         Quaternion q = getLocalRotation();
         q.set(0f, y, 0f, w);
@@ -427,8 +436,8 @@ public class CharacterNode extends TransformableNode {
         // 終了情報をリセット
         //----------------------------------
         // 開始位置を現在情報として設定
-        mEndPosition = mStartPosition;
-        mEndDegree = mStartDegree;
+        mCurrentPosition = mStartPosition;
+        mCurrentDegree = mStartDegree;
     }
 
     /*
@@ -459,10 +468,10 @@ public class CharacterNode extends TransformableNode {
         // 前進／後退
         //-----------------------------------------
         // 単位変換：cm → m
-        if ( procKind == SingleProcessBlock.PROCESS_CONTENTS_FORWARD ){
+        if (procKind == SingleProcessBlock.PROCESS_CONTENTS_FORWARD) {
             return (float) procVolume / 100f;
         }
-        if ( procKind == SingleProcessBlock.PROCESS_CONTENTS_BACK ){
+        if (procKind == SingleProcessBlock.PROCESS_CONTENTS_BACK) {
             return (procVolume / 100f) * -1;
         }
 
@@ -528,13 +537,13 @@ public class CharacterNode extends TransformableNode {
             Log.i("歩行", "ratio=" + ratio);
             Log.i("歩行", "WALK_TIME_PER_CM=" + (WALK_TIME_PER_CM * ratio));
 
-            return (long)(procVolume * WALK_TIME_PER_CM * ratio );
+            return (long) (procVolume * WALK_TIME_PER_CM * ratio);
         }
 
         //-------------------
         // 回転
         //-------------------
-        return (long)(procVolume * ROTATE_TIME_PER_ANGLE);
+        return (long) (procVolume * ROTATE_TIME_PER_ANGLE);
 
 /*
         // 前進／後退の場合は、ブロックの処理量がそのままアニメーション時間
@@ -564,14 +573,14 @@ public class CharacterNode extends TransformableNode {
     public void startModelAnimation(String animationName, long duration) {
 
         // アニメーション中なら、終了
-        if( (mModelAnimator != null) && (mModelAnimator.isStarted()) ){
+        if ((mModelAnimator != null) && (mModelAnimator.isStarted())) {
             mModelAnimator.end();
         }
 
         // モデルアニメーション開始
-        mModelAnimator = getRenderableInstance().animate( animationName );
-        mModelAnimator.setDuration( duration );
-        mModelAnimator.setRepeatCount( 0 );
+        mModelAnimator = getRenderableInstance().animate(animationName);
+        mModelAnimator.setDuration(duration);
+        mModelAnimator.setRepeatCount(0);
         mModelAnimator.start();
 
         Log.i("startModelAnimation", "animationName=" + animationName);
@@ -602,7 +611,7 @@ public class CharacterNode extends TransformableNode {
         }
 
         // モデルアニメーション開始
-        startModelAnimation( animationName, duration );
+        startModelAnimation(animationName, duration);
     }
 
     /*
@@ -610,6 +619,97 @@ public class CharacterNode extends TransformableNode {
      */
     public boolean isGoaled() {
         return (mCollisionType == COLLISION_TYPE_GOAL);
+    }
+
+
+    /*
+     * 本キャラクターが指定Nodeの方向を向いているかどうかを判定
+     */
+    public boolean isFacingToNode(Node node) {
+
+        //---------------------
+        // 角度情報
+        //---------------------
+        // キャラクターとNodeを結ぶ直線の傾きから角度を算出
+        double toNodeDegree = calcDegreeFromSlopeToNode(node);
+        // キャラクターが向いている方向（角度）
+        double characterFacingDegree = calcDegreeCharacterFacing();
+
+        //------------------------
+        // Nodeを向いているかどうか判定
+        //------------------------
+        // 判定範囲
+        // （キャラクターの向いている角度の±0.5度以内なら向いていると判定する）
+        double minRange = characterFacingDegree - 0.5;
+        double maxRange = characterFacingDegree + 0.5;
+
+        // 判定範囲内なら、向いているとみなす
+        if( ( minRange <= toNodeDegree ) && ( toNodeDegree <= maxRange ) ){
+//            Log.i("向いている方向ロジック", "〇 傾きからの角度=" + toNodeDegree);
+//            Log.i("向いている方向ロジック", "〇 キャラの向き=" + characterFacingDegree);
+            return true;
+        } else {
+//            Log.i("向いている方向ロジック", "× 傾きからの角度=" + toNodeDegree);
+//            Log.i("向いている方向ロジック", "× キャラの向き=" + characterFacingDegree);
+            return false;
+        }
+    }
+
+    /*
+     * 本キャラクターノードと指定Nodeを結ぶ直線の傾きから角度を算出
+     * 　@return：角度範囲（－180～180）
+     * 　　　　　　※例）270度に相当する角度は、「-90度」で返す
+     */
+    private double calcDegreeFromSlopeToNode(Node node) {
+
+        //-------------------------
+        // キャラクターとNodeの位置情報
+        //-------------------------
+        // キャラクター位置
+        Vector3 selfPos = getLocalPosition();
+        float selfPosX = selfPos.x;
+        float selfPosZ = selfPos.z;
+        // Node位置
+        Vector3 nodePos = node.getLocalPosition();
+        float nodePosX = nodePos.x;
+        float nodePosZ = nodePos.z;
+
+        // 奥く方向を正としたいため、符号を反転（※sceneformでは、奥がマイナス方向）
+        selfPosZ *= -1;
+        nodePosZ *= -1;
+
+        Log.i("向いている方向ロジック", "座標 Char=" + selfPosX + ", " + selfPosZ);
+        Log.i("向いている方向ロジック", "座標 Node=" + nodePosX + ", " + nodePosZ);
+
+        //-------------------------
+        // 角度算出
+        //-------------------------
+        // 2点を結ぶ直線のラジアンを取得
+        double radian = Math.atan2((nodePosZ - selfPosZ), (nodePosX - selfPosX));
+        // ラジアン⇒角度にして返す
+        return Math.toDegrees(radian);
+    }
+
+
+    /*
+     * 本キャラクターノードが向いている角度を返す
+     * 　@return：角度範囲（－180～180）
+     * 　　　　　　※例）270度に相当する角度は、「-90度」で返す
+     * 　　　　　　※キャラクターが右を向いている状態：「0度」
+     * 　　　　　　※キャラクターが奥を向いている状態：「90度」
+     */
+    private double calcDegreeCharacterFacing() {
+
+        // キャラクターが右方向を向いている状態を0度として扱いたいため、保持中の角度を調整
+        double degree = mCurrentDegree - 90;
+
+        // 180度以下なら、その値をそのまま返す
+        if( degree <= 180 ){
+            return degree;
+        }
+
+        // 180度超過分は、「0度～-180度」の範囲に変換して返す
+        return degree - 360;
     }
 
     /*

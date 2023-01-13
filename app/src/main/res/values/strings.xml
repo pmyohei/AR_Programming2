@@ -23,6 +23,8 @@
     <string name="block_contents_if_else_block">もし、ブロックなら</string>
     <string name="block_contents_loop_goal">ゴールまでループ</string>
     <string name="block_contents_loop_block">ブロックまでループ</string>
+    <string name="block_contents_loop_facing_goal">ゴールを向くまでループ</string>
+    <string name="block_contents_loop_facing_obstacle">障害物を向くまでループ</string>
     <!--  処理ブロック 処理量の単位  -->
     <string name="block_unit_walk">cm</string>
     <string name="block_unit_rotate">度</string>

@@ -195,7 +195,7 @@ public class ProcessBlockListAdapter extends RecyclerView.Adapter<ProcessBlockLi
             case SELECT_PROCESS_ROTATE_RIGHT:
                 return SingleProcessBlock.PROCESS_CONTENTS_RIGHT_ROTATE;
             case SELECT_PROCESS_LOOP:
-                return LoopProcessBlock.PROCESS_CONTENTS_LOOP_GOAL;
+                return LoopProcessBlock.PROCESS_CONTENTS_LOOP_FACING_GOAL;
             case SELECT_PROCESS_IF:
                 return IfProcessBlock.PROCESS_CONTENTS_IF_BLOCK;
             case SELECT_PROCESS_IF_ELSE:

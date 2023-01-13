@@ -21,7 +21,6 @@ public abstract class ProcessBlock extends Block {
     // 定数
     //---------------------------
 
-
     //---------------------------
     // フィールド変数
     //---------------------------
@@ -33,11 +32,9 @@ public abstract class ProcessBlock extends Block {
     public ProcessBlock(Context context) {
         this(context, null);
     }
-
     public ProcessBlock(Context context, AttributeSet attrs) {
         this(context, attrs, 0, 0, 0);
     }
-
     public ProcessBlock(Context context, AttributeSet attrs, int defStyle, int type, int contents) {
         super(context, attrs, defStyle, type);
         mProcessContents = contents;
@@ -156,7 +153,6 @@ public abstract class ProcessBlock extends Block {
             // 下ブロックがあれば、そのブロックの処理を開始
             ProcessBlock nextBlock = (ProcessBlock) getBelowBlock();
             nextBlock.startProcess(characterNode);
-
             return;
         }
 

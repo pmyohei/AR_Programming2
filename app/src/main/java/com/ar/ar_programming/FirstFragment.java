@@ -53,6 +53,7 @@ import com.google.ar.sceneform.rendering.Texture;
 import com.google.ar.sceneform.rendering.ViewRenderable;
 import com.google.ar.sceneform.ux.ArFragment;
 import com.google.ar.sceneform.ux.BaseArFragment;
+import com.google.ar.sceneform.ux.TransformableNode;
 import com.google.ar.sceneform.ux.TransformationSystem;
 import com.ar.ar_programming.databinding.FragmentFirstBinding;
 
@@ -200,15 +201,18 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
                 // Node生成
                 //----------------------------------
                 // ステージ上ブロックNode生成
-                createBlocksNode(anchorNode);
+//                createBlocksNode(anchorNode);
                 // ステージ上ゴールNode生成
-                createGoalNode(anchorNode);
+                Node goal = createGoalNode(anchorNode);
                 // ステージ上オブジェクトのNode生成
-                createObjOnStageNode(anchorNode);
+//                createObjOnStageNode(anchorNode);
                 // キャラクターNode生成
                 // ！他のNode生成の後に行うこと（重複をさけて配置しているため）！
                 createCharacterNode(anchorNode);
 
+                //tmp-------------
+                mCharacterNode.tmpsetGoalNode( goal );
+                //tmp-------------
 
 //                DisplayMetrics metrics = getResources().getDisplayMetrics();
 //                ScaleController testscale = new ScaleController( modelNode1, new PinchGestureRecognizer( new GesturePointersUtility( metrics ) ));
@@ -990,6 +994,11 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
         // ステージ上のキャラクターとして保持
         mCharacterNode = characterNode;
 
+
+        Log.i("向いている方向ロジック", "scene判定 arFragment=" + scene);
+        Log.i("向いている方向ロジック", "scene判定 mCharacterNode=" + mCharacterNode.getScene());
+
+
         // 衝突検知リスナーの設定
         mCharacterNode.setOnCollisionDetectListener(new CharacterNode.CollisionDetectListener() {
             @Override
@@ -1085,7 +1094,7 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
             Vector3 pos = getRandomPosition(stageScale);
 
             // Node生成
-            CharacterNode node = new CharacterNode(transformationSystem);
+            TransformableNode node = new TransformableNode(transformationSystem);
             node.setName(NODE_NAME_BLOCK);
             node.getScaleController().setMinScale(scale);
             node.getScaleController().setMaxScale(scale * 2);
@@ -1100,7 +1109,7 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
     /*
      * ステージ上のゴールNode生成
      */
-    private void createGoalNode(AnchorNode anchorNode) {
+    private Node createGoalNode(AnchorNode anchorNode) {
 
         TransformationSystem transformationSystem = arFragment.getTransformationSystem();
 
@@ -1115,7 +1124,7 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
         Vector3 pos = getRandomPosition(stageScale);
 
         // Node生成
-        CharacterNode node = new CharacterNode(transformationSystem);
+        TransformableNode node = new TransformableNode(transformationSystem);
         node.setName(NODE_NAME_GOAL);
         node.getScaleController().setMinScale(scale);
         node.getScaleController().setMaxScale(scale * 2);
@@ -1124,6 +1133,10 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
         node.setLocalPosition(pos);
         node.setRenderable(mGoalRenderable);
         node.select();
+
+        //tmp======
+        return node;
+        //tmp======
     }
 
     /*
@@ -1229,7 +1242,7 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
         int i = 0;
         for (ModelRenderable renderable : mObjOnStageRenderable) {
 
-            CharacterNode node = new CharacterNode(transformationSystem);
+            TransformableNode node = new TransformableNode(transformationSystem);
 
             node.setName(mObjOnStageName.get(i));
             node.getScaleController().setMinScale(scale);
