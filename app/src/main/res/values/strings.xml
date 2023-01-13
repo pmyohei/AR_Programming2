@@ -1,6 +1,28 @@
 <resources>
     <string name="app_name">AR_Programming</string>
 
+    <!--      -->
+    <!-- Home -->
+    <!--      -->
+    <string name="home_play">Play</string>
+    <string name="home_how">遊び方</string>
+    <string name="home_setting">Setting</string>
+
+    <!--         -->
+    <!-- Setting -->
+    <!--         -->
+    <string name="setting_stage_size">ステージサイズ</string>
+    <string name="setting_stage_size_table">テーブルサイズ</string>
+    <string name="setting_stage_size_living">リビングサイズ</string>
+
+    <string name="setting_difficulty">難易度</string>
+    <string name="setting_difficulty_easy">やさしめ</string>
+    <string name="setting_difficulty_difficult">むずかしめ</string>
+
+    <string name="setting_character">キャラクター</string>
+    <string name="setting_character_animal">動物</string>
+    <string name="setting_character_car">車</string>
+
     <!-- ////////// -->
     <!-- 処理ブロック -->
     <!-- ////////// -->

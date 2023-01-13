@@ -7,7 +7,7 @@
     android:layout_height="wrap_content"
     android:padding="12dp"
     android:background="@drawable/frame_single_process"
-    tools:context=".MainActivity">
+    tools:context=".ARActivity">
 
     <ImageView
         android:id="@+id/iv_remove"

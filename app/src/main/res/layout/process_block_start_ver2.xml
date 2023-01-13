@@ -8,7 +8,7 @@
     android:minWidth="240dp"
     android:minHeight="52dp"
     android:background="@drawable/frame_single_process"
-    tools:context=".MainActivity">
+    tools:context=".ARActivity">
 
     <TextView
         android:id="@+id/tv_volume"

@@ -1,6 +1,21 @@
 <resources>
     <dimen name="fab_margin">16dp</dimen>
 
+    <dimen name="home_icon_size">40dp</dimen>
+    <dimen name="home_icon_margin_end">120dp</dimen>
+    <dimen name="home_tx_margin_start">20dp</dimen>
+    <dimen name="home_tx_size">32sp</dimen>
+
+
+    <dimen name="setting_title_margin_top">32dp</dimen>
+    <dimen name="setting_title_margin_start">20dp</dimen>
+    <dimen name="setting_item_margin_top">18dp</dimen>
+    <dimen name="setting_title_size">20sp</dimen>
+    <dimen name="setting_tx_item_size">14sp</dimen>
+    <dimen name="setting_icon_size">40dp</dimen>
+
+
+
     <dimen name="chart_area_width">2000dp</dimen>
     <dimen name="chart_area_height">2000dp</dimen>
 

@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".HomeActivity">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_play"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/bg_home_play"
+        android:onClick="onPlayClicked"
+        app:layout_constraintBottom_toTopOf="@+id/cl_how"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:context=".HomeActivity">
+
+        <ImageView
+            android:id="@+id/iv_play"
+            android:layout_width="@dimen/home_icon_size"
+            android:layout_height="@dimen/home_icon_size"
+            android:layout_marginEnd="@dimen/home_icon_margin_end"
+            android:src="@drawable/baseline_animal_24"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_play"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/home_tx_margin_start"
+            android:text="@string/home_play"
+            android:textColor="@color/tx_home"
+            android:textSize="@dimen/home_tx_size"
+            android:letterSpacing="0.2"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/iv_play"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_how"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/bg_home_how"
+        android:onClick="onHowToPlayClicked"
+        app:layout_constraintTop_toBottomOf="@+id/cl_play"
+        app:layout_constraintBottom_toTopOf="@+id/cl_setting"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:context=".HomeActivity">
+
+        <ImageView
+            android:id="@+id/iv_how"
+            android:layout_width="@dimen/home_icon_size"
+            android:layout_height="@dimen/home_icon_size"
+            android:layout_marginEnd="@dimen/home_icon_margin_end"
+            android:src="@drawable/baseline_how_24"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_how"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/home_tx_margin_start"
+            android:text="@string/home_how"
+            android:textColor="@color/tx_home"
+            android:textSize="@dimen/home_tx_size"
+            android:letterSpacing="0.2"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/iv_how"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_setting"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/bg_home_setting"
+        android:onClick="onSettingClicked"
+        app:layout_constraintTop_toBottomOf="@+id/cl_how"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:context=".HomeActivity">
+
+        <ImageView
+            android:id="@+id/iv_setting"
+            android:layout_width="@dimen/home_icon_size"
+            android:layout_height="@dimen/home_icon_size"
+            android:layout_marginEnd="@dimen/home_icon_margin_end"
+            android:src="@drawable/baseline_settings_24"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_setting"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/home_tx_margin_start"
+            android:text="@string/home_setting"
+            android:textColor="@color/tx_home"
+            android:textSize="@dimen/home_tx_size"
+            android:letterSpacing="0.2"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/iv_setting"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

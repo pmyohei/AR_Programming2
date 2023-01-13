@@ -2,6 +2,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.ar.ar_programming">
+    <!-- カメラの使用／アプリの実行にARCoreが必須　に設定 -->
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <uses-feature
+        android:name="android.hardware.camera.ar"
+        android:required="true" />
 
     <application
         android:allowBackup="true"
@@ -13,24 +19,39 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AR_Programming"
         tools:targetApi="31">
+
         <activity
-            android:name="com.ar.ar_programming.MainActivity"
-            android:exported="true"
-            android:label="@string/app_name"
-            android:theme="@style/Theme.AR_Programming.NoActionBar">
+            android:name=".HomeActivity"
+            android:exported="true">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+
+        <activity
+            android:name=".SettingActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+
+        <activity
+            android:name=".ARActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AR_Programming.NoActionBar">
         </activity>
 
         <!-- Playストア上でARCoreに対応していない端末からは、このアプリが見えないようフィルタリング -->
-        <meta-data android:name="com.google.ar.core" android:value="required" />
+        <meta-data
+            android:name="com.google.ar.core"
+            android:value="required" />
     </application>
-
-    <!-- カメラの使用／アプリの実行にARCoreが必須　に設定 -->
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-feature android:name="android.hardware.camera.ar" android:required="true" />
 
 </manifest>

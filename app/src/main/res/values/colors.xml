@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="tx_home">#323232</color>
+    <color name="bg_home_play">#E9FFF6</color>
+    <color name="bg_home_how">#F8F5B5</color>
+    <color name="bg_home_setting">#F7C3BF</color>
+
+
     <color name="bg_single_process">#A1F0FA</color>
     <color name="bg_single_process_dark">#24B9CC</color>
     <color name="bg_if_process">#F3BE70</color>

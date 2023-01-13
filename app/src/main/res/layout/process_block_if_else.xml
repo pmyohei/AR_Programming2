@@ -7,7 +7,7 @@
     android:layout_height="wrap_content"
     android:minHeight="72dp"
     android:background="@drawable/frame_if_process"
-    tools:context=".MainActivity">
+    tools:context=".ARActivity">
 
     <TextView
         android:id="@+id/tv_contents"
