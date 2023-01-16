@@ -10,20 +10,20 @@
     <string name="saved_character_key">CHARACTER_KEY</string>
 
     <!--      -->
-    <!-- menu -->
+    <!-- 共通  -->
     <!--      -->
     <string name="menu_save">保存</string>
 
-    <!--      -->
-    <!-- Home -->
-    <!--      -->
+    <!--         -->
+    <!-- Home画面 -->
+    <!--         -->
     <string name="home_play">Play</string>
     <string name="home_how">遊び方</string>
     <string name="home_setting">Setting</string>
 
-    <!--         -->
-    <!-- Setting -->
-    <!--         -->
+    <!--            -->
+    <!-- Setting画面 -->
+    <!--            -->
     <string name="setting_title">ゲーム設定</string>
 
     <string name="setting_stage_size">ステージサイズ</string>
@@ -82,13 +82,29 @@
     <string name="process_volume_degree_error">!範囲外です(0～360)!</string>
 
 
-    <!-- ////////// -->
-    <!-- ツールバー -->
-    <!-- ////////// -->
-    <string name="action_reset">Reset</string>
+    <!--            -->
+    <!-- AR画面      -->
+    <!--            -->
+    <!-- menu -->
+    <string name="ar_menu_how_to_play">遊び方</string>
+    <string name="ar_menu_setting">設定</string>
+    <string name="ar_menu_clear_field">フィールドをクリア</string>
+    <string name="ar_menu_init_programming">初めからプログラミング</string>
+
+    <!-- snackbar -->
+    <string name="snackbar_please_programming">プログラミングを作ったらもう一度押してね</string>
+
+    <!-- ダイアログ -->
+    <string name="ar_dialog_title">リトライ</string>
+    <string name="ar_dialog_contents">ゲームを初めの状態に戻しますか？</string>
+    <string name="ar_dialog_positive">やり直す</string>
+    <string name="ar_dialog_negative">このまま</string>
 
 
-    <string name="action_settings">Settings</string>
+
+
+
+
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>
     <string name="second_fragment_label">Second Fragment</string>

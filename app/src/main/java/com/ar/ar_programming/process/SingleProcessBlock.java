@@ -12,11 +12,7 @@ import android.widget.TextView;
 import androidx.fragment.app.FragmentManager;
 
 import com.ar.ar_programming.CharacterNode;
-import com.ar.ar_programming.FirstFragment;
 import com.ar.ar_programming.R;
-import com.google.ar.sceneform.Node;
-
-import java.util.ArrayList;
 
 
 /*

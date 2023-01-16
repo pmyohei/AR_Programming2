@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".ARActivity">
 
+    <!--  アクションバー  -->
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -20,15 +21,18 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <include layout="@layout/content_main" />
+    <!--  AR本体／プログラミングUI  -->
+    <include layout="@layout/content_ar" />
 
-<!--    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab"
+    <!--  Fab：ゲーム制御用  -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabGameControl"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_marginEnd="@dimen/fab_margin"
         android:layout_marginBottom="16dp"
-        app:srcCompat="@android:drawable/ic_dialog_email" />-->
+        app:backgroundTint="@color/white"
+        app:srcCompat="@drawable/baseline_play_24" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

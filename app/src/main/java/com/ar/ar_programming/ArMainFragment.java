@@ -1,9 +1,13 @@
 package com.ar.ar_programming;
 
-import android.animation.Animator;
-import android.animation.ObjectAnimator;
+import static android.content.Context.MODE_PRIVATE;
+
 import android.animation.ValueAnimator;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.net.Uri;
 import android.os.Bundle;
@@ -16,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,6 +39,7 @@ import com.ar.ar_programming.process.NestProcessBlock;
 import com.ar.ar_programming.process.ProcessBlock;
 import com.ar.ar_programming.process.SingleProcessBlock;
 import com.ar.ar_programming.process.StartBlock;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.ar.core.Anchor;
 import com.google.ar.core.HitResult;
@@ -51,18 +57,17 @@ import com.google.ar.sceneform.rendering.PlaneRenderer;
 import com.google.ar.sceneform.rendering.ShapeFactory;
 import com.google.ar.sceneform.rendering.Texture;
 import com.google.ar.sceneform.rendering.ViewRenderable;
-import com.google.ar.sceneform.ux.ArFragment;
 import com.google.ar.sceneform.ux.BaseArFragment;
 import com.google.ar.sceneform.ux.TransformableNode;
 import com.google.ar.sceneform.ux.TransformationSystem;
-import com.ar.ar_programming.databinding.FragmentFirstBinding;
+import com.ar.ar_programming.databinding.FragmentArBinding;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 
-public class FirstFragment extends Fragment implements Block.MarkerAreaListener, Block.DropBlockListener, ProcessBlock.ProcessListener {
+public class ArMainFragment extends Fragment implements ARActivity.MenuClickListener, ARActivity.PlayControlListener, Block.MarkerAreaListener, Block.DropBlockListener, ProcessBlock.ProcessListener {
 
     //---------------------------
     // 定数
@@ -96,11 +101,15 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
     private final float NODE_SIZE_L = 1.0f;
     private final float NODE_SIZE_XL = 5.0f;
 
+    // Play状態
+    private final int PLAY_STATE_PROGRAMMING = 0;       // プログラミング中（ゲーム開始前）
+    private final int PLAY_STATE_PLAYING = 1;           // ゲーム中
+
     //---------------------------
     // フィールド変数
     //---------------------------
-    private FragmentFirstBinding binding;
-    private ArFragment arFragment;
+    private FragmentArBinding binding;
+    private com.google.ar.sceneform.ux.ArFragment arFragment;
     private ModelRenderable mCharacterRenderable;
     private ModelRenderable mGoalRenderable;
     private ModelRenderable mBlockRenderable;
@@ -120,14 +129,16 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
     // tmp
 
     private CharacterNode mCharacterNode;
-    private Block mMarkedBlock;        // ブロック下部追加マーカーの付与されている処理ブロック
+    private Block mMarkedBlock;         // ブロック下部追加マーカーの付与されている処理ブロック
+
+    private int mPlayState;             // Play状態
 
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState
     ) {
-        binding = FragmentFirstBinding.inflate(inflater, container, false);
+        binding = FragmentArBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
 
@@ -135,7 +146,14 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
         super.onViewCreated(view, savedInstanceState);
 
         // ArFragmentを保持
-        arFragment = (ArFragment) getChildFragmentManager().findFragmentById(R.id.sceneform_fragment);
+        arFragment = (com.google.ar.sceneform.ux.ArFragment) getChildFragmentManager().findFragmentById(R.id.sceneform_fragment);
+        // ゲーム状態初期化
+        mPlayState = PLAY_STATE_PROGRAMMING;
+
+        //------------------------------------------
+        // 生成元Activityのmenuアクションリスナーを設定
+        //------------------------------------------
+        setMenuAction();
 
         //------------------------------------------
         // プログラミングUIの設定
@@ -156,27 +174,6 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
         // お試し：平面ドットのビジュアル変更
         //------------------------------------------
         setPlaneVisual(view.getContext());
-
-
-        //お試し
-        TextView kidou = binding.getRoot().findViewById(R.id.kidou);
-        kidou.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                NestedScrollView nsv_UIRoot = binding.getRoot().findViewById(R.id.nsv_UIRoot);
-//                nsv_UIRoot.set
-
-                StartBlock pb_chartTop = binding.getRoot().findViewById(R.id.pb_chartTop);
-                pb_chartTop.setTranslationY(pb_chartTop.getTop() + 100);
-
-                Log.i("描画不具合", "pb_chartTop.getHeight()=" + pb_chartTop.getHeight());
-                Log.i("描画不具合", "nsv_UIRoot.getHeight()=" + nsv_UIRoot.getHeight());
-
-            }
-        });
-        //お試し
-
 
         //------------------------------------------
         // 平面タップリスナーの設定
@@ -211,7 +208,7 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
                 createCharacterNode(anchorNode);
 
                 //tmp-------------
-                mCharacterNode.tmpsetGoalNode( goal );
+                mCharacterNode.tmpsetGoalNode(goal);
                 //tmp-------------
 
 //                DisplayMetrics metrics = getResources().getDisplayMetrics();
@@ -276,6 +273,18 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
     }
 
     /*
+     * 生成元Activityのmenuアクションリスナー設定
+     */
+    private void setMenuAction() {
+
+        ARActivity arActivity = (ARActivity) getActivity();
+        // Menuリスナー
+        arActivity.setOnMenuClickListener(this);
+        // ゲーム制御Fabリスナー
+        arActivity.setPlayControlListener(this);
+    }
+
+    /*
      * プログラミングUIの設定
      */
     private void setProgrammingUI() {
@@ -283,34 +292,11 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
         // マーカ―はスタートブロックに付与
         initStartBlock();
 
-        // プログラミング開始設定
-        setStartProgramming();
-        // ステージクリア設定
-        setClearStage();
-        // チャートクリア設定
-        setClearChart();
-        // キャラクター位置リセット
-        resetCharacterPosition();
-
-        //------------------------------------------
-        // 「開始ブロック」設定
-        //------------------------------------------
-//        setStartBlock();
-
-        //------------------------------------------
-        // 処理ブロック追加用サンプル
-        //------------------------------------------
-//        sampleCreateBlock();
-//        sampleDragView();
-
         // 処理ブロック削除エリア設定
         setRemoveBlockArea();
 
         // 処理ブロックリストアダプタの設定
         setSelectProcessBlockList();
-
-        // プログラミングチャートエリアのスクロール設定
-//        setChartAreaScroll();
     }
 
     /*
@@ -327,99 +313,55 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
     }
 
     /*
-     * プログラミング開始設定
+     * ゲーム開始
      */
-    private void setStartProgramming() {
+    private void startGame( FloatingActionButton fab ) {
 
+        //----------------------
+        // 処理ブロック数チェック
+        //----------------------
+        // ブロックがなにもないなら、メッセージを表示して終了
         ViewGroup root = binding.getRoot();
+        StartBlock startBlock = root.findViewById(R.id.pb_chartTop);
+        if ( !startBlock.hasBelowBlock() ) {
+            Snackbar.make(root, getString( R.string.snackbar_please_programming ), Snackbar.LENGTH_SHORT).show();
+            return;
+        }
 
-        // start検知
-        TextView tv_start = root.findViewById(R.id.tv_start);
-        tv_start.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        //----------------------
+        // プログラミング開始
+        //----------------------
+        // 処理開始
+        ProcessBlock block = (ProcessBlock) startBlock.getBelowBlock();
+        runProcessBlock(block);
 
-                //----------------------
-                // 処理ブロック数チェック
-                //----------------------
-                StartBlock startBlock = root.findViewById(R.id.pb_chartTop);
-                if (!startBlock.hasBelowBlock()) {
-                    Snackbar.make(root, "処理ブロックがありません", Snackbar.LENGTH_SHORT).show();
-                    return;
-                }
+        // ゲーム状態更新
+        mPlayState = PLAY_STATE_PLAYING;
 
-                //----------------------
-                // 先頭の処理ブロック開始
-                //----------------------
-                // 処理開始
-                ProcessBlock block = (ProcessBlock) startBlock.getBelowBlock();
-                runProcessBlock(block);
-            }
-        });
+        // Fabアイコンを切り替え
+        fab.setImageResource( R.drawable.baseline_replay_24 );
     }
 
     /*
-     * ステージクリア設定
+     * ゲームリトライ確認
      */
-    private void setClearStage() {
+    private void confirmRetryGame( FloatingActionButton fab ) {
 
-        ViewGroup root = binding.getRoot();
-        TextView tv_clear = root.findViewById(R.id.tv_nodeAllClear);
-        tv_clear.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                if (mCharacterNode == null) {
-                    return;
-                }
-
-                // Sceneに追加されたNodeを全て取得
-                Scene scene = arFragment.getArSceneView().getScene();
-                List<Node> nodes = scene.getChildren();
-
-                // Scene内のAnchorNodeを削除
-                for (Node node : nodes) {
-                    if (node.getName().equals(NODE_NAME_ANCHOR)) {
-                        scene.removeChild(node);
-                        return;
+        // リトライ確認ダイアログを表示
+        new AlertDialog.Builder(getActivity(), R.style.AlertDialogStyle)
+                .setTitle( getString(R.string.ar_dialog_title) )
+                .setMessage( getString(R.string.ar_dialog_contents) )
+                .setPositiveButton( getString(R.string.ar_dialog_positive), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // ゲームをリセット
+                        resetGame();
+                        // Fabアイコンを切り替え
+                        fab.setImageResource( R.drawable.baseline_play_24 );
                     }
-                }
-
-                // クリア
-                mCharacterNode = null;
-            }
-        });
-    }
-
-    /*
-     * チャートクリア設定
-     */
-    private void setClearChart() {
-
-        ViewGroup root = binding.getRoot();
-        TextView tv_chartClear = root.findViewById(R.id.tv_chartClear);
-        tv_chartClear.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                //------------------
-                // 処理ブロック全削除
-                //------------------
-                // Startブロックより後の処理ブロックを全て削除
-                ViewGroup ll_UIRoot = root.findViewById(R.id.ll_UIRoot);
-                int lastIndex = ll_UIRoot.getChildCount() - 1;
-                ll_UIRoot.removeViews(1, lastIndex);
-
-                //---------------------------
-                // マークをスタートブロックに設定
-                //---------------------------
-                mMarkedBlock = binding.getRoot().findViewById(R.id.pb_chartTop);
-                mMarkedBlock.setMarker(true);
-
-                // 下ブロックをなしに
-                mMarkedBlock.setBelowBlock(null);
-            }
-        });
+                })
+                .setNegativeButton(getString(R.string.ar_dialog_negative), null)
+                .show();
     }
 
     /*
@@ -429,9 +371,9 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
 
         // 削除エリア
         ViewGroup root = binding.getRoot();
-        View v_removeArea = root.findViewById(R.id.v_removeArea);
+        View iv_removeBlock = root.findViewById(R.id.iv_removeBlock);
 
-        v_removeArea.setOnDragListener(new View.OnDragListener() {
+        iv_removeBlock.setOnDragListener(new View.OnDragListener() {
             @Override
             public boolean onDrag(View view, DragEvent dragEvent) {
 
@@ -458,17 +400,14 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
     }
 
     /*
-     * キャラクター位置リセット
+     * ゲームリセット
+     *   キャラクター位置、プログラミング状態を初期状態に戻す
      */
-    private void resetCharacterPosition() {
-        ViewGroup root = binding.getRoot();
-        TextView tv_resetCharacter = root.findViewById(R.id.tv_resetCharacter);
-        tv_resetCharacter.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mCharacterNode.positionReset();
-            }
-        });
+    private void resetGame() {
+
+        // キャラクター位置リセット
+        mCharacterNode.positionReset();
+
     }
 
     /*
@@ -708,9 +647,9 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
      */
     private void dragMoveUnderDrop(Block dropBlock, ProcessBlock moveBlock) {
         // 上下情報の更新
-        rewriteAboveBelowBlockOnDrop( dropBlock, moveBlock );
+        rewriteAboveBelowBlockOnDrop(dropBlock, moveBlock);
         // 親ネストの更新
-        moveBlock.setOwnNestBlock( dropBlock.getOwnNestBlock() );
+        moveBlock.setOwnNestBlock(dropBlock.getOwnNestBlock());
         // ブロック位置をチャート先頭から更新
         updatePositionFromTop();
     }
@@ -723,7 +662,7 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
         // チャートスタートブロックの下ブロックを取得
         StartBlock pb_chartTop = binding.getRoot().findViewById(R.id.pb_chartTop);
         Block updateStart = pb_chartTop.getBelowBlock();
-        if( updateStart == null ){
+        if (updateStart == null) {
             // ブロックなしなら処理なし
             return;
         }
@@ -1144,14 +1083,15 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
      */
     private float getNodeScale() {
 
-        EditText et_nodeScale = binding.getRoot().findViewById(R.id.et_nodeScale);
-        String value = et_nodeScale.getText().toString();
-        int select = Integer.parseInt(value);
+        // ユーザーの指定したフィールドサイズを取得
+        SharedPreferences sharedPref = getActivity().getSharedPreferences(getString(R.string.preference_file_key), MODE_PRIVATE);
+        int defaultValue = getResources().getInteger(R.integer.saved_field_size_default_key);
+        int fieldSize = sharedPref.getInt(getString(R.string.saved_field_size_key), defaultValue);
 
-        switch (select) {
-            case 0:
+        switch (fieldSize) {
+            case SettingActivity.FIELD_SIZE_TABLE:
                 return NODE_SIZE_S;
-            case 1:
+            case SettingActivity.FIELD_SIZE_LIVING:
                 return NODE_SIZE_M;
             case 2:
                 return NODE_SIZE_L;
@@ -1162,18 +1102,19 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
     }
 
     /*
-     * ステージ上のランダム位置の取得
+     * ステージサイズの倍率を取得
      */
     private float getStageScaleRatio() {
 
-        EditText et_nodeScale = binding.getRoot().findViewById(R.id.et_nodeScale);
-        String value = et_nodeScale.getText().toString();
-        int select = Integer.parseInt(value);
+        // ユーザーの指定したフィールドサイズを取得
+        SharedPreferences sharedPref = getActivity().getSharedPreferences(getString(R.string.preference_file_key), MODE_PRIVATE);
+        int defaultValue = getResources().getInteger(R.integer.saved_field_size_default_key);
+        int fieldSize = sharedPref.getInt(getString(R.string.saved_field_size_key), defaultValue);
 
-        switch (select) {
-            case 0:
+        switch (fieldSize) {
+            case SettingActivity.FIELD_SIZE_TABLE:
                 return STAGE_RATIO_S;
-            case 1:
+            case SettingActivity.FIELD_SIZE_LIVING:
                 return STAGE_RATIO_M;
             case 2:
                 return STAGE_RATIO_L;
@@ -1188,18 +1129,19 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
      */
     private float getStageScale() {
 
-        // ユーザー指定のNodeサイズ
-        EditText et_stageScale = binding.getRoot().findViewById(R.id.et_stageScale);
-        String value = et_stageScale.getText().toString();
-        int select = Integer.parseInt(value);
+        // ユーザーの指定したフィールドサイズを取得
+        SharedPreferences sharedPref = getActivity().getSharedPreferences(getString(R.string.preference_file_key), MODE_PRIVATE);
+        int defaultValue = getResources().getInteger(R.integer.saved_field_size_default_key);
+        int fieldSize = sharedPref.getInt(getString(R.string.saved_field_size_key), defaultValue);
+
         // ステージサイズの倍率
         float stageRatio = getStageScaleRatio();
 
         // ステージサイズを算出
-        switch (select) {
-            case 0:
+        switch (fieldSize) {
+            case SettingActivity.FIELD_SIZE_TABLE:
                 return (STAGE_SIZE_S * stageRatio);
-            case 1:
+            case SettingActivity.FIELD_SIZE_LIVING:
                 return (STAGE_SIZE_M * stageRatio);
             case 2:
             default:
@@ -1534,5 +1476,90 @@ public class FirstFragment extends Fragment implements Block.MarkerAreaListener,
     @Override
     public void onProcessEnd() {
 
+    }
+
+    /*
+     *
+     */
+    @Override
+    public void onHowToClick() {
+        Log.i("menuテスト", "");
+    }
+
+    /*
+     *
+     */
+    @Override
+    public void onSettingClick() {
+        Intent intent = new Intent(getActivity(), SettingActivity.class);
+        startActivity(intent);
+    }
+
+    /*
+     *
+     */
+    @Override
+    public void onClearFieldClick() {
+
+        // キャラクター未生成（フィールド未生成）なら何もなし
+        if (mCharacterNode == null) {
+            return;
+        }
+
+        //------------------
+        // Node全削除
+        //------------------
+        // Sceneに追加されたNodeを全て取得
+        Scene scene = arFragment.getArSceneView().getScene();
+        List<Node> nodes = scene.getChildren();
+
+        // Scene内のAnchorNodeを削除
+        for (Node node : nodes) {
+            if (node.getName().equals(NODE_NAME_ANCHOR)) {
+                scene.removeChild(node);
+                return;//★いらないかも。アンカー複数作られない実装ならいらない
+            }
+        }
+
+        // キャラクタークリア
+        //!通る？★
+        mCharacterNode = null;
+    }
+
+    /*
+     *
+     */
+    @Override
+    public void onInitProgrammingClick() {
+        //------------------
+        // 処理ブロック全削除
+        //------------------
+        // Startブロックより後の処理ブロックを全て削除
+        ViewGroup ll_UIRoot = binding.getRoot().findViewById(R.id.ll_UIRoot);
+        int lastIndex = ll_UIRoot.getChildCount() - 1;
+        ll_UIRoot.removeViews(1, lastIndex);
+
+        //---------------------------
+        // マークをスタートブロックに設定
+        //---------------------------
+        mMarkedBlock = binding.getRoot().findViewById(R.id.pb_chartTop);
+        mMarkedBlock.setMarker(true);
+        // 下ブロックをなしに
+        mMarkedBlock.setBelowBlock(null);
+    }
+
+    /*
+     * ゲーム制御Fabクリックリスナー
+     */
+    @Override
+    public void onPlayControlClick( FloatingActionButton fab ) {
+
+        if( mPlayState == PLAY_STATE_PROGRAMMING ){
+            // ゲーム開始
+            startGame( fab );
+        } else {
+            // ゲームリトライ確認
+            confirmRetryGame( fab );
+        }
     }
 }

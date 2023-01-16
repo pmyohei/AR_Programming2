@@ -24,14 +24,14 @@ public class SettingActivity extends AppCompatActivity {
     // 定数
     //---------------------------
     // フィールドサイズ
-    public final int FIELD_SIZE_TABLE = 0;
-    public final int FIELD_SIZE_LIVING = 1;
+    public static final int FIELD_SIZE_TABLE = 0;
+    public static final int FIELD_SIZE_LIVING = 1;
     // 難易度
-    public final int PLAY_DIFFICULTY_EASY = 0;
-    public final int PLAY_DIFFICULTY_DIFFICULT = 1;
+    public static final int PLAY_DIFFICULTY_EASY = 0;
+    public static final int PLAY_DIFFICULTY_DIFFICULT = 1;
     // キャラクター
-    public final int CHARACTER_ANIMAL = 0;
-    public final int CHARACTER_VEHICLE = 1;
+    public static final int CHARACTER_ANIMAL = 0;
+    public static final int CHARACTER_VEHICLE = 1;
 
     //---------------------------
     // フィールド変数

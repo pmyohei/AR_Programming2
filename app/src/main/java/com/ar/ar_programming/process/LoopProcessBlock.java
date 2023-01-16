@@ -1,18 +1,15 @@
 package com.ar.ar_programming.process;
 
-import static com.ar.ar_programming.FirstFragment.NODE_NAME_GOAL;
-
 import android.content.Context;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.widget.TextView;
 
 import com.ar.ar_programming.CharacterNode;
-import com.ar.ar_programming.FirstFragment;
+import com.ar.ar_programming.ArMainFragment;
 import com.ar.ar_programming.R;
 import com.google.ar.sceneform.Node;
 import com.google.ar.sceneform.NodeParent;
-import com.google.ar.sceneform.Scene;
 
 import java.util.List;
 
@@ -163,13 +160,13 @@ public class LoopProcessBlock extends NestProcessBlock {
 
         switch (contents) {
             case PROCESS_CONTENTS_LOOP_FACING_GOAL:
-                nodeName = FirstFragment.NODE_NAME_GOAL;
+                nodeName = ArMainFragment.NODE_NAME_GOAL;
                 break;
             case PROCESS_CONTENTS_LOOP_FACING_OBSTACLE:
-                nodeName = FirstFragment.NODE_NAME_OBSTACLE;
+                nodeName = ArMainFragment.NODE_NAME_OBSTACLE;
                 break;
             default:
-                nodeName = FirstFragment.NODE_NAME_GOAL;
+                nodeName = ArMainFragment.NODE_NAME_GOAL;
                 break;
         }
 

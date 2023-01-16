@@ -116,17 +116,17 @@ public class CharacterNode extends TransformableNode {
             // 衝突したノードを判別
             String collidingNodeName = collidingNode.getName();
 
-            if (collidingNodeName.equals(FirstFragment.NODE_NAME_GOAL)) {
+            if (collidingNodeName.equals(ArMainFragment.NODE_NAME_GOAL)) {
                 collisionType = COLLISION_TYPE_GOAL;
                 startModelAnimation(MODEL_ANIMATION_STR_GOAL, 2000);
                 break;
 
-            } else if (collidingNodeName.equals(FirstFragment.NODE_NAME_OBSTACLE)) {
+            } else if (collidingNodeName.equals(ArMainFragment.NODE_NAME_OBSTACLE)) {
                 collisionType = COLLISION_TYPE_OBSTACLE;
                 startModelAnimation(MODEL_ANIMATION_STR_ERROR, 2000);
                 break;
 
-            } else if (collidingNodeName.equals(FirstFragment.NODE_NAME_BLOCK)) {
+            } else if (collidingNodeName.equals(ArMainFragment.NODE_NAME_BLOCK)) {
 
                 collisionType = COLLISION_TYPE_BLOCK;
                 break;
@@ -531,7 +531,7 @@ public class CharacterNode extends TransformableNode {
         if ((procKind == SingleProcessBlock.PROCESS_CONTENTS_FORWARD) || (procKind == SingleProcessBlock.PROCESS_CONTENTS_BACK)) {
             // スケールに応じた処理時間に変換
             Vector3 scale = getLocalScale();
-            float ratio = (FirstFragment.NODE_SIZE_S * FirstFragment.NODE_SIZE_TMP_RATIO) / scale.x;
+            float ratio = (ArMainFragment.NODE_SIZE_S * ArMainFragment.NODE_SIZE_TMP_RATIO) / scale.x;
 
             Log.i("歩行", "scale.x=" + scale.x);
             Log.i("歩行", "ratio=" + ratio);
