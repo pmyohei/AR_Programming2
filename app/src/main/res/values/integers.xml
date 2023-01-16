@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--                              -->
+    <!-- 共有環境設定 SharedPreferences -->
+    <!--                              -->
+    <integer name="saved_field_size_default_key">0</integer>
+    <integer name="saved_difficulty_default_key">0</integer>
+    <integer name="saved_character_default_key">0</integer>
+
+
+
+
+
+</resources>

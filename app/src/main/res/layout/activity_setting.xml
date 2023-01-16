@@ -2,40 +2,38 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cl_settingRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".SettingActivity">
 
-    <!--  ツールバー  -->
-    <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/bar_setting"
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar_setting"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:background="@android:color/transparent"
+        android:elevation="0dp"
+        android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+        app:theme="@style/ToolbarTheme"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:theme="@style/Theme.AR_Programming.AppBarOverlay">
+        app:menu="@menu/toolbar_save">
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar_setting"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:popupTheme="@style/Theme.AR_Programming.PopupOverlay" />
-
-    </com.google.android.material.appbar.AppBarLayout>
+    </androidx.appcompat.widget.Toolbar>
 
     <TextView
         android:id="@+id/tv_stageSize"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/setting_title_margin_top"
+        android:layout_marginTop="20dp"
         android:layout_marginStart="@dimen/setting_title_margin_start"
         android:text="@string/setting_stage_size"
         android:textColor="@color/tx_home"
         android:textSize="@dimen/setting_title_size"
         android:letterSpacing="0.1"
-        app:layout_constraintTop_toBottomOf="@+id/bar_setting"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_setting"
         app:layout_constraintStart_toStartOf="parent" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -66,11 +64,13 @@
             android:text="@string/setting_stage_size_table"
             android:textColor="@color/tx_home"
             android:textSize="@dimen/setting_tx_item_size"
-            android:letterSpacing="0.2"
+            android:letterSpacing="0.1"
+            android:onClick="onFieldSizeClicked"
             app:layout_constraintTop_toBottomOf="@+id/iv_tableSize"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"/>
+            app:layout_constraintStart_toStartOf="parent"
+            tools:context=".SettingActivity" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -102,7 +102,8 @@
             android:text="@string/setting_stage_size_living"
             android:textColor="@color/tx_home"
             android:textSize="@dimen/setting_tx_item_size"
-            android:letterSpacing="0.2"
+            android:letterSpacing="0.1"
+            android:onClick="onFieldSizeClicked"
             app:layout_constraintTop_toBottomOf="@+id/iv_livingSize"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -152,7 +153,8 @@
             android:text="@string/setting_difficulty_easy"
             android:textColor="@color/tx_home"
             android:textSize="@dimen/setting_tx_item_size"
-            android:letterSpacing="0.2"
+            android:letterSpacing="0.1"
+            android:onClick="onDifficultyClicked"
             app:layout_constraintTop_toBottomOf="@+id/iv_easy"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -188,7 +190,8 @@
             android:text="@string/setting_difficulty_difficult"
             android:textColor="@color/tx_home"
             android:textSize="@dimen/setting_tx_item_size"
-            android:letterSpacing="0.2"
+            android:letterSpacing="0.1"
+            android:onClick="onDifficultyClicked"
             app:layout_constraintTop_toBottomOf="@+id/iv_difficult"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -217,7 +220,7 @@
         android:layout_marginTop="@dimen/setting_item_margin_top"
         app:layout_constraintTop_toBottomOf="@+id/tv_character"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/cl_car"
+        app:layout_constraintEnd_toStartOf="@+id/cl_vehicle"
         >
 
         <ImageView
@@ -238,7 +241,8 @@
             android:text="@string/setting_character_animal"
             android:textColor="@color/tx_home"
             android:textSize="@dimen/setting_tx_item_size"
-            android:letterSpacing="0.2"
+            android:letterSpacing="0.1"
+            android:onClick="onCharacterClicked"
             app:layout_constraintTop_toBottomOf="@+id/iv_animal"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -247,7 +251,7 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/cl_car"
+        android:id="@+id/cl_vehicle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/setting_item_margin_top"
@@ -257,7 +261,7 @@
         >
 
         <ImageView
-            android:id="@+id/iv_car"
+            android:id="@+id/iv_vehicle"
             android:layout_width="@dimen/setting_icon_size"
             android:layout_height="@dimen/setting_icon_size"
             android:src="@drawable/baseline_car_24"
@@ -268,21 +272,19 @@
 
         <!-- ラジオボタンそのものの排他制御は自前で行う -->
         <RadioButton
-            android:id="@+id/radio_car"
+            android:id="@+id/radio_vehicle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/setting_character_car"
+            android:text="@string/setting_character_vehicle"
             android:textColor="@color/tx_home"
             android:textSize="@dimen/setting_tx_item_size"
-            android:letterSpacing="0.2"
-            app:layout_constraintTop_toBottomOf="@+id/iv_car"
+            android:letterSpacing="0.1"
+            android:onClick="onCharacterClicked"
+            app:layout_constraintTop_toBottomOf="@+id/iv_vehicle"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>
