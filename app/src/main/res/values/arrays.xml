@@ -24,6 +24,18 @@
         <item>@string/block_nest_if_elseif_else</item>
     </array>
 
+    <!---->
+    <!-- 処理ブロックタイトルリスト -->
+    <!---->
+    <array name="easy_gimmick_list">
+        <item>@array/gimmick_sample</item>
+    </array>
+
+    <array name="gimmick_sample">
+        <item>@string/gimmick_object_tree_1</item>
+        <item>@string/gimmick_object_rock_1</item>
+    </array>
+
 
 
 

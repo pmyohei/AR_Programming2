@@ -1,29 +1,29 @@
 <resources>
     <string name="app_name">AR_Programming</string>
 
-    <!--                              -->
+    <!---->
     <!-- 共有環境設定 SharedPreferences -->
-    <!--                              -->
+    <!---->
     <string name="preference_file_key">com.ar.ar_programming.PREFERENCE_FILE_KEY</string>
     <string name="saved_field_size_key">FIELD_SIZE_KEY</string>
     <string name="saved_difficulty_key">DIFFICULTY_KEY</string>
     <string name="saved_character_key">CHARACTER_KEY</string>
 
-    <!--      -->
-    <!-- 共通  -->
-    <!--      -->
+    <!---->
+    <!-- 共通 -->
+    <!---->
     <string name="menu_save">保存</string>
 
-    <!--         -->
+    <!---->
     <!-- Home画面 -->
-    <!--         -->
+    <!---->
     <string name="home_play">Play</string>
     <string name="home_how">遊び方</string>
     <string name="home_setting">Setting</string>
 
-    <!--            -->
+    <!---->
     <!-- Setting画面 -->
-    <!--            -->
+    <!---->
     <string name="setting_title">ゲーム設定</string>
 
     <string name="setting_stage_size">ステージサイズ</string>
@@ -44,12 +44,12 @@
     <string name="setting_dialog_positive">保存</string>
     <string name="setting_dialog_negative">いいえ</string>
 
-    <!-- ダイアログ -->
+    <!-- snackbar -->
     <string name="setting_snackbar_message">保存しました</string>
 
-    <!-- ////////// -->
+    <!---->
     <!-- 処理ブロック -->
-    <!-- ////////// -->
+    <!---->
     <!--  処理ブロックリストタイトル  -->
     <string name="block_forward">前へ進む</string>
     <string name="block_back">後ろに戻る</string>
@@ -75,21 +75,21 @@
     <string name="block_unit_walk">cm</string>
     <string name="block_unit_rotate">度</string>
 
-
-    <!-- ////////// -->
     <!-- ダイアログ -->
-    <!-- ////////// -->
     <string name="process_volume_degree_error">!範囲外です(0～360)!</string>
 
 
-    <!--            -->
-    <!-- AR画面      -->
-    <!--            -->
+    <!---->
+    <!-- AR画面 -->
+    <!---->
     <!-- menu -->
     <string name="ar_menu_how_to_play">遊び方</string>
     <string name="ar_menu_setting">設定</string>
     <string name="ar_menu_clear_field">フィールドをクリア</string>
     <string name="ar_menu_init_programming">初めからプログラミング</string>
+
+    <!-- プログラミング画面 -->
+    <string name="programming_top">Let\'s Programming!</string>
 
     <!-- snackbar -->
     <string name="snackbar_please_programming">プログラミングを作ったらもう一度押してね</string>
@@ -102,6 +102,11 @@
     <string name="ar_dialog_negative">このまま</string>
 
 
+    <!---->
+    <!-- ギミック -->
+    <!---->
+    <string name="gimmick_object_tree_1">tree</string>
+    <string name="gimmick_object_rock_1">rock</string>
 
 
 
