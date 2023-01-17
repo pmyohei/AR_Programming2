@@ -93,6 +93,7 @@
 
     <!-- snackbar -->
     <string name="snackbar_please_programming">プログラミングを作ったらもう一度押してね</string>
+    <string name="snackbar_please_finish_game">ゲーム終了後に押してね</string>
 
     <!-- ダイアログ -->
     <string name="ar_dialog_title">リトライ</string>

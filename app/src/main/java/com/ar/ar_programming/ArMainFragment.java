@@ -18,14 +18,14 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -133,6 +133,8 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
 
     private int mPlayState;             // Play状態
 
+    private ActivityResultLauncher<Intent> mSettingRegistrationLancher;
+
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container,
@@ -149,6 +151,9 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
         arFragment = (com.google.ar.sceneform.ux.ArFragment) getChildFragmentManager().findFragmentById(R.id.sceneform_fragment);
         // ゲーム状態初期化
         mPlayState = PLAY_STATE_PROGRAMMING;
+
+        // 画面遷移ランチャー生成
+        setSettingRegistrationLancher();
 
         //------------------------------------------
         // 生成元Activityのmenuアクションリスナーを設定
@@ -198,11 +203,11 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
                 // Node生成
                 //----------------------------------
                 // ステージ上ブロックNode生成
-//                createBlocksNode(anchorNode);
+                createBlocksNode(anchorNode);
                 // ステージ上ゴールNode生成
                 Node goal = createGoalNode(anchorNode);
                 // ステージ上オブジェクトのNode生成
-//                createObjOnStageNode(anchorNode);
+                createObjOnStageNode(anchorNode);
                 // キャラクターNode生成
                 // ！他のNode生成の後に行うこと（重複をさけて配置しているため）！
                 createCharacterNode(anchorNode);
@@ -313,9 +318,39 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
     }
 
     /*
-     * ゲーム開始
+     * 画面遷移ランチャーの設定：設定画面遷移用
      */
-    private void startGame( FloatingActionButton fab ) {
+    private void setSettingRegistrationLancher() {
+
+        mSettingRegistrationLancher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                new ActivityResultCallback<ActivityResult>() {
+                    @Override
+                    public void onActivityResult(ActivityResult result) {
+
+                        // ResultCodeの取得
+                        int resultCode = result.getResultCode();
+                        if (resultCode != SettingActivity.RESULT_SETTING) {
+                            // フェールセーフ
+                            return;
+                        }
+
+                        // 設定変更された場合
+                        Intent intent = result.getData();
+                        boolean isChanged = intent.getBooleanExtra(SettingActivity.IS_CHANGED_KEY, false);
+                        if (isChanged) {
+                            // ゲーム状態を初期化
+                            initGameState();
+                        }
+                    }
+                });
+    }
+
+
+    /*
+     * ゲーム開始可能か判定
+     */
+    private boolean enableStartGame() {
 
         //----------------------
         // 処理ブロック数チェック
@@ -325,12 +360,44 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
         StartBlock startBlock = root.findViewById(R.id.pb_chartTop);
         if ( !startBlock.hasBelowBlock() ) {
             Snackbar.make(root, getString( R.string.snackbar_please_programming ), Snackbar.LENGTH_SHORT).show();
+            return false;
+        }
+
+        //-------------------------------
+        // ループブロック内ブロック数チェック
+        //-------------------------------
+        //★優先度低；ループ内ブロック数がない場合はじく
+//        ViewGroup ll_UIRoot = binding.getRoot().findViewById(R.id.ll_UIRoot);
+//        int childNum = ll_UIRoot.getChildCount();
+//        for( int i = 0; i < childNum; i++ ){
+//            View childView = ll_UIRoot.getChildAt( i );
+//            // ループブロックに対して、ネスト内ブロック数をチェック
+//            if (childView instanceof LoopProcessBlock) {
+//
+//            }
+//        }
+
+        return true;
+    }
+
+    /*
+     * ゲーム開始
+     */
+    private void startGame( FloatingActionButton fab ) {
+
+        //----------------------
+        // ゲーム開始可能判定
+        //----------------------
+        if( !enableStartGame() ){
             return;
         }
 
         //----------------------
         // プログラミング開始
         //----------------------
+        ViewGroup root = binding.getRoot();
+        StartBlock startBlock = root.findViewById(R.id.pb_chartTop);
+
         // 処理開始
         ProcessBlock block = (ProcessBlock) startBlock.getBelowBlock();
         runProcessBlock(block);
@@ -355,7 +422,7 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         // ゲームをリセット
-                        resetGame();
+                        returnGameToStart();
                         // Fabアイコンを切り替え
                         fab.setImageResource( R.drawable.baseline_play_24 );
                     }
@@ -403,7 +470,7 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
      * ゲームリセット
      *   キャラクター位置、プログラミング状態を初期状態に戻す
      */
-    private void resetGame() {
+    private void returnGameToStart() {
 
         // キャラクター位置リセット
         mCharacterNode.positionReset();
@@ -926,17 +993,15 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
                 break;
             }
 
-            // 重複していれば、そのキャラクターは削除
+            // 重複していれば、そのキャラクターは削除してもう一度配置をやり直し
             anchorNode.removeChild(characterNode);
         }
 
         // ステージ上のキャラクターとして保持
         mCharacterNode = characterNode;
 
-
-        Log.i("向いている方向ロジック", "scene判定 arFragment=" + scene);
-        Log.i("向いている方向ロジック", "scene判定 mCharacterNode=" + mCharacterNode.getScene());
-
+//        Log.i("向いている方向ロジック", "scene判定 arFragment=" + scene);
+//        Log.i("向いている方向ロジック", "scene判定 mCharacterNode=" + mCharacterNode.getScene());
 
         // 衝突検知リスナーの設定
         mCharacterNode.setOnCollisionDetectListener(new CharacterNode.CollisionDetectListener() {
@@ -1389,6 +1454,72 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
     }
 
     /*
+     * ゲームを初期状態に戻す
+     * ・フィールドをクリア
+     * ・プログラミング処理ブロックを全て削除
+     */
+    public void initGameState() {
+
+        // フィールドをクリア
+        clearField();
+        // プログラミングを初期化（ブロック全削除）
+        initProgramming();
+    }
+
+    /*
+     * フィールドをクリアする（配置した３Dモデルを全て削除する）
+     */
+    public void clearField() {
+
+        // キャラクター未生成（フィールド未生成）なら何もなし
+        if (mCharacterNode == null) {
+            return;
+        }
+
+        //------------------
+        // Node全削除
+        //------------------
+        // Sceneに追加されたNodeを全て取得
+        Scene scene = arFragment.getArSceneView().getScene();
+        List<Node> nodes = scene.getChildren();
+
+        // Scene内のAnchorNodeを削除
+        for (Node node : nodes) {
+            if (node.getName().equals(NODE_NAME_ANCHOR)) {
+                scene.removeChild(node);
+                return;//★いらないかも。アンカー複数作られない実装ならいらない
+            }
+        }
+
+        // キャラクタークリア
+        //!通る？★
+        mCharacterNode = null;
+    }
+
+    /*
+     * プログラミングを初期化する（処理ブロックを全て削除する）
+     */
+    public void initProgramming() {
+
+        //------------------
+        // 処理ブロック全削除
+        //------------------
+        // Startブロックより後の処理ブロックを全て削除
+        ViewGroup ll_UIRoot = binding.getRoot().findViewById(R.id.ll_UIRoot);
+        int lastIndex = ll_UIRoot.getChildCount() - 1;
+        ll_UIRoot.removeViews(1, lastIndex);
+
+        //---------------------------
+        // マークをスタートブロックに設定
+        //---------------------------
+        mMarkedBlock = binding.getRoot().findViewById(R.id.pb_chartTop);
+        mMarkedBlock.setMarker(true);
+        // 下ブロックをなしに
+        mMarkedBlock.setBelowBlock(null);
+    }
+
+
+    /*
      * 【処理ブロック内リスナー設定】マーカーエリアクリック処理
      */
     @Override
@@ -1475,7 +1606,6 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
      */
     @Override
     public void onProcessEnd() {
-
     }
 
     /*
@@ -1483,7 +1613,7 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
      */
     @Override
     public void onHowToClick() {
-        Log.i("menuテスト", "");
+
     }
 
     /*
@@ -1491,61 +1621,37 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
      */
     @Override
     public void onSettingClick() {
-        Intent intent = new Intent(getActivity(), SettingActivity.class);
-        startActivity(intent);
-    }
 
-    /*
-     *
-     */
-    @Override
-    public void onClearFieldClick() {
-
-        // キャラクター未生成（フィールド未生成）なら何もなし
-        if (mCharacterNode == null) {
+        //------------------
+        // 設定変更可能か判定
+        //------------------
+        // ゲーム中は設定変更不可
+        if( mPlayState == PLAY_STATE_PLAYING ){
+            Snackbar.make(binding.getRoot(), getString(R.string.snackbar_please_finish_game), Snackbar.LENGTH_SHORT).show();
             return;
         }
 
         //------------------
-        // Node全削除
+        // 画面遷移
         //------------------
-        // Sceneに追加されたNodeを全て取得
-        Scene scene = arFragment.getArSceneView().getScene();
-        List<Node> nodes = scene.getChildren();
-
-        // Scene内のAnchorNodeを削除
-        for (Node node : nodes) {
-            if (node.getName().equals(NODE_NAME_ANCHOR)) {
-                scene.removeChild(node);
-                return;//★いらないかも。アンカー複数作られない実装ならいらない
-            }
-        }
-
-        // キャラクタークリア
-        //!通る？★
-        mCharacterNode = null;
+        Intent intent = new Intent(getActivity(), SettingActivity.class);
+        mSettingRegistrationLancher.launch( intent );
     }
 
     /*
-     *
+     * フィールドクリアクリック
+     */
+    @Override
+    public void onClearFieldClick() {
+        clearField();
+    }
+
+    /*
+     * 「初めからプログラミング」クリック
      */
     @Override
     public void onInitProgrammingClick() {
-        //------------------
-        // 処理ブロック全削除
-        //------------------
-        // Startブロックより後の処理ブロックを全て削除
-        ViewGroup ll_UIRoot = binding.getRoot().findViewById(R.id.ll_UIRoot);
-        int lastIndex = ll_UIRoot.getChildCount() - 1;
-        ll_UIRoot.removeViews(1, lastIndex);
-
-        //---------------------------
-        // マークをスタートブロックに設定
-        //---------------------------
-        mMarkedBlock = binding.getRoot().findViewById(R.id.pb_chartTop);
-        mMarkedBlock.setMarker(true);
-        // 下ブロックをなしに
-        mMarkedBlock.setBelowBlock(null);
+        initProgramming();
     }
 
     /*

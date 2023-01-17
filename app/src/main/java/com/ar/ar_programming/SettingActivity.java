@@ -6,6 +6,7 @@ import androidx.appcompat.widget.Toolbar;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
@@ -23,6 +24,10 @@ public class SettingActivity extends AppCompatActivity {
     //---------------------------
     // 定数
     //---------------------------
+    // 呼び出し元への戻り値
+    public static final int RESULT_SETTING = 200;
+    public static final String IS_CHANGED_KEY = "is_update_key";
+
     // フィールドサイズ
     public static final int FIELD_SIZE_TABLE = 0;
     public static final int FIELD_SIZE_LIVING = 1;
@@ -36,8 +41,9 @@ public class SettingActivity extends AppCompatActivity {
     //---------------------------
     // フィールド変数
     //---------------------------
-    // ユーザー設定変更フラグ
-    private boolean mUpdateFlg;
+    // flg
+    private boolean mUpdateFlg;     // ユーザー設定変更フラグ（ユーザーが設定を変更した場合、true）
+    private boolean mSavedFlg;      // ユーザー保存フラグ（ユーザーが保存を選択した場合、true）
     // 設定データ
     private int mFileldSize;
     private int mPlayDifficulty;
@@ -48,8 +54,11 @@ public class SettingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setting);
 
-        // 設定変更なし
+        //--------------
+        // フラグ初期化
+        //--------------
         mUpdateFlg = false;
+        mSavedFlg = false;
 
         // Toolbar設定
         setToolbar();
@@ -306,6 +315,8 @@ public class SettingActivity extends AppCompatActivity {
 
         // 変更なしに戻す
         mUpdateFlg = false;
+        // 保存ありに設定
+        mSavedFlg = true;
 
         return true;
     }
@@ -317,25 +328,41 @@ public class SettingActivity extends AppCompatActivity {
 
         // 保存確認ダイアログを表示
         new AlertDialog.Builder(this, R.style.AlertDialogStyle)
-                .setTitle( getString(R.string.setting_dialog_title) )
-                .setMessage( getString(R.string.setting_dialog_contents) )
-                .setPositiveButton( getString(R.string.setting_dialog_positive), new DialogInterface.OnClickListener() {
+                .setTitle(getString(R.string.setting_dialog_title))
+                .setMessage(getString(R.string.setting_dialog_contents))
+                .setPositiveButton(getString(R.string.setting_dialog_positive), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         // 保存処理へ
                         saveUserData();
-                        finish();
+                        finishSetting();
                     }
                 })
                 .setNegativeButton(getString(R.string.setting_dialog_negative), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         // そのまま終了
-                        finish();
+                        finishSetting();
                     }
                 })
                 .show();
     }
+
+    /*
+     * ユーザー設定画面終了
+     */
+    private void finishSetting() {
+
+        // 変更されたカテゴリのリスト内における位置を設定
+        Intent intent = getIntent();
+        intent.putExtra( IS_CHANGED_KEY, mSavedFlg );
+        // resultコード設定
+        setResult(RESULT_SETTING, intent );
+
+        // 画面終了
+        finish();
+    }
+
 
     /*
      * ツールバーオプションメニュー生成
@@ -361,7 +388,7 @@ public class SettingActivity extends AppCompatActivity {
         }
 
         // 更新なしの場合、そのままアクティビティ終了
-        finish();
+        finishSetting();
         return super.onSupportNavigateUp();
     }
 
