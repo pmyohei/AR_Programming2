@@ -30,6 +30,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.ar.ar_programming.databinding.FragmentArBinding;
 import com.ar.ar_programming.process.Block;
 import com.ar.ar_programming.process.IfElseIfElseProcessBlock;
 import com.ar.ar_programming.process.IfElseProcessBlock;
@@ -39,7 +40,6 @@ import com.ar.ar_programming.process.NestProcessBlock;
 import com.ar.ar_programming.process.ProcessBlock;
 import com.ar.ar_programming.process.SingleProcessBlock;
 import com.ar.ar_programming.process.StartBlock;
-import com.google.android.filament.utils.Manipulator;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.ar.core.Anchor;
@@ -61,7 +61,6 @@ import com.google.ar.sceneform.rendering.ViewRenderable;
 import com.google.ar.sceneform.ux.BaseArFragment;
 import com.google.ar.sceneform.ux.TransformableNode;
 import com.google.ar.sceneform.ux.TransformationSystem;
-import com.ar.ar_programming.databinding.FragmentArBinding;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -96,11 +95,12 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
     private final float STAGE_RATIO_L = 10.0f;
     private final float STAGE_RATIO_XL = 50.0f;
     // ノードサイズ
-    public static final float NODE_SIZE_TMP_RATIO = 0.1f;
-    public static final float NODE_SIZE_S = 0.1f;
-    private final float NODE_SIZE_M = 0.5f;
-    private final float NODE_SIZE_L = 1.0f;
-    private final float NODE_SIZE_XL = 5.0f;
+//    public static final float NODE_SIZE_TMP_RATIO = 0.1f;
+    public static final float NODE_SIZE_TMP_RATIO = 1f;
+    public static final float NODE_SIZE_S = 0.02f;
+    public static final float NODE_SIZE_M = 0.5f;
+    public static final float NODE_SIZE_L = 1.0f;
+    public static final float NODE_SIZE_XL = 5.0f;
 
     // Play状態
     private final int PLAY_STATE_PROGRAMMING = 0;       // プログラミング中（ゲーム開始前）
@@ -134,6 +134,8 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
     private Block mMarkedBlock;         // ブロック下部追加マーカーの付与されている処理ブロック
 
     private int mPlayState;             // Play状態
+    private int mGimmickID;             // ステージギミックID
+    private Gimmick mGimmick;             // ステージギミックID
 
     private ActivityResultLauncher<Intent> mSettingRegistrationLancher;
 
@@ -170,16 +172,9 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
         setProgrammingUI();
 
         //------------------------------------------
-        // 3Dモデルレンダリング生成
+        // 3Dモデルレンダリング初期生成
         //------------------------------------------
-        // キャラクター
-        createModelRenderable(view.getContext());
-        // ブロック
-        createObjOnStageNode(view.getContext());
-        // ステージ上の物体
-        createObjectsRenderable(view.getContext());
-        // ステージ上の物体tmp
-//        createtmpObjOnStageRenderable(view.getContext());
+        initRenderable();
 
         //------------------------------------------
         // お試し：平面ドットのビジュアル変更
@@ -213,13 +208,12 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
                 // ステージ上ブロックNode生成
 //                createBlocksNode(anchorNode);
                 // ステージ上ゴールNode生成
-                createGoalNode(anchorNode);
+//                createGoalNode(anchorNode);
                 // ステージ上オブジェクトのNode生成
 //                createObjOnStageNode(anchorNode);
                 // キャラクターNode生成
                 // ！他のNode生成の後に行うこと（重複をさけて配置しているため）！
                 createCharacterNode(anchorNode);
-
 
 
 //                DisplayMetrics metrics = getResources().getDisplayMetrics();
@@ -623,6 +617,62 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
         newBlock.updatePosition();
     }
 
+
+    /*
+     * 3Dモデルレンダリング初期生成
+     */
+    private void initRenderable() {
+
+        //----------------------------------------
+        // ステージギミックを選出
+        //----------------------------------------
+        mGimmick = GimmickManager.getGimmick( getContext() );
+/*
+        // ギミック候補リストを取得
+        TypedArray gimmickCandidate = getGimmickList();
+
+        //!完全初回→ガイドギミックを強制選択
+        //!初回以後→ランダムで選定
+        //！とりあえず先頭
+        String gimmick = gimmickCandidate.getString(0);
+        mGimmickID = getResources().getIdentifier(gimmick, "array", getActivity().getPackageName());
+*/
+
+
+        // キャラクター
+        createCharacterRenderable(mGimmick);
+        // ステージ上の物体
+        createObjectsRenderable(mGimmick);
+        // ブロック
+//        createObjOnStageNode(view.getContext());
+        // ステージ上の物体tmp
+//        createtmpObjOnStageRenderable(view.getContext());
+    }
+
+    /*
+     * ギミックリスト候補を取得
+     */
+    private TypedArray getGimmickList() {
+
+        // ユーザーの設定しているキャラクターと難易度
+        SharedPreferences sharedPref = getActivity().getSharedPreferences(getString(R.string.preference_file_key), MODE_PRIVATE);
+        int defaultCharacter = getResources().getInteger(R.integer.saved_character_default_key);
+        int defaultDifficulty = getResources().getInteger(R.integer.saved_difficulty_default_key);
+        int character = sharedPref.getInt(getString(R.string.saved_character_key), defaultCharacter);
+        int difficulty = sharedPref.getInt(getString(R.string.saved_difficulty_key), defaultDifficulty);
+
+        String characterStr = (character == SettingActivity.CHARACTER_ANIMAL ? "animal" : "vehicle");
+        String difficultyStr = (difficulty == SettingActivity.PLAY_DIFFICULTY_EASY ? "easy" : "difficult");
+
+        String arrayName = "gimmick_list_" + characterStr + "_" + difficultyStr;
+
+        int arrayId = getResources().getIdentifier(arrayName, "array", getActivity().getPackageName());
+
+        Log.i("ギミック", "arrayName=" + arrayName);
+
+        return getResources().obtainTypedArray(arrayId);
+    }
+
     /*
      * 上下ブロック保持情報の更新（ブロック挿入時）
      */
@@ -783,24 +833,45 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
         mMarkedBlock = newMarkerBlock;
     }
 
+
     /*
      * 3Dモデルレンダリング「ModelRenderable」の生成
      */
-    private void createModelRenderable(Context context) {
+    private void createCharacterRenderable( Gimmick gimmick ) {
+
+        Context context = getContext();
+
+        // Renderable生成
+        ModelRenderable
+                .builder()
+                .setSource(context, Uri.parse( gimmick.characterName ))
+                .setIsFilamentGltf(true)    // glbファイルを読み込む必須
+                .build()
+                .thenAccept(renderable -> mCharacterRenderable = renderable)
+                .exceptionally(
+                        throwable -> {
+                            //!string
+                            Toast toast = Toast.makeText(context, "Unable to load andy renderable", Toast.LENGTH_LONG);
+                            toast.setGravity(Gravity.CENTER, 0, 0);
+                            toast.show();
+                            return null;
+                        });
+
+    }
+
+    /*
+     * 3Dモデルレンダリング「ModelRenderable」の生成
+     */
+    //!一応参考に残しておく
+    private void createModelRenderable_old() {
+
+        Context context = getContext();
 
         // レンダリングは非同期で生成する
         CompletableFuture<ModelRenderable> modelCompletableFuture =
                 ModelRenderable
                         .builder()
-//                      .setSource(view.getContext(), Uri.parse("models/test_anim.glb"))
-//                      .setSource(view.getContext(), Uri.parse("models/tree.glb"))
-//                      .setSource(view.getContext(), Uri.parse("models/halloween.glb"))
-//                        .setSource(context, Uri.parse("models/sample_bear_small2.glb"))
-//                        .setSource(view.getContext(), Uri.parse("models/sample_bear_ver3_born_anim.glb"))
-//                        .setSource(view.getContext(), Uri.parse("models/box_02.glb"))
-//                        .setSource(context, Uri.parse("models/box_03.glb"))
-                        .setSource(context, Uri.parse("models/sample_bear_ver3_born_anim_4num.glb"))
-//                      .setSource(view.getContext(), Uri.parse("models/steampunk_vehicle.gltf"))
+                        .setSource(context, Uri.parse("models/bear.glb"))
                         .setIsFilamentGltf(true)    // これは上のファイルを読み込む場合は必要なよう
                         .build();
 
@@ -846,23 +917,6 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
                             material);
                 });
 
-        //円のモデル生成完了時、生成されたMaterialからモデルを生成して保持する
-//        materialCompletableFuture
-//                .thenAccept(
-//                        material -> {
-//                            //半径／中心／素材
-//                            mRedSphereRenderable = ShapeFactory.makeSphere(0.1f, new Vector3(0.0f, 0.15f, 0.0f), material);
-//
-//                            //！ここで色を変えると、前に作成したRenderableにも影響がでる
-//                            //material.setFloat3( MATERIAL_COLOR , new Color(android.graphics.Color.BLUE) );
-//                            //mBlueSphereRenderable = ShapeFactory.makeSphere(0.05f, new Vector3(0.0f, 0.0f, 0.0f), material);
-//
-//                            mRedCubeRenderable = ShapeFactory.makeCube(
-//                                    new Vector3(1.2f, 0.3f, 0.4f),
-//                                    new Vector3(0.1f, 0.1f, 0.1f),
-//                                    material);
-//                        });
-
         //----------------------------------------------
         // ビューのレンダリング生成
         // ----------------------------------------------
@@ -878,29 +932,31 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
     /*
      * 3Dモデルレンダリング「ステージ上障害物」の生成
      */
-    private void createObjectsRenderable(Context context) {
+    private void createObjectsRenderable(Gimmick gimmick) {
+
+        Context context = getContext();
 
         //---------------------------------------------
         // ギミックのオブジェクトリストからRenderable生成
         //---------------------------------------------
-        TypedArray gimmickObject = getResources().obtainTypedArray(R.array.gimmick_sample);
-        for (int i = 0; i < gimmickObject.length(); i++) {
+        // オブジェクトの種類分レンダラブルを生成
+        int objectNum = gimmick.objectNameList.size();
+        for (int i = 0; i < objectNum; i++) {
 
-            // gleファイル名（パス付き）を生成
-            String glbFilename = gimmickObject.getString(i);
-            String fullName = "models/" + glbFilename + ".glb";
+            // gleファイル名（パス付き）
+            String glbFilename = gimmick.objectNameList.get(i);
 
             // Renderable生成
             ModelRenderable
                     .builder()
-                    .setSource(context, Uri.parse(fullName))
+                    .setSource(context, Uri.parse(glbFilename))
                     .setIsFilamentGltf(true)    // glbファイルを読み込む必須
                     .build()
                     .thenAccept(renderable -> mObjectRenderable.add(renderable))
                     .exceptionally(
                             throwable -> {
-                                Toast toast =
-                                        Toast.makeText(context, "Unable to load andy renderable", Toast.LENGTH_LONG);
+                                //!
+                                Toast toast = Toast.makeText(context, "Unable to load andy renderable", Toast.LENGTH_LONG);
                                 toast.setGravity(Gravity.CENTER, 0, 0);
                                 toast.show();
                                 return null;
@@ -1099,6 +1155,10 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
         //------------------------
         TransformationSystem transformationSystem = arFragment.getTransformationSystem();
 
+        //tmp
+//        scale = 1.0f;
+        //tmp
+
         // AnchorNodeを親として、モデル情報からNodeを生成
         CharacterNode characterNode = new CharacterNode(transformationSystem);
         characterNode.getScaleController().setMinScale(scale);
@@ -1132,7 +1192,7 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
         float stageScale = getStageScale();
 
         // ギミック物体リスト
-        TypedArray gimmickObject = getResources().obtainTypedArray(R.array.gimmick_sample);
+        TypedArray gimmickObject = getResources().obtainTypedArray( mGimmickID );
 
         //-----------------------------
         // 物体のNode生成
@@ -1146,9 +1206,10 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
             Log.i("ギミック", "Node生成 objectName=" + objectName);
 
             // Node生成
-            for (int num = 0; num < 5; num++) {
+            for (int num = 0; num < 1; num++) {
                 // ランダム位置を生成
-                Vector3 pos = getRandomPosition(stageScale);
+//                Vector3 pos = getRandomPosition(stageScale);
+                Vector3 pos = new Vector3(0,0,0);
 
                 // Node生成
                 TransformableNode node = new TransformableNode(transformationSystem);

@@ -24,18 +24,85 @@
         <item>@string/block_nest_if_elseif_else</item>
     </array>
 
+
     <!---->
-    <!-- 処理ブロックタイトルリスト -->
+    <!-- キャラクター候補リスト -->
     <!---->
-    <array name="easy_gimmick_list">
-        <item>@array/gimmick_sample</item>
+    <array name="animal_list">
+        <item>@string/animal_bear</item>
     </array>
 
-    <array name="gimmick_sample">
+    <array name="vehicle_list">
+        <item>@string/vehicle_car</item>
+    </array>
+
+    <!---->
+    <!-- ギミック候補リスト -->
+    <!---->
+    <!--  !並び順を変える場合は、コードも変更必要  -->
+<!--    <array name="all_gimmick_list">
+        <item>@array/gimmick_list_animal_easy</item>
+        <item>@array/gimmick_list_animal_difficult</item>
+        <item>@array/gimmick_list_vehicle_easy</item>
+        <item>@array/gimmick_list_vehicle_difficult</item>
+    </array>-->
+
+    <array name="gimmick_list_animal_easy">
+        <item>animal_easy_gimmick_01</item>
+        <item>animal_easy_gimmick_02</item>
+        <item>animal_easy_gimmick_03</item>
+    </array>
+
+    <array name="animal_easy_gimmick_01">
+<!--        <item>@string/gimmick_stage_1</item>-->
+        <item>@string/gimmick_stage_2</item>
+<!--        <item>@string/gimmick_object_tree_1</item>-->
+<!--        <item>@string/gimmick_object_rock_1</item>-->
+    </array>
+
+    <array name="animal_easy_gimmick_02">
         <item>@string/gimmick_object_tree_1</item>
         <item>@string/gimmick_object_rock_1</item>
     </array>
 
+    <array name="animal_easy_gimmick_03">
+        <item>@string/gimmick_object_tree_1</item>
+        <item>@string/gimmick_object_rock_1</item>
+    </array>
+
+
+
+
+    <array name="gimmick_list_animal_difficult">
+        <item>animal_difficult_gimmick_01</item>
+    </array>
+
+    <array name="animal_difficult_gimmick_01">
+        <item>@string/gimmick_object_tree_1</item>
+        <item>@string/gimmick_object_rock_1</item>
+    </array>
+
+
+
+    <array name="gimmick_list_vehicle_easy">
+        <item>vehicle_easy_gimmick_01</item>
+    </array>
+
+    <array name="vehicle_easy_gimmick_01">
+        <item>@string/gimmick_object_tree_1</item>
+<!--        <item>@string/gimmick_object_rock_1</item>-->
+    </array>
+
+
+
+    <array name="gimmick_list_vehicle_difficult">
+        <item>vehicle_difficult_gimmick_01</item>
+    </array>
+
+    <array name="vehicle_difficult_gimmick_01">
+        <item>@string/gimmick_object_tree_1</item>
+        <item>@string/gimmick_object_rock_1</item>
+    </array>
 
 
 
