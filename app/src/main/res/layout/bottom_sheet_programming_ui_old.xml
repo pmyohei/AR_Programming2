@@ -167,12 +167,12 @@
                             android:layout_height="wrap_content"
                             />
 
-        <!--                <com.ar.ar_programming.process.SingleProcessBlock_old-->
+        <!--                <com.ar.ar_programming.process.SingleBlock_old-->
         <!--                    android:layout_width="wrap_content"-->
         <!--                    android:layout_height="wrap_content"-->
         <!--                    />-->
 
-        <!--                <com.ar.ar_programming.process.SingleProcessBlock_old-->
+        <!--                <com.ar.ar_programming.process.SingleBlock_old-->
         <!--                    android:layout_width="wrap_content"-->
         <!--                    android:layout_height="wrap_content"-->
         <!--                    />-->

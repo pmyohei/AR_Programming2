@@ -1,6 +1,9 @@
 <resources>
     <dimen name="fab_margin">16dp</dimen>
 
+    <!---->
+    <!--  Home画面  -->
+    <!---->
     <dimen name="home_icon_size">40dp</dimen>
     <dimen name="home_icon_margin_end">120dp</dimen>
     <dimen name="home_tx_margin_start">20dp</dimen>
@@ -27,6 +30,13 @@
     <dimen name="block_icon_size">24dp</dimen>
     <dimen name="block_icon_margin_start">8dp</dimen>
 
+    <!--  ダイアログ：目標の提示  -->
+    <dimen name="dialog_goal_start_margin">20dp</dimen>
 
+
+    <!---->
+    <!--  AR画面  -->
+    <!---->
+    <dimen name="goal_guide_bg_icon">40dp</dimen>
 
 </resources>

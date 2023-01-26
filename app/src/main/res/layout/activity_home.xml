@@ -38,6 +38,8 @@
             android:textColor="@color/tx_home"
             android:textSize="@dimen/home_tx_size"
             android:letterSpacing="0.2"
+            android:fontFamily="@font/hachimarupop_regular"
+            android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/iv_play"
             app:layout_constraintTop_toTopOf="parent" />
@@ -76,6 +78,8 @@
             android:textColor="@color/tx_home"
             android:textSize="@dimen/home_tx_size"
             android:letterSpacing="0.2"
+            android:fontFamily="@font/hachimarupop_regular"
+            android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/iv_how"
             app:layout_constraintTop_toTopOf="parent" />
@@ -115,6 +119,8 @@
             android:textColor="@color/tx_home"
             android:textSize="@dimen/home_tx_size"
             android:letterSpacing="0.2"
+            android:fontFamily="@font/hachimarupop_regular"
+            android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/iv_setting"
             app:layout_constraintTop_toTopOf="parent" />

@@ -1,19 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
 <gimmick_list dataNum="4">
 
-    <gimmick
+	<gimmick
 		sequence="1"
-    	successCondition="goal"
-        stageName="model/tutorial_stage_1.glb"
-    	characterName="model/car.glb"
-    	characterPosition="0, 0, 0"
-    	goalName="model/flag.glb"
-    	goalPosition="0,0,0"
-    	objectName="model/tree.glb, model/rock.glb"
-    	objectNum="5, 5"
-    	objectKind="obstacle, obstacle"
+		successCondition="goal"
+		goalExplanation="guide_major_tutorial_1, guide_sub_tutorial_1, guide_contents_tutorial_1, guide_explanation_tutorial_1"
+		stageGlb="models/stage/tutorial_stage_1.glb"
+		characterGlb="models/animal/rabit.glb"
+		characterPosition="-3.8 : 1.5 : 9.1"
+		goalGlb="models/goal/fox_and_tree.glb"
+		goalPosition="3.2 : 2.3 : -2.7"
+		goalAngle="-45"
+		objectGlb="models/obstacle/stamp.glb"
+		objectNum="1"
+		objectKind="obstacle"
+		objectPositionRandom="false"
+		objectPosition="0 : 1.4 : 0.6"
+		block="single_forward, single_rotate-right, single_rotate-left"
+		/>
+
+<!--
+	block="single_forward_1, single_back_123, single_rotate-right, single_rotate-left,
+	loop_facing-goal, loop_arrival-obstacle,
+	if_collision-obstacle, if-else_collision-obstacle, if-elseif-else_collision-obstacle"
+-->
+
+
+
+<!--
+	<gimmick
+		sequence="1"
+		successCondition="goal"
+		stageGlb="models/tutorial_stage_1.glb"
+		characterGlb="models/bear.glb"
+		characterPosition="-3.8 : -9.1 : 1.5"
+		goalGlb="models/goal/fox_and_tree.glb"
+		goalPosition="3.6 : 1.6 : 2.3"
+		objectGlb="models/stamp.glb"
+		objectNum="1"
+		objectKind="obstacle"
+		objectPositionRandom="false"
+		objectPosition="0 : -0.6 : 0.6"
 		block="forward, rotate_right, rotate_left"
 		/>
+-->
+
+
+	<!--
+        <gimmick
+            sequence="1"
+            successCondition="goal"
+            stageGlb="models/tutorial_stage_1.glb"
+            characterGlb="models/tree.glb"
+            characterPosition="0 : 0 : 0"
+            goalGlb="models/tree.glb"
+            goalPosition="0.2 : 0.1 : 0.3"
+            objectGlb="models/stamp.glb"
+            objectNum="1"
+            objectKind="obstacle"
+            objectPositionRandom="false"
+            objectPosition="0 : -0.6 : 0.6"
+            block="forward, rotate_right, rotate_left"
+            />
+    -->
 
 
 </gimmick_list>

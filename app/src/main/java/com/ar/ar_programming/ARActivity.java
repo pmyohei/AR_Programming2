@@ -73,6 +73,14 @@ public class ARActivity extends AppCompatActivity {
                 mMenuClickListener.onHowToClick();
                 return true;
 
+            case R.id.action_setting:
+                mMenuClickListener.onSettingClick();
+                return true;
+
+            case R.id.action_goal_guide:
+                mMenuClickListener.onGoalGuide();
+                return true;
+
             case R.id.action_clear_field:
                 mMenuClickListener.onClearFieldClick();
                 return true;
@@ -81,9 +89,7 @@ public class ARActivity extends AppCompatActivity {
                 mMenuClickListener.onInitProgrammingClick();
                 return true;
 
-            case R.id.action_setting:
-                mMenuClickListener.onSettingClick();
-                return true;
+
         }
 
         return super.onOptionsItemSelected(item);
@@ -117,6 +123,7 @@ public class ARActivity extends AppCompatActivity {
     public interface MenuClickListener {
         void onHowToClick();
         void onSettingClick();
+        void onGoalGuide();
         void onClearFieldClick();
         void onInitProgrammingClick();
     }

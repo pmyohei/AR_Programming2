@@ -3,11 +3,13 @@ package com.ar.ar_programming;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.DialogFragment;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -42,7 +44,7 @@ public class SettingActivity extends AppCompatActivity {
     // フィールド変数
     //---------------------------
     // flg
-    private boolean mUpdateFlg;     // ユーザー設定変更フラグ（ユーザーが設定を変更した場合、true）
+    private boolean mSetChangeFlg;     // ユーザー設定変更フラグ（ユーザーが設定を変更した場合、true）
     private boolean mSavedFlg;      // ユーザー保存フラグ（ユーザーが保存を選択した場合、true）
     // 設定データ
     private int mFileldSize;
@@ -54,19 +56,28 @@ public class SettingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setting);
 
-        //--------------
         // フラグ初期化
-        //--------------
-        mUpdateFlg = false;
+        mSetChangeFlg = false;
         mSavedFlg = false;
 
         // Toolbar設定
         setToolbar();
 
+        //----------------------
+        // 設定情報をviewに反映
+        //----------------------
         // ユーザー保存情報を取得
-        getUserSavedData();
+        boolean isFinishTutorial = getUserSavedData();
         // ユーザ設定情報をレイアウトに反映
-        setUserSettingData();
+        setUserSettingData(isFinishTutorial);
+    }
+
+    /*
+     * 設定不可のダイアログを表示
+     */
+    private void showCannotSetDialog(int tutorial) {
+        DialogFragment newFragment = new CannotSetDialogFragment( tutorial );
+        newFragment.show( getSupportFragmentManager(), "cannotSet" );
     }
 
     /*
@@ -91,13 +102,36 @@ public class SettingActivity extends AppCompatActivity {
     /*
      * ユーザー保存情報を取得
      */
-    private void getUserSavedData() {
+    private boolean getUserSavedData() {
+
+        Resources resources = getResources();
 
         // 本アプリ共通情報
         SharedPreferences sharedPref = getSharedPreferences(getString(R.string.preference_file_key), MODE_PRIVATE);
 
+        //--------------------
+        // チュートリアル終了確認
+        //--------------------
+        // チュートリアル終了値
+        final int TUTORIAL_END = resources.getInteger(R.integer.saved_tutorial_end);
+
+        // 現在のチュートリアル進行状況を取得
+        int defaultValue = resources.getInteger(R.integer.saved_tutorial_block);
+        int tutorial = sharedPref.getInt(getString(R.string.saved_tutorial_key), defaultValue);
+
+        // チュートリアルが未完了の場合
+        if (tutorial < TUTORIAL_END) {
+            // 設定不可のダイアログを表示
+            showCannotSetDialog( tutorial );
+            // 設定情報取得なし
+            return false;
+        }
+
+        //--------------------
+        // 設定情報の取得
+        //--------------------
         // フィールドサイズ
-        int defaultValue = getResources().getInteger(R.integer.saved_field_size_default_key);
+        defaultValue = getResources().getInteger(R.integer.saved_field_size_default_key);
         mFileldSize = sharedPref.getInt(getString(R.string.saved_field_size_key), defaultValue);
 
         // 難易度
@@ -107,12 +141,51 @@ public class SettingActivity extends AppCompatActivity {
         // キャラクター
         defaultValue = getResources().getInteger(R.integer.saved_character_default_key);
         mCharacter = sharedPref.getInt(getString(R.string.saved_character_key), defaultValue);
+
+        // チュートリアル終了
+        return true;
     }
 
     /*
      * ユーザ設定情報をレイアウトに反映
      */
-    private void setUserSettingData() {
+    private void setUserSettingData( boolean isFinishTutorial ) {
+
+        // チュートリアル完了有無
+        if( isFinishTutorial ){
+            // 完了しているなら、ユーザー情報を反映
+            reflectUserData();
+        } else {
+            // 未完了なら、設定UIを無効化
+            disableSetUI();
+        }
+    }
+
+    /*
+     * ユーザ設定情報のUIを無効化
+     */
+    private void disableSetUI() {
+
+        // UI無効化
+        RadioButton radio_table = findViewById(R.id.radio_table);
+        RadioButton radio_living = findViewById(R.id.radio_living);
+        RadioButton radio_easy = findViewById(R.id.radio_easy);
+        RadioButton radio_difficult = findViewById(R.id.radio_difficult);
+        RadioButton radio_animal = findViewById(R.id.radio_animal);
+        RadioButton radio_vehicle = findViewById(R.id.radio_vehicle);
+
+        radio_table.setEnabled(false);
+        radio_living.setEnabled(false);
+        radio_easy.setEnabled(false);
+        radio_difficult.setEnabled(false);
+        radio_animal.setEnabled(false);
+        radio_vehicle.setEnabled(false);
+    }
+
+    /*
+     * ユーザ設定情報をレイアウトに反映
+     */
+    private void reflectUserData() {
         // フィールドサイズ
         setFieldSizeRadioButton(mFileldSize);
         // 難易度
@@ -225,7 +298,7 @@ public class SettingActivity extends AppCompatActivity {
         setFieldSizeRadioButton(mFileldSize);
 
         // 変更ありにする
-        mUpdateFlg = true;
+        mSetChangeFlg = true;
     }
 
     /*
@@ -256,7 +329,7 @@ public class SettingActivity extends AppCompatActivity {
         setDifficultyRadioButton(mPlayDifficulty);
 
         // 変更ありにする
-        mUpdateFlg = true;
+        mSetChangeFlg = true;
     }
 
     /*
@@ -287,7 +360,7 @@ public class SettingActivity extends AppCompatActivity {
         setCharacterRadioButton(selectValue);
 
         // 変更ありにする
-        mUpdateFlg = true;
+        mSetChangeFlg = true;
     }
 
     /*
@@ -296,7 +369,7 @@ public class SettingActivity extends AppCompatActivity {
     private boolean saveUserData() {
 
         // 変更なしなら何もしない
-        if (!mUpdateFlg) {
+        if (!mSetChangeFlg) {
             return false;
         }
 
@@ -314,7 +387,7 @@ public class SettingActivity extends AppCompatActivity {
         editor.apply();
 
         // 変更なしに戻す
-        mUpdateFlg = false;
+        mSetChangeFlg = false;
         // 保存ありに設定
         mSavedFlg = true;
 
@@ -382,7 +455,7 @@ public class SettingActivity extends AppCompatActivity {
     public boolean onSupportNavigateUp() {
 
         // 更新ありの場合、ユーザー設定保存確認を行う
-        if( mUpdateFlg ){
+        if(mSetChangeFlg){
             confirmSave();
             return super.onSupportNavigateUp();
         }

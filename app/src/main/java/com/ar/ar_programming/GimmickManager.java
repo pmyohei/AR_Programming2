@@ -47,7 +47,7 @@ public class GimmickManager {
 
         // 現在のチュートリアル進行状況を取得
         SharedPreferences sharedPref = context.getSharedPreferences(context.getString(R.string.preference_file_key), MODE_PRIVATE);
-        int defaultValue = resources.getInteger(R.integer.saved_tutorial_default_key);
+        int defaultValue = resources.getInteger(R.integer.saved_tutorial_block);
         int tutorial = sharedPref.getInt(context.getString(R.string.saved_tutorial_key), defaultValue);
 
         // チュートリアルかチュートリアル終了しているかでギミック選定を分ける
@@ -66,24 +66,37 @@ public class GimmickManager {
      */
     private static void readGimmickData(Gimmick gimmick, XmlResourceParser parser) {
 
+        //----------------------
+        // リスト変換するプロパティ
+        //----------------------
+        String goalExplanation = parser.getAttributeValue(null, "goalExplanation");
         String characterPosition = parser.getAttributeValue(null, "characterPosition");
         String goalPosition = parser.getAttributeValue(null, "goalPosition");
-        String objectName = parser.getAttributeValue(null, "objectName");
+        String goalAngle = parser.getAttributeValue(null, "goalAngle");
+        String objectGlb = parser.getAttributeValue(null, "objectGlb");
         String objectNum = parser.getAttributeValue(null, "objectNum");
         String objectKind = parser.getAttributeValue(null, "objectKind");
+        String objectPositionRandom = parser.getAttributeValue(null, "objectPositionRandom");
+        String objectPosition = parser.getAttributeValue(null, "objectPosition");
         String block = parser.getAttributeValue(null, "block");
 
+        //--------------------------
         // ギミックにreadデータを設定
+        //--------------------------
         gimmick.successCondition = parser.getAttributeValue(null, "successCondition");
-        gimmick.stageName = parser.getAttributeValue(null, "stageName");
-        gimmick.characterName = parser.getAttributeValue(null, "characterName");
-        gimmick.setCharacterPosition(characterPosition);
-        gimmick.goalName = parser.getAttributeValue(null, "goalName");
-        gimmick.setGoalPosition(goalPosition);
-        gimmick.setObjectName(objectName);
-        gimmick.setObjectNum(objectNum);
-        gimmick.setObjectKind(objectKind);
-        gimmick.setBlock(block);
+        gimmick.setGoalExplanation( goalExplanation );
+        gimmick.stageGlb = parser.getAttributeValue(null, "stageGlb");
+        gimmick.characterGlb = parser.getAttributeValue(null, "characterGlb");
+        gimmick.setCharacterPosition( characterPosition );
+        gimmick.goalGlb = parser.getAttributeValue(null, "goalGlb");
+        gimmick.setGoalAngle( goalAngle );
+        gimmick.setGoalPosition( goalPosition );
+        gimmick.setObjectGlb( objectGlb );
+        gimmick.setObjectNum( objectNum );
+        gimmick.setObjectKind( objectKind );
+        gimmick.setObjectPositionRandom( objectPositionRandom );
+        gimmick.setObjectPositionVecList( objectPosition );
+        gimmick.setBlock( block );
     }
 
     /*
@@ -122,7 +135,7 @@ public class GimmickManager {
         //-----------------------------------------
         // ギミック生成
         //-----------------------------------------
-        Gimmick gimmick = new Gimmick();
+        Gimmick gimmick = new Gimmick( context );
         readGimmickData(gimmick, parser);
 
         // parser閉じる
@@ -143,13 +156,13 @@ public class GimmickManager {
         XmlResourceParser parser = resources.getXml(xmlID);
 
         // ギミックをランダムに取得して返す
-        return getGimmickRandomly(parser);
+        return getGimmickRandomly(parser, context);
     }
 
     /*
      * ギミックリスト内からランダムにギミックを取得する
      */
-    private static Gimmick getGimmickRandomly(XmlResourceParser parser) {
+    private static Gimmick getGimmickRandomly(XmlResourceParser parser, Context context) {
 
         //------------------------
         // 取得ギミック位置
@@ -188,7 +201,7 @@ public class GimmickManager {
         //-----------------------------------------
         // ギミック生成
         //-----------------------------------------
-        Gimmick gimmick = new Gimmick();
+        Gimmick gimmick = new Gimmick( context );
         readGimmickData(gimmick, parser);
 
         // parser閉じる

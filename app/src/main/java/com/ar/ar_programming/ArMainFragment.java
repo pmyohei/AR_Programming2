@@ -26,19 +26,20 @@ import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ar.ar_programming.databinding.FragmentArBinding;
 import com.ar.ar_programming.process.Block;
-import com.ar.ar_programming.process.IfElseIfElseProcessBlock;
-import com.ar.ar_programming.process.IfElseProcessBlock;
-import com.ar.ar_programming.process.IfProcessBlock;
-import com.ar.ar_programming.process.LoopProcessBlock;
-import com.ar.ar_programming.process.NestProcessBlock;
+import com.ar.ar_programming.process.IfElseIfElseBlock;
+import com.ar.ar_programming.process.IfElseBlock;
+import com.ar.ar_programming.process.IfBlock;
+import com.ar.ar_programming.process.LoopBlock;
+import com.ar.ar_programming.process.NestBlock;
 import com.ar.ar_programming.process.ProcessBlock;
-import com.ar.ar_programming.process.SingleProcessBlock;
+import com.ar.ar_programming.process.SingleBlock;
 import com.ar.ar_programming.process.StartBlock;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -47,17 +48,16 @@ import com.google.ar.core.HitResult;
 import com.google.ar.core.Plane;
 import com.google.ar.sceneform.AnchorNode;
 import com.google.ar.sceneform.ArSceneView;
+import com.google.ar.sceneform.HitTestResult;
 import com.google.ar.sceneform.Node;
 import com.google.ar.sceneform.Scene;
 import com.google.ar.sceneform.math.Quaternion;
 import com.google.ar.sceneform.math.Vector3;
-import com.google.ar.sceneform.rendering.Color;
-import com.google.ar.sceneform.rendering.MaterialFactory;
 import com.google.ar.sceneform.rendering.ModelRenderable;
 import com.google.ar.sceneform.rendering.PlaneRenderer;
-import com.google.ar.sceneform.rendering.ShapeFactory;
 import com.google.ar.sceneform.rendering.Texture;
 import com.google.ar.sceneform.rendering.ViewRenderable;
+import com.google.ar.sceneform.ux.ArFragment;
 import com.google.ar.sceneform.ux.BaseArFragment;
 import com.google.ar.sceneform.ux.TransformableNode;
 import com.google.ar.sceneform.ux.TransformationSystem;
@@ -65,7 +65,6 @@ import com.google.ar.sceneform.ux.TransformationSystem;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.CompletableFuture;
 
 public class ArMainFragment extends Fragment implements ARActivity.MenuClickListener, ARActivity.PlayControlListener, Block.MarkerAreaListener, Block.DropBlockListener, ProcessBlock.ProcessListener {
 
@@ -74,9 +73,11 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
     //---------------------------
     // Node名
     private final String NODE_NAME_ANCHOR = "anchorNode";
+    public static final String NODE_NAME_STAGE = "stageNode";
     public static final String NODE_NAME_GOAL = "goalNode";
     public static final String NODE_NAME_BLOCK = "blockNode";
     public static final String NODE_NAME_OBSTACLE = "obstacleNode";
+    public static final String NODE_NAME_GOAL_GUIDE_UI = "goalGuideUINode";
 
     // ステージ4辺
     private final int STAGE_BOTTOM = 0;
@@ -103,38 +104,25 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
     public static final float NODE_SIZE_XL = 5.0f;
 
     // Play状態
-    private final int PLAY_STATE_PROGRAMMING = 0;       // プログラミング中（ゲーム開始前）
-    private final int PLAY_STATE_PLAYING = 1;           // ゲーム中
+    private final int PLAY_STATE_INIT = 0;              // ステージ配置前
+    private final int PLAY_STATE_PROGRAMMING = 1;       // プログラミング中（ゲーム開始前）
+    private final int PLAY_STATE_PLAYING = 2;           // ゲーム中
 
     //---------------------------
     // フィールド変数
     //---------------------------
     private FragmentArBinding binding;
-    private com.google.ar.sceneform.ux.ArFragment arFragment;
+    private ArFragment arFragment;
+    private ModelRenderable mStageRenderable;
     private ModelRenderable mCharacterRenderable;
     private ModelRenderable mGoalRenderable;
-    private ModelRenderable mBlockRenderable;
+    private ViewRenderable mGuideViewRenderable;
     private ArrayList<ModelRenderable> mObjectRenderable;
-
-    // tmp
-    private ModelRenderable mRedSphereRenderable;
-    private ModelRenderable mBlueSphereRenderable;
-    private ModelRenderable mRedCubeRenderable;
-    private ModelRenderable mBlueCubeRenderable;
-    private ViewRenderable mTextViewRenderable;
-    // tmp
-
-    // tmp
-    private ArrayList<ModelRenderable> mObjOnStageRenderable;
-    private ArrayList<Vector3> mObjOnStagePosition;
-    private ArrayList<String> mObjOnStageName;
-    // tmp
 
     private CharacterNode mCharacterNode;
     private Block mMarkedBlock;         // ブロック下部追加マーカーの付与されている処理ブロック
 
     private int mPlayState;             // Play状態
-    private int mGimmickID;             // ステージギミックID
     private Gimmick mGimmick;             // ステージギミックID
 
     private ActivityResultLauncher<Intent> mSettingRegistrationLancher;
@@ -154,120 +142,25 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
         // ArFragmentを保持
         arFragment = (com.google.ar.sceneform.ux.ArFragment) getChildFragmentManager().findFragmentById(R.id.sceneform_fragment);
         // ゲーム状態初期化
-        mPlayState = PLAY_STATE_PROGRAMMING;
+        mPlayState = PLAY_STATE_INIT;
         // 障害物Renderableリスト
         mObjectRenderable = new ArrayList<>();
+        // ステージギミックを選出
+        mGimmick = GimmickManager.getGimmick(getContext());
 
         // 画面遷移ランチャー生成
         setSettingRegistrationLancher();
 
-        //------------------------------------------
         // 生成元Activityのmenuアクションリスナーを設定
-        //------------------------------------------
         setMenuAction();
-
-        //------------------------------------------
         // プログラミングUIの設定
-        //------------------------------------------
         setProgrammingUI();
-
-        //------------------------------------------
         // 3Dモデルレンダリング初期生成
-        //------------------------------------------
         initRenderable();
-
-        //------------------------------------------
         // お試し：平面ドットのビジュアル変更
-        //------------------------------------------
         setPlaneVisual(view.getContext());
-
-        //------------------------------------------
         // 平面タップリスナーの設定
-        //------------------------------------------
-        arFragment.setOnTapArPlaneListener(new BaseArFragment.OnTapArPlaneListener() {
-            @Override
-            public void onTapPlane(HitResult hitResult, Plane plane, MotionEvent motionEvent) {
-
-                //----------------------------------
-                // AnchorNodeの生成／Sceneへの追加
-                //----------------------------------
-                // ARScene
-                Scene scene = arFragment.getArSceneView().getScene();
-
-                // アンカーノードを生成して、Sceneに追加
-                Anchor anchor = hitResult.createAnchor();
-                AnchorNode anchorNode = new AnchorNode(anchor);
-                anchorNode.setName(NODE_NAME_ANCHOR);
-                anchorNode.setParent(scene);
-
-                //----------------------------------
-                // Node生成
-                //----------------------------------
-                // ステージ上ブロックNode生成
-                createObjectNode(anchorNode);
-                // ステージ上ブロックNode生成
-//                createBlocksNode(anchorNode);
-                // ステージ上ゴールNode生成
-//                createGoalNode(anchorNode);
-                // ステージ上オブジェクトのNode生成
-//                createObjOnStageNode(anchorNode);
-                // キャラクターNode生成
-                // ！他のNode生成の後に行うこと（重複をさけて配置しているため）！
-                createCharacterNode(anchorNode);
-
-
-//                DisplayMetrics metrics = getResources().getDisplayMetrics();
-//                ScaleController testscale = new ScaleController( modelNode1, new PinchGestureRecognizer( new GesturePointersUtility( metrics ) ));
-
-//                Node node1 = scene.overlapTest( modelNode2 );
-//                Node node2 = scene.overlapTest( modelNode1 );
-//
-//                Log.i("衝突検知", "modelNode2 と衝突したNode=" + node1.getName() );
-//                Log.i("衝突検知", "modelNode1 と衝突したNode=" + node2.getName() );
-
-//                Log.i("アニメーション", "getAnimationCount()=" + modelNode1.getRenderableInstance().getAnimationCount() );
-
-                // モデルに付与されたアニメーションの実行
-//                modelNode1.getRenderableInstance().animate(true).start();
-//                Log.i("AR調査", "アニメーション数=" + modelNode1.getRenderableInstance().getAnimationCount());
-
-                //---------------------------
-                // ノードタッチ検出とビューの生成
-                // ※実験
-                //---------------------------
-/*                modelNode1.setOnTapListener(new Node.OnTapListener() {
-                    @Override
-                    public void onTap(HitTestResult hitTestResult, MotionEvent motionEvent) {
-                        Log.i("onTap", "onTapを検出");
-                        //modelNode1.setLocalScale( new Vector3( 2, 3, 1 ) );
-
-                        Vector3 localPosition = modelNode1.getLocalPosition();
-                        Vector3 worldPosition = modelNode1.getWorldPosition();
-                        Vector3 scale = modelNode1.getLocalScale();
-                        Vector3 scaleW = modelNode1.getWorldScale();
-
-                        Log.i("メソッド調査", "ノード位置(local) x=" + localPosition.x + " y=" + localPosition.y + " z=" + localPosition.z);
-                        Log.i("メソッド調査", "ノード位置(world) x=" + worldPosition.x + " y=" + worldPosition.y + " z=" + worldPosition.z);
-                        Log.i("メソッド調査", "ノードスケール(local) x=" + scale.x + " y=" + scale.y + " z=" + scale.z);
-                        Log.i("メソッド調査", "ノードスケール(world) x=" + scaleW.x + " y=" + scaleW.y + " z=" + scaleW.z);
-
-                        if (mTextViewRenderable == null) {
-                            return;
-                        }
-
-                        //ノードサイズ
-                        Vector3 vector3 = modelNode1.getLocalScale();
-
-                        //テキストノードを生成して、タッチされたノードの少し上に表示させる
-//                        TransformableNode textNode = new TransformableNode( transformationSystem );
-//                        textNode.setParent( modelNode1 );
-//                        textNode.setLocalPosition( new Vector3( 0f, 0.3f + 0.0f, 0f ) );
-//                        textNode.setRenderable(mTextViewRenderable);
-//                        textNode.select();
-                    }
-                });*/
-            }
-        });
+        setTapPlaneListener(arFragment);
     }
 
 
@@ -296,12 +189,18 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
 
         // マーカ―はスタートブロックに付与
         initStartBlock();
-
         // 処理ブロック削除エリア設定
         setRemoveBlockArea();
-
         // 処理ブロックリストアダプタの設定
         setSelectProcessBlockList();
+    }
+
+    /*
+     * ゴール説明ダイアログの表示
+     */
+    private void showGoalGuideDialog() {
+        DialogFragment newFragment = new GoalExplanationDialogFragment( mGimmick.goalExplanationIdList );
+        newFragment.show(getActivity().getSupportFragmentManager(), "goalGuide");
     }
 
     /*
@@ -500,9 +399,7 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
         // 処理ブロック選択リスト
         //---------------------
         // 処理ブロックイメージリストを取得し、アダプタを生成
-        TypedArray images = getResources().obtainTypedArray(R.array.processBlockImageList);
-        TypedArray titles = getResources().obtainTypedArray(R.array.processBlockTitleList);
-        ProcessBlockListAdapter adapter = new ProcessBlockListAdapter(images, titles);
+        UserBlockSelectListAdapter adapter = new UserBlockSelectListAdapter(mGimmick.xmlBlockInfoList);
 
         // スクロール方向を用意
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
@@ -514,11 +411,11 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
         rv_selectBlock.setLayoutManager(linearLayoutManager);
 
         // 処理ブロッククリックリスナーの設定
-        adapter.setOnProcessBlockClickListener(new ProcessBlockListAdapter.ProcessBlockClickListener() {
+        adapter.setOnBlockClickListener(new UserBlockSelectListAdapter.BlockClickListener() {
             @Override
-            public void onBlockClick(int selectProcessType, int selectProcessContents) {
-                // クリックされた処理の処理ブロックを生成
-                createProcessBlock(selectProcessType, selectProcessContents);
+            public void onBlockClick(int selectBlockType, int selectBlockContents, int valueLimit) {
+                // クリックされたブロックを生成
+                createProcessBlock(selectBlockType, selectBlockContents, valueLimit);
             }
         });
     }
@@ -526,7 +423,7 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
     /*
      * チャート最下部に処理ブロックを生成する
      */
-    private void createProcessBlock(int processType, int processContents) {
+    private void createProcessBlock(int blockType, int blockContents, int valueLimit) {
 
         ProcessBlock newBlock;
         Context context = getContext();
@@ -534,31 +431,32 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
         //-----------------
         // 処理ブロック生成
         //-----------------
-        switch (processType) {
+        switch (blockType) {
             // 単体処理
             case Block.PROCESS_TYPE_SINGLE:
-                newBlock = new SingleProcessBlock(context, getParentFragmentManager(), processContents);
+                newBlock = new SingleBlock(context, getParentFragmentManager(), blockContents, valueLimit);
                 break;
 
             // ネスト処理
             case Block.PROCESS_TYPE_IF:
-                newBlock = new IfProcessBlock(context, processContents);
+                newBlock = new IfBlock(context, blockContents);
                 break;
 
             case Block.PROCESS_TYPE_IF_ELSE:
-                newBlock = new IfElseProcessBlock(context, processContents);
+                newBlock = new IfElseBlock(context, blockContents);
                 break;
 
             case Block.PROCESS_TYPE_IF_ELSEIF_ELSE:
-                newBlock = new IfElseIfElseProcessBlock(context, processContents);
+                newBlock = new IfElseIfElseBlock(context, blockContents);
                 break;
 
             case Block.PROCESS_TYPE_LOOP:
-                newBlock = new LoopProcessBlock(context, processContents);
+                newBlock = new LoopBlock(context, blockContents);
                 break;
 
             default:
                 // 種別指定がおかしければ、何もしない
+                Log.i("ブロックxml", "blockType=" + blockType);
                 return;
         }
 
@@ -573,7 +471,7 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
         //-------------------------------
         // ネスト情報の書き換え
         //-------------------------------
-        NestProcessBlock nestBlock = mMarkedBlock.getOwnNestBlock();
+        NestBlock nestBlock = mMarkedBlock.getOwnNestBlock();
         newBlock.setOwnNestBlock(nestBlock);
 
         //----------------------
@@ -608,9 +506,9 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
         ll_UIRoot.addView(newBlock, mlp);
 
         // 生成するブロックがネストブロックの場合
-        if (newBlock instanceof NestProcessBlock) {
+        if (newBlock instanceof NestBlock) {
             // ネスト内スタートブロックの配置
-            ((NestProcessBlock) newBlock).deployStartBlock(ll_UIRoot);
+            ((NestBlock) newBlock).deployStartBlock(ll_UIRoot);
         }
 
         // 生成ブロック位置を更新
@@ -624,29 +522,18 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
     private void initRenderable() {
 
         //----------------------------------------
-        // ステージギミックを選出
+        // ギミックに応じたRenderableを生成
         //----------------------------------------
-        mGimmick = GimmickManager.getGimmick( getContext() );
-/*
-        // ギミック候補リストを取得
-        TypedArray gimmickCandidate = getGimmickList();
-
-        //!完全初回→ガイドギミックを強制選択
-        //!初回以後→ランダムで選定
-        //！とりあえず先頭
-        String gimmick = gimmickCandidate.getString(0);
-        mGimmickID = getResources().getIdentifier(gimmick, "array", getActivity().getPackageName());
-*/
-
-
+        // ステージ
+        buildRenderableStage(mGimmick);
         // キャラクター
-        createCharacterRenderable(mGimmick);
-        // ステージ上の物体
-        createObjectsRenderable(mGimmick);
-        // ブロック
-//        createObjOnStageNode(view.getContext());
-        // ステージ上の物体tmp
-//        createtmpObjOnStageRenderable(view.getContext());
+        buildRenderableCharacter(mGimmick);
+        // オブジェクト
+        buildRenderableObjects(mGimmick);
+        // ゴール
+        buildRenderableGoal(mGimmick);
+        // ゴール説明UI
+        buildRenderableGuideView(mGimmick);
     }
 
     /*
@@ -833,21 +720,21 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
         mMarkedBlock = newMarkerBlock;
     }
 
-
     /*
-     * 3Dモデルレンダリング「ModelRenderable」の生成
+     * 3Dモデルレンダリング「ModelRenderable」の生成：ステージ
      */
-    private void createCharacterRenderable( Gimmick gimmick ) {
+    private void buildRenderableStage(Gimmick gimmick) {
 
         Context context = getContext();
+        mStageRenderable = null;
 
         // Renderable生成
         ModelRenderable
                 .builder()
-                .setSource(context, Uri.parse( gimmick.characterName ))
+                .setSource(context, Uri.parse(gimmick.stageGlb))
                 .setIsFilamentGltf(true)    // glbファイルを読み込む必須
                 .build()
-                .thenAccept(renderable -> mCharacterRenderable = renderable)
+                .thenAccept(renderable -> mStageRenderable = renderable)
                 .exceptionally(
                         throwable -> {
                             //!string
@@ -862,89 +749,57 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
     /*
      * 3Dモデルレンダリング「ModelRenderable」の生成
      */
-    //!一応参考に残しておく
-    private void createModelRenderable_old() {
+    private void buildRenderableCharacter(Gimmick gimmick) {
 
         Context context = getContext();
 
-        // レンダリングは非同期で生成する
-        CompletableFuture<ModelRenderable> modelCompletableFuture =
-                ModelRenderable
-                        .builder()
-                        .setSource(context, Uri.parse("models/bear.glb"))
-                        .setIsFilamentGltf(true)    // これは上のファイルを読み込む場合は必要なよう
-                        .build();
+        Log.i("ギミックxml", "gimmick.goalGlb=" + gimmick.goalGlb);
+        Log.i("ギミックxml", "gimmick.stageGlb=" + gimmick.stageGlb);
+        Log.i("ギミックxml", "gimmick.characterGlb=" + gimmick.characterGlb);
+        Log.i("ギミックxml", "gimmick.x=" + gimmick.characterPositionVec.x);
+        Log.i("ギミックxml", "gimmick.y=" + gimmick.characterPositionVec.y);
+        Log.i("ギミックxml", "gimmick.z=" + gimmick.characterPositionVec.z);
 
-        // 非同期処理結果として、指定したレンダリングを受け取る
-        modelCompletableFuture
+        mCharacterRenderable = null;
+
+        // Renderable生成
+        ModelRenderable
+                .builder()
+                .setSource(context, Uri.parse(gimmick.characterGlb))
+                .setIsFilamentGltf(true)    // glbファイルを読み込む必須
+                .build()
                 .thenAccept(renderable -> mCharacterRenderable = renderable)
                 .exceptionally(
                         throwable -> {
-                            Toast toast =
-                                    Toast.makeText(context, "Unable to load andy renderable", Toast.LENGTH_LONG);
+                            //!string
+                            Toast toast = Toast.makeText(context, "失敗 Unable to load andy renderable", Toast.LENGTH_LONG);
                             toast.setGravity(Gravity.CENTER, 0, 0);
                             toast.show();
-
-                            Log.i("AR調査", "ModelRenderable　失敗");
                             return null;
                         });
 
-        //----------------------------------------------
-        // 単純な図形のレンダリング「Material」の生成
-        // ----------------------------------------------
-        // 非同期にてMaterialを生成
-        MaterialFactory.makeOpaqueWithColor(context, new Color(android.graphics.Color.RED))
-                .thenAccept(material -> {
-                    //半径／中心／素材
-                    //mRedSphereRenderable = ShapeFactory.makeSphere(0.1f, new Vector3(0.0f, 0.15f, 0.0f), material);
-
-                    //！ここで色を変えると、前に作成したRenderableにも影響がでる
-                    //material.setFloat3( MATERIAL_COLOR , new Color(android.graphics.Color.BLUE) );
-                    //mBlueSphereRenderable = ShapeFactory.makeSphere(0.05f, new Vector3(0.0f, 0.0f, 0.0f), material);
-
-                    mRedCubeRenderable = ShapeFactory.makeCube(
-                            new Vector3(0.2f, 0.2f, 0.2f),
-                            new Vector3(0f, 0f, 0f),
-                            material);
-                });
-
-        // 非同期にてMaterialを生成
-        MaterialFactory.makeOpaqueWithColor(context, new Color(android.graphics.Color.BLUE))
-                .thenAccept(material -> {
-                    mBlueCubeRenderable = ShapeFactory.makeCube(
-                            new Vector3(0.2f, 0.2f, 0.2f),
-                            new Vector3(0f, 0f, 0f),
-                            material);
-                });
-
-        //----------------------------------------------
-        // ビューのレンダリング生成
-        // ----------------------------------------------
-        ViewRenderable
-                .builder()
-                .setView(context, R.layout.sample_card)
-                .build()
-                .thenAccept(renderable -> mTextViewRenderable = renderable);
-
     }
-
 
     /*
      * 3Dモデルレンダリング「ステージ上障害物」の生成
      */
-    private void createObjectsRenderable(Gimmick gimmick) {
+    private void buildRenderableObjects(Gimmick gimmick) {
 
         Context context = getContext();
+
+        mObjectRenderable.clear();
 
         //---------------------------------------------
         // ギミックのオブジェクトリストからRenderable生成
         //---------------------------------------------
         // オブジェクトの種類分レンダラブルを生成
-        int objectNum = gimmick.objectNameList.size();
+        int objectNum = gimmick.objectGlbList.size();
         for (int i = 0; i < objectNum; i++) {
 
             // gleファイル名（パス付き）
-            String glbFilename = gimmick.objectNameList.get(i);
+            String glbFilename = gimmick.objectGlbList.get(i);
+
+            Log.i("ギミックxml", "glbFilename=" + glbFilename);
 
             // Renderable生成
             ModelRenderable
@@ -966,41 +821,26 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
     }
 
     /*
-     * 3Dモデルレンダリング「ステージ上オブジェクト」の生成
+     * 3Dモデルレンダリング「ゴール」の生成
      */
-    private void createObjOnStageNode(Context context) {
+    private void buildRenderableGoal(Gimmick gimmick) {
 
-        //-------------------
-        // ブロック
-        //-------------------
-        ModelRenderable
-                .builder()
-                .setSource(context, Uri.parse("models/block_01.glb"))
-                .setIsFilamentGltf(true)    // glbファイルを読み込む必須
-                .build()
-                .thenAccept(renderable -> mBlockRenderable = renderable)
-                .exceptionally(
-                        throwable -> {
-                            Toast toast =
-                                    Toast.makeText(context, "Unable to load andy renderable", Toast.LENGTH_LONG);
-                            toast.setGravity(Gravity.CENTER, 0, 0);
-                            toast.show();
-                            return null;
-                        });
+        Context context = getContext();
+        mGoalRenderable = null;
 
         //-------------------
         // ゴール
         //-------------------
         ModelRenderable
                 .builder()
-                .setSource(context, Uri.parse("models/goal_01.glb"))
+                .setSource(context, Uri.parse(gimmick.goalGlb))
                 .setIsFilamentGltf(true)    // glbファイルを読み込む必須
                 .build()
                 .thenAccept(renderable -> mGoalRenderable = renderable)
                 .exceptionally(
                         throwable -> {
-                            Toast toast =
-                                    Toast.makeText(context, "Unable to load andy renderable", Toast.LENGTH_LONG);
+                            //!
+                            Toast toast = Toast.makeText(context, "Unable to load andy renderable", Toast.LENGTH_LONG);
                             toast.setGravity(Gravity.CENTER, 0, 0);
                             toast.show();
                             return null;
@@ -1008,65 +848,35 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
     }
 
     /*
-     * 3Dモデルレンダリング「ステージ上の物体」の生成
+     * 3Dモデルレンダリング「ゴール説明view」の生成
      */
-    private void createtmpObjOnStageRenderable(Context context) {
+    private void buildRenderableGuideView(Gimmick gimmick) {
 
-        mObjOnStageRenderable = new ArrayList<>();
-        mObjOnStagePosition = new ArrayList<>();
-        mObjOnStageName = new ArrayList<>();
+        Context context = getContext();
+        mGuideViewRenderable = null;
 
-        //----------------------------
-        // glbファイルpath文字列
-        //----------------------------
-        ArrayList<String> glbPath = new ArrayList<>();
-//        glbPath.add("models/goal_01.glb");
-//        glbPath.add("models/block_01.glb");
-        glbPath.add("models/cone_01.glb");
-
-        //------------------------
-        // 多分変更するロジック★★★
-        //------------------------
-//        mObjOnStageName.add(NODE_NAME_GOAL);
-//        mObjOnStageName.add(NODE_NAME_BLOCK);
-        mObjOnStageName.add(NODE_NAME_OBSTACLE);
-
-        //----------------------------
-        // ステージオブジェクト位置
-        //----------------------------
-        float stageScale = getStageScale();
-
-//        mObjOnStagePosition.add(new Vector3(-0.0f, -0.0f, -0.0f));
-//        mObjOnStagePosition.add(new Vector3(-stageScale, -0.0f, -0.0f));
-        mObjOnStagePosition.add(new Vector3(-0.0f, -0.0f, -stageScale));
-
-        //----------------------------
-        // Renderableの生成
-        //----------------------------
-        for (String glb : glbPath) {
-            ModelRenderable
-                    .builder()
-                    .setSource(context, Uri.parse(glb))
-                    .setIsFilamentGltf(true)    // glbファイルを読み込む必須
-                    .build()
-                    .thenAccept(renderable -> mObjOnStageRenderable.add(renderable))
-                    .exceptionally(
-                            throwable -> {
-                                Toast toast =
-                                        Toast.makeText(context, "Unable to load andy renderable", Toast.LENGTH_LONG);
-                                toast.setGravity(Gravity.CENTER, 0, 0);
-                                toast.show();
-                                return null;
-                            });
-        }
-
+        //-------------------
+        // ゴール
+        //-------------------
+        ViewRenderable
+                .builder()
+                .setView(context, R.layout.goal_guide_ui)
+                .build()
+                .thenAccept(renderable -> mGuideViewRenderable = renderable)
+                .exceptionally(
+                        throwable -> {
+                            //!
+                            Toast toast = Toast.makeText(context, "Unable to load andy renderable", Toast.LENGTH_LONG);
+                            toast.setGravity(Gravity.CENTER, 0, 0);
+                            toast.show();
+                            return null;
+                        });
     }
-
 
     /*
      * キャラクターノード生成
      */
-    private void createCharacterNode(AnchorNode anchorNode) {
+    private void createNodeCharacter(AnchorNode anchorNode) {
 
         Scene scene = arFragment.getArSceneView().getScene();
 
@@ -1077,12 +887,12 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
         //------------------------------------
         // キャラクター生成と他Nodeとの重複なしの配置
         //------------------------------------
-        CharacterNode characterNode;
+        CharacterNode characterNode = createTemporaryCharacterNode(anchorNode, scale);
 
         // 重複しない配置になるまで、繰り返し
-        while (true) {
+/*        while (true) {
             // 生成
-            characterNode = createTmpCharacterNode(anchorNode, scale);
+            characterNode = createTemporaryCharacterNode(anchorNode, scale);
 
             // 他のNodeと重複していなければ、生成終了
             ArrayList<Node> nodes = scene.overlapTestAll(characterNode);
@@ -1090,9 +900,15 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
                 break;
             }
 
+            Log.i("ギミックxml", "createNodeCharacter() 再配置中");
+            for( Node node: nodes ){
+                Log.i("ギミックxml", "衝突判定=" + node.getName());
+            }
+            Log.i("ギミックxml", "=========================");
+
             // 重複していれば、そのキャラクターは削除してもう一度配置をやり直し
             anchorNode.removeChild(characterNode);
-        }
+        }*/
 
         // ステージ上のキャラクターとして保持
         mCharacterNode = characterNode;
@@ -1134,7 +950,7 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
     /*
      * キャラクターノード生成：
      */
-    private CharacterNode createTmpCharacterNode(AnchorNode anchorNode, float scale) {
+    private CharacterNode createTemporaryCharacterNode(AnchorNode anchorNode, float scale) {
 
         //------------------------------------
         // キャラクターの生成位置／向く方向／サイズ
@@ -1143,21 +959,28 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
         Random random = new Random();
         int side = random.nextInt(STAGE_4_SIDE);
 
+/*
         // キャラクター初期位置
         Vector3 position = getCharacterInitPosition(side);
         // キャラクターに向かせる角度
         float angle = getCharacterInitFacingAngle(side);
         // キャラクターに向かせる方向のQuaternion値
         Quaternion facingDirection = getCharacterInitFacingDirection(angle);
+*/
+
+        // キャラクターに向かせる角度
+        //!xmlで管理するかも
+        float angle = 180;
+        // キャラクターに向かせる方向のQuaternion値
+        Quaternion facingDirection = getCharacterInitFacingDirection(angle);
+
+        // 下辺配置を前提とする
+        Vector3 position = new Vector3(mGimmick.characterPositionVec.x * scale, mGimmick.characterPositionVec.y * scale, mGimmick.characterPositionVec.z * scale);
 
         //------------------------
         // キャラクターの生成
         //------------------------
         TransformationSystem transformationSystem = arFragment.getTransformationSystem();
-
-        //tmp
-//        scale = 1.0f;
-        //tmp
 
         // AnchorNodeを親として、モデル情報からNodeを生成
         CharacterNode characterNode = new CharacterNode(transformationSystem);
@@ -1180,7 +1003,7 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
     /*
      * ステージ上のオブジェクト生成
      */
-    private void createObjectNode(AnchorNode anchorNode) {
+    private void createNodeObject(AnchorNode anchorNode) {
 
         TransformationSystem transformationSystem = arFragment.getTransformationSystem();
 
@@ -1191,29 +1014,32 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
         // ステージの広さ
         float stageScale = getStageScale();
 
-        // ギミック物体リスト
-        TypedArray gimmickObject = getResources().obtainTypedArray( mGimmickID );
-
         //-----------------------------
-        // 物体のNode生成
+        // オブジェクトのNode生成
         //-----------------------------
-        int i = 0;
-        for(ModelRenderable renderable: mObjectRenderable){
+        int objKindIndex = 0;
+        for (ModelRenderable renderable : mObjectRenderable) {
 
-            // 物体名
-            String objectName = gimmickObject.getString( i );
-
-            Log.i("ギミック", "Node生成 objectName=" + objectName);
+            // オブジェクトの種類をNode名として設定する
+            String objectKind = mGimmick.objectKindList.get(objKindIndex);
+            int objectNum = mGimmick.objectNumList.get(objKindIndex);
 
             // Node生成
-            for (int num = 0; num < 1; num++) {
-                // ランダム位置を生成
-//                Vector3 pos = getRandomPosition(stageScale);
-                Vector3 pos = new Vector3(0,0,0);
+            for (int num = 0; num < objectNum; num++) {
+
+                Vector3 pos;
+                if (mGimmick.objectPositionRandom) {
+                    // ランダム位置を生成
+                    pos = getRandomPosition(stageScale);
+                } else {
+                    // 指定位置に設定
+                    pos = mGimmick.objectPositionVecList.get(objKindIndex);
+                    pos = new Vector3(pos.x * scale, pos.y * scale, pos.z * scale);
+                }
 
                 // Node生成
                 TransformableNode node = new TransformableNode(transformationSystem);
-                node.setName( objectName );
+                node.setName(objectKind);
                 node.getScaleController().setMinScale(scale);
                 node.getScaleController().setMaxScale(scale * 2);
                 node.setLocalScale(scaleVector);
@@ -1223,14 +1049,52 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
                 node.select();
             }
 
-            i++;
+            objKindIndex++;
         }
     }
 
+
     /*
-     * ステージ上のブロックNode生成
+     * 目標説明UIの生成
      */
-    private void createBlocksNode(AnchorNode anchorNode) {
+    private void createNodeGoalGuideUI(AnchorNode anchorNode) {
+
+        TransformationSystem transformationSystem = arFragment.getTransformationSystem();
+
+        // 配置位置
+        final float GUIDE_POS_Y = 0.05f;    // 高さ
+        final float GUIDE_POS_Z = -0.6f;  // 奥方向へ
+        Vector3 pos = new Vector3(0f, GUIDE_POS_Y, GUIDE_POS_Z);
+
+        // Node生成
+        TransformableNode node = new TransformableNode(transformationSystem);
+        node.setName(NODE_NAME_GOAL_GUIDE_UI);
+//        node.getScaleController().setMinScale(1);
+//        node.getScaleController().setMaxScale(1);
+//        node.setLocalScale(scaleVector);
+        node.setParent(anchorNode);
+        node.setLocalPosition(pos);
+        node.setRenderable(mGuideViewRenderable);
+        node.select();
+
+        //------------------------
+        // タッチ時のゴール目標表示
+        //------------------------
+        node.setOnTapListener(new Node.OnTapListener() {
+            @Override
+            public void onTap(HitTestResult hitTestResult, MotionEvent motionEvent) {
+                // ゴール説明ダイアログの表示
+                showGoalGuideDialog();
+                // アンカーから本UIを削除
+                anchorNode.removeChild( node );
+            }
+        });
+    }
+
+    /*
+     * ステージNode生成
+     */
+    private void createNodeStage(AnchorNode anchorNode) {
 
         TransformationSystem transformationSystem = arFragment.getTransformationSystem();
 
@@ -1238,33 +1102,30 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
         final float scale = getNodeScale();
         Vector3 scaleVector = new Vector3(scale, scale, scale);
 
-        // ステージの広さ
+        /*// ステージの広さ
         float stageScale = getStageScale();
+        // ランダム位置を生成
+        Vector3 pos = getRandomPosition(stageScale);
+        */
 
-        //-----------------------------
-        // ブロックNode生成
-        //-----------------------------
-        for (int i = 0; i < 10; i++) {
-            // ランダム位置を生成
-            Vector3 pos = getRandomPosition(stageScale);
+        Log.i("ギミックxml", "createNodeStage()");
 
-            // Node生成
-            TransformableNode node = new TransformableNode(transformationSystem);
-            node.setName(NODE_NAME_BLOCK);
-            node.getScaleController().setMinScale(scale);
-            node.getScaleController().setMaxScale(scale * 2);
-            node.setLocalScale(scaleVector);
-            node.setParent(anchorNode);
-            node.setLocalPosition(pos);
-            node.setRenderable(mBlockRenderable);
-            node.select();
-        }
+        // Node生成
+        TransformableNode node = new TransformableNode(transformationSystem);
+        node.setName(NODE_NAME_STAGE);
+        node.getScaleController().setMinScale(scale);
+        node.getScaleController().setMaxScale(scale * 2);
+        node.setLocalScale(scaleVector);
+        node.setParent(anchorNode);
+        node.setLocalPosition(new Vector3(0f, 0f, 0f));
+        node.setRenderable(mStageRenderable);
+        node.select();
     }
 
     /*
      * ステージ上のゴールNode生成
      */
-    private Node createGoalNode(AnchorNode anchorNode) {
+    private void createNodeGoal(AnchorNode anchorNode) {
 
         TransformationSystem transformationSystem = arFragment.getTransformationSystem();
 
@@ -1272,11 +1133,24 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
         final float scale = getNodeScale();
         Vector3 scaleVector = new Vector3(scale, scale, scale);
 
-        // ステージの広さ
+        /*// ステージの広さ
         float stageScale = getStageScale();
-
         // ランダム位置を生成
         Vector3 pos = getRandomPosition(stageScale);
+        */
+
+        // キャラクターに向かせる角度
+        //!xmlで管理するかも
+        float angle = mGimmick.goalAngle;
+        // キャラクターに向かせる方向のQuaternion値
+        Quaternion facingDirection = getCharacterInitFacingDirection(angle);
+
+        Log.i("ギミックxml", "createNodeGoal()");
+        Log.i("ギミックxml", "mGimmick.goalPositionVecx" + mGimmick.goalPositionVec.x);
+        Log.i("ギミックxml", "mGimmick.goalPositionVecy" + mGimmick.goalPositionVec.y);
+        Log.i("ギミックxml", "mGimmick.goalPositionVecz" + mGimmick.goalPositionVec.z);
+
+        Vector3 scalePos = new Vector3(mGimmick.goalPositionVec.x * scale, mGimmick.goalPositionVec.y * scale, mGimmick.goalPositionVec.z * scale);
 
         // Node生成
         TransformableNode node = new TransformableNode(transformationSystem);
@@ -1285,13 +1159,11 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
         node.getScaleController().setMaxScale(scale * 2);
         node.setLocalScale(scaleVector);
         node.setParent(anchorNode);
-        node.setLocalPosition(pos);
+//        node.setLocalPosition( mGimmick.goalPositionVec );
+        node.setLocalPosition(scalePos);
+        node.setLocalRotation(facingDirection);
         node.setRenderable(mGoalRenderable);
         node.select();
-
-        //tmp======
-        return node;
-        //tmp======
     }
 
     /*
@@ -1381,38 +1253,6 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
         Log.i("ランダム位置", "----------------");
 
         return new Vector3(-positionx, -0.0f, -positionz);
-    }
-
-    /*
-     * ステージ上オブジェクトのNode生成
-     */
-    private void createObjOnStageNode(AnchorNode anchorNode) {
-
-        TransformationSystem transformationSystem = arFragment.getTransformationSystem();
-
-        // Nodeスケール
-        final float scale = getNodeScale();
-        Vector3 scaleVector = new Vector3(scale, scale, scale);
-
-        //------------------------------
-        // ステージ上オブジェクトのNode生成
-        //-----------------------------
-        int i = 0;
-        for (ModelRenderable renderable : mObjOnStageRenderable) {
-
-            TransformableNode node = new TransformableNode(transformationSystem);
-
-            node.setName(mObjOnStageName.get(i));
-            node.getScaleController().setMinScale(scale);
-            node.getScaleController().setMaxScale(scale * 2);
-            node.setLocalScale(scaleVector);
-            node.setParent(anchorNode);
-            node.setLocalPosition(mObjOnStagePosition.get(i));
-            node.setRenderable(renderable);
-            node.select();
-
-            i++;
-        }
     }
 
     /*
@@ -1510,6 +1350,90 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
 
         // 向きたい方向のQuaternion情報を生成
         return (new Quaternion(0.0f, y, 0.0f, w));
+    }
+
+    /*
+     * ARフラグメント：平面タッチリスナーの設定
+     */
+    private void setTapPlaneListener(ArFragment arFragment) {
+
+        arFragment.setOnTapArPlaneListener(new BaseArFragment.OnTapArPlaneListener() {
+            @Override
+            public void onTapPlane(HitResult hitResult, Plane plane, MotionEvent motionEvent) {
+
+                //!ガード：レンダラブル未生成チェック
+                //!ガード：タップして配置済みチェック
+                // Node生成可能か判定
+                if( !enableCreateNode() ){
+                    Snackbar.make(binding.getRoot(), getString(R.string.snackbar_please_wait), Snackbar.LENGTH_SHORT).show();
+
+                    //!失敗した場合のリカバリをどうするか
+                }
+
+                //----------------------------------
+                // AnchorNodeの生成／Sceneへの追加
+                //----------------------------------
+                // ARScene
+                Scene scene = arFragment.getArSceneView().getScene();
+
+                //!２つ以上生成されないようにする
+                // アンカーノードを生成して、Sceneに追加
+                Anchor anchor = hitResult.createAnchor();
+                AnchorNode anchorNode = new AnchorNode(anchor);
+                anchorNode.setName(NODE_NAME_ANCHOR);
+                anchorNode.setParent(scene);
+
+                //----------------------------------
+                // Node生成
+                //----------------------------------
+                // オブジェクト
+                createNodeObject(anchorNode);
+                // ゴール
+                createNodeGoal(anchorNode);
+                // キャラクターNode生成
+                // ！他のNode生成の後に行うこと（重複をさけて配置しているため）！
+                createNodeCharacter(anchorNode);
+                // ステージ
+                createNodeStage(anchorNode);
+                // 目標説明view
+                createNodeGoalGuideUI(anchorNode);
+
+                //----------------------------------
+                // 状態管理
+                //----------------------------------
+                // ステージ配置前⇒プログラミング中へ
+                mPlayState = PLAY_STATE_PROGRAMMING;
+            }
+        });
+    }
+
+
+    /*
+     * ARフラグメント：平面タッチリスナーの設定
+     */
+    private boolean enableCreateNode() {
+
+        //!ガード：タップして配置済みチェック
+
+
+
+
+        //------------------------------
+        // レンダラブル生成済みチェック
+        //------------------------------
+        // レンダラブルのどれか一つでもnullなら、Node生成不可
+        if( (mCharacterRenderable == null) || (mStageRenderable == null) || (mGoalRenderable == null) || (mGuideViewRenderable == null) ){
+            return false;
+        }
+
+        // 生成済みのobjectRenderableの数が、生成予定数よりも少ない場合、Node生成不可
+        int objectRenderableNum = mObjectRenderable.size();
+        int gimmickobjectNum = mGimmick.objectGlbList.size();
+        if( objectRenderableNum < gimmickobjectNum ){
+            return false;
+        }
+
+        return true;
     }
 
     /*
@@ -1622,8 +1546,8 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
      */
     public void clearField() {
 
-        // キャラクター未生成（フィールド未生成）なら何もなし
-        if (mCharacterNode == null) {
+        // ステージ配置前なら何もしない
+        if( mPlayState < PLAY_STATE_PROGRAMMING ){
             return;
         }
 
@@ -1645,6 +1569,12 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
         // キャラクタークリア
         //!通る？★
         mCharacterNode = null;
+
+        //----------------------------------
+        // 状態管理
+        //----------------------------------
+        // プログラミング中⇒ステージ配置前
+        mPlayState = PLAY_STATE_INIT;
     }
 
     /*
@@ -1760,7 +1690,7 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
     }
 
     /*
-     *
+     * menuアクションリスナー：遊び方
      */
     @Override
     public void onHowToClick() {
@@ -1768,7 +1698,7 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
     }
 
     /*
-     *
+     * menuアクションリスナー：設定
      */
     @Override
     public void onSettingClick() {
@@ -1790,7 +1720,22 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
     }
 
     /*
-     * フィールドクリアクリック
+     * menuアクションリスナー：ゴール説明
+     */
+    @Override
+    public void onGoalGuide() {
+
+        // ステージ配置前なら何もしない
+        if( mPlayState < PLAY_STATE_PROGRAMMING ){
+            return;
+        }
+
+        // ゴール説明ダイアログの表示
+        showGoalGuideDialog();
+    }
+
+    /*
+     * menuアクションリスナー：フィールドクリアクリック
      */
     @Override
     public void onClearFieldClick() {
@@ -1798,7 +1743,7 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
     }
 
     /*
-     * 「初めからプログラミング」クリック
+     * menuアクションリスナー：「初めからプログラミング」クリック
      */
     @Override
     public void onInitProgrammingClick() {

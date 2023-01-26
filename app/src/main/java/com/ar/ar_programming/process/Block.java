@@ -2,7 +2,6 @@ package com.ar.ar_programming.process;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.DragEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,7 +41,7 @@ public abstract class Block extends ConstraintLayout {
     //---------------------------
     public int mProcessType;
     // 本ブロックが組み込まれているネストブロック（ない場合はnull）
-    public NestProcessBlock mOwnNestBlock;
+    public NestBlock mOwnNestBlock;
     private Block mAboveBlock;
     private Block mBelowBlock;
 
@@ -336,14 +335,14 @@ public abstract class Block extends ConstraintLayout {
     /*
      * 「本ブロックが組み込まれているネストブロック」設定
      */
-    public void setOwnNestBlock( NestProcessBlock nestBlock ) {
+    public void setOwnNestBlock( NestBlock nestBlock ) {
         mOwnNestBlock = nestBlock;
     }
 
     /*
      * 「本ブロックが組み込まれているネストブロック」取得
      */
-    public NestProcessBlock getOwnNestBlock() {
+    public NestBlock getOwnNestBlock() {
         return mOwnNestBlock;
     }
 

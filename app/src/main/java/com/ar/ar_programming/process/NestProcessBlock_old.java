@@ -94,7 +94,7 @@ public abstract class NestProcessBlock_old extends ProcessBlock_old {
                 break;
 
             case PROC_KIND_LOOP_OBSTACLE:
-                contentId = R.string.block_contents_loop_goal;
+                contentId = R.string.block_contents_loop_arrival_goal;
                 break;
 
             default:

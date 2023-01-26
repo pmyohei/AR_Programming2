@@ -116,7 +116,7 @@ public class StartBlock extends Block {
     public boolean shouldUpdatePosition() {
 
         // 親ネストなし（チャートのスタートブロック）の場合は、位置固定のため更新なし
-        NestProcessBlock parentNest = getOwnNestBlock();
+        NestBlock parentNest = getOwnNestBlock();
         if( parentNest == null ){
             return false;
         }
@@ -136,7 +136,7 @@ public class StartBlock extends Block {
      */
     public int setPositionMlp() {
 
-        NestProcessBlock parentNest = getOwnNestBlock();
+        NestBlock parentNest = getOwnNestBlock();
         int targetNest = parentNest.whichInNest( this );
 
         // 上左マージンを取得

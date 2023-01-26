@@ -10,6 +10,18 @@
         app:showAsAction="never" />
 
     <item
+        android:id="@+id/action_setting"
+        android:orderInCategory="100"
+        android:title="@string/ar_menu_setting"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_goal_guide"
+        android:orderInCategory="100"
+        android:title="@string/ar_menu_goal_guide"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/action_clear_field"
         android:orderInCategory="100"
         android:title="@string/ar_menu_clear_field"
@@ -21,11 +33,6 @@
         android:title="@string/ar_menu_init_programming"
         app:showAsAction="never" />
 
-    <item
-        android:id="@+id/action_setting"
-        android:orderInCategory="100"
-        android:title="@string/ar_menu_setting"
-        app:showAsAction="never" />
 
 
 </menu>

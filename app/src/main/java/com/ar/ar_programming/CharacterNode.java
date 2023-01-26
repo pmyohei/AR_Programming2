@@ -4,7 +4,7 @@ import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.util.Log;
 
-import com.ar.ar_programming.process.SingleProcessBlock;
+import com.ar.ar_programming.process.SingleBlock;
 import com.google.ar.sceneform.Node;
 import com.google.ar.sceneform.Scene;
 import com.google.ar.sceneform.math.Quaternion;
@@ -369,14 +369,14 @@ public class CharacterNode extends TransformableNode {
         // 処理種別に応じた保存処理
         switch (processKind) {
             // 移動
-            case SingleProcessBlock.PROCESS_CONTENTS_FORWARD:
-            case SingleProcessBlock.PROCESS_CONTENTS_BACK:
+            case SingleBlock.PROCESS_CONTENTS_FORWARD:
+            case SingleBlock.PROCESS_CONTENTS_BACK:
                 saveCurrentPosition();
                 return;
 
             // 回転
-            case SingleProcessBlock.PROCESS_CONTENTS_RIGHT_ROTATE:
-            case SingleProcessBlock.PROCESS_CONTENTS_LEFT_ROTATE:
+            case SingleBlock.PROCESS_CONTENTS_RIGHT_ROTATE:
+            case SingleBlock.PROCESS_CONTENTS_LEFT_ROTATE:
                 saveCurrentAngle(volume);
                 return;
         }
@@ -447,12 +447,12 @@ public class CharacterNode extends TransformableNode {
 
         // 処理種別に応じたメソッドのプロパティ名を取得
         switch (procKind) {
-            case SingleProcessBlock.PROCESS_CONTENTS_FORWARD:
-            case SingleProcessBlock.PROCESS_CONTENTS_BACK:
+            case SingleBlock.PROCESS_CONTENTS_FORWARD:
+            case SingleBlock.PROCESS_CONTENTS_BACK:
                 return PROPERTY_WALK;
 
-            case SingleProcessBlock.PROCESS_CONTENTS_RIGHT_ROTATE:
-            case SingleProcessBlock.PROCESS_CONTENTS_LEFT_ROTATE:
+            case SingleBlock.PROCESS_CONTENTS_RIGHT_ROTATE:
+            case SingleBlock.PROCESS_CONTENTS_LEFT_ROTATE:
                 return PROPERTY_ROTATE;
         }
 
@@ -468,17 +468,17 @@ public class CharacterNode extends TransformableNode {
         // 前進／後退
         //-----------------------------------------
         // 単位変換：cm → m
-        if (procKind == SingleProcessBlock.PROCESS_CONTENTS_FORWARD) {
+        if (procKind == SingleBlock.PROCESS_CONTENTS_FORWARD) {
             return (float) procVolume / 100f;
         }
-        if (procKind == SingleProcessBlock.PROCESS_CONTENTS_BACK) {
+        if (procKind == SingleBlock.PROCESS_CONTENTS_BACK) {
             return (procVolume / 100f) * -1;
         }
 
         //-----------------------------------------
         // 回転
         //-----------------------------------------
-        if (procKind == SingleProcessBlock.PROCESS_CONTENTS_LEFT_ROTATE) {
+        if (procKind == SingleBlock.PROCESS_CONTENTS_LEFT_ROTATE) {
             return (float) procVolume;
         }
 
@@ -528,7 +528,7 @@ public class CharacterNode extends TransformableNode {
         //-------------------
         // 前進／後退
         //-------------------
-        if ((procKind == SingleProcessBlock.PROCESS_CONTENTS_FORWARD) || (procKind == SingleProcessBlock.PROCESS_CONTENTS_BACK)) {
+        if ((procKind == SingleBlock.PROCESS_CONTENTS_FORWARD) || (procKind == SingleBlock.PROCESS_CONTENTS_BACK)) {
             // スケールに応じた処理時間に変換
             Vector3 scale = getLocalScale();
             float ratio = (ArMainFragment.NODE_SIZE_S * ArMainFragment.NODE_SIZE_TMP_RATIO) / scale.x;
@@ -572,6 +572,11 @@ public class CharacterNode extends TransformableNode {
      */
     public void startModelAnimation(String animationName, long duration) {
 
+        // アニメーションがないなら何もしない
+        if( getRenderableInstance().getAnimationCount() == 0 ){
+            return;
+        }
+
         // アニメーション中なら、終了
         if ((mModelAnimator != null) && (mModelAnimator.isStarted())) {
             mModelAnimator.end();
@@ -579,9 +584,11 @@ public class CharacterNode extends TransformableNode {
 
         // モデルアニメーション開始
         mModelAnimator = getRenderableInstance().animate(animationName);
-        mModelAnimator.setDuration(duration);
-        mModelAnimator.setRepeatCount(0);
-        mModelAnimator.start();
+        if( mModelAnimator != null ){
+            mModelAnimator.setDuration(duration);
+            mModelAnimator.setRepeatCount(0);
+            mModelAnimator.start();
+        }
 
         Log.i("startModelAnimation", "animationName=" + animationName);
     }
@@ -596,16 +603,16 @@ public class CharacterNode extends TransformableNode {
 
         // アニメーション名を取得
         switch (procKind) {
-            case SingleProcessBlock.PROCESS_CONTENTS_FORWARD:
-            case SingleProcessBlock.PROCESS_CONTENTS_BACK:
+            case SingleBlock.PROCESS_CONTENTS_FORWARD:
+            case SingleBlock.PROCESS_CONTENTS_BACK:
                 animationName = MODEL_ANIMATION_STR_WALK;
                 break;
 
-            case SingleProcessBlock.PROCESS_CONTENTS_RIGHT_ROTATE:
+            case SingleBlock.PROCESS_CONTENTS_RIGHT_ROTATE:
                 animationName = MODEL_ANIMATION_STR_ROTATE_RIGHT;
                 break;
 
-            case SingleProcessBlock.PROCESS_CONTENTS_LEFT_ROTATE:
+            case SingleBlock.PROCESS_CONTENTS_LEFT_ROTATE:
                 animationName = MODEL_ANIMATION_STR_ROTATE_LEFT;
                 break;
         }

@@ -1,21 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <gimmick_list dataNum="1">
 
-    <gimmick
-		sequence="1"
-    	successCondition="goal"
-        stageName="model/tutorial_stage_1.glb"
-    	characterName="model/car.glb"
-    	characterPosition="0, 0, 0"
-    	goalName="model/flag.glb"
-    	goalPosition="0,0,0"
-    	objectName="model/tree.glb, model/rock.glb"
-    	objectNum="5, 5"
-    	objectKind="obstacle, obstacle"/>
-
-
 	<gimmick
-		sequence="1"
 		successCondition="goal"
 		stageName="model/tutorial_stage_1.glb"
 		characterName="model/car.glb"
@@ -24,6 +10,9 @@
 		goalPosition="0,0,0"
 		objectName="model/tree.glb, model/rock.glb"
 		objectNum="5, 5"
-		objectKind="obstacle, obstacle"/>
+		objectKind="obstacle, obstacle"
+		block="forward, rotate_right, rotate_left"
+		/>
+
 
 </gimmick_list>

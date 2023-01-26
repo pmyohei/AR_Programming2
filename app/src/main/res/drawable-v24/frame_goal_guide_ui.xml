@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <solid
+        android:color="@color/bg_goal_guide_ui" />
+
+    <stroke
+        android:width="2dp"
+        android:color="@color/stroke_goal_guide_ui" />
+
+    <corners
+        android:radius="4dp" />
+
+</shape>

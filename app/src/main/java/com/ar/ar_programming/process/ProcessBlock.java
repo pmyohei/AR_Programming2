@@ -5,7 +5,6 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 
 import com.ar.ar_programming.CharacterNode;
 import com.ar.ar_programming.R;
@@ -161,7 +160,7 @@ public abstract class ProcessBlock extends Block {
         //--------------------------
         // 本ブロックがネスト内にあり、最後の処理であった場合
         if (inNest()) {
-            NestProcessBlock parentNest = getOwnNestBlock();
+            NestBlock parentNest = getOwnNestBlock();
 
             if (parentNest.getProcessType() == PROCESS_TYPE_LOOP) {
                 // ループの場合は、開始処理から

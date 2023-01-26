@@ -4,12 +4,12 @@
     <!---->
     <!-- 共有環境設定 SharedPreferences -->
     <!---->
-    <integer name="saved_tutorial_default_key">1</integer>
     <integer name="saved_field_size_default_key">0</integer>
     <integer name="saved_difficulty_default_key">0</integer>
     <integer name="saved_character_default_key">0</integer>
 
     <!--  チュートリアル進行状態  -->
+    <integer name="saved_tutorial_block">1</integer>
     <integer name="saved_tutorial_loop">2</integer>
     <integer name="saved_tutorial_if">3</integer>
     <integer name="saved_tutorial_if_else">4</integer>

@@ -23,7 +23,7 @@
     <string name="home_setting">Setting</string>
 
     <!---->
-    <!-- Setting画面 -->
+    <!-- 設定画面 -->
     <!---->
     <string name="setting_title">ゲーム設定</string>
 
@@ -45,6 +45,11 @@
     <string name="setting_dialog_positive">保存</string>
     <string name="setting_dialog_negative">いいえ</string>
 
+    <!-- ダイアログ チュートリアル完了まで設定不可 -->
+    <string name="setting_dialog_cannot_title">チュートリアルを終えると\n設定できるよ</string>
+    <string name="setting_dialog_cannot_supplement">完了したチュートリアル</string>
+    <string name="setting_dialog_cannot_tutorial_status">" / 4"</string>
+
     <!-- snackbar -->
     <string name="setting_snackbar_message">保存しました</string>
 
@@ -62,14 +67,15 @@
     <string name="block_nest_loop">..までループ</string>
 
     <!--  処理ブロック 処理内容  -->
-    <string name="block_contents_forward">cm 前へ進む</string>
-    <string name="block_contents_back">cm 後ろに戻る</string>
-    <string name="block_contents_rorate_right">度 右に回転</string>
-    <string name="block_contents_rorate_left">度 左に回転</string>
-    <string name="block_contents_if_block">もし、ブロックなら</string>
-    <string name="block_contents_if_else_block">もし、ブロックなら</string>
-    <string name="block_contents_loop_goal">ゴールまでループ</string>
-    <string name="block_contents_loop_block">ブロックまでループ</string>
+    <string name="block_contents_forward">前へ進む</string>
+    <string name="block_contents_back">後ろに戻る</string>
+    <string name="block_contents_rorate_right">右に回転</string>
+    <string name="block_contents_rorate_left">左に回転</string>
+    <string name="block_contents_if_block">ifもし、ブロックなら</string>
+    <string name="block_contents_if_else_block">ifeもし、ブロックなら</string>
+    <string name="block_contents_if_elseif_else_block">ifeifもし、ブロックなら</string>
+    <string name="block_contents_loop_arrival_goal">ゴールまでループ</string>
+    <string name="block_contents_loop_arrival_block">ブロックまでループ</string>
     <string name="block_contents_loop_facing_goal">ゴールを向くまでループ</string>
     <string name="block_contents_loop_facing_obstacle">障害物を向くまでループ</string>
     <!--  処理ブロック 処理量の単位  -->
@@ -79,6 +85,8 @@
     <!-- ダイアログ -->
     <string name="process_volume_degree_error">!範囲外です(0～360)!</string>
 
+    <!-- snackbar -->
+    <string name="diable_set_volume">このブロックは変更できないよ</string>
 
     <!---->
     <!-- AR画面 -->
@@ -88,19 +96,28 @@
     <string name="ar_menu_setting">設定</string>
     <string name="ar_menu_clear_field">フィールドをクリア</string>
     <string name="ar_menu_init_programming">初めからプログラミング</string>
+    <string name="ar_menu_goal_guide">ステージの説明をみる</string>
 
     <!-- プログラミング画面 -->
     <string name="programming_top">Let\'s Programming!</string>
 
+    <!-- その他 -->
+    <string name="goal_guide_view">ステージの説明をみる！\n（タッチしてね）</string>
+
     <!-- snackbar -->
     <string name="snackbar_please_programming">プログラミングを作ったらもう一度押してね</string>
     <string name="snackbar_please_finish_game">ゲーム終了後に押してね</string>
+    <string name="snackbar_please_wait">もう少し待ってね</string>
 
     <!-- ダイアログ -->
     <string name="ar_dialog_title">リトライ</string>
     <string name="ar_dialog_contents">ゲームを初めの状態に戻しますか？</string>
     <string name="ar_dialog_positive">やり直す</string>
     <string name="ar_dialog_negative">このまま</string>
+    <!-- ダイアログ：ゴール詳細 -->
+    <string name="ar_dialog_goal_title">ゴール</string>
+    <string name="ar_dialog_explanation_title">説明</string>
+    <string name="ar_dialog_goal_close">閉じる</string>
 
     <!---->
     <!-- キャラクター（.glbファイル名と一致させること） -->
@@ -111,12 +128,29 @@
 
 
     <!---->
-    <!-- ギミックオブジェクト（.glbファイル名と一致させること） -->
+    <!-- ギミックのゴール説明 -->
     <!---->
-    <string name="gimmick_stage_1">stage</string>
-    <string name="gimmick_stage_2">init_stage</string>
-    <string name="gimmick_object_tree_1">tree</string>
-    <string name="gimmick_object_rock_1">rock</string>
+    <string name="guide_major_tutorial_1">チュートリアル1</string>
+    <string name="guide_sub_tutorial_1">～プログラミングをしてみよう～</string>
+    <string name="guide_contents_tutorial_1">切り株をよけて、リスのそばまで行こう</string>
+    <string name="guide_explanation_tutorial_1">
+        ウサギをリスのそばまで移動させる\nプログラムを作ってみよう！\n\n真ん中にある切り株にあたると失敗だよ！\nうまく避けるようにプログラミングしてね！
+    </string>
+
+    <string name="guide_major_tutorial_2">チュートリアル2</string>
+    <string name="guide_sub_tutorial_2">～ループ処理をしてみよう～</string>
+    <string name="guide_contents_tutorial_2">橋を渡って看板まで運転</string>
+    <string name="guide_explanation_tutorial_2">
+        橋の先の看板まで運転する\nプログラムを作ってみよう！\n\n真ん中にある切り株にあたると失敗だよ！\nうまく避けるようにプログラミングしてね！
+    </string>
+
+
+
+
+
+
+
+
 
 
 
