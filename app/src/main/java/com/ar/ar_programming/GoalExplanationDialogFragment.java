@@ -2,6 +2,11 @@ package com.ar.ar_programming;
 
 import static android.content.Context.WINDOW_SERVICE;
 
+import static com.ar.ar_programming.GimmickManager.GOAl_EXP_CONTENTS_POS;
+import static com.ar.ar_programming.GimmickManager.GOAl_EXP_EXPLANATION_POS;
+import static com.ar.ar_programming.GimmickManager.GOAl_EXP_MAJOR_POS;
+import static com.ar.ar_programming.GimmickManager.GOAl_EXP_SUB_POS;
+
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
@@ -64,10 +69,10 @@ public class GoalExplanationDialogFragment extends DialogFragment {
         setupDialogSize(dialog);
 
         // 設定文言ID
-        int major = mGoalExplanationIdList.get(Gimmick.GOAl_EXP_MAJOR_POS);
-        int sub = mGoalExplanationIdList.get(Gimmick.GOAl_EXP_SUB_POS);
-        int contents = mGoalExplanationIdList.get(Gimmick.GOAl_EXP_CONTENTS_POS);
-        int explanation = mGoalExplanationIdList.get(Gimmick.GOAl_EXP_EXPLANATION_POS);
+        int major = mGoalExplanationIdList.get( GOAl_EXP_MAJOR_POS );
+        int sub = mGoalExplanationIdList.get( GOAl_EXP_SUB_POS );
+        int contents = mGoalExplanationIdList.get( GOAl_EXP_CONTENTS_POS );
+        int explanation = mGoalExplanationIdList.get( GOAl_EXP_EXPLANATION_POS );
 
         // 説明内容にギミック用xmlの内容を反映
         ((TextView) dialog.findViewById(R.id.tv_majorTitle)).setText(major);

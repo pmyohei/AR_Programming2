@@ -2,12 +2,13 @@
 <gimmick_list dataNum="4">
 
 	<gimmick
-		sequence="1"
+		sequence="2"
 		successCondition="goal"
 		goalExplanation="guide_major_tutorial_1, guide_sub_tutorial_1, guide_contents_tutorial_1, guide_explanation_tutorial_1"
 		stageGlb="models/stage/tutorial_stage_1.glb"
 		characterGlb="models/animal/rabit.glb"
 		characterPosition="-3.8 : 1.5 : 9.1"
+		characterAngle="-30"
 		goalGlb="models/goal/fox_and_tree.glb"
 		goalPosition="3.2 : 2.3 : -2.7"
 		goalAngle="-45"
@@ -16,11 +17,62 @@
 		objectKind="obstacle"
 		objectPositionRandom="false"
 		objectPosition="0 : 1.4 : 0.6"
-		block="single_forward, single_rotate-right, single_rotate-left"
+		block="single_forward, single_rotateRight, single_rotateLeft"
 		/>
 
+	<gimmick
+		sequence="2"
+		successCondition="goal"
+		goalExplanation="guide_major_tutorial_2, guide_sub_tutorial_2, guide_contents_tutorial_2, guide_explanation_tutorial_2"
+		stageGlb="models/stage/tutorial_stage_2.glb"
+		characterGlb="models/vehicle/car.glb"
+		characterPosition="0 : 0.5 : 7.5"
+		characterAngle="-30"
+		goalGlb="models/goal/signboard_stop.glb"
+		goalPosition="0 : -0.6 : -8.8"
+		goalAngle="0"
+		block="single_forward, single_rotateRight_1, loop_facing-goal"
+		/>
+
+	<gimmick
+		sequence="3"
+		successCondition="goal"
+		goalExplanation="guide_major_tutorial_2, guide_sub_tutorial_2, guide_contents_tutorial_2, guide_explanation_tutorial_2"
+		stageGlb="models/stage/tutorial_stage_3.glb"
+		characterGlb="models/animal/rabit.glb"
+		characterPosition="0 : 1.4 : 8.7"
+		characterAngle="180"
+		goalGlb="models/goal/house.glb"
+		goalPosition="0 : 3.9 : -18.8"
+		goalAngle="0"
+		objectGlb="models/obstacle/carrot.glb"
+		objectNum="1"
+		objectKind="obstacle"
+		objectPositionRandom="false"
+		objectPosition="0 : 1.3 : -5.0"
+		block="single_forward, single_eat, loop_facing-goal"
+		/>
+
+	<gimmick
+		sequence="1"
+		successCondition="goal"
+		goalExplanation="guide_major_tutorial_2, guide_sub_tutorial_2, guide_contents_tutorial_2, guide_explanation_tutorial_2"
+		stageGlb="models/stage/tutorial_stage_4.glb"
+		characterGlb="models/animal/rabit.glb"
+		characterPosition="0 : 1.4 : 8.7"
+		characterAngle="180"
+		goalGlb="models/goal/house.glb"
+		goalPosition="0 : 3.9 : -18.8"
+		goalAngle="0"
+		objectGlb="models/obstacle/mushroom.glb, models/obstacle/mushroom_poison.glb"
+		objectNum="1, 2"
+		objectKind="eatable, eatable"
+		objectPositionRandom="false"
+		objectPosition="0 : 1.1 : -4.1, 0 : 1.2 : 3, 0 : 1.2 : -10"
+		block="single_forward, single_eat, single_throwAway, loop_facing-goal"
+		/>
 <!--
-	block="single_forward_1, single_back_123, single_rotate-right, single_rotate-left,
+	block="single_forward_1, single_back_123, single_rotateRight, single_rotateLeft,
 	loop_facing-goal, loop_arrival-obstacle,
 	if_collision-obstacle, if-else_collision-obstacle, if-elseif-else_collision-obstacle"
 -->

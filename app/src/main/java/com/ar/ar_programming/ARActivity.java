@@ -70,23 +70,23 @@ public class ARActivity extends AppCompatActivity {
         int id = item.getItemId();
         switch ( id ){
             case R.id.action_how_to_play:
-                mMenuClickListener.onHowToClick();
+                mMenuClickListener.onMenuHowToClick();
                 return true;
 
             case R.id.action_setting:
-                mMenuClickListener.onSettingClick();
+                mMenuClickListener.onMenuSettingClick();
                 return true;
 
             case R.id.action_goal_guide:
-                mMenuClickListener.onGoalGuide();
+                mMenuClickListener.onMenuGoalGuide();
                 return true;
 
             case R.id.action_clear_field:
-                mMenuClickListener.onClearFieldClick();
+                mMenuClickListener.onMenuClearFieldClick();
                 return true;
 
             case R.id.action_init_programming:
-                mMenuClickListener.onInitProgrammingClick();
+                mMenuClickListener.onMenuInitProgrammingClick();
                 return true;
 
 
@@ -121,11 +121,11 @@ public class ARActivity extends AppCompatActivity {
      * Menuクリックインターフェース
      */
     public interface MenuClickListener {
-        void onHowToClick();
-        void onSettingClick();
-        void onGoalGuide();
-        void onClearFieldClick();
-        void onInitProgrammingClick();
+        void onMenuHowToClick();
+        void onMenuSettingClick();
+        void onMenuGoalGuide();
+        void onMenuClearFieldClick();
+        void onMenuInitProgrammingClick();
     }
 
     /*

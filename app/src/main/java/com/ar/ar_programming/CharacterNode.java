@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.ar.ar_programming.process.SingleBlock;
 import com.google.ar.sceneform.Node;
+import com.google.ar.sceneform.NodeParent;
 import com.google.ar.sceneform.Scene;
 import com.google.ar.sceneform.math.Quaternion;
 import com.google.ar.sceneform.math.Vector3;
@@ -22,36 +23,36 @@ public class CharacterNode extends TransformableNode {
     // アニメーションプロパティ名
     public static final String PROPERTY_WALK = "walk";
     public static final String PROPERTY_ROTATE = "rotate";
-    public static final String PROPERTY_FORWARD = "forward";
-    public static final String PROPERTY_BACK = "back";
-    public static final String PROPERTY_RIGHT_ROTATE = "right_rotate";
-    public static final String PROPERTY_LEFT_ROTATE = "left_rotate";
+    public static final String PROPERTY_EAT = "eat";
 
     // モデルアニメーション名（Blendarで命名）
     public static final String MODEL_ANIMATION_STR_GOAL = "goal";
     public static final String MODEL_ANIMATION_STR_WALK = "walk";
     public static final String MODEL_ANIMATION_STR_ROTATE_LEFT = "rotate_left";
     public static final String MODEL_ANIMATION_STR_ROTATE_RIGHT = "rotate_right";
+    public static final String MODEL_ANIMATION_STR_EAT = "eat";
+    public static final String MODEL_ANIMATION_STR_THROW_AWAY = "throwAway";
     public static final String MODEL_ANIMATION_STR_ERROR = "error";
 
-    // 移動1s当たりのアニメーション移動量
-//    public static final float MOVE_VOLUME_PER_SECOND = 0.08f;
     // 移動1cm当たりのアニメーション時間(ms)
-    public static final float WALK_TIME_PER_CM = 250f;
+    private final float WALK_TIME_PER_CM = 250f;
     // 回転1度当たりのアニメーション時間(ms)
-    public static final float ROTATE_TIME_PER_ANGLE = 10f;
+    private final float ROTATE_TIME_PER_ANGLE = 10f;
 
-    // 衝突検知の種別
-    public static final int COLLISION_TYPE_NONE = -1;
-    public static final int COLLISION_TYPE_GOAL = 0;
-    public static final int COLLISION_TYPE_BLOCK = 1;
-    public static final int COLLISION_TYPE_OBSTACLE = 2;
+    // 処理量のない処理の仮量と仮時間(ms)
+    private final float NO_VOLUME_TIME = 3000f;
+    private final float NO_VOLUME_VALUE = 1000f;
+    private final float NO_VOLUME_START_RATIO = 0.6f;
+    private final float NO_VOLUME_START_VALUE = NO_VOLUME_VALUE * NO_VOLUME_START_RATIO;
 
     //---------------------------
     // フィールド変数
     //---------------------------
     private Scene mScene;
-    private int mCollisionType;
+    // 衝突中のNode
+    private String mCollisionNode;
+    // 衝突検知リスナー
+    private CollisionDetectListener mCollisionDetectListener;
     // 初期位置の情報
     private Vector3 mStartPosition;
     private float mStartDegree;
@@ -62,8 +63,8 @@ public class CharacterNode extends TransformableNode {
     private ValueAnimator mProcessAnimator;
     // モデルアニメーションの開始と終了を制御する用
     private ObjectAnimator mModelAnimator;
-    // 衝突検知リスナー
-    private CollisionDetectListener mCollisionDetectListenerListener;
+    // 処理量なしの処理完了フラグ
+    private boolean mfinishNoneVolume;
 
     //tmp
     Node mptGoal;
@@ -77,7 +78,8 @@ public class CharacterNode extends TransformableNode {
         //----------------------------------------
         mCurrentPosition = new Vector3(0f, 0f, 0f);
         mCurrentDegree = 0f;
-        mCollisionType = COLLISION_TYPE_NONE;
+        mCollisionNode = GimmickManager.NODE_NAME_NONE;
+        mfinishNoneVolume = false;
     }
 
     /*
@@ -104,41 +106,50 @@ public class CharacterNode extends TransformableNode {
     /*
      * 衝突検知
      */
-    private int detectCollision() {
+    private String detectCollision() {
 
-        // 衝突検知種別
-        int collisionType = COLLISION_TYPE_NONE;
+        // 衝突の有無
+        String collisionNode = GimmickManager.NODE_NAME_NONE;
 
+        //------------
         // 衝突の検証
+        //------------
         ArrayList<Node> nodes = mScene.overlapTestAll(this);
         for (Node collidingNode : nodes) {
 
-            // 衝突したノードを判別
-            String collidingNodeName = collidingNode.getName();
+            // 衝突中のノード名
+            collisionNode = collidingNode.getName();
 
-            if (collidingNodeName.equals(ArMainFragment.NODE_NAME_GOAL)) {
-                collisionType = COLLISION_TYPE_GOAL;
+            if (collisionNode.equals(GimmickManager.NODE_NAME_GOAL)) {
                 startModelAnimation(MODEL_ANIMATION_STR_GOAL, 2000);
                 break;
 
-            } else if (collidingNodeName.equals(ArMainFragment.NODE_NAME_OBSTACLE)) {
-                collisionType = COLLISION_TYPE_OBSTACLE;
+            } else if (collisionNode.equals(GimmickManager.NODE_NAME_OBSTACLE)) {
                 startModelAnimation(MODEL_ANIMATION_STR_ERROR, 2000);
                 break;
 
-            } else if (collidingNodeName.equals(ArMainFragment.NODE_NAME_BLOCK)) {
+            } else if (collisionNode.equals(GimmickManager.NODE_NAME_EATABLE)) {
+                startModelAnimation(MODEL_ANIMATION_STR_ERROR, 2000);
+                break;
 
-                collisionType = COLLISION_TYPE_BLOCK;
+            } else if (collisionNode.equals(GimmickManager.NODE_NAME_THROW_AWAY)) {
+                startModelAnimation(MODEL_ANIMATION_STR_ERROR, 2000);
                 break;
             }
+
+            // 衝突中ノードクリア
+            collisionNode = GimmickManager.NODE_NAME_NONE;
         }
 
-        // 衝突したとき、リスナーをコール
-        if (collisionType != COLLISION_TYPE_NONE) {
-            mCollisionDetectListenerListener.onCollisionDetect(collisionType, mProcessAnimator);
+        //----------------
+        // 衝突リスナーコール
+        //----------------
+        // リスナーコール判定
+        if (!collisionNode.equals(GimmickManager.NODE_NAME_NONE)) {
+            mCollisionDetectListener.onCollisionDetect(collisionNode, mProcessAnimator);
         }
 
-        return collisionType;
+        return collisionNode;
     }
 
 
@@ -148,8 +159,8 @@ public class CharacterNode extends TransformableNode {
      */
     public void setWalk(float volume) {
 
-        // ブロックと衝突中は、処理なし
-        if (mCollisionType == COLLISION_TYPE_BLOCK) {
+        // 衝突中は、処理なし
+        if (!mCollisionNode.equals(GimmickManager.NODE_NAME_NONE)) {
             return;
         }
 
@@ -169,7 +180,7 @@ public class CharacterNode extends TransformableNode {
         //----------------------
         // 衝突検知
         //----------------------
-        mCollisionType = detectCollision();
+        mCollisionNode = detectCollision();
     }
 
 
@@ -209,6 +220,42 @@ public class CharacterNode extends TransformableNode {
 //        Log.i("回転アニメーション", "volume=\t" + volume + "\tsetDegree=\t" + setDegree + "\ty=\t" + y);
 //        Log.i("回転アニメーション", "setDegree=" + setDegree);
 //        Log.i("回転アニメーション", "y=" + y);
+    }
+
+    /*
+     * 食事アニメーションメソッド
+     *   ※ プロパティ名：eat
+     *   ※ 本メソッド内でアニメーション処理は実行しない。
+     *      一定時間経過でブロック処理を実行させるために利用する。
+     */
+    public void setEat(float volume) {
+
+        // 一定時間を超過したとき、ブロック処理を実行する
+        if( (volume >= NO_VOLUME_START_VALUE) && !mfinishNoneVolume ){
+            // 処理完了に
+            mfinishNoneVolume = true;
+            // 食べる
+            eat();
+        }
+    }
+
+    /*
+     * 食べる
+     */
+    public void eat() {
+
+        //--------------------------------
+        // 衝突中の食事可能NodeをSceneから削除
+        //--------------------------------
+        ArrayList<Node> nodes = mScene.overlapTestAll(this);
+        for (Node collisionNode : nodes) {
+            // Sceneから削除
+            if (collisionNode.getName().equals(GimmickManager.NODE_NAME_EATABLE)) {
+                NodeParent parent = collisionNode.getParent();
+                parent.removeChild( collisionNode );
+                break;
+            }
+        }
     }
 
     /*
@@ -352,8 +399,9 @@ public class CharacterNode extends TransformableNode {
      */
     public void setEndProcessAnimation(int processKind, float volume) {
 
-        // 衝突状態をクリア
-        mCollisionType = COLLISION_TYPE_NONE;
+        // 状態クリア
+        mCollisionNode = GimmickManager.NODE_NAME_NONE;
+        mfinishNoneVolume = false;
 
         Log.i("startModelAnimation", "処理ブロックアニメーション終了処理");
 
@@ -454,6 +502,9 @@ public class CharacterNode extends TransformableNode {
             case SingleBlock.PROCESS_CONTENTS_RIGHT_ROTATE:
             case SingleBlock.PROCESS_CONTENTS_LEFT_ROTATE:
                 return PROPERTY_ROTATE;
+
+            case SingleBlock.PROCESS_CONTENTS_EAT:
+                return PROPERTY_EAT;
         }
 
         return PROPERTY_WALK;
@@ -481,43 +532,14 @@ public class CharacterNode extends TransformableNode {
         if (procKind == SingleBlock.PROCESS_CONTENTS_LEFT_ROTATE) {
             return (float) procVolume;
         }
-
-        return (float) procVolume * -1;
-
-        //-----------------------------------------
-        // 回転
-        //-----------------------------------------
-        // ブロックの処理量がそのままアニメーション量となる
-/*        if (procKind == ProcessBlock.PROC_KIND_LEFT_ROTATE) {
-            return (float) procVolume;
-        }
-        if (procKind == ProcessBlock.PROC_KIND_RIGHT_ROTATE) {
-            return (float) procVolume * -1;
-        }*/
-
-        //-----------------------------------------
-        // 前進／後退
-        //-----------------------------------------
-        // ブロックの処理量がそのままアニメーション量となる
-/*
-        if (procKind == ProcessBlock.PROC_KIND_FORWARD) {
-            return (float) procVolume;
-        }
-        if (procKind == ProcessBlock.PROC_KIND_BACK) {
+        if (procKind == SingleBlock.PROCESS_CONTENTS_RIGHT_ROTATE) {
             return (float) procVolume * -1;
         }
 
-        return (float) procVolume;
-*/
-
-/*        // 処理時間からアニメーション量を算出
-        float volume = (float) (procVolume * MOVE_VOLUME_PER_SECOND);
-        if (procKind == ProcessBlock.PROC_KIND_BACK) {
-            // 後退の場合、処理量はマイナス
-            volume *= -1;
-        }
-        return volume;
-*/
+        //-----------------------------------------
+        // その他：処理量のない処理
+        //-----------------------------------------
+        return (float) NO_VOLUME_VALUE;
     }
 
     /*
@@ -533,30 +555,20 @@ public class CharacterNode extends TransformableNode {
             Vector3 scale = getLocalScale();
             float ratio = (ArMainFragment.NODE_SIZE_S * ArMainFragment.NODE_SIZE_TMP_RATIO) / scale.x;
 
-            Log.i("歩行", "scale.x=" + scale.x);
-            Log.i("歩行", "ratio=" + ratio);
-            Log.i("歩行", "WALK_TIME_PER_CM=" + (WALK_TIME_PER_CM * ratio));
-
             return (long) (procVolume * WALK_TIME_PER_CM * ratio);
         }
 
         //-------------------
         // 回転
         //-------------------
-        return (long) (procVolume * ROTATE_TIME_PER_ANGLE);
-
-/*
-        // 前進／後退の場合は、ブロックの処理量がそのままアニメーション時間
-        if ((procKind == ProcessBlock.PROC_KIND_FORWARD) || (procKind == ProcessBlock.PROC_KIND_BACK)) {
-//            return (long) procVolume * MILL_SECOND;
-            return (long)(procVolume * WALK_TIME_PER_ANGLE);
+        if ((procKind == SingleBlock.PROCESS_CONTENTS_LEFT_ROTATE) || (procKind == SingleBlock.PROCESS_CONTENTS_RIGHT_ROTATE)) {
+            return (long) (procVolume * ROTATE_TIME_PER_ANGLE);
         }
-*/
 
         //-----------------------------------------
-        // 回転の場合は、角度からアニメーション時間を算出
+        // その他：処理量のない処理
         //-----------------------------------------
-//        return (long)(procVolume * ROTATE_TIME_PER_ANGLE);
+        return (long) NO_VOLUME_TIME;
     }
 
     /*
@@ -565,7 +577,6 @@ public class CharacterNode extends TransformableNode {
     public void setAnimator(ValueAnimator animator) {
         mProcessAnimator = animator;
     }
-
 
     /*
      * モデルアニメーションの開始
@@ -615,6 +626,14 @@ public class CharacterNode extends TransformableNode {
             case SingleBlock.PROCESS_CONTENTS_LEFT_ROTATE:
                 animationName = MODEL_ANIMATION_STR_ROTATE_LEFT;
                 break;
+
+            case SingleBlock.PROCESS_CONTENTS_EAT:
+                animationName = MODEL_ANIMATION_STR_EAT;
+                break;
+
+            case SingleBlock.PROCESS_CONTENTS_THROW_AWAY:
+                animationName = MODEL_ANIMATION_STR_THROW_AWAY;
+                break;
         }
 
         // モデルアニメーション開始
@@ -625,9 +644,8 @@ public class CharacterNode extends TransformableNode {
      * 衝突検知リスナーの設定
      */
     public boolean isGoaled() {
-        return (mCollisionType == COLLISION_TYPE_GOAL);
+        return (mCollisionNode.equals( GimmickManager.NODE_NAME_GOAL ));
     }
-
 
     /*
      * 本キャラクターが指定Nodeの方向を向いているかどうかを判定
@@ -685,9 +703,6 @@ public class CharacterNode extends TransformableNode {
         selfPosZ *= -1;
         nodePosZ *= -1;
 
-        Log.i("向いている方向ロジック", "座標 Char=" + selfPosX + ", " + selfPosZ);
-        Log.i("向いている方向ロジック", "座標 Node=" + nodePosX + ", " + nodePosZ);
-
         //-------------------------
         // 角度算出
         //-------------------------
@@ -723,7 +738,7 @@ public class CharacterNode extends TransformableNode {
      * 衝突検知リスナーの設定
      */
     public void setOnCollisionDetectListener( CollisionDetectListener listener ) {
-        mCollisionDetectListenerListener = listener;
+        mCollisionDetectListener = listener;
     }
 
     /*
@@ -731,6 +746,6 @@ public class CharacterNode extends TransformableNode {
      */
     public interface CollisionDetectListener {
         // 衝突検知リスナー
-        void onCollisionDetect( int collisionType, ValueAnimator animator );
+        void onCollisionDetect( String collisionNode, ValueAnimator processAnimator );
     }
 }

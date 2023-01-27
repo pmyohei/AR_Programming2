@@ -71,6 +71,8 @@
     <string name="block_contents_back">後ろに戻る</string>
     <string name="block_contents_rorate_right">右に回転</string>
     <string name="block_contents_rorate_left">左に回転</string>
+    <string name="block_contents_eat">食べる</string>
+    <string name="block_contents_throw_away">捨てる</string>
     <string name="block_contents_if_block">ifもし、ブロックなら</string>
     <string name="block_contents_if_else_block">ifeもし、ブロックなら</string>
     <string name="block_contents_if_elseif_else_block">ifeifもし、ブロックなら</string>

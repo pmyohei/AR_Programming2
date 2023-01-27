@@ -25,7 +25,7 @@ public abstract class ProcessBlock extends Block {
     //---------------------------
     public int mProcessContents;
     private boolean mDragFlg;
-    private ProcessListener mProcessListener;
+    private ProgrammingListener mProgrammingListener;
 
 
     public ProcessBlock(Context context) {
@@ -176,20 +176,20 @@ public abstract class ProcessBlock extends Block {
         // 下ブロックなし／親ネストなし
         //--------------------------
         // 終了リスナーをコール
-        mProcessListener.onProcessEnd();
+        mProgrammingListener.onProgrammingEnd();
     }
 
     /*
      * ブロック処理リスナーの設定
      */
-    public void setProcessListener(ProcessListener listener ) {
-        mProcessListener = listener;
+    public void setProgrammingListener(ProgrammingListener listener ) {
+        mProgrammingListener = listener;
     }
 
     /*
      * ブロック処理リスナー
      */
-    public interface ProcessListener {
-        void onProcessEnd();
+    public interface ProgrammingListener {
+        void onProgrammingEnd();
     }
 }

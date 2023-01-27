@@ -1,5 +1,9 @@
 package com.ar.ar_programming;
 
+import static com.ar.ar_programming.GimmickManager.BLOCK_CONTENTS_POS;
+import static com.ar.ar_programming.GimmickManager.BLOCK_TYPE_POS;
+import static com.ar.ar_programming.GimmickManager.BLOCK_VALUE_LIMIT_POS;
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.util.Log;
@@ -20,20 +24,10 @@ public class Gimmick {
     //---------------------------
     // 定数
     //---------------------------
-    // フォーマット位置；ゴール説明
-    public static final int GOAl_EXP_MAJOR_POS = 0;
-    public static final int GOAl_EXP_SUB_POS = 1;
-    public static final int GOAl_EXP_CONTENTS_POS = 2;
-    public static final int GOAl_EXP_EXPLANATION_POS = 3;
-
-    // フォーマット位置；Block
-    private final int BLOCK_TYPE_POS = 0;
-    private final int BLOCK_CONTENTS_POS = 1;
-    private final int BLOCK_VALUE_LIMIT_POS = 2;
 
     // 異常値
     public static final int VOLUME_LIMIT_NONE = 0;
-    public static final int NO_DATA_GOAL_ANGLE = 0xFFFF;
+    public static final int NO_DATA_GOAL_ANGLE = 0;
 
     //---------------------------
     // フィールド変数
@@ -45,6 +39,7 @@ public class Gimmick {
     public String stageGlb;
     public String characterGlb;
     public Vector3 characterPositionVec;
+    public float characterAngle;
     public String goalGlb;
     public Vector3 goalPositionVec;
     public float goalAngle;
@@ -226,17 +221,34 @@ public class Gimmick {
                 selectStringId = R.string.block_contents_back;
                 break;
 
-            case "rotate-right":
+            case "rotateRight":
                 contents = SingleBlock.PROCESS_CONTENTS_RIGHT_ROTATE;
                 selectDrawableId = R.drawable.baseline_block_rotate_right_24;
                 selectStringId = R.string.block_contents_rorate_right;
                 break;
 
-            case "rotate-left":
-            default:
+            case "rotateLeft":
                 contents = SingleBlock.PROCESS_CONTENTS_LEFT_ROTATE;
                 selectDrawableId = R.drawable.baseline_block_rotate_left_24;
                 selectStringId = R.string.block_contents_rorate_left;
+                break;
+
+            case "eat":
+                contents = SingleBlock.PROCESS_CONTENTS_EAT;
+                selectDrawableId = R.drawable.baseline_eat_24;
+                selectStringId = R.string.block_contents_eat;
+                break;
+
+            case "throwAway":
+                contents = SingleBlock.PROCESS_CONTENTS_THROW_AWAY;
+                selectDrawableId = R.drawable.baseline_throw_away_24;
+                selectStringId = R.string.block_contents_throw_away;
+                break;
+
+            default:
+                contents = SingleBlock.PROCESS_CONTENTS_FORWARD;
+                selectDrawableId = R.drawable.baseline_block_forward_24;
+                selectStringId = R.string.block_contents_forward;
                 break;
         }
 
@@ -395,6 +407,21 @@ public class Gimmick {
     }
 
     /*
+     * キャラクターモデルの角度を設定
+     */
+    public void setCharacterAngle( String angle ) {
+
+        // 設定なしなら、未設定用値を設定して終了
+        if( (angle == null) || angle.isEmpty() ){
+            characterAngle = NO_DATA_GOAL_ANGLE;
+            return;
+        }
+
+        // float変換
+        characterAngle = Float.parseFloat(angle);
+    }
+
+    /*
      * ゴール座標を設定
      */
     public void setGoalPosition( String position ) {
@@ -421,7 +448,7 @@ public class Gimmick {
     public void setGoalAngle( String angle ) {
 
         // 設定なしなら、未設定用値を設定して終了
-        if( angle.isEmpty() ){
+        if( (angle == null) || angle.isEmpty() ){
             goalAngle = NO_DATA_GOAL_ANGLE;
             return;
         }
@@ -453,6 +480,11 @@ public class Gimmick {
      */
     public void setObjectGlb( String objectGlb ) {
 
+        // プロパティなし
+        if( objectGlb == null ){
+            return;
+        }
+
         // オブジェクト名を分割
         String[] strs = splitGimmickValueDelimiter(objectGlb);
 
@@ -465,6 +497,11 @@ public class Gimmick {
      * オブジェクト数を設定
      */
     public void setObjectNum( String objectNum ) {
+
+        // プロパティなし
+        if( objectNum == null ){
+            return;
+        }
 
         // オブジェクト名を分割
         String[] strs = splitGimmickValueDelimiter(objectNum);
@@ -481,6 +518,11 @@ public class Gimmick {
      */
     public void setObjectKind( String objectKind ) {
 
+        // プロパティなし
+        if( objectKind == null ){
+            return;
+        }
+
         // オブジェクト名を分割
         String[] strs = splitGimmickValueDelimiter(objectKind);
 
@@ -493,6 +535,12 @@ public class Gimmick {
      * オブジェクト座標のランダムの有無
      */
     public void setObjectPositionRandom( String random ) {
+
+        // プロパティなし
+        if( random == null ){
+            return;
+        }
+
         objectPositionRandom = random.equals( "true" );
     }
 
@@ -500,6 +548,11 @@ public class Gimmick {
      * オブジェクト座標を設定
      */
     public void setObjectPositionVecList(String position ) {
+
+        // プロパティなし
+        if( position == null ){
+            return;
+        }
 
         // 位置情報データ毎に分割
         // 例)"0:0:0, 1:1:1" → 「0:0:0」「1:1:1」
@@ -515,17 +568,19 @@ public class Gimmick {
             String[] posSplit = splitGimmickPositionDelimiter(posStr);
 
             // 正常フォーマットの場合
+            Vector3 pos;
             if( posSplit.length == 3 ){
                 // 位置形式に変換
                 float x = Float.parseFloat( posSplit[0] );
                 float y = Float.parseFloat( posSplit[1] );
                 float z = Float.parseFloat( posSplit[2] );
-                objectPositionVecList.add( new Vector3( x, y, z ) );
-                return;
+                pos = new Vector3( x, y, z );
+            } else {
+                // フォーマット異常の場合
+                pos = new Vector3( 0, 0, 0 );
             }
 
-            // フォーマット異常の場合
-            objectPositionVecList.add(new Vector3( 0f, 0f, 0f ));
+            objectPositionVecList.add( pos );
         }
     }
 

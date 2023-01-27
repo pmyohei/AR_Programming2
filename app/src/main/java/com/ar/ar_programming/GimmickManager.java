@@ -20,6 +20,28 @@ public class GimmickManager {
     //---------------------------
     // 定数
     //---------------------------
+    // Node名
+    // （objectKindの文言もここに含まれる）
+    public static final String NODE_NAME_NONE = "none";
+    public static final String NODE_NAME_ANCHOR = "anchor";
+    public static final String NODE_NAME_STAGE = "stage";
+    public static final String NODE_NAME_GOAL = "goal";
+    public static final String NODE_NAME_OBSTACLE = "obstacle";
+    public static final String NODE_NAME_EATABLE = "eatable";
+    public static final String NODE_NAME_THROW_AWAY = "throwAway";
+    public static final String NODE_NAME_GOAL_GUIDE_UI = "goalGuideUI";
+
+    // フォーマット位置；ゴール説明
+    public static final int GOAl_EXP_MAJOR_POS = 0;
+    public static final int GOAl_EXP_SUB_POS = 1;
+    public static final int GOAl_EXP_CONTENTS_POS = 2;
+    public static final int GOAl_EXP_EXPLANATION_POS = 3;
+
+    // フォーマット位置；Block
+    public static final int BLOCK_TYPE_POS = 0;
+    public static final int BLOCK_CONTENTS_POS = 1;
+    public static final int BLOCK_VALUE_LIMIT_POS = 2;
+
 
     //---------------------------
     // フィールド変数
@@ -71,6 +93,7 @@ public class GimmickManager {
         //----------------------
         String goalExplanation = parser.getAttributeValue(null, "goalExplanation");
         String characterPosition = parser.getAttributeValue(null, "characterPosition");
+        String characterAngle = parser.getAttributeValue(null, "characterAngle");
         String goalPosition = parser.getAttributeValue(null, "goalPosition");
         String goalAngle = parser.getAttributeValue(null, "goalAngle");
         String objectGlb = parser.getAttributeValue(null, "objectGlb");
@@ -88,6 +111,7 @@ public class GimmickManager {
         gimmick.stageGlb = parser.getAttributeValue(null, "stageGlb");
         gimmick.characterGlb = parser.getAttributeValue(null, "characterGlb");
         gimmick.setCharacterPosition( characterPosition );
+        gimmick.setCharacterAngle( characterAngle );
         gimmick.goalGlb = parser.getAttributeValue(null, "goalGlb");
         gimmick.setGoalAngle( goalAngle );
         gimmick.setGoalPosition( goalPosition );

@@ -7,6 +7,7 @@ import android.widget.TextView;
 
 import com.ar.ar_programming.CharacterNode;
 import com.ar.ar_programming.ArMainFragment;
+import com.ar.ar_programming.GimmickManager;
 import com.ar.ar_programming.R;
 import com.google.ar.sceneform.Node;
 import com.google.ar.sceneform.NodeParent;
@@ -161,13 +162,13 @@ public class LoopBlock extends NestBlock {
 
         switch (contents) {
             case PROCESS_CONTENTS_LOOP_FACING_GOAL:
-                nodeName = ArMainFragment.NODE_NAME_GOAL;
+                nodeName = GimmickManager.NODE_NAME_GOAL;
                 break;
             case PROCESS_CONTENTS_LOOP_FACING_OBSTACLE:
-                nodeName = ArMainFragment.NODE_NAME_OBSTACLE;
+                nodeName = GimmickManager.NODE_NAME_OBSTACLE;
                 break;
             default:
-                nodeName = ArMainFragment.NODE_NAME_GOAL;
+                nodeName = GimmickManager.NODE_NAME_GOAL;
                 break;
         }
 

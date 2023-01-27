@@ -30,6 +30,8 @@ public class SingleBlock extends ProcessBlock {
     public static final int PROCESS_CONTENTS_BACK = 1;
     public static final int PROCESS_CONTENTS_RIGHT_ROTATE = 2;
     public static final int PROCESS_CONTENTS_LEFT_ROTATE = 3;
+    public static final int PROCESS_CONTENTS_EAT = 4;
+    public static final int PROCESS_CONTENTS_THROW_AWAY = 5;
 
     private final String VOLUME_FORMAT = "%03d";
 
@@ -48,19 +50,22 @@ public class SingleBlock extends ProcessBlock {
         mFragmentManager = fragmentManager;
         Log.i("ブロックxml", "SingleBlock 1 valueLimit=" + valueLimit);
     }
+
     public SingleBlock(Context context, int valueLimit) {
         this(context, (AttributeSet) null, 0, valueLimit);
         Log.i("ブロックxml", "SingleBlock 2");
     }
+
     public SingleBlock(Context context, AttributeSet attrs, int contents, int valueLimit) {
         this(context, attrs, 0, contents, valueLimit);
         Log.i("ブロックxml", "SingleBlock 3 valueLimit=" + valueLimit);
     }
+
     public SingleBlock(Context context, AttributeSet attrs, int defStyle, int contents, int valueLimit) {
         super(context, attrs, defStyle, PROCESS_TYPE_SINGLE, contents);
         Log.i("ブロックxml", "SingleBlock 4 valueLimit=" + valueLimit);
         init(valueLimit);
-        setLayout(R.layout.process_block_single_ver3);
+        setLayout(R.layout.process_block_single);
     }
 
     /*
@@ -80,10 +85,50 @@ public class SingleBlock extends ProcessBlock {
 
         // 処理ブロック内の内容を書き換え
         rewriteProcessContents(mProcessContents);
-        // 処理量設定リスナー
-        setVolumeListener();
+
+        //
+        setBlockLayout(mProcessContents);
         // 処理ブロックタッチリスナー
         setBlockTouchListerer();
+    }
+
+
+    /*
+     * 単体ブロックレイアウト設定
+     */
+    private void setBlockLayout(int contents) {
+
+        switch (contents) {
+            //------------------------
+            // 処理量をユーザーが変更可能
+            //------------------------
+            case PROCESS_CONTENTS_FORWARD:
+            case PROCESS_CONTENTS_BACK:
+            case PROCESS_CONTENTS_LEFT_ROTATE:
+            case PROCESS_CONTENTS_RIGHT_ROTATE:
+                // 処理量設定リスナー
+                setVolumeListener();
+                break;
+
+            //------------------------
+            // 処理量なし
+            //------------------------
+            case PROCESS_CONTENTS_EAT:
+            case PROCESS_CONTENTS_THROW_AWAY:
+            default:
+                // 処理量なしのブロックレイアウト設定
+                setNoVolumeLayout();
+                break;
+        }
+    }
+
+    /*
+     * 処理量設定リスナー
+     */
+    private void setNoVolumeLayout() {
+        // 処理量viewを非表示
+        TextView tv_volume = findViewById(R.id.tv_volume);
+        tv_volume.setVisibility( GONE );
     }
 
     /*
@@ -179,8 +224,14 @@ public class SingleBlock extends ProcessBlock {
             case PROCESS_CONTENTS_RIGHT_ROTATE:
                 contentId = R.string.block_contents_rorate_right;
                 break;
+            case PROCESS_CONTENTS_EAT:
+                contentId = R.string.block_contents_eat;
+                break;
+            case PROCESS_CONTENTS_THROW_AWAY:
+                contentId = R.string.block_contents_throw_away;
+                break;
             default:
-                contentId = R.string.block_contents_rorate_right;
+                contentId = R.string.block_contents_forward;
                 break;
         }
 
@@ -197,28 +248,15 @@ public class SingleBlock extends ProcessBlock {
         //------------------------------------------------------
         // 処理種別と処理量からアニメーション量とアニメーション時間を取得
         //------------------------------------------------------
-/*
-        // 処理種別と処理量
-        int contents = getProcessContents();
-        int setVolume = getProcessVolume();
-
-        // アニメーション量とアニメーション時間
-        float volume = characterNode.getAnimationVolume(contents, setVolume);
-        long duration = characterNode.getAnimationDuration(contents, setVolume);
-*/
-
         // 処理に対応するアニメーションプロパティ名を取得
-        String propertyName = CharacterNode.getPropertyName(contents);
-
-        Log.i("アニメーション", "アニメーション開始--------------------");
-        Log.i("アニメーション", "volume=" + volume);
-        Log.i("アニメーション", "duration=" + duration);
+        // ※ setXXX()の「XXX」を取得
+        String methodPropertyName = CharacterNode.getPropertyName(contents);
 
         //----------------------------------
         // アニメーションの生成／開始：処理ブロック用
         //----------------------------------
         // アニメーション生成
-        ValueAnimator processAnimator = ObjectAnimator.ofFloat(characterNode, propertyName, volume);
+        ValueAnimator processAnimator = ObjectAnimator.ofFloat(characterNode, methodPropertyName, volume);
         processAnimator.setDuration(duration);
 
         return processAnimator;
@@ -246,11 +284,9 @@ public class SingleBlock extends ProcessBlock {
             @Override
             public void onAnimationCancel(Animator animator) {
             }
-
             @Override
             public void onAnimationRepeat(Animator animator) {
             }
-
             @Override
             public void onAnimationStart(Animator animator) {
             }
@@ -258,7 +294,7 @@ public class SingleBlock extends ProcessBlock {
             @Override
             public void onAnimationEnd(Animator animator) {
 
-                // ゴールしているなら、チャート処理はここで終了
+                // ゴールしているなら、プログラミングはここで終了
                 boolean isGoal = characterNode.isGoaled();
                 if (isGoal) {
                     return;

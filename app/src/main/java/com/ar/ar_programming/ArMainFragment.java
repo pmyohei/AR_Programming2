@@ -66,18 +66,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class ArMainFragment extends Fragment implements ARActivity.MenuClickListener, ARActivity.PlayControlListener, Block.MarkerAreaListener, Block.DropBlockListener, ProcessBlock.ProcessListener {
+public class ArMainFragment extends Fragment implements ARActivity.MenuClickListener, ARActivity.PlayControlListener,
+        Block.MarkerAreaListener, Block.DropBlockListener, ProcessBlock.ProgrammingListener,
+        CharacterNode.CollisionDetectListener {
 
     //---------------------------
     // 定数
     //---------------------------
-    // Node名
-    private final String NODE_NAME_ANCHOR = "anchorNode";
-    public static final String NODE_NAME_STAGE = "stageNode";
-    public static final String NODE_NAME_GOAL = "goalNode";
-    public static final String NODE_NAME_BLOCK = "blockNode";
-    public static final String NODE_NAME_OBSTACLE = "obstacleNode";
-    public static final String NODE_NAME_GOAL_GUIDE_UI = "goalGuideUINode";
 
     // ステージ4辺
     private final int STAGE_BOTTOM = 0;
@@ -199,7 +194,7 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
      * ゴール説明ダイアログの表示
      */
     private void showGoalGuideDialog() {
-        DialogFragment newFragment = new GoalExplanationDialogFragment( mGimmick.goalExplanationIdList );
+        DialogFragment newFragment = new GoalExplanationDialogFragment(mGimmick.goalExplanationIdList);
         newFragment.show(getActivity().getSupportFragmentManager(), "goalGuide");
     }
 
@@ -208,7 +203,7 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
      */
     private void initStartBlock() {
         Block startBlock = binding.getRoot().findViewById(R.id.pb_chartTop);
-        startBlock.setLayout(R.layout.process_block_start_ver2);
+        startBlock.setLayout(R.layout.process_block_start);
         startBlock.setMarkAreaListerner(this);
         startBlock.setDropBlockListerner(this);
 
@@ -466,7 +461,7 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
         // 全ブロック共通
         newBlock.setMarkAreaListerner(this);
         newBlock.setDropBlockListerner(this);
-        newBlock.setProcessListener(this);
+        newBlock.setProgrammingListener(this);
 
         //-------------------------------
         // ネスト情報の書き換え
@@ -910,41 +905,13 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
             anchorNode.removeChild(characterNode);
         }*/
 
-        // ステージ上のキャラクターとして保持
+
+        //-----------------------------
+        // ステージ上キャラクターとして保持
+        //-----------------------------
+        // キャラクター衝突リスナーの設定
+        characterNode.setOnCollisionDetectListener( this );
         mCharacterNode = characterNode;
-
-//        Log.i("向いている方向ロジック", "scene判定 arFragment=" + scene);
-//        Log.i("向いている方向ロジック", "scene判定 mCharacterNode=" + mCharacterNode.getScene());
-
-        // 衝突検知リスナーの設定
-        mCharacterNode.setOnCollisionDetectListener(new CharacterNode.CollisionDetectListener() {
-            @Override
-            public void onCollisionDetect(int collisionType, ValueAnimator animator) {
-
-                // 衝突に応じた処理
-                switch (collisionType) {
-
-                    case CharacterNode.COLLISION_TYPE_GOAL:
-                        // ゴール成功処理
-                        // アニメーション終了
-                        animator.cancel();
-                        Snackbar.make(binding.getRoot(), "Goal", Snackbar.LENGTH_SHORT).show();
-                        break;
-
-                    case CharacterNode.COLLISION_TYPE_OBSTACLE:
-                        // ゴール失敗処理
-                        animator.cancel();
-                        Snackbar.make(binding.getRoot(), "失敗", Snackbar.LENGTH_SHORT).show();
-                        break;
-
-                    case CharacterNode.COLLISION_TYPE_BLOCK:
-                        // 本アニメーション終了
-//                        animator.end();
-//                        Snackbar.make(binding.getRoot(), "衝突（継続可）", Snackbar.LENGTH_SHORT).show();
-                        break;
-                }
-            }
-        });
     }
 
     /*
@@ -970,7 +937,7 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
 
         // キャラクターに向かせる角度
         //!xmlで管理するかも
-        float angle = 180;
+        float angle = mGimmick.characterAngle;
         // キャラクターに向かせる方向のQuaternion値
         Quaternion facingDirection = getCharacterInitFacingDirection(angle);
 
@@ -1018,6 +985,7 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
         // オブジェクトのNode生成
         //-----------------------------
         int objKindIndex = 0;
+        int objPosIndex = 0;
         for (ModelRenderable renderable : mObjectRenderable) {
 
             // オブジェクトの種類をNode名として設定する
@@ -1033,8 +1001,11 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
                     pos = getRandomPosition(stageScale);
                 } else {
                     // 指定位置に設定
-                    pos = mGimmick.objectPositionVecList.get(objKindIndex);
+                    pos = mGimmick.objectPositionVecList.get(objPosIndex);
                     pos = new Vector3(pos.x * scale, pos.y * scale, pos.z * scale);
+
+                    // 位置indexを次へ
+                    objPosIndex++;
                 }
 
                 // Node生成
@@ -1068,7 +1039,7 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
 
         // Node生成
         TransformableNode node = new TransformableNode(transformationSystem);
-        node.setName(NODE_NAME_GOAL_GUIDE_UI);
+        node.setName( GimmickManager.NODE_NAME_GOAL_GUIDE_UI );
 //        node.getScaleController().setMinScale(1);
 //        node.getScaleController().setMaxScale(1);
 //        node.setLocalScale(scaleVector);
@@ -1086,7 +1057,7 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
                 // ゴール説明ダイアログの表示
                 showGoalGuideDialog();
                 // アンカーから本UIを削除
-                anchorNode.removeChild( node );
+                anchorNode.removeChild(node);
             }
         });
     }
@@ -1112,7 +1083,7 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
 
         // Node生成
         TransformableNode node = new TransformableNode(transformationSystem);
-        node.setName(NODE_NAME_STAGE);
+        node.setName( GimmickManager.NODE_NAME_STAGE );
         node.getScaleController().setMinScale(scale);
         node.getScaleController().setMaxScale(scale * 2);
         node.setLocalScale(scaleVector);
@@ -1154,7 +1125,7 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
 
         // Node生成
         TransformableNode node = new TransformableNode(transformationSystem);
-        node.setName(NODE_NAME_GOAL);
+        node.setName( GimmickManager.NODE_NAME_GOAL );
         node.getScaleController().setMinScale(scale);
         node.getScaleController().setMaxScale(scale * 2);
         node.setLocalScale(scaleVector);
@@ -1364,7 +1335,7 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
                 //!ガード：レンダラブル未生成チェック
                 //!ガード：タップして配置済みチェック
                 // Node生成可能か判定
-                if( !enableCreateNode() ){
+                if (!enableCreateNode()) {
                     Snackbar.make(binding.getRoot(), getString(R.string.snackbar_please_wait), Snackbar.LENGTH_SHORT).show();
 
                     //!失敗した場合のリカバリをどうするか
@@ -1380,7 +1351,7 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
                 // アンカーノードを生成して、Sceneに追加
                 Anchor anchor = hitResult.createAnchor();
                 AnchorNode anchorNode = new AnchorNode(anchor);
-                anchorNode.setName(NODE_NAME_ANCHOR);
+                anchorNode.setName( GimmickManager.NODE_NAME_ANCHOR );
                 anchorNode.setParent(scene);
 
                 //----------------------------------
@@ -1416,20 +1387,18 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
         //!ガード：タップして配置済みチェック
 
 
-
-
         //------------------------------
         // レンダラブル生成済みチェック
         //------------------------------
         // レンダラブルのどれか一つでもnullなら、Node生成不可
-        if( (mCharacterRenderable == null) || (mStageRenderable == null) || (mGoalRenderable == null) || (mGuideViewRenderable == null) ){
+        if ((mCharacterRenderable == null) || (mStageRenderable == null) || (mGoalRenderable == null) || (mGuideViewRenderable == null)) {
             return false;
         }
 
         // 生成済みのobjectRenderableの数が、生成予定数よりも少ない場合、Node生成不可
         int objectRenderableNum = mObjectRenderable.size();
         int gimmickobjectNum = mGimmick.objectGlbList.size();
-        if( objectRenderableNum < gimmickobjectNum ){
+        if (objectRenderableNum < gimmickobjectNum) {
             return false;
         }
 
@@ -1547,7 +1516,7 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
     public void clearField() {
 
         // ステージ配置前なら何もしない
-        if( mPlayState < PLAY_STATE_PROGRAMMING ){
+        if (mPlayState < PLAY_STATE_PROGRAMMING) {
             return;
         }
 
@@ -1560,7 +1529,7 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
 
         // Scene内のAnchorNodeを削除
         for (Node node : nodes) {
-            if (node.getName().equals(NODE_NAME_ANCHOR)) {
+            if (node.getName().equals( GimmickManager.NODE_NAME_ANCHOR )) {
                 scene.removeChild(node);
                 return;//★いらないかも。アンカー複数作られない実装ならいらない
             }
@@ -1599,6 +1568,24 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
         mMarkedBlock.setBelowBlock(null);
     }
 
+    /*
+     * ステージクリア
+     */
+    private void stageClear() {
+
+        // ユーザーへクリアの提示
+
+
+    }
+
+    /*
+     * ステージクリア失敗
+     */
+    private void stageClearFailure() {
+
+        // ユーザーへ失敗の提示
+
+    }
 
     /*
      * 【処理ブロック内リスナー設定】マーカーエリアクリック処理
@@ -1683,25 +1670,70 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
     }
 
     /*
-     * ブロック処理終了リスナー
+     * キャラクター衝突リスナー
      */
     @Override
-    public void onProcessEnd() {
+    public void onCollisionDetect(String collisionNode, ValueAnimator processAnimator) {
+
+        //----------------
+        // 衝突時の共通処理
+        //----------------
+        // 処理ブロック側のアニメーション終了
+        processAnimator.cancel();
+
+        //----------------
+        // 衝突Node毎の対応
+        //----------------
+        switch (collisionNode) {
+
+            // 衝突Node：ゴール
+            case GimmickManager.NODE_NAME_GOAL:
+                // ゴール成功処理
+                stageClear();
+                break;
+
+            // 衝突Node：障害物
+            case GimmickManager.NODE_NAME_OBSTACLE:
+                // ゴール失敗処理
+                stageClearFailure();
+                break;
+
+            // 衝突Node：食事可
+            case GimmickManager.NODE_NAME_EATABLE:
+                break;
+        }
+
+
+    }
+
+    /*
+     * プログラミング終了リスナー
+     */
+    @Override
+    public void onProgrammingEnd() {
+
+        //!現時点のゲームは全てゴール判定のため、ここに来たら失敗判定となる
+
+        //----------------
+        // ステージクリア失敗
+        //----------------
+        stageClearFailure();
+
+
     }
 
     /*
      * menuアクションリスナー：遊び方
      */
     @Override
-    public void onHowToClick() {
+    public void onMenuHowToClick() {
 
     }
-
     /*
      * menuアクションリスナー：設定
      */
     @Override
-    public void onSettingClick() {
+    public void onMenuSettingClick() {
 
         //------------------
         // 設定変更可能か判定
@@ -1718,12 +1750,11 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
         Intent intent = new Intent(getActivity(), SettingActivity.class);
         mSettingRegistrationLancher.launch( intent );
     }
-
     /*
      * menuアクションリスナー：ゴール説明
      */
     @Override
-    public void onGoalGuide() {
+    public void onMenuGoalGuide() {
 
         // ステージ配置前なら何もしない
         if( mPlayState < PLAY_STATE_PROGRAMMING ){
@@ -1733,20 +1764,18 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
         // ゴール説明ダイアログの表示
         showGoalGuideDialog();
     }
-
     /*
      * menuアクションリスナー：フィールドクリアクリック
      */
     @Override
-    public void onClearFieldClick() {
+    public void onMenuClearFieldClick() {
         clearField();
     }
-
     /*
      * menuアクションリスナー：「初めからプログラミング」クリック
      */
     @Override
-    public void onInitProgrammingClick() {
+    public void onMenuInitProgrammingClick() {
         initProgramming();
     }
 

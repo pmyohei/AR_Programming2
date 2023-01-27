@@ -46,7 +46,7 @@ public class UserBlockSelectListAdapter extends RecyclerView.Adapter<UserBlockSe
             super(itemView);
 
             cl_parent = itemView.findViewById(R.id.cl_parent);
-            iv_blockImage = itemView.findViewById(R.id.iv_remove);
+            iv_blockImage = itemView.findViewById(R.id.iv_blockImage);
             tv_title = itemView.findViewById(R.id.tv_title);
         }
 
