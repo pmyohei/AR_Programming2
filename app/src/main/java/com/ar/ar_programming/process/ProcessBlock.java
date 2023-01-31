@@ -1,5 +1,7 @@
 package com.ar.ar_programming.process;
 
+import static com.ar.ar_programming.ArMainFragment.PROGRAMMING_END_ALL_DONE;
+
 import android.content.Context;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -143,6 +145,18 @@ public abstract class ProcessBlock extends Block {
     /*
      * 次の処理ブロック遷移処理
      */
+    public boolean isBottomBlock() {
+
+        if (hasBelowBlock() || inNest()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /*
+     * 次の処理ブロック遷移処理
+     */
     public void tranceNextBlock(CharacterNode characterNode) {
 
         //------------------
@@ -176,7 +190,7 @@ public abstract class ProcessBlock extends Block {
         // 下ブロックなし／親ネストなし
         //--------------------------
         // 終了リスナーをコール
-        mProgrammingListener.onProgrammingEnd();
+//        mProgrammingListener.onProgrammingEnd( PROGRAMMING_END_ALL_DONE );
     }
 
     /*
@@ -187,9 +201,16 @@ public abstract class ProcessBlock extends Block {
     }
 
     /*
+     * ブロック処理リスナーの設定
+     */
+    public void end( int programmingEndState ) {
+        mProgrammingListener.onProgrammingEnd( programmingEndState );
+    }
+
+    /*
      * ブロック処理リスナー
      */
     public interface ProgrammingListener {
-        void onProgrammingEnd();
+        void onProgrammingEnd( int programmingEndState );
     }
 }

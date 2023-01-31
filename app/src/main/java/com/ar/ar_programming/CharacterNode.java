@@ -1,9 +1,15 @@
 package com.ar.ar_programming;
 
+import static com.ar.ar_programming.ArMainFragment.PROGRAMMING_END_ACTION_FAILURE;
+import static com.ar.ar_programming.ArMainFragment.PROGRAMMING_END_ALL_DONE;
+import static com.ar.ar_programming.ArMainFragment.PROGRAMMING_END_GOAL;
+
+import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.util.Log;
 
+import com.ar.ar_programming.process.ProcessBlock;
 import com.ar.ar_programming.process.SingleBlock;
 import com.google.ar.sceneform.Node;
 import com.google.ar.sceneform.NodeParent;
@@ -24,6 +30,7 @@ public class CharacterNode extends TransformableNode {
     public static final String PROPERTY_WALK = "walk";
     public static final String PROPERTY_ROTATE = "rotate";
     public static final String PROPERTY_EAT = "eat";
+    public static final String PROPERTY_THROW_AWAY = "throwAway";
 
     // モデルアニメーション名（Blendarで命名）
     public static final String MODEL_ANIMATION_STR_GOAL = "goal";
@@ -35,7 +42,7 @@ public class CharacterNode extends TransformableNode {
     public static final String MODEL_ANIMATION_STR_ERROR = "error";
 
     // 移動1cm当たりのアニメーション時間(ms)
-    private final float WALK_TIME_PER_CM = 250f;
+    private final float WALK_TIME_PER_CM = 100f;
     // 回転1度当たりのアニメーション時間(ms)
     private final float ROTATE_TIME_PER_ANGLE = 10f;
 
@@ -45,12 +52,16 @@ public class CharacterNode extends TransformableNode {
     private final float NO_VOLUME_START_RATIO = 0.6f;
     private final float NO_VOLUME_START_VALUE = NO_VOLUME_VALUE * NO_VOLUME_START_RATIO;
 
+    // 指定Node衝突判定結果
+    private final int COLLISION_RET_NONE = -1;       // （ステージを除いて）衝突中Nodeなし
+    private final int COLLISION_RET_OTHRE = -2;      // （ステージを除いて）指定Node以外と衝突中
+
     //---------------------------
     // フィールド変数
     //---------------------------
     private Scene mScene;
     // 衝突中のNode
-    private String mCollisionNode;
+    private String mCollisionNodeName;
     // 衝突検知リスナー
     private CollisionDetectListener mCollisionDetectListener;
     // 初期位置の情報
@@ -63,8 +74,11 @@ public class CharacterNode extends TransformableNode {
     private ValueAnimator mProcessAnimator;
     // モデルアニメーションの開始と終了を制御する用
     private ObjectAnimator mModelAnimator;
-    // 処理量なしの処理完了フラグ
+    // 処理量なしのアクションメソッド完了フラグ
     private boolean mfinishNoneVolume;
+    // アクション成否
+    private boolean mSuccessAction;
+
 
     //tmp
     Node mptGoal;
@@ -78,8 +92,9 @@ public class CharacterNode extends TransformableNode {
         //----------------------------------------
         mCurrentPosition = new Vector3(0f, 0f, 0f);
         mCurrentDegree = 0f;
-        mCollisionNode = GimmickManager.NODE_NAME_NONE;
-        mfinishNoneVolume = false;
+        mCollisionNodeName = GimmickManager.NODE_NAME_NONE;
+        mfinishNoneVolume = false;          // 処理量なしアクション：未完了
+        mSuccessAction = true;              // アクション成否：成功
     }
 
     /*
@@ -144,6 +159,8 @@ public class CharacterNode extends TransformableNode {
         //----------------
         // 衝突リスナーコール
         //----------------
+        mCollisionNodeName = collisionNode;
+
         // リスナーコール判定
         if (!collisionNode.equals(GimmickManager.NODE_NAME_NONE)) {
             mCollisionDetectListener.onCollisionDetect(collisionNode, mProcessAnimator);
@@ -160,7 +177,7 @@ public class CharacterNode extends TransformableNode {
     public void setWalk(float volume) {
 
         // 衝突中は、処理なし
-        if (!mCollisionNode.equals(GimmickManager.NODE_NAME_NONE)) {
+        if (!mCollisionNodeName.equals(GimmickManager.NODE_NAME_NONE)) {
             return;
         }
 
@@ -180,7 +197,8 @@ public class CharacterNode extends TransformableNode {
         //----------------------
         // 衝突検知
         //----------------------
-        mCollisionNode = detectCollision();
+//        mCollisionNodeName = detectCollision();
+        detectCollision();
     }
 
 
@@ -225,13 +243,13 @@ public class CharacterNode extends TransformableNode {
     /*
      * 食事アニメーションメソッド
      *   ※ プロパティ名：eat
-     *   ※ 本メソッド内でアニメーション処理は実行しない。
+     *   ※ 本メソッド内でアニメーションのための漸次的な処理はなし
      *      一定時間経過でブロック処理を実行させるために利用する。
      */
     public void setEat(float volume) {
 
         // 一定時間を超過したとき、ブロック処理を実行する
-        if( (volume >= NO_VOLUME_START_VALUE) && !mfinishNoneVolume ){
+        if ((volume >= NO_VOLUME_START_VALUE) && !mfinishNoneVolume) {
             // 処理完了に
             mfinishNoneVolume = true;
             // 食べる
@@ -239,23 +257,117 @@ public class CharacterNode extends TransformableNode {
         }
     }
 
+
+    /*
+     * 捨てるアニメーションメソッド
+     *   ※ プロパティ名：throwAway
+     *   ※ 本メソッド内でアニメーションのための漸次的な処理はなし
+     *      一定時間経過でブロック処理を実行させるために利用する。
+     */
+    public void setThrowAway(float volume) {
+
+        // 一定時間を超過したとき、ブロック処理を実行する
+        if ((volume >= NO_VOLUME_START_VALUE) && !mfinishNoneVolume) {
+            // 処理完了に
+            mfinishNoneVolume = true;
+            // 捨てる
+            throwAway();
+        }
+    }
+
+
     /*
      * 食べる
      */
-    public void eat() {
+    private void eat() {
+
+        // アクション成否：成功
+        mSuccessAction = true;
 
         //--------------------------------
         // 衝突中の食事可能NodeをSceneから削除
         //--------------------------------
+        int index = getCollisionIndex(GimmickManager.NODE_NAME_EATABLE);
+        // 衝突中Nodeなし
+        if (index == COLLISION_RET_NONE) {
+            return;
+        }
+
+        // アクション対象外Nodeと衝突中
+        if (index == COLLISION_RET_OTHRE) {
+            // アクション失敗
+            mSuccessAction = false;
+            return;
+        }
+
+        // アクション対象外Nodeと衝突中なら、Sceneから削除
+        removeNodeFromScene( index );
+    }
+
+    /*
+     * 捨てる
+     */
+    private void throwAway() {
+
+        // アクション成否：成功
+        mSuccessAction = true;
+
+        //--------------------------------
+        // 衝突中の捨てる対象NodeをSceneから削除
+        //--------------------------------
+        int index = getCollisionIndex(GimmickManager.NODE_NAME_THROW_AWAY);
+        // 衝突中Nodeなし
+        if (index == COLLISION_RET_NONE) {
+            return;
+        }
+
+        // アクション対象外Nodeと衝突中
+        if (index == COLLISION_RET_OTHRE) {
+            // アクション失敗
+            mSuccessAction = false;
+            return;
+        }
+
+        // アクション対象外Nodeと衝突中なら、Sceneから削除
+        removeNodeFromScene( index );
+    }
+
+    /*
+     * SceneからNodeを削除
+     */
+    private void removeNodeFromScene(int index) {
         ArrayList<Node> nodes = mScene.overlapTestAll(this);
-        for (Node collisionNode : nodes) {
-            // Sceneから削除
-            if (collisionNode.getName().equals(GimmickManager.NODE_NAME_EATABLE)) {
-                NodeParent parent = collisionNode.getParent();
-                parent.removeChild( collisionNode );
-                break;
+        Node deleteNode = nodes.get(index);
+        NodeParent parent = deleteNode.getParent();
+        parent.removeChild(deleteNode);
+    }
+
+    /*
+     * （ステージを除いた）衝突中判定
+     *   指定Nodeと衝突しているか判定する
+     */
+    private int getCollisionIndex(String nodeName ) {
+
+        ArrayList<Node> nodes = mScene.overlapTestAll(this);
+        for( int i = 0; i < nodes.size(); i++ ){
+
+            String overlapNode = nodes.get(i).getName();
+
+            if (overlapNode.equals(GimmickManager.NODE_NAME_STAGE)) {
+                // ステージの場合は、次のNodeをチェック
+
+            } else if ( overlapNode.equals(nodeName) ) {
+                // 指定Nodeと衝突している場合、indexを返す
+                return i;
+
+            } else {
+                // 「ステージ、指定Node」以外と衝突している場合
+                return COLLISION_RET_OTHRE;
             }
         }
+
+        // (ステージを除いて)衝突中Nodeなし
+        return COLLISION_RET_NONE;
     }
 
     /*
@@ -400,10 +512,11 @@ public class CharacterNode extends TransformableNode {
     public void setEndProcessAnimation(int processKind, float volume) {
 
         // 状態クリア
-        mCollisionNode = GimmickManager.NODE_NAME_NONE;
-        mfinishNoneVolume = false;
+        mCollisionNodeName = GimmickManager.NODE_NAME_NONE;
+        mfinishNoneVolume = false;          // 処理量なしアクション：未完了
+        mSuccessAction = true;              // アクション成否：成功
 
-        Log.i("startModelAnimation", "処理ブロックアニメーション終了処理");
+        Log.i("成功判定", "処理ブロックアニメーション終了処理");
 
         // アニメーション終了時の変化後の値を保持
         setAnimationEndValue(processKind, volume);
@@ -505,6 +618,9 @@ public class CharacterNode extends TransformableNode {
 
             case SingleBlock.PROCESS_CONTENTS_EAT:
                 return PROPERTY_EAT;
+
+            case SingleBlock.PROCESS_CONTENTS_THROW_AWAY:
+                return PROPERTY_THROW_AWAY;
         }
 
         return PROPERTY_WALK;
@@ -573,9 +689,72 @@ public class CharacterNode extends TransformableNode {
 
     /*
      * 本NodeのアニメーションメソッドをコールするAnimatorを設定
+     *   @para1：実行ブロック
      */
-    public void setAnimator(ValueAnimator animator) {
+    public void setAnimator(ProcessBlock executeBlock, ValueAnimator animator, int contents, float volume) {
         mProcessAnimator = animator;
+
+        CharacterNode characterNode = this;
+
+        //-----------------
+        // リスナ―設定
+        //-----------------
+        mProcessAnimator.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationCancel(Animator animator) {
+            }
+            @Override
+            public void onAnimationRepeat(Animator animator) {
+            }
+            @Override
+            public void onAnimationStart(Animator animator) {
+            }
+
+            /*
+             * ブロックアニメーション終了時
+             * ※setWalk()等のコール満了時
+             */
+            @Override
+            public void onAnimationEnd(Animator animator) {
+
+                //----------------------
+                // プログラミング途中終了
+                //----------------------
+                // ゴール判定
+                if ( isGoaled() ) {
+                    executeBlock.end( PROGRAMMING_END_GOAL );
+                    return;
+                }
+                // アクション成否判定
+                if ( !mSuccessAction ) {
+                    executeBlock.end( PROGRAMMING_END_ACTION_FAILURE );
+                    return;
+                }
+                // 障害物衝突判定
+                if ( isObstacle() ) {
+                    //!必要に応じて、それ用の値設定
+                    executeBlock.end( PROGRAMMING_END_ACTION_FAILURE );
+                    return;
+                }
+
+                //----------------------
+                // プログラミング終了
+                //----------------------
+                // 実行ブロックが一番最後のブロックの場合
+                if( executeBlock.isBottomBlock() ){
+                    executeBlock.end( PROGRAMMING_END_ALL_DONE );
+                    return;
+                }
+
+                //-------------------------------
+                // 次の処理ブロックへ
+                //-------------------------------
+                // アニメーション終了時の位置を保持
+                setEndProcessAnimation(contents, volume);
+                // 次の処理ブロックへ
+                executeBlock.tranceNextBlock( characterNode );
+            }
+        });
     }
 
     /*
@@ -588,11 +767,17 @@ public class CharacterNode extends TransformableNode {
             return;
         }
 
-        // アニメーション中なら、終了
+        //---------------------------------
+        // 既にアニメーションが動いているかチェック
+        //---------------------------------
         if ((mModelAnimator != null) && (mModelAnimator.isStarted())) {
+            // 動いているアニメーションは終了
             mModelAnimator.end();
         }
 
+        //---------------------------------
+        // 新しい（指定された）アニメーションを開始
+        //---------------------------------
         // モデルアニメーション開始
         mModelAnimator = getRenderableInstance().animate(animationName);
         if( mModelAnimator != null ){
@@ -641,10 +826,17 @@ public class CharacterNode extends TransformableNode {
     }
 
     /*
-     * 衝突検知リスナーの設定
+     * ゴール判定
      */
-    public boolean isGoaled() {
-        return (mCollisionNode.equals( GimmickManager.NODE_NAME_GOAL ));
+    private boolean isGoaled() {
+        return ( mCollisionNodeName.equals( GimmickManager.NODE_NAME_GOAL ));
+    }
+
+    /*
+     * 障害物判定
+     */
+    private boolean isObstacle() {
+        return ( mCollisionNodeName.equals( GimmickManager.NODE_NAME_OBSTACLE ));
     }
 
     /*

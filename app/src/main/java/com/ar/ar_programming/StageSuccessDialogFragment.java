@@ -1,7 +1,7 @@
 package com.ar.ar_programming;
 
+import static android.content.Context.MODE_PRIVATE;
 import static android.content.Context.WINDOW_SERVICE;
-
 import static com.ar.ar_programming.GimmickManager.GOAl_EXP_CONTENTS_POS;
 import static com.ar.ar_programming.GimmickManager.GOAl_EXP_EXPLANATION_POS;
 import static com.ar.ar_programming.GimmickManager.GOAl_EXP_MAJOR_POS;
@@ -10,7 +10,9 @@ import static com.ar.ar_programming.GimmickManager.GOAl_EXP_SUB_POS;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
@@ -26,25 +28,20 @@ import android.widget.TextView;
 
 import androidx.fragment.app.DialogFragment;
 
-import java.util.ArrayList;
+public class StageSuccessDialogFragment extends DialogFragment {
 
-public class GoalExplanationDialogFragment extends DialogFragment {
-
-    private ArrayList<Integer> mGoalExplanationIdList;
+    //Bundle保存キー
+    private static final String KEY_TUTORIAL = "tutorial";
 
     //空のコンストラクタ
     //※必須（画面回転等の画面再生成時にコールされる）
-    public GoalExplanationDialogFragment() {
+    public StageSuccessDialogFragment() {
         //do nothing
-    }
-
-    public GoalExplanationDialogFragment(ArrayList<Integer> idList) {
-        mGoalExplanationIdList = idList;
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.dialog_goal_explanation, container, false);
+        return inflater.inflate(R.layout.dialog_success, container, false);
     }
 
     /**
@@ -57,7 +54,7 @@ public class GoalExplanationDialogFragment extends DialogFragment {
         //背景を透明にする(デフォルトテーマに付いている影などを消す) ※これをしないと、画面横サイズまで拡張されない
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         // ダイアログ表示時、背景を暗くさせない
-        dialog.getWindow().clearFlags( WindowManager.LayoutParams.FLAG_DIM_BEHIND );
+//        dialog.getWindow().clearFlags( WindowManager.LayoutParams.FLAG_DIM_BEHIND );
 
         return dialog;
     }
@@ -74,17 +71,34 @@ public class GoalExplanationDialogFragment extends DialogFragment {
         // ダイアログサイズ設定
         setupDialogSize(dialog);
 
-        // 設定文言ID
-        int major = mGoalExplanationIdList.get( GOAl_EXP_MAJOR_POS );
-        int sub = mGoalExplanationIdList.get( GOAl_EXP_SUB_POS );
-        int contents = mGoalExplanationIdList.get( GOAl_EXP_CONTENTS_POS );
-        int explanation = mGoalExplanationIdList.get( GOAl_EXP_EXPLANATION_POS );
+        // チュートリアルの場合
+        if( !finishTutorial() ){
+            String next = getString( R.string.ar_dialog_next_tutorial );
+            ((TextView) dialog.findViewById(R.id.tv_otherStage)).setText(next);
 
-        // 説明内容にギミック用xmlの内容を反映
-        ((TextView) dialog.findViewById(R.id.tv_majorTitle)).setText(major);
-        ((TextView) dialog.findViewById(R.id.tv_subTitle)).setText(sub);
-        ((TextView) dialog.findViewById(R.id.tv_goalContents)).setText(contents);
-        ((TextView) dialog.findViewById(R.id.tv_explanationContents)).setText(explanation);
+            dialog.findViewById(R.id.tv_otherStage).setVisibility( View.GONE );
+            dialog.findViewById(R.id.tv_nextTutorial).setVisibility( View.VISIBLE );
+        }
+    }
+
+    /*
+     * チュートリアル終了判定
+     */
+    private boolean finishTutorial() {
+
+        Context context = getContext();
+        Resources resources = context.getResources();
+
+        // チュートリアル終了値
+        final int TUTORIAL_END = resources.getInteger(R.integer.saved_tutorial_end);
+
+        // 現在のチュートリアル進行状況を取得
+        SharedPreferences sharedPref = context.getSharedPreferences(context.getString(R.string.preference_file_key), MODE_PRIVATE);
+        int defaultValue = resources.getInteger(R.integer.saved_tutorial_block);
+        int tutorial = sharedPref.getInt(context.getString(R.string.saved_tutorial_key), defaultValue);
+
+        // チュートリアル終了しているかどうか
+        return  (tutorial >= TUTORIAL_END);
     }
 
     /*

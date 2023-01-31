@@ -268,6 +268,9 @@ public class SingleBlock extends ProcessBlock {
     @Override
     public void startProcess(CharacterNode characterNode) {
 
+        //----------------------------------------
+        // ブロックアニメーションデータからアニメータを生成
+        //----------------------------------------
         // 処理種別と処理量
         int contents = getProcessContents();
         int setVolume = getProcessVolume();
@@ -277,47 +280,7 @@ public class SingleBlock extends ProcessBlock {
 
         // 今回の処理用アニメーターを保持させる
         ValueAnimator processAnimator = createProcessBlockAnimator(characterNode, contents, volume, duration);
-        characterNode.setAnimator(processAnimator);
-
-        // リスナ―設定：アニメーション終了のみ
-        processAnimator.addListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationCancel(Animator animator) {
-            }
-            @Override
-            public void onAnimationRepeat(Animator animator) {
-            }
-            @Override
-            public void onAnimationStart(Animator animator) {
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animator) {
-
-                // ゴールしているなら、プログラミングはここで終了
-                boolean isGoal = characterNode.isGoaled();
-                if (isGoal) {
-                    return;
-                }
-
-                Log.i("ループ処理", "処理アニメーション終了");
-
-                //-------------------------------
-                // アニメーション終了時の位置を保持
-                //-------------------------------
-                characterNode.setEndProcessAnimation(contents, volume);
-
-                //==================================
-//                characterNode.tmpCallFace();
-                //==================================
-
-
-                //-------------------------------
-                // 次の処理へ
-                //-------------------------------
-                tranceNextBlock( characterNode );
-            }
-        });
+        characterNode.setAnimator(this, processAnimator, contents, volume);
 
         // 処理ブロックアニメーション開始
         processAnimator.start();

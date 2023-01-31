@@ -2,13 +2,13 @@
 <gimmick_list dataNum="4">
 
 	<gimmick
-		sequence="2"
+		sequence="1"
 		successCondition="goal"
 		goalExplanation="guide_major_tutorial_1, guide_sub_tutorial_1, guide_contents_tutorial_1, guide_explanation_tutorial_1"
 		stageGlb="models/stage/tutorial_stage_1.glb"
 		characterGlb="models/animal/rabit.glb"
 		characterPosition="-3.8 : 1.5 : 9.1"
-		characterAngle="-30"
+		characterAngle="180"
 		goalGlb="models/goal/fox_and_tree.glb"
 		goalPosition="3.2 : 2.3 : -2.7"
 		goalAngle="-45"
@@ -54,7 +54,7 @@
 		/>
 
 	<gimmick
-		sequence="1"
+		sequence="4"
 		successCondition="goal"
 		goalExplanation="guide_major_tutorial_2, guide_sub_tutorial_2, guide_contents_tutorial_2, guide_explanation_tutorial_2"
 		stageGlb="models/stage/tutorial_stage_4.glb"
@@ -66,7 +66,7 @@
 		goalAngle="0"
 		objectGlb="models/obstacle/mushroom.glb, models/obstacle/mushroom_poison.glb"
 		objectNum="1, 2"
-		objectKind="eatable, eatable"
+		objectKind="eatable, throwAway"
 		objectPositionRandom="false"
 		objectPosition="0 : 1.1 : -4.1, 0 : 1.2 : 3, 0 : 1.2 : -10"
 		block="single_forward, single_eat, single_throwAway, loop_facing-goal"

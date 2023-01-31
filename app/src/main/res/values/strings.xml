@@ -120,6 +120,13 @@
     <string name="ar_dialog_goal_title">ゴール</string>
     <string name="ar_dialog_explanation_title">説明</string>
     <string name="ar_dialog_goal_close">閉じる</string>
+    <!-- ダイアログ：ゴール演出 -->
+    <string name="ar_dialog_success">ステージクリア！</string>
+    <string name="ar_dialog_failure">失敗\.\.\.</string>
+    <string name="ar_dialog_next_tutorial">次のチュートリアルへ</string>
+    <string name="ar_dialog_play_another_stage">別のステージで遊ぶ</string>
+    <string name="ar_dialog_try">もう一度！</string>
+    <string name="ar_dialog_break">休憩</string>
 
     <!---->
     <!-- キャラクター（.glbファイル名と一致させること） -->

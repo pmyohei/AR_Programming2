@@ -2,6 +2,8 @@ package com.ar.ar_programming;
 
 import static android.content.Context.MODE_PRIVATE;
 
+import static androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_FADE;
+
 import android.animation.ValueAnimator;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -28,6 +30,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -73,6 +76,10 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
     //---------------------------
     // 定数
     //---------------------------
+    // プログラミング終了ステータス
+    public static final int PROGRAMMING_END_GOAL = 0;
+    public static final int PROGRAMMING_END_ACTION_FAILURE = 1;
+    public static final int PROGRAMMING_END_ALL_DONE = 2;
 
     // ステージ4辺
     private final int STAGE_BOTTOM = 0;
@@ -111,6 +118,7 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
     private ModelRenderable mStageRenderable;
     private ModelRenderable mCharacterRenderable;
     private ModelRenderable mGoalRenderable;
+    private ModelRenderable mSuccessRenderable;
     private ViewRenderable mGuideViewRenderable;
     private ArrayList<ModelRenderable> mObjectRenderable;
 
@@ -142,6 +150,11 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
         mObjectRenderable = new ArrayList<>();
         // ステージギミックを選出
         mGimmick = GimmickManager.getGimmick(getContext());
+
+        // ダイアログ表示
+//        DialogFragment newFragment = new StageSuccessDialogFragment();
+//        newFragment.show(getActivity().getSupportFragmentManager(), "result");
+        //tmp
 
         // 画面遷移ランチャー生成
         setSettingRegistrationLancher();
@@ -194,9 +207,11 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
      * ゴール説明ダイアログの表示
      */
     private void showGoalGuideDialog() {
+
         DialogFragment newFragment = new GoalExplanationDialogFragment(mGimmick.goalExplanationIdList);
         newFragment.show(getActivity().getSupportFragmentManager(), "goalGuide");
     }
+
 
     /*
      * スタートブロック初期化処理
@@ -287,18 +302,17 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
         }
 
         //----------------------
-        // プログラミング開始
+        // プログラミング実行開始
         //----------------------
         ViewGroup root = binding.getRoot();
         StartBlock startBlock = root.findViewById(R.id.pb_chartTop);
 
-        // 処理開始
+        // スタートブロック下のブロック処理開始
         ProcessBlock block = (ProcessBlock) startBlock.getBelowBlock();
         runProcessBlock(block);
 
         // ゲーム状態更新
         mPlayState = PLAY_STATE_PLAYING;
-
         // Fabアイコンを切り替え
         fab.setImageResource(R.drawable.baseline_replay_24);
     }
@@ -527,6 +541,8 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
         buildRenderableObjects(mGimmick);
         // ゴール
         buildRenderableGoal(mGimmick);
+        // ゴール成功演出
+        buildRenderableSuccess(mGimmick);
         // ゴール説明UI
         buildRenderableGuideView(mGimmick);
     }
@@ -843,6 +859,33 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
     }
 
     /*
+     * 3Dモデルレンダリング「ステージクリア演出モデル」の生成
+     */
+    private void buildRenderableSuccess(Gimmick gimmick) {
+
+        Context context = getContext();
+        mSuccessRenderable = null;
+
+        //-------------------
+        // ステージクリア演出モデル
+        //-------------------
+        ModelRenderable
+                .builder()
+                .setSource(context, Uri.parse( "models/balloon.glb" ))
+                .setIsFilamentGltf(true)    // glbファイルを読み込む必須
+                .build()
+                .thenAccept(renderable -> mSuccessRenderable = renderable)
+                .exceptionally(
+                        throwable -> {
+                            //!
+                            Toast toast = Toast.makeText(context, "Unable to load andy renderable", Toast.LENGTH_LONG);
+                            toast.setGravity(Gravity.CENTER, 0, 0);
+                            toast.show();
+                            return null;
+                        });
+    }
+
+    /*
      * 3Dモデルレンダリング「ゴール説明view」の生成
      */
     private void buildRenderableGuideView(Gimmick gimmick) {
@@ -867,6 +910,7 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
                             return null;
                         });
     }
+
 
     /*
      * キャラクターノード生成
@@ -1138,6 +1182,53 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
     }
 
     /*
+     * ステージ上のステージクリア演出Node生成
+     */
+    private void createNodeSuccess(AnchorNode anchorNode) {
+
+        TransformationSystem transformationSystem = arFragment.getTransformationSystem();
+
+        // Nodeスケール
+        final float scale = getNodeScale();
+        Vector3 scaleVector = new Vector3(scale, scale, scale);
+
+        /*// ステージの広さ
+        float stageScale = getStageScale();
+        // ランダム位置を生成
+        Vector3 pos = getRandomPosition(stageScale);
+        */
+
+        // キャラクターに向かせる角度
+        //!xmlで管理するかも
+//        float angle = mGimmick.goalAngle;
+        // キャラクターに向かせる方向のQuaternion値
+//        Quaternion facingDirection = getCharacterInitFacingDirection(angle);
+
+        Vector3 scalePos = new Vector3(mGimmick.goalPositionVec.x * scale, mGimmick.goalPositionVec.y * scale, mGimmick.goalPositionVec.z * scale);
+
+        // Node生成
+        TransformableNode node = new TransformableNode(transformationSystem);
+        node.setName( GimmickManager.NODE_NAME_GOAL );
+        node.getScaleController().setMinScale(scale);
+        node.getScaleController().setMaxScale(scale * 2);
+        node.setLocalScale(scaleVector);
+        node.setParent(anchorNode);
+//        node.setLocalPosition( mGimmick.goalPositionVec );
+        node.setLocalPosition(scalePos);
+//        node.setLocalRotation(facingDirection);
+        node.setRenderable(mSuccessRenderable);
+        node.select();
+
+//        node.getRenderableInstance().animate(0).start();
+//        node.getRenderableInstance().animate("tmp").start();
+
+        for( int i = 0;  i < node.getRenderableInstance().getAnimationCount() ; i++ ){
+            Log.i("風船", "getAnimationName()=" + node.getRenderableInstance().getAnimationName(i));
+        }
+    }
+
+
+    /*
      * ユーザー指定のNodeサイズの取得
      */
     private float getNodeScale() {
@@ -1368,6 +1459,8 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
                 createNodeStage(anchorNode);
                 // 目標説明view
                 createNodeGoalGuideUI(anchorNode);
+                // 目標説明view
+                createNodeSuccess(anchorNode);
 
                 //----------------------------------
                 // 状態管理
@@ -1572,18 +1665,51 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
      * ステージクリア
      */
     private void stageClear() {
-
         // ユーザーへクリアの提示
+        Log.i("成功判定", "stageClear");
 
-
+        // ダイアログ表示
+        DialogFragment newFragment = new StageSuccessDialogFragment();
+        newFragment.show(getActivity().getSupportFragmentManager(), "result");
     }
 
     /*
      * ステージクリア失敗
      */
     private void stageClearFailure() {
-
         // ユーザーへ失敗の提示
+        Log.i("成功判定", "stageClearFailure");
+
+        // ダイアログ表示
+        DialogFragment newFragment = new StageFailureDialogFragment();
+        newFragment.show(getActivity().getSupportFragmentManager(), "result");
+    }
+
+    /*
+     * ゴール結果ダイアログ：「再挑戦」
+     */
+    public void onRetryClicked(View view) {
+
+    }
+
+    /*
+     * ゴール結果ダイアログ：「別のステージで遊ぶ」
+     */
+    public void onOtherStageClicked(View view) {
+
+    }
+
+    /*
+     * ゴール結果ダイアログ：「次のチュートリアルへ」
+     */
+    public void onNextTutorialClicked(View view) {
+
+    }
+
+    /*
+     * ゴール結果ダイアログ：「休憩」
+     */
+    public void onBreakClicked(View view) {
 
     }
 
@@ -1672,6 +1798,7 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
     /*
      * キャラクター衝突リスナー
      */
+    //!キャラクターで実装してもよい
     @Override
     public void onCollisionDetect(String collisionNode, ValueAnimator processAnimator) {
 
@@ -1689,13 +1816,13 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
             // 衝突Node：ゴール
             case GimmickManager.NODE_NAME_GOAL:
                 // ゴール成功処理
-                stageClear();
+//                stageClear();
                 break;
 
             // 衝突Node：障害物
             case GimmickManager.NODE_NAME_OBSTACLE:
                 // ゴール失敗処理
-                stageClearFailure();
+//                stageClearFailure();
                 break;
 
             // 衝突Node：食事可
@@ -1710,16 +1837,23 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
      * プログラミング終了リスナー
      */
     @Override
-    public void onProgrammingEnd() {
+    public void onProgrammingEnd(int programmingEndState) {
 
-        //!現時点のゲームは全てゴール判定のため、ここに来たら失敗判定となる
+        Log.i("成功判定", "onProgrammingEnd() programmingEndState=" + programmingEndState);
 
-        //----------------
-        // ステージクリア失敗
-        //----------------
-        stageClearFailure();
+        switch ( programmingEndState ){
+            case PROGRAMMING_END_GOAL:
+                // ステージクリア
+                stageClear();
+                break;
 
-
+            case PROGRAMMING_END_ALL_DONE:
+            case PROGRAMMING_END_ACTION_FAILURE:
+            default:
+                // ステージクリア失敗
+                stageClearFailure();
+                break;
+        }
     }
 
     /*
@@ -1727,7 +1861,7 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
      */
     @Override
     public void onMenuHowToClick() {
-
+        stageClear();
     }
     /*
      * menuアクションリスナー：設定
