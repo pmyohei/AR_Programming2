@@ -3,11 +3,22 @@ package com.ar.ar_programming;
 import static com.ar.ar_programming.ArMainFragment.PROGRAMMING_END_ACTION_FAILURE;
 import static com.ar.ar_programming.ArMainFragment.PROGRAMMING_END_ALL_DONE;
 import static com.ar.ar_programming.ArMainFragment.PROGRAMMING_END_GOAL;
+import static com.ar.ar_programming.process.SingleBlock.PROCESS_CONTENTS_BACK;
+import static com.ar.ar_programming.process.SingleBlock.PROCESS_CONTENTS_EAT;
+import static com.ar.ar_programming.process.SingleBlock.PROCESS_CONTENTS_FORWARD;
+import static com.ar.ar_programming.process.SingleBlock.PROCESS_CONTENTS_LEFT_ROTATE;
+import static com.ar.ar_programming.process.SingleBlock.PROCESS_CONTENTS_NOTHING;
+import static com.ar.ar_programming.process.SingleBlock.PROCESS_CONTENTS_RIGHT_ROTATE;
+import static com.ar.ar_programming.process.SingleBlock.PROCESS_CONTENTS_THROW_AWAY;
 
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
+import android.content.Context;
 import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.ar.ar_programming.process.ProcessBlock;
 import com.ar.ar_programming.process.SingleBlock;
@@ -16,10 +27,14 @@ import com.google.ar.sceneform.NodeParent;
 import com.google.ar.sceneform.Scene;
 import com.google.ar.sceneform.math.Quaternion;
 import com.google.ar.sceneform.math.Vector3;
+import com.google.ar.sceneform.rendering.ViewRenderable;
+import com.google.ar.sceneform.rendering.ViewSizer;
 import com.google.ar.sceneform.ux.TransformableNode;
 import com.google.ar.sceneform.ux.TransformationSystem;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class CharacterNode extends TransformableNode {
 
@@ -56,6 +71,19 @@ public class CharacterNode extends TransformableNode {
     private final int COLLISION_RET_NONE = -1;       // （ステージを除いて）衝突中Nodeなし
     private final int COLLISION_RET_OTHRE = -2;      // （ステージを除いて）指定Node以外と衝突中
 
+    // ブロック処理とアクションワード紐づけ
+    private final Map<Integer, Integer> ACTION_CONTENTS_MAP = new HashMap<Integer, Integer>() {
+        {
+            put((Integer) PROCESS_CONTENTS_NOTHING, R.string.action_wait);
+            put((Integer) PROCESS_CONTENTS_FORWARD, R.string.action_walk_animal);
+            put((Integer) PROCESS_CONTENTS_BACK, R.string.action_walk_animal);
+            put((Integer) PROCESS_CONTENTS_RIGHT_ROTATE, R.string.action_rotate);
+            put((Integer) PROCESS_CONTENTS_LEFT_ROTATE, R.string.action_rotate);
+            put((Integer) PROCESS_CONTENTS_EAT, R.string.action_eat);
+            put((Integer) PROCESS_CONTENTS_THROW_AWAY, R.string.action_throw_away);
+        }
+    };
+
     //---------------------------
     // フィールド変数
     //---------------------------
@@ -78,7 +106,8 @@ public class CharacterNode extends TransformableNode {
     private boolean mfinishNoneVolume;
     // アクション成否
     private boolean mSuccessAction;
-
+    // アクション表記Renderable
+    private ViewRenderable mActionRenderable;
 
     //tmp
     Node mptGoal;
@@ -111,12 +140,99 @@ public class CharacterNode extends TransformableNode {
     }
 
     /*
-     * tmp ゴールノード取得
+     * キャラクターアクション表記Nodeの生成
      */
-    public void tmpsetGoalNode(Node goal) {
-        mptGoal = goal;
+    public void createActionRenderable(ViewRenderable renderable) {
+
+        //------------------
+        // 生成済み判定
+        //------------------
+        // 生成済みなら何もしない
+        if( hasActionWordNode() ){
+            return;
+        }
+
+        //---------------------------
+        // 実行中アクション表記Node生成
+        //---------------------------
+        mActionRenderable = renderable;
+
+        // 位置（キャラクターの少し前方に配置）
+        Vector3 pos = new Vector3(0f, 3.5f, 0.6f);
+        // サイズ設定：固定サイズ
+        // !リビングサイズ用も用意しないとダメ？
+        mActionRenderable.setSizer(new ViewSizer() {
+            @Override
+            public Vector3 getSize(View view) {
+                return new Vector3(4.0f, 2.5f, 2.5f);
+            }
+        });
+
+        // Node生成
+        TransformationSystem transformationSystem = getTransformationSystem();
+        TransformableNode node = new TransformableNode(transformationSystem);
+        node.setParent(this);
+        node.setLocalPosition(pos);
+        node.setRenderable(mActionRenderable);
     }
 
+    /*
+     * アクションワードNodeを既に持っているか
+     */
+    private boolean hasActionWordNode() {
+
+        Log.i("アクション", "hasActionWordNode=" + getChildren().size());
+
+        // レンダラブルなしなら確実に持っていない
+        if( mActionRenderable == null ){
+            return false;
+        }
+
+        // 子Nodeが１つもなければ、未生成
+        if( getChildren().size() == 0){
+            return false;
+        }
+
+        // あり
+        return true;
+    }
+
+    /*
+     * アクション表記ワードの設定
+     */
+    public void setActionWord(int blockContents) {
+
+        ViewGroup view = (ViewGroup) mActionRenderable.getView();
+        TextView tv_action = view.findViewById(R.id.tv_action);
+
+        //------------------
+        // 更新要否の判定
+        //------------------
+        // 表記中ワード
+        String currentStr = tv_action.getText().toString();
+        // ブロックに対応するアクションワードを取得
+        String word = getContentsActionWord( view.getContext(), blockContents );
+
+        if( currentStr.equals( word ) ){
+            // ワードに変化がなければ何もしない
+            return;
+        }
+
+        //------------------
+        // アクションワード設定
+        //------------------
+        tv_action.setText( word );
+    }
+
+    /*
+     * 指定ブロックコンテンツに対応するアクションワードを取得
+     */
+    private String getContentsActionWord(Context context, int blockContents) {
+
+        // ブロックコンテンツIDに対応するワードを返す
+        Integer stringID = ACTION_CONTENTS_MAP.get(blockContents);
+        return context.getResources().getString( stringID );
+    }
 
     /*
      * 衝突検知
@@ -530,14 +646,14 @@ public class CharacterNode extends TransformableNode {
         // 処理種別に応じた保存処理
         switch (processKind) {
             // 移動
-            case SingleBlock.PROCESS_CONTENTS_FORWARD:
-            case SingleBlock.PROCESS_CONTENTS_BACK:
+            case PROCESS_CONTENTS_FORWARD:
+            case PROCESS_CONTENTS_BACK:
                 saveCurrentPosition();
                 return;
 
             // 回転
-            case SingleBlock.PROCESS_CONTENTS_RIGHT_ROTATE:
-            case SingleBlock.PROCESS_CONTENTS_LEFT_ROTATE:
+            case PROCESS_CONTENTS_RIGHT_ROTATE:
+            case PROCESS_CONTENTS_LEFT_ROTATE:
                 saveCurrentAngle(volume);
                 return;
         }
@@ -577,16 +693,15 @@ public class CharacterNode extends TransformableNode {
     public void positionReset() {
 
         //----------------------------------
-        // 位置を初期位置に戻す
+        // 初期位置に戻す
         //----------------------------------
+        // 位置
         setLocalPosition(mStartPosition);
 
-        //----------------------------------
-        // 角度を初期位置に戻す
-        //----------------------------------
+        // 角度
         // Quaternionのy/wの値を算出
-        float w = calcQuaternionWvalue(mCurrentDegree);
-        float y = calcQuaternionYvalue(mCurrentDegree);
+        float w = calcQuaternionWvalue(mStartDegree);
+        float y = calcQuaternionYvalue(mStartDegree);
         // Quaternion生成
         Quaternion q = getLocalRotation();
         q.set(0f, y, 0f, w);
@@ -599,6 +714,11 @@ public class CharacterNode extends TransformableNode {
         // 開始位置を現在情報として設定
         mCurrentPosition = mStartPosition;
         mCurrentDegree = mStartDegree;
+
+        //----------------------------------
+        // アクションワードを初期状態へ
+        //----------------------------------
+        setActionWord( PROCESS_CONTENTS_NOTHING );
     }
 
     /*
@@ -608,15 +728,15 @@ public class CharacterNode extends TransformableNode {
 
         // 処理種別に応じたメソッドのプロパティ名を取得
         switch (procKind) {
-            case SingleBlock.PROCESS_CONTENTS_FORWARD:
-            case SingleBlock.PROCESS_CONTENTS_BACK:
+            case PROCESS_CONTENTS_FORWARD:
+            case PROCESS_CONTENTS_BACK:
                 return PROPERTY_WALK;
 
-            case SingleBlock.PROCESS_CONTENTS_RIGHT_ROTATE:
-            case SingleBlock.PROCESS_CONTENTS_LEFT_ROTATE:
+            case PROCESS_CONTENTS_RIGHT_ROTATE:
+            case PROCESS_CONTENTS_LEFT_ROTATE:
                 return PROPERTY_ROTATE;
 
-            case SingleBlock.PROCESS_CONTENTS_EAT:
+            case PROCESS_CONTENTS_EAT:
                 return PROPERTY_EAT;
 
             case SingleBlock.PROCESS_CONTENTS_THROW_AWAY:
@@ -635,20 +755,20 @@ public class CharacterNode extends TransformableNode {
         // 前進／後退
         //-----------------------------------------
         // 単位変換：cm → m
-        if (procKind == SingleBlock.PROCESS_CONTENTS_FORWARD) {
+        if (procKind == PROCESS_CONTENTS_FORWARD) {
             return (float) procVolume / 100f;
         }
-        if (procKind == SingleBlock.PROCESS_CONTENTS_BACK) {
+        if (procKind == PROCESS_CONTENTS_BACK) {
             return (procVolume / 100f) * -1;
         }
 
         //-----------------------------------------
         // 回転
         //-----------------------------------------
-        if (procKind == SingleBlock.PROCESS_CONTENTS_LEFT_ROTATE) {
+        if (procKind == PROCESS_CONTENTS_LEFT_ROTATE) {
             return (float) procVolume;
         }
-        if (procKind == SingleBlock.PROCESS_CONTENTS_RIGHT_ROTATE) {
+        if (procKind == PROCESS_CONTENTS_RIGHT_ROTATE) {
             return (float) procVolume * -1;
         }
 
@@ -666,7 +786,7 @@ public class CharacterNode extends TransformableNode {
         //-------------------
         // 前進／後退
         //-------------------
-        if ((procKind == SingleBlock.PROCESS_CONTENTS_FORWARD) || (procKind == SingleBlock.PROCESS_CONTENTS_BACK)) {
+        if ((procKind == PROCESS_CONTENTS_FORWARD) || (procKind == PROCESS_CONTENTS_BACK)) {
             // スケールに応じた処理時間に変換
             Vector3 scale = getLocalScale();
             float ratio = (ArMainFragment.NODE_SIZE_S * ArMainFragment.NODE_SIZE_TMP_RATIO) / scale.x;
@@ -677,7 +797,7 @@ public class CharacterNode extends TransformableNode {
         //-------------------
         // 回転
         //-------------------
-        if ((procKind == SingleBlock.PROCESS_CONTENTS_LEFT_ROTATE) || (procKind == SingleBlock.PROCESS_CONTENTS_RIGHT_ROTATE)) {
+        if ((procKind == PROCESS_CONTENTS_LEFT_ROTATE) || (procKind == PROCESS_CONTENTS_RIGHT_ROTATE)) {
             return (long) (procVolume * ROTATE_TIME_PER_ANGLE);
         }
 
@@ -799,20 +919,20 @@ public class CharacterNode extends TransformableNode {
 
         // アニメーション名を取得
         switch (procKind) {
-            case SingleBlock.PROCESS_CONTENTS_FORWARD:
-            case SingleBlock.PROCESS_CONTENTS_BACK:
+            case PROCESS_CONTENTS_FORWARD:
+            case PROCESS_CONTENTS_BACK:
                 animationName = MODEL_ANIMATION_STR_WALK;
                 break;
 
-            case SingleBlock.PROCESS_CONTENTS_RIGHT_ROTATE:
+            case PROCESS_CONTENTS_RIGHT_ROTATE:
                 animationName = MODEL_ANIMATION_STR_ROTATE_RIGHT;
                 break;
 
-            case SingleBlock.PROCESS_CONTENTS_LEFT_ROTATE:
+            case PROCESS_CONTENTS_LEFT_ROTATE:
                 animationName = MODEL_ANIMATION_STR_ROTATE_LEFT;
                 break;
 
-            case SingleBlock.PROCESS_CONTENTS_EAT:
+            case PROCESS_CONTENTS_EAT:
                 animationName = MODEL_ANIMATION_STR_EAT;
                 break;
 

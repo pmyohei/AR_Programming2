@@ -111,6 +111,14 @@
     <string name="snackbar_please_finish_game">ゲーム終了後に押してね</string>
     <string name="snackbar_please_wait">もう少し待ってね</string>
 
+    <!-- キャラクターアクションワード -->
+    <string name="action_wait">待機中！</string>
+    <string name="action_walk_animal">とことこ</string>
+    <string name="action_walk_vehicle">進みます！</string>
+    <string name="action_rotate">回ります</string>
+    <string name="action_eat">がぶがぶ</string>
+    <string name="action_throw_away">これは捨てるよ</string>
+
     <!-- ダイアログ -->
     <string name="ar_dialog_title">リトライ</string>
     <string name="ar_dialog_contents">ゲームを初めの状態に戻しますか？</string>

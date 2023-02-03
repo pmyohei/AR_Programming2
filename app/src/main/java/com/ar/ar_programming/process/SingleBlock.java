@@ -16,6 +16,9 @@ import androidx.fragment.app.FragmentManager;
 import com.ar.ar_programming.CharacterNode;
 import com.ar.ar_programming.R;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.ar.sceneform.Node;
+
+import java.util.List;
 
 
 /*
@@ -26,6 +29,7 @@ public class SingleBlock extends ProcessBlock {
     //---------------------------
     // 定数
     //---------------------------
+    public static final int PROCESS_CONTENTS_NOTHING = -1;
     public static final int PROCESS_CONTENTS_FORWARD = 0;
     public static final int PROCESS_CONTENTS_BACK = 1;
     public static final int PROCESS_CONTENTS_RIGHT_ROTATE = 2;
@@ -83,12 +87,11 @@ public class SingleBlock extends ProcessBlock {
     public void setLayout(int layoutID) {
         super.setLayout(layoutID);
 
-        // 処理ブロック内の内容を書き換え
+        // ブロック内の内容を書き換え
         rewriteProcessContents(mProcessContents);
-
-        //
+        // ブロックレイアウト設定
         setBlockLayout(mProcessContents);
-        // 処理ブロックタッチリスナー
+        // ブロックタッチリスナー
         setBlockTouchListerer();
     }
 
@@ -290,7 +293,11 @@ public class SingleBlock extends ProcessBlock {
         //----------------------------------------
         // モデルに用意されたアニメーションを開始
         characterNode.startModelAnimation(contents, duration);
-    }
 
+        //----------------------------------------
+        // キャラクターアクションの内容設定
+        //----------------------------------------
+        characterNode.setActionWord( mProcessContents );
+    }
 
 }
