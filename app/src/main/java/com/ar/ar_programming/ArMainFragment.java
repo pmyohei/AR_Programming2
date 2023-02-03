@@ -2,6 +2,9 @@ package com.ar.ar_programming;
 
 import static android.content.Context.MODE_PRIVATE;
 
+import static com.ar.ar_programming.CharacterNode.ACTION_FAILURE;
+import static com.ar.ar_programming.CharacterNode.ACTION_SUCCESS;
+
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
@@ -1729,11 +1732,11 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
      * ステージクリア
      */
     private void stageClear() {
-        // ユーザーへクリアの提示
-        Log.i("成功判定", "stageClear");
 
         // ステージクリア演出Nodeの生成
         createNodeSuccess( (AnchorNode) mCharacterNode.getParentNode() );
+        // キャラクターアクション表記を成功にする
+        mCharacterNode.setActionWord( ACTION_SUCCESS );
 
         // ダイアログ表示
         DialogFragment newFragment = new StageSuccessDialogFragment();
@@ -1744,8 +1747,9 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
      * ステージクリア失敗
      */
     private void stageClearFailure() {
-        // ユーザーへ失敗の提示
-        Log.i("成功判定", "stageClearFailure");
+
+        // キャラクターアクション表記を失敗にする
+        mCharacterNode.setActionWord( ACTION_FAILURE );
 
         // ダイアログ表示
         DialogFragment newFragment = new StageFailureDialogFragment();

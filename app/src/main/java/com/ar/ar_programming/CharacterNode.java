@@ -7,7 +7,6 @@ import static com.ar.ar_programming.process.SingleBlock.PROCESS_CONTENTS_BACK;
 import static com.ar.ar_programming.process.SingleBlock.PROCESS_CONTENTS_EAT;
 import static com.ar.ar_programming.process.SingleBlock.PROCESS_CONTENTS_FORWARD;
 import static com.ar.ar_programming.process.SingleBlock.PROCESS_CONTENTS_LEFT_ROTATE;
-import static com.ar.ar_programming.process.SingleBlock.PROCESS_CONTENTS_NOTHING;
 import static com.ar.ar_programming.process.SingleBlock.PROCESS_CONTENTS_RIGHT_ROTATE;
 import static com.ar.ar_programming.process.SingleBlock.PROCESS_CONTENTS_THROW_AWAY;
 
@@ -71,10 +70,17 @@ public class CharacterNode extends TransformableNode {
     private final int COLLISION_RET_NONE = -1;       // （ステージを除いて）衝突中Nodeなし
     private final int COLLISION_RET_OTHRE = -2;      // （ステージを除いて）指定Node以外と衝突中
 
+    // アクションワード種別
+    public static final int ACTION_WAITING = -1;
+    public static final int ACTION_SUCCESS = -2;
+    public static final int ACTION_FAILURE = -3;
+
     // ブロック処理とアクションワード紐づけ
     private final Map<Integer, Integer> ACTION_CONTENTS_MAP = new HashMap<Integer, Integer>() {
         {
-            put((Integer) PROCESS_CONTENTS_NOTHING, R.string.action_wait);
+            put((Integer) ACTION_WAITING, R.string.action_wait);
+            put((Integer) ACTION_SUCCESS, R.string.action_success);
+            put((Integer) ACTION_FAILURE, R.string.action_failure);
             put((Integer) PROCESS_CONTENTS_FORWARD, R.string.action_walk_animal);
             put((Integer) PROCESS_CONTENTS_BACK, R.string.action_walk_animal);
             put((Integer) PROCESS_CONTENTS_RIGHT_ROTATE, R.string.action_rotate);
@@ -718,7 +724,7 @@ public class CharacterNode extends TransformableNode {
         //----------------------------------
         // アクションワードを初期状態へ
         //----------------------------------
-        setActionWord( PROCESS_CONTENTS_NOTHING );
+        setActionWord( ACTION_WAITING );
     }
 
     /*

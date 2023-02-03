@@ -112,6 +112,8 @@
     <string name="snackbar_please_wait">もう少し待ってね</string>
 
     <!-- キャラクターアクションワード -->
+    <string name="action_success">わーい！</string>
+    <string name="action_failure">あらら、、</string>
     <string name="action_wait">待機中！</string>
     <string name="action_walk_animal">とことこ</string>
     <string name="action_walk_vehicle">進みます！</string>

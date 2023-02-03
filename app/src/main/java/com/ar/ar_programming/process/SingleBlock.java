@@ -29,7 +29,6 @@ public class SingleBlock extends ProcessBlock {
     //---------------------------
     // 定数
     //---------------------------
-    public static final int PROCESS_CONTENTS_NOTHING = -1;
     public static final int PROCESS_CONTENTS_FORWARD = 0;
     public static final int PROCESS_CONTENTS_BACK = 1;
     public static final int PROCESS_CONTENTS_RIGHT_ROTATE = 2;
