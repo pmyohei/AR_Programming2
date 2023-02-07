@@ -3,6 +3,22 @@
 
 	<gimmick
 		sequence="1"
+		successCondition="knockDown"
+		goalExplanation="guide_major_tutorial_2, guide_sub_tutorial_2, guide_contents_tutorial_2, guide_explanation_tutorial_2"
+		stageGlb="models/stage/fantasy_magic_enemy.glb"
+		characterGlb="models/animal/rabit_witch.glb"
+		characterPosition="-4.2 : -1.1 : 1.8"
+		characterAngle="60"
+		enemyGlb="models/enemy/bat.glb, models/enemy/ghost.glb"
+		enemyNumRandom="true"
+		enemyKind="bat, ghost"
+		enemyPosition="12 : 4.0 : 3.7"
+		enemyEndPosition="12 : 4.0 : 3.7"
+		block="single_forward, single_eat, single_throwAway, loop_facing-goal"
+		/>
+
+	<gimmick
+		sequence="11"
 		successCondition="goal"
 		goalExplanation="guide_major_tutorial_1, guide_sub_tutorial_1, guide_contents_tutorial_1, guide_explanation_tutorial_1"
 		stageGlb="models/stage/tutorial_stage_1.glb"

@@ -163,8 +163,8 @@ public class CharacterNode extends TransformableNode {
         //---------------------------
         mActionRenderable = renderable;
 
-        // 位置（キャラクターの少し前方に配置）
-        Vector3 pos = new Vector3(0f, 3.5f, 0.6f);
+        // 位置
+        Vector3 pos = new Vector3(0f, 3.5f, 0.0f);
         // サイズ設定：固定サイズ
         // !リビングサイズ用も用意しないとダメ？
         mActionRenderable.setSizer(new ViewSizer() {
@@ -351,16 +351,23 @@ public class CharacterNode extends TransformableNode {
         float y = calcQuaternionYvalue(setDegree);
 
         //----------------------------------
-        // 角度を反映
+        // 角度を反映：キャラクター
         //----------------------------------
         Quaternion q = getLocalRotation();
         q.set(0f, y, 0f, w);
         setLocalRotation(q);
 
-//        Log.i("回転アニメーション", "volume=\t" + volume + "\tsetDegree=\t" + setDegree + "\ty=\t" + y);
-//        Log.i("回転アニメーション", "setDegree=" + setDegree);
-//        Log.i("回転アニメーション", "y=" + y);
+        //----------------------------------
+        // 角度を反映：アクション表記Node
+        //----------------------------------
+        // キャラクターと逆の回転をさせる
+        Quaternion qAction = getLocalRotation();
+        qAction.set(0f, -y, 0f, w);
+
+        Node node = getChildren().get(0);
+        node.setLocalRotation(qAction);
     }
+
 
     /*
      * 食事アニメーションメソッド

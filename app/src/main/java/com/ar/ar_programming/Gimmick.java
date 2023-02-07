@@ -34,23 +34,36 @@ public class Gimmick {
     //---------------------------
     public Context mContext;
 
+    //-----------------
     // ギミックプロパティ
+    //-----------------
     public String successCondition;
     public String stageGlb;
+    // キャラクター
     public String characterGlb;
     public Vector3 characterPositionVec;
     public float characterAngle;
+    // ゴール
+    public ArrayList<Integer> goalExplanationIdList;
     public String goalGlb;
     public Vector3 goalPositionVec;
     public float goalAngle;
+    // オブジェクト
     public boolean objectPositionRandom;
     public ArrayList<String> objectGlbList;
     public ArrayList<Integer> objectNumList;
     public ArrayList<String> objectKindList;
     public ArrayList<Vector3> objectPositionVecList;
-    public ArrayList<String> blockList;
+    // 敵
+    public boolean enemyNumRandom;
+    public ArrayList<String> enemyGlbList;
+    public ArrayList<Integer> enemyNumList;
+    public ArrayList<String> enemyKindList;
+    public ArrayList<Vector3> enemyPositionVecList;
+    public Vector3 enemyEndPositionVec;
+    // ブロック
     public ArrayList<XmlBlockInfo> xmlBlockInfoList;
-    public ArrayList<Integer> goalExplanationIdList;
+    public ArrayList<String> blockList;
 
     /*
      * ブロックプロパティ情報
@@ -66,26 +79,6 @@ public class Gimmick {
         }
     }
 
-/*    public HashMap mBlockXmlResourseMap = new HashMap() {
-        {
-            put( "single_forward", new HashMap<Integer, Integer>() {
-                {
-                    put(Block.PROCESS_TYPE_SINGLE, SingleBlock.PROCESS_CONTENTS_FORWARD);
-                    put(R.drawable.baseline_block_forward_24, R.string.block_forward);
-                }
-            });
-
-            put( "single_back", new HashMap<Integer, Integer>() {
-                {
-                    put(Block.PROCESS_TYPE_SINGLE, SingleBlock.PROCESS_CONTENTS_BACK);
-                    put(R.drawable.baseline_block_back_24, R.string.block_back);
-                }
-            });
-
-        }
-    };*/
-
-
     /*
      * コンストラクタ
      */
@@ -93,13 +86,20 @@ public class Gimmick {
 
         mContext = context;
 
+        goalExplanationIdList = new ArrayList<>();
+
         objectGlbList = new ArrayList<>();
         objectNumList = new ArrayList<>();
         objectKindList = new ArrayList<>();
         objectPositionVecList = new ArrayList<>();
+
+        enemyGlbList = new ArrayList<>();
+        enemyNumList = new ArrayList<>();
+        enemyKindList = new ArrayList<>();
+        enemyPositionVecList = new ArrayList<>();
+
         blockList = new ArrayList<>();
         xmlBlockInfoList = new ArrayList<>();
-        goalExplanationIdList = new ArrayList<>();
     }
 
     /*
@@ -582,6 +582,137 @@ public class Gimmick {
 
             objectPositionVecList.add( pos );
         }
+    }
+    
+    /*
+     * 敵名を設定
+     */
+    public void setEnemyGlb( String enemyGlb ) {
+
+        // プロパティなし
+        if( enemyGlb == null ){
+            return;
+        }
+
+        // 敵名を分割
+        String[] strs = splitGimmickValueDelimiter(enemyGlb);
+
+        // リスト生成
+        enemyGlbList.clear();
+        Collections.addAll(enemyGlbList, strs);
+    }
+
+    /*
+     * 敵数を設定
+     */
+    public void setEnemyNum( String enemyNum ) {
+
+        // プロパティなし
+        if( enemyNum == null ){
+            return;
+        }
+
+        // 敵名を分割
+        String[] strs = splitGimmickValueDelimiter(enemyNum);
+
+        // リスト生成
+        enemyNumList.clear();
+        for( String num: strs ){
+            enemyNumList.add( Integer.parseInt(num) );
+        }
+    }
+
+    /*
+     * 敵数ランダムの有無を設定
+     */
+    public void setEnemyNumRandom( String random ) {
+
+        // プロパティなし
+        if( random == null ){
+            return;
+        }
+
+        // ランダム有無を反映
+        enemyNumRandom = random.equals( "true" );
+    }
+
+    /*
+     * 敵種別を設定
+     */
+    public void setEnemyKind( String enemyKind ) {
+
+        // プロパティなし
+        if( enemyKind == null ){
+            return;
+        }
+
+        // 敵名を分割
+        String[] strs = splitGimmickValueDelimiter(enemyKind);
+
+        // リスト生成
+        enemyKindList.clear();
+        Collections.addAll(enemyKindList, strs);
+    }
+
+    /*
+     * 敵座標を設定
+     */
+    public void setEnemyPositionVecList(String position ) {
+
+        // プロパティなし
+        if( position == null ){
+            return;
+        }
+
+        // 位置情報データ毎に分割
+        // 例)"0:0:0, 1:1:1" → 「0:0:0」「1:1:1」
+        String[] valueSplit = splitGimmickValueDelimiter(position);
+
+        //-----------------------
+        // 位置情報分、リストに格納
+        //-----------------------
+        for( String posStr: valueSplit ){
+
+            // 位置情報を座標毎に分割
+            // 例)「0:0:0」 → 「0」「0」「0」
+            String[] posSplit = splitGimmickPositionDelimiter(posStr);
+
+            // 正常フォーマットの場合
+            Vector3 pos;
+            if( posSplit.length == 3 ){
+                // 位置形式に変換
+                float x = Float.parseFloat( posSplit[0] );
+                float y = Float.parseFloat( posSplit[1] );
+                float z = Float.parseFloat( posSplit[2] );
+                pos = new Vector3( x, y, z );
+            } else {
+                // フォーマット異常の場合
+                pos = new Vector3( 0, 0, 0 );
+            }
+
+            enemyPositionVecList.add( pos );
+        }
+    }
+
+    /*
+     * 敵移動終点座標を設定
+     */
+    public void setEnemyEndPosition( String position ) {
+
+        String[] strs = splitGimmickPositionDelimiter(position);
+
+        // 正常フォーマットの場合
+        if( strs.length == 3 ){
+            // 位置形式に変換
+            float x = Float.parseFloat( strs[0] );
+            float y = Float.parseFloat( strs[1] );
+            float z = Float.parseFloat( strs[2] );
+            enemyEndPositionVec = new Vector3( x, y, z );
+            return;
+        }
+
+        // フォーマット異常の場合
+        enemyEndPositionVec = new Vector3( 1f, 1f, 1f );
     }
 
     /*

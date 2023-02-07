@@ -23,13 +23,15 @@ public class GimmickManager {
     // Node名
     // （objectKindの文言もここに含まれる）
     public static final String NODE_NAME_NONE = "none";
+    public static final String NODE_NAME_GOAL_GUIDE_UI = "goalGuideUI";
     public static final String NODE_NAME_ANCHOR = "anchor";
     public static final String NODE_NAME_STAGE = "stage";
     public static final String NODE_NAME_GOAL = "goal";
     public static final String NODE_NAME_OBSTACLE = "obstacle";
     public static final String NODE_NAME_EATABLE = "eatable";
     public static final String NODE_NAME_THROW_AWAY = "throwAway";
-    public static final String NODE_NAME_GOAL_GUIDE_UI = "goalGuideUI";
+    public static final String NODE_NAME_ENEMY_BAT = "bat";
+    public static final String NODE_NAME_ENEMY_GHOST = "ghost";
 
     // フォーマット位置；ゴール説明
     public static final int GOAl_EXP_MAJOR_POS = 0;
@@ -92,15 +94,26 @@ public class GimmickManager {
         // リスト変換するプロパティ
         //----------------------
         String goalExplanation = parser.getAttributeValue(null, "goalExplanation");
+        // キャラクター
         String characterPosition = parser.getAttributeValue(null, "characterPosition");
         String characterAngle = parser.getAttributeValue(null, "characterAngle");
+        // ゴール
         String goalPosition = parser.getAttributeValue(null, "goalPosition");
         String goalAngle = parser.getAttributeValue(null, "goalAngle");
+        // オブジェクト
         String objectGlb = parser.getAttributeValue(null, "objectGlb");
         String objectNum = parser.getAttributeValue(null, "objectNum");
         String objectKind = parser.getAttributeValue(null, "objectKind");
         String objectPositionRandom = parser.getAttributeValue(null, "objectPositionRandom");
         String objectPosition = parser.getAttributeValue(null, "objectPosition");
+        // 敵
+        String enemyGlb = parser.getAttributeValue(null, "enemyGlb");
+        String enemyNum = parser.getAttributeValue(null, "enemyNum");
+        String enemyKind = parser.getAttributeValue(null, "enemyKind");
+        String enemyNumRandom = parser.getAttributeValue(null, "enemyNumRandom");
+        String enemyPosition = parser.getAttributeValue(null, "enemyPosition");
+        String enemyEndPosition = parser.getAttributeValue(null, "enemyEndPosition");
+        // ブロック
         String block = parser.getAttributeValue(null, "block");
 
         //--------------------------
@@ -109,17 +122,28 @@ public class GimmickManager {
         gimmick.successCondition = parser.getAttributeValue(null, "successCondition");
         gimmick.setGoalExplanation( goalExplanation );
         gimmick.stageGlb = parser.getAttributeValue(null, "stageGlb");
+        // キャラクター
         gimmick.characterGlb = parser.getAttributeValue(null, "characterGlb");
         gimmick.setCharacterPosition( characterPosition );
         gimmick.setCharacterAngle( characterAngle );
+        // ゴール
         gimmick.goalGlb = parser.getAttributeValue(null, "goalGlb");
         gimmick.setGoalAngle( goalAngle );
         gimmick.setGoalPosition( goalPosition );
+        // オブジェクト
         gimmick.setObjectGlb( objectGlb );
         gimmick.setObjectNum( objectNum );
         gimmick.setObjectKind( objectKind );
         gimmick.setObjectPositionRandom( objectPositionRandom );
         gimmick.setObjectPositionVecList( objectPosition );
+        // 敵
+        gimmick.setEnemyGlb( enemyGlb );
+        gimmick.setEnemyNum( enemyNum );
+        gimmick.setEnemyKind( enemyKind );
+        gimmick.setEnemyNumRandom( enemyNumRandom );
+        gimmick.setEnemyPositionVecList( enemyPosition );
+        gimmick.setEnemyEndPosition( enemyEndPosition );
+        // ブロック
         gimmick.setBlock( block );
     }
 
@@ -130,8 +154,6 @@ public class GimmickManager {
 
         Resources resources = context.getResources();
         XmlResourceParser parser = resources.getXml(R.xml.gimmick_tutorial);
-
-        Log.i("ギミック", "getAttributeCount()=" + parser.getAttributeCount());
 
         //-----------------------------------------
         // 該当するチュートリアルのギミック情報まで進める

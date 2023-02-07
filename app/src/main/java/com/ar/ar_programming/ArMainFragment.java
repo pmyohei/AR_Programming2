@@ -126,6 +126,7 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
     private ViewRenderable mGuideViewRenderable;
     private ViewRenderable mActionRenderable;
     private ArrayList<ModelRenderable> mObjectRenderable;
+    private ArrayList<ModelRenderable> mEnemyRenderable;
 
     private CharacterNode mCharacterNode;
     private Block mMarkedBlock;         // ブロック下部追加マーカーの付与されている処理ブロック
@@ -840,6 +841,15 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
     }
 
     /*
+     * 3Dモデルレンダリング「敵」の生成
+     */
+    private void buildRenderableEnemy(Gimmick gimmick) {
+
+
+
+    }
+
+    /*
      * 3Dモデルレンダリング「ゴール」の生成
      */
     private void buildRenderableGoal(Gimmick gimmick) {
@@ -847,12 +857,21 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
         Context context = getContext();
         mGoalRenderable = null;
 
+        //----------------
+        // 生成チェック
+        //----------------
+        String goalGlb = gimmick.goalGlb;
+        if( goalGlb == null ){
+            // 生成なし
+            return;
+        }
+
         //-------------------
-        // ゴール
+        // レンダリング生成
         //-------------------
         ModelRenderable
                 .builder()
-                .setSource(context, Uri.parse(gimmick.goalGlb))
+                .setSource(context, Uri.parse( gimmick.goalGlb ))
                 .setIsFilamentGltf(true)    // glbファイルを読み込む必須
                 .build()
                 .thenAccept(renderable -> mGoalRenderable = renderable)
@@ -1016,14 +1035,12 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
 
         // キャラクターに向かせる角度
         float angle = mGimmick.characterAngle;
-        // キャラクターに向かせる方向のQuaternion値
         Quaternion facingDirection = getCharacterInitFacingDirection(angle);
-
-        // 下辺配置を前提とする
+        // 位置
         Vector3 position = new Vector3(mGimmick.characterPositionVec.x * scale, mGimmick.characterPositionVec.y * scale, mGimmick.characterPositionVec.z * scale);
 
         //------------------------
-        // キャラクターの生成
+        // Node生成
         //------------------------
         TransformationSystem transformationSystem = arFragment.getTransformationSystem();
 
@@ -1105,6 +1122,52 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
         }
     }
 
+    /*
+     * ステージ上の敵を生成
+     */
+    private void createNodeEnemy(AnchorNode anchorNode) {
+
+        TransformationSystem transformationSystem = arFragment.getTransformationSystem();
+
+        // Nodeスケール
+        final float scale = getNodeScale();
+        Vector3 scaleVector = new Vector3(scale, scale, scale);
+
+        // ステージの広さ
+        float stageScale = getStageScale();
+
+        //-----------------------------
+        // Node生成
+        //-----------------------------
+        int kindIndex = 0;
+        for (ModelRenderable renderable : mObjectRenderable) {
+
+            // オブジェクトの種類をNode名として設定する
+            String objectKind = mGimmick.enemyKindList.get(kindIndex);
+
+            // 位置
+            // （存在している分は位置として設定。位置がなければ先頭データを設定）
+            int posIndex = 0;
+            if( kindIndex < mGimmick.enemyPositionVecList.size() ){
+                posIndex = kindIndex;
+            }
+            Vector3 enemyPosition = mGimmick.enemyPositionVecList.get(posIndex);
+            Vector3 position = new Vector3(enemyPosition.x * scale, enemyPosition.y * scale, enemyPosition.z * scale);
+
+            // Node生成
+            TransformableNode node = new TransformableNode(transformationSystem);
+            node.setName(objectKind);
+            node.getScaleController().setMinScale(scale);
+            node.getScaleController().setMaxScale(scale * 2);
+            node.setLocalScale(scaleVector);
+            node.setParent(anchorNode);
+            node.setLocalPosition(position);
+            node.setRenderable(renderable);
+            node.select();
+
+            kindIndex++;
+        }
+    }
 
     /*
      * 目標説明UIの生成
@@ -1187,6 +1250,17 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
      */
     private void createNodeGoal(AnchorNode anchorNode) {
 
+        //----------------
+        // 生成チェック
+        //----------------
+        if( mGoalRenderable == null ){
+            // 生成なし
+            return;
+        }
+
+        //----------------
+        // Node生成
+        //----------------
         TransformationSystem transformationSystem = arFragment.getTransformationSystem();
 
         // Nodeスケール
@@ -1199,17 +1273,10 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
         Vector3 pos = getRandomPosition(stageScale);
         */
 
-        // キャラクターに向かせる角度
-        //!xmlで管理するかも
+        // ゴールの角度
         float angle = mGimmick.goalAngle;
-        // キャラクターに向かせる方向のQuaternion値
         Quaternion facingDirection = getCharacterInitFacingDirection(angle);
-
-        Log.i("ギミックxml", "createNodeGoal()");
-        Log.i("ギミックxml", "mGimmick.goalPositionVecx" + mGimmick.goalPositionVec.x);
-        Log.i("ギミックxml", "mGimmick.goalPositionVecy" + mGimmick.goalPositionVec.y);
-        Log.i("ギミックxml", "mGimmick.goalPositionVecz" + mGimmick.goalPositionVec.z);
-
+        // 位置
         Vector3 scalePos = new Vector3(mGimmick.goalPositionVec.x * scale, mGimmick.goalPositionVec.y * scale, mGimmick.goalPositionVec.z * scale);
 
         // Node生成
@@ -1219,7 +1286,6 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
         node.getScaleController().setMaxScale(scale * 2);
         node.setLocalScale(scaleVector);
         node.setParent(anchorNode);
-//        node.setLocalPosition( mGimmick.goalPositionVec );
         node.setLocalPosition(scalePos);
         node.setLocalRotation(facingDirection);
         node.setRenderable(mGoalRenderable);
