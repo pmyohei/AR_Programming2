@@ -4,6 +4,7 @@ import static android.content.Context.MODE_PRIVATE;
 
 import static com.ar.ar_programming.CharacterNode.ACTION_FAILURE;
 import static com.ar.ar_programming.CharacterNode.ACTION_SUCCESS;
+import static com.ar.ar_programming.CharacterNode.ACTION_WAITING;
 
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
@@ -133,6 +134,8 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
 
     private int mPlayState;             // Play状態
     private Gimmick mGimmick;             // ステージギミックID
+
+    private FloatingActionButton mPlayControlFab;
 
     private ActivityResultLauncher<Intent> mSettingRegistrationLancher;
 
@@ -385,7 +388,6 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
      *   キャラクター位置、プログラミング状態を初期状態に戻す
      */
     private void returnGameToStart() {
-
         // キャラクター位置リセット
         mCharacterNode.positionReset();
         // ゲーム状態をゲーム開始前にする
@@ -1003,7 +1005,6 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
             anchorNode.removeChild(characterNode);
         }*/
 
-
         //-----------------------------
         // ステージ上キャラクターとして保持
         //-----------------------------
@@ -1059,8 +1060,9 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
         characterNode.initAnimation();
         characterNode.startPosData(position, angle);
 
-        // キャラクターアクション表記Nodeの作成s
+        // キャラクターアクション表記Nodeの作成
         characterNode.createActionRenderable(mActionRenderable);
+        characterNode.setActionWord( ACTION_WAITING );
 
         return characterNode;
     }
@@ -1592,7 +1594,7 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
                 createNodeStage(anchorNode);
                 // 目標説明view
                 createNodeGoalGuideUI(anchorNode);
-                // aaaaa
+                //
                 createNodeProcess(anchorNode);
                 //----------------------------------
                 // 状態管理
@@ -1757,12 +1759,11 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
         for (Node node : nodes) {
             if (node.getName().equals( GimmickManager.NODE_NAME_ANCHOR )) {
                 scene.removeChild(node);
-                return;//★いらないかも。アンカー複数作られない実装ならいらない
+                //return;//★いらないかも。アンカー複数作られない実装ならいらない
             }
         }
 
         // キャラクタークリア
-        //!通る？★
         mCharacterNode = null;
 
         //----------------------------------
@@ -1770,6 +1771,8 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
         //----------------------------------
         // プログラミング中⇒ステージ配置前
         mPlayState = PLAY_STATE_INIT;
+        // FabをPlay可能状態に変更
+        mPlayControlFab.setImageResource(R.drawable.baseline_play_24);
     }
 
     /*
@@ -1817,16 +1820,37 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
         // キャラクターアクション表記を失敗にする
         mCharacterNode.setActionWord( ACTION_FAILURE );
 
-        // ダイアログ表示
-        DialogFragment newFragment = new StageFailureDialogFragment();
-        newFragment.show(getActivity().getSupportFragmentManager(), "result");
+        //--------------------
+        // ダイアログ生成
+        //--------------------
+        StageFailureDialogFragment failureDialog = new StageFailureDialogFragment();
+        failureDialog.show(getActivity().getSupportFragmentManager(), "result");
+
+        // リトライリスナー設定
+        failureDialog.setOnRetryListerner(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onRetryClicked( view );
+            }
+        });
+
+        // 別ステージ選択リスナー設定
+        failureDialog.setOnOtherStageListerner(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onOtherStageClicked( view );
+            }
+        });
     }
 
     /*
      * ゴール結果ダイアログ：「再挑戦」
      */
     public void onRetryClicked(View view) {
-
+        // ゲームをリセット
+        returnGameToStart();
+        // Fabアイコンを切り替え
+        mPlayControlFab.setImageResource(R.drawable.baseline_play_24);
     }
 
     /*
@@ -2000,6 +2024,7 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
     public void onMenuHowToClick() {
         stageClear();
     }
+
     /*
      * menuアクションリスナー：設定
      */
@@ -2056,12 +2081,23 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
     @Override
     public void onPlayControlClick( FloatingActionButton fab ) {
 
+        //---------------------
+        // プレイ制御
+        //---------------------
         if( mPlayState == PLAY_STATE_PRE_PLAY){
             // ゲーム開始
             startGame( fab );
         } else {
             // ゲームリトライ確認
             confirmRetryGame( fab );
+        }
+
+        //---------------------
+        // プレイ制御Fab
+        //---------------------
+        // ここでFabを保持する
+        if( mPlayControlFab == null ){
+            mPlayControlFab = fab;
         }
     }
 }

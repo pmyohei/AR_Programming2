@@ -115,9 +115,6 @@ public class CharacterNode extends TransformableNode {
     // アクション表記Renderable
     private ViewRenderable mActionRenderable;
 
-    //tmp
-    Node mptGoal;
-
 
     public CharacterNode(TransformationSystem transformationSystem) {
         super(transformationSystem);
@@ -186,8 +183,6 @@ public class CharacterNode extends TransformableNode {
      * アクションワードNodeを既に持っているか
      */
     private boolean hasActionWordNode() {
-
-        Log.i("アクション", "hasActionWordNode=" + getChildren().size());
 
         // レンダラブルなしなら確実に持っていない
         if( mActionRenderable == null ){
@@ -732,6 +727,9 @@ public class CharacterNode extends TransformableNode {
         // アクションワードを初期状態へ
         //----------------------------------
         setActionWord( ACTION_WAITING );
+        // 向きを初期状態にする
+        Node node = getChildren().get(0);
+        node.setLocalRotation(q);
     }
 
     /*
