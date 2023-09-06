@@ -134,9 +134,9 @@
     <string name="ar_dialog_success">ステージクリア！</string>
     <string name="ar_dialog_failure">失敗\.\.\.</string>
     <string name="ar_dialog_next_tutorial">次のチュートリアルへ</string>
-    <string name="ar_dialog_play_another_stage">別のステージで遊ぶ</string>
+    <string name="ar_dialog_play_another_stage">別のステージで遊ぶ！</string>
     <string name="ar_dialog_try">もう一度！</string>
-    <string name="ar_dialog_break">休憩</string>
+    <string name="ar_dialog_break">休憩（ホームへ）</string>
 
     <!---->
     <!-- キャラクター（.glbファイル名と一致させること） -->
@@ -160,7 +160,7 @@
     <string name="guide_sub_tutorial_2">～ループ処理をしてみよう～</string>
     <string name="guide_contents_tutorial_2">橋を渡って看板まで運転</string>
     <string name="guide_explanation_tutorial_2">
-        橋の先の看板まで運転する\nプログラムを作ってみよう！\n\n真ん中にある切り株にあたると失敗だよ！\nうまく避けるようにプログラミングしてね！
+        橋の先の看板まで運転する\nプログラムを作ってみよう！\n\n向きの変更がポイントだよ！\nループ処理を使ってうまくプログラミングしてね！
     </string>
 
 

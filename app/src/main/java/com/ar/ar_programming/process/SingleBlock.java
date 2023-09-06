@@ -292,6 +292,10 @@ public class SingleBlock extends ProcessBlock {
         //----------------------------------------
         // モデルに用意されたアニメーションを開始
         characterNode.startModelAnimation(contents, duration);
+        Log.i("不具合", "contents=" + contents);
+        Log.i("不具合", "volume=" + volume);
+        Log.i("不具合", "duration=" + duration);
+        Log.i("不具合", "===========");
 
         //----------------------------------------
         // キャラクターアクションの内容設定

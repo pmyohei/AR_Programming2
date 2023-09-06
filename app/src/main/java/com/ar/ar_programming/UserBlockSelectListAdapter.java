@@ -83,7 +83,8 @@ public class UserBlockSelectListAdapter extends RecyclerView.Adapter<UserBlockSe
      * コンストラクタ
      */
     public UserBlockSelectListAdapter( ArrayList<Gimmick.XmlBlockInfo> blockList ) {
-        mXmlBlockInfo = blockList;
+        mXmlBlockInfo = new ArrayList<>();
+        mXmlBlockInfo.addAll( blockList );
     }
 
     /*
@@ -132,6 +133,13 @@ public class UserBlockSelectListAdapter extends RecyclerView.Adapter<UserBlockSe
     public int getItemCount() {
         // ブロック数を返す
         return mXmlBlockInfo.size();
+    }
+
+    /*
+     * 処理ブロックリストクリア
+     */
+    public void clearBlockList() {
+        mXmlBlockInfo.clear();
     }
 
     /*

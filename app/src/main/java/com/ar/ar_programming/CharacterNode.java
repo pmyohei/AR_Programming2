@@ -314,7 +314,6 @@ public class CharacterNode extends TransformableNode {
         //----------------------
         // 衝突検知
         //----------------------
-//        mCollisionNodeName = detectCollision();
         detectCollision();
     }
 
@@ -730,6 +729,11 @@ public class CharacterNode extends TransformableNode {
         // 向きを初期状態にする
         Node node = getChildren().get(0);
         node.setLocalRotation(q);
+
+        //----------------------------------
+        // 衝突情報をリセット
+        //----------------------------------
+        mCollisionNodeName = GimmickManager.NODE_NAME_NONE;
     }
 
     /*

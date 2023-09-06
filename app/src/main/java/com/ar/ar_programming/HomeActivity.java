@@ -23,57 +23,9 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home);
 
 
-/*
-        //tmp
-        Resources resources = getResources();
-        XmlResourceParser parser = resources.getXml(R.xml.gimmick_tutorial);
-        int eventType = 0;
-        try {
-            eventType = parser.getEventType();
-        } catch (XmlPullParserException e) {
-            e.printStackTrace();
-        }
-        while (eventType != XmlPullParser.END_DOCUMENT) {
-
-            if(eventType == XmlPullParser.START_DOCUMENT) {
-                Log.i("ギミック", "START_DOCUMENT");
-                Log.i("ギミック", "getAttributeCount()=" + parser.getAttributeCount());
-
-            } else if(eventType == XmlPullParser.START_TAG) {
-                Log.i("ギミック", "START_TAG");
-                Log.i("ギミック", "TAG=" + parser.getName());
-                Log.i("ギミック", "getAttributeCount()=" + parser.getAttributeCount());
-
-            } else if(eventType == XmlPullParser.END_TAG) {
-                Log.i("ギミック", "END_TAG");
-                Log.i("ギミック", "getAttributeCount()=" + parser.getAttributeCount());
-
-            } else if(eventType == XmlPullParser.TEXT) {
-                Log.i("ギミック", "TEXT");
-                Log.i("ギミック", "getAttributeCount()=" + parser.getAttributeCount());
-            }
-
-            // 次の要素を読み込む
-            try {
-                parser.next();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (XmlPullParserException e) {
-                e.printStackTrace();
-            }
-            try {
-                eventType = parser.getEventType();
-            } catch (XmlPullParserException e) {
-                e.printStackTrace();
-            }
-        }
-
-        Log.i("ギミック", "getAttributeCount()=" + parser.getAttributeCount());
-
-        XmlResourceParser parser2 = resources.getXml(R.xml.gimmick_animal_easy);
-        Log.i("ギミック", "gimmick_animal_easy getAttributeCount()=" + parser2.getAttributeCount());
-*/
-
+        //debug-------------------
+        Common.setTutorialDebug(this, 3);
+        //--------------------
     }
 
     /*

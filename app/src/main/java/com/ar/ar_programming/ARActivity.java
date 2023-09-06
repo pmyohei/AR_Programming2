@@ -134,4 +134,5 @@ public class ARActivity extends AppCompatActivity {
     public interface PlayControlListener {
         void onPlayControlClick( FloatingActionButton fab );
     }
+
 }

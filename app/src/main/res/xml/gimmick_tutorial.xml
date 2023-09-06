@@ -2,7 +2,7 @@
 <gimmick_list dataNum="4">
 
 	<gimmick
-		sequence="1"
+		sequence="11"
 		successCondition="knockDown"
 		goalExplanation="guide_major_tutorial_2, guide_sub_tutorial_2, guide_contents_tutorial_2, guide_explanation_tutorial_2"
 		stageGlb="models/stage/fantasy_magic_enemy.glb"
@@ -18,7 +18,7 @@
 		/>
 
 	<gimmick
-		sequence="11"
+		sequence="1"
 		successCondition="goal"
 		goalExplanation="guide_major_tutorial_1, guide_sub_tutorial_1, guide_contents_tutorial_1, guide_explanation_tutorial_1"
 		stageGlb="models/stage/tutorial_stage_1.glb"

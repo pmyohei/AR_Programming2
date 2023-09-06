@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.content.res.XmlResourceParser;
-import android.util.Log;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -15,6 +14,9 @@ import java.io.IOException;
 import java.util.Objects;
 import java.util.Random;
 
+/*
+ * ギミックマネージャ
+ */
 public class GimmickManager {
 
     //---------------------------
@@ -49,14 +51,10 @@ public class GimmickManager {
     // フィールド変数
     //---------------------------
 
-    public GimmickManager() {
-    }
-
-
     /*
-     * tmp
+     * コンストラクタ
      */
-    private void tmp() {
+    public GimmickManager() {
     }
 
     /*
@@ -64,26 +62,17 @@ public class GimmickManager {
      */
     public static Gimmick getGimmick(Context context) {
 
-        Resources resources = context.getResources();
-
-        // チュートリアル終了値
-        final int TUTORIAL_END = resources.getInteger(R.integer.saved_tutorial_end);
-
-        // 現在のチュートリアル進行状況を取得
-        SharedPreferences sharedPref = context.getSharedPreferences(context.getString(R.string.preference_file_key), MODE_PRIVATE);
-        int defaultValue = resources.getInteger(R.integer.saved_tutorial_block);
-        int tutorial = sharedPref.getInt(context.getString(R.string.saved_tutorial_key), defaultValue);
-
         // チュートリアルかチュートリアル終了しているかでギミック選定を分ける
-        if (tutorial < TUTORIAL_END) {
-            // チュートリアルからギミックを生成
-            return makeTutorialGimmick(context, tutorial);
-        } else {
+        boolean finishTutorial = Common.isFisishTutorial( context );
+        if (finishTutorial) {
             // ユーザー設定に応じたギミックを生成
-            return makeUserGimmick(context, sharedPref);
+            return makeUserGimmick(context);
+        } else {
+            // チュートリアルからギミックを生成
+            int tutorial = Common.getTutorialSequence( context );
+            return makeTutorialGimmick(context, tutorial);
         }
     }
-
 
     /*
      * 指定parserからギミック情報を読み込み、指定ギミックに設定する
@@ -193,12 +182,12 @@ public class GimmickManager {
     /*
      * ユーザー設定に応じたギミックXML名を生成
      */
-    private static Gimmick makeUserGimmick(Context context, SharedPreferences sharedPref) {
+    private static Gimmick makeUserGimmick(Context context) {
 
         Resources resources = context.getResources();
 
         // ユーザー設定に応じたギミックXMLファイルIDを取得
-        int xmlID = getUserGimmickXmlFileNameID(context, sharedPref);
+        int xmlID = getUserGimmickXmlFileNameID(context);
         XmlResourceParser parser = resources.getXml(xmlID);
 
         // ギミックをランダムに取得して返す
@@ -287,9 +276,10 @@ public class GimmickManager {
     /*
      * ユーザー設定に応じたギミックXMLファイルIDを取得
      */
-    private static int getUserGimmickXmlFileNameID( Context context, SharedPreferences sharedPref ){
+    private static int getUserGimmickXmlFileNameID( Context context ){
 
         Resources resources = context.getResources();
+        SharedPreferences sharedPref = context.getSharedPreferences(context.getString(R.string.preference_file_key), MODE_PRIVATE);
 
         //------------------
         // xmlファイルidの判定

@@ -1,18 +1,11 @@
 package com.ar.ar_programming;
 
-import static android.content.Context.MODE_PRIVATE;
 import static android.content.Context.WINDOW_SERVICE;
-import static com.ar.ar_programming.GimmickManager.GOAl_EXP_CONTENTS_POS;
-import static com.ar.ar_programming.GimmickManager.GOAl_EXP_EXPLANATION_POS;
-import static com.ar.ar_programming.GimmickManager.GOAl_EXP_MAJOR_POS;
-import static com.ar.ar_programming.GimmickManager.GOAl_EXP_SUB_POS;
 
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
@@ -28,7 +21,14 @@ import android.widget.TextView;
 
 import androidx.fragment.app.DialogFragment;
 
+/*
+ * ステージクリア時のダイアログ
+ */
 public class StageSuccessDialogFragment extends DialogFragment {
+
+    private View.OnClickListener mBreakClickListener;
+    private View.OnClickListener mNextTutorialClickListener;
+    private View.OnClickListener mOtherStageClickListener;
 
     //Bundle保存キー
     private static final String KEY_TUTORIAL = "tutorial";
@@ -70,9 +70,12 @@ public class StageSuccessDialogFragment extends DialogFragment {
 
         // ダイアログサイズ設定
         setupDialogSize(dialog);
+        // リスナー設定
+        setListerner(dialog);
 
-        // チュートリアルの場合
-        if( !finishTutorial() ){
+        // チュートリアル中の場合
+        boolean finishTutorial = Common.isFisishTutorial( getContext() );
+        if( !finishTutorial ){
             String next = getString( R.string.ar_dialog_next_tutorial );
             ((TextView) dialog.findViewById(R.id.tv_otherStage)).setText(next);
 
@@ -82,23 +85,45 @@ public class StageSuccessDialogFragment extends DialogFragment {
     }
 
     /*
-     * チュートリアル終了判定
+     * リスナー設定
      */
-    private boolean finishTutorial() {
+    private void setListerner(Dialog dialog) {
+        TextView tv_break = dialog.findViewById(R.id.tv_break);
+        TextView tv_nextTutorial = dialog.findViewById(R.id.tv_nextTutorial);
+        TextView tv_otherStage = dialog.findViewById(R.id.tv_otherStage);
 
-        Context context = getContext();
-        Resources resources = context.getResources();
+        //-----------------
+        // 休憩
+        //-----------------
+        tv_break.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mBreakClickListener.onClick(view);
+                dismiss();
+            }
+        });
 
-        // チュートリアル終了値
-        final int TUTORIAL_END = resources.getInteger(R.integer.saved_tutorial_end);
+        //-----------------
+        // 次のチュートリアルへ
+        //-----------------
+        tv_nextTutorial.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mNextTutorialClickListener.onClick(view);
+                dismiss();
+            }
+        });
 
-        // 現在のチュートリアル進行状況を取得
-        SharedPreferences sharedPref = context.getSharedPreferences(context.getString(R.string.preference_file_key), MODE_PRIVATE);
-        int defaultValue = resources.getInteger(R.integer.saved_tutorial_block);
-        int tutorial = sharedPref.getInt(context.getString(R.string.saved_tutorial_key), defaultValue);
-
-        // チュートリアル終了しているかどうか
-        return  (tutorial >= TUTORIAL_END);
+        //-----------------
+        // 別ステージ選択
+        //-----------------
+        tv_otherStage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mOtherStageClickListener.onClick(view);
+                dismiss();
+            }
+        });
     }
 
     /*
@@ -144,4 +169,24 @@ public class StageSuccessDialogFragment extends DialogFragment {
             return displayMetrics.widthPixels;
         }
     }
+
+    /*
+     * 休憩リスナー設定
+     */
+    public void setOnBreakListerner(View.OnClickListener listerner) {
+        mBreakClickListener = listerner;
+    }
+    /*
+     * 次のチュートリアルリスナー設定
+     */
+    public void setOnNextTutorialListerner(View.OnClickListener listerner) {
+        mNextTutorialClickListener = listerner;
+    }
+    /*
+     * 別ステージ選択リスナー設定
+     */
+    public void setOnOtherStageListerner(View.OnClickListener listerner) {
+        mOtherStageClickListener = listerner;
+    }
+
 }

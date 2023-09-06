@@ -123,6 +123,16 @@ public class Gimmick {
      *   例）":"、": "、" :"、" : "
      */
     private String[] splitGimmickPositionDelimiter(String str) {
+
+        //----------------------
+        // dataなしの場合
+        //----------------------
+        // 明示的に異常フォーマットとする
+        if( str == null ){
+            return new String[]{""};
+        }
+
+        // 分割
         return str.split(" *: *");
     }
 
