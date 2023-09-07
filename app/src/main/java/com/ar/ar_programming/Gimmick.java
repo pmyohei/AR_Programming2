@@ -81,7 +81,8 @@ public class Gimmick {
         public int contents;            // ブロック内容（「前へ進む」、「食べる」、、）
         public int drawableId;          // ブロックイメージID
         public int stringId;            // ブロック文字列ID
-        public int volumeLimit;          // 処理量制限値
+        public int stringIdElseIf;      // ブロック文字列ID（else if 条件文）
+        public int volumeLimit;         // 処理量制限値
         public boolean existsVolume;    // 処理量があるブロックかどうか（例えば、「前へ進む」は”あり”。「食べる」であれば”なし”。）
 
         public XmlBlockInfo() {
@@ -393,17 +394,21 @@ public class Gimmick {
 
         int contents;
         int stringId;
+        int stringIdElseIf;
 
         switch (blockContentsStr) {
-            case "collision-obstacle":
+            case "eatable-poison":
             default:
-                contents = IfElseIfElseBlock.PROCESS_CONTENTS_IF_ELSEIF_ELSE_BLOCK;
-                stringId = R.string.block_contents_if_elseif_else_block;
+                contents = IfElseIfElseBlock.PROCESS_CONTENTS_IF_ELSEIF_ELSE_EATABLE_POISON;
+                stringId = R.string.block_contents_if_eatable;
+                stringIdElseIf = R.string.block_contents_if_poison;
+                break;
         }
 
         // 設定
         xmlBlockInfo.contents = contents;
         xmlBlockInfo.stringId = stringId;
+        xmlBlockInfo.stringIdElseIf = stringIdElseIf;
         xmlBlockInfo.drawableId = R.drawable.baseline_block_if_else_24;
     }
 

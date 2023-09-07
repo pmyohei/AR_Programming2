@@ -32,14 +32,14 @@ public class IfElseBlock extends NestBlock {
      * コンストラクタ
      */
     public IfElseBlock(Context context, Gimmick.XmlBlockInfo xmlBlockInfo) {
-        this(context, null, xmlBlockInfo);
+        this(context, null, xmlBlockInfo, R.layout.process_block_if_else);
     }
-    public IfElseBlock(Context context, AttributeSet attrs, Gimmick.XmlBlockInfo xmlBlockInfo) {
-        this(context, attrs, 0, xmlBlockInfo);
+    public IfElseBlock(Context context, AttributeSet attrs, Gimmick.XmlBlockInfo xmlBlockInfo, int layout) {
+        this(context, attrs, 0, xmlBlockInfo, layout);
     }
-    public IfElseBlock(Context context, AttributeSet attrs, int defStyle, Gimmick.XmlBlockInfo xmlBlockInfo) {
+    public IfElseBlock(Context context, AttributeSet attrs, int defStyle, Gimmick.XmlBlockInfo xmlBlockInfo, int layout) {
         super(context, attrs, defStyle, xmlBlockInfo);
-        setLayout(R.layout.process_block_if_else);
+        setLayout( layout );
         init();
     }
 

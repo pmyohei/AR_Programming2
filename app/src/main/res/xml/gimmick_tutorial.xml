@@ -70,6 +70,26 @@
 		/>
 
 	<!-- objectGlb：！先に「mushroom_poison.glb」を記載すること。Renderable生成のタイミング問題。 -->
+<!--	<gimmick-->
+<!--		sequence="4"-->
+<!--		successCondition="goal"-->
+<!--		goalExplanation="guide_major_tutorial_4, guide_sub_tutorial_4, guide_contents_tutorial_4, guide_explanation_tutorial_4"-->
+<!--		stageGlb="models/stage/tutorial_stage_4.glb"-->
+<!--		characterGlb="models/animal/rabit.glb"-->
+<!--		characterPosition="0 : 1.4 : 8.7"-->
+<!--		characterAngle="180"-->
+<!--		goalGlb="models/goal/house.glb"-->
+<!--		goalPosition="0 : 3.9 : -18.8"-->
+<!--		goalAngle="0"-->
+<!--		objectGlb="models/obstacle/mushroom_poison.glb, models/obstacle/carrot.glb"-->
+<!--		objectNum="2, 1"-->
+<!--		objectKind="throwAway, eatable"-->
+<!--		objectPositionRandom="false"-->
+<!--		objectPosition="0 : 1.2 : 3, 0 : 1.2 : -10, 0 : 1.1 : -4.1"-->
+<!--		block="single_forward_5, single_eat, single_throwAway, loop_arrival-goal, if-else_eatable, if-else_nothing"-->
+<!--		/>-->
+
+	<!-- objectGlb：！先に「mushroom_poison.glb」を記載すること。Renderable生成のタイミング問題。 -->
 	<gimmick
 		sequence="4"
 		successCondition="goal"
@@ -86,52 +106,8 @@
 		objectKind="throwAway, eatable"
 		objectPositionRandom="false"
 		objectPosition="0 : 1.2 : 3, 0 : 1.2 : -10, 0 : 1.1 : -4.1"
-		block="single_forward_5, single_eat, single_throwAway, loop_arrival-goal, if-else_eatable, if-else_nothing"
+		block="single_forward_5, single_eat, single_throwAway, loop_arrival-goal, if-elseif-else_eatable-poison"
 		/>
-<!--
-	block="single_forward_1, single_back_123, single_rotateRight, single_rotateLeft,
-	loop_facing-goal, loop_arrival-obstacle,
-	if_collision-obstacle, if-else_collision-obstacle, if-elseif-else_collision-obstacle"
--->
-
-
-
-<!--
-	<gimmick
-		sequence="1"
-		successCondition="goal"
-		stageGlb="models/tutorial_stage_1.glb"
-		characterGlb="models/bear.glb"
-		characterPosition="-3.8 : -9.1 : 1.5"
-		goalGlb="models/goal/fox_and_tree.glb"
-		goalPosition="3.6 : 1.6 : 2.3"
-		objectGlb="models/stamp.glb"
-		objectNum="1"
-		objectKind="obstacle"
-		objectPositionRandom="false"
-		objectPosition="0 : -0.6 : 0.6"
-		block="forward, rotate_right, rotate_left"
-		/>
--->
-
-
-	<!--
-        <gimmick
-            sequence="1"
-            successCondition="goal"
-            stageGlb="models/tutorial_stage_1.glb"
-            characterGlb="models/tree.glb"
-            characterPosition="0 : 0 : 0"
-            goalGlb="models/tree.glb"
-            goalPosition="0.2 : 0.1 : 0.3"
-            objectGlb="models/stamp.glb"
-            objectNum="1"
-            objectKind="obstacle"
-            objectPositionRandom="false"
-            objectPosition="0 : -0.6 : 0.6"
-            block="forward, rotate_right, rotate_left"
-            />
-    -->
 
 
 </gimmick_list>

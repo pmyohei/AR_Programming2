@@ -990,15 +990,20 @@ public class CharacterNode extends TransformableNode {
      * 食べもの判定
      */
     public boolean isEatable() {
-        Log.i("Eat", "isEatable() mCollisionNodeName=" + mCollisionNodeName);
         return ( mCollisionNodeName.equals( GimmickManager.NODE_NAME_EATABLE ));
+    }
+
+    /*
+     * 捨てる物（毒）判定
+     */
+    public boolean isPoison() {
+        return ( mCollisionNodeName.equals( GimmickManager.NODE_NAME_THROW_AWAY ));
     }
 
     /*
      * 目の前に何もないかどうか判定
      */
     public boolean isNothingInFront() {
-        Log.i("Eat", "isNothingInFront() mCollisionNodeName=" + mCollisionNodeName);
         return ( mCollisionNodeName.equals( GimmickManager.NODE_NAME_NONE ));
     }
 
