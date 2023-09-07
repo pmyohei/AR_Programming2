@@ -19,7 +19,8 @@ public class IfElseBlock extends NestBlock {
     //---------------------------
     // 定数
     //---------------------------
-    public static final int PROCESS_CONTENTS_IF_ELSE_BLOCK = 0;
+    public static final int PROCESS_CONTENTS_IF_ELSE_EATABLE_IN_FRONT = 0;      // 目の前に食べ物があれば
+    public static final int PROCESS_CONTENTS_IF_ELSE_NOTHING_IN_FRONT = 1;      // 目の前に何もなければ
 
     //---------------------------
     // フィールド変数
@@ -38,14 +39,9 @@ public class IfElseBlock extends NestBlock {
     }
     public IfElseBlock(Context context, AttributeSet attrs, int defStyle, Gimmick.XmlBlockInfo xmlBlockInfo) {
         super(context, attrs, defStyle, xmlBlockInfo);
-
         setLayout(R.layout.process_block_if_else);
         init();
     }
-//    public IfElseBlock(Context context, AttributeSet attrs, int defStyle, Gimmick.XmlBlockInfo xmlBlockInfo) {
-//        super(context, attrs, defStyle, xmlBlockInfo);
-//        init();
-//    }
 
     /*
      * 初期化処理
@@ -260,18 +256,24 @@ public class IfElseBlock extends NestBlock {
     @Override
     public boolean isCondition(CharacterNode characterNode) {
 
-        //-----------------
-        // 仮置き中
-        //-----------------
-        int i = 0;
+        //--------------------
+        // if文に応じた条件判定
+        //--------------------
+        switch (mXmlBlockInfo.contents) {
 
-        Block below = mNestStartBlockFirst.getBelowBlock();
-        while( below != null ){
-            below = below.getBelowBlock();
-            i++;
+            // 目の前に食べ物があるかどうか
+            case PROCESS_CONTENTS_IF_ELSE_EATABLE_IN_FRONT:
+                return characterNode.isEatable();
+
+            // 目の前に何もないか
+            case PROCESS_CONTENTS_IF_ELSE_NOTHING_IN_FRONT:
+                return characterNode.isNothingInFront();
+
+            default:
+                break;
         }
 
-        return ( i % 2 != 0 );
+        return false;
     }
 
     /*

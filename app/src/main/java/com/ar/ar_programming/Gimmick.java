@@ -187,7 +187,7 @@ public class Gimmick {
     private void setXmlBlockInfo(String[] blockSplit, XmlBlockInfo xmlBlockInfo) {
 
         // ブロック識別値
-        final int blockType = convertBlockType(blockSplit[BLOCK_TYPE_POS]);
+        final int blockType = convertBlockType( blockSplit[BLOCK_TYPE_POS] );
         // 設定
         xmlBlockInfo.type = blockType;
 
@@ -293,36 +293,35 @@ public class Gimmick {
     private void setXmlLoopBlockInfo(String blockContentsStr, XmlBlockInfo xmlBlockInfo) {
 
         int contents;
-        int selectDrawableId = R.drawable.baseline_block_loop_24;
-        int selectStringId;
+        int stringId;
 
         switch (blockContentsStr) {
             case "facing-goal":
                 contents = LoopBlock.PROCESS_CONTENTS_LOOP_FACING_GOAL;
-                selectStringId = R.string.block_contents_loop_facing_goal;
+                stringId = R.string.block_contents_loop_facing_goal;
                 break;
 
             case "facing-obstacle":
                 contents = LoopBlock.PROCESS_CONTENTS_LOOP_FACING_OBSTACLE;
-                selectStringId = R.string.block_contents_loop_facing_obstacle;
+                stringId = R.string.block_contents_loop_facing_obstacle;
                 break;
 
             case "arrival-goal":
                 contents = LoopBlock.PROCESS_CONTENTS_LOOP_ARRIVAL_GOAL;
-                selectStringId = R.string.block_contents_loop_arrival_goal;
+                stringId = R.string.block_contents_loop_arrival_goal;
                 break;
 
             case "arrival-obstacle":
             default:
                 contents = LoopBlock.PROCESS_CONTENTS_LOOP_ARRIVAL_OBSTACLE;
-                selectStringId = R.string.block_contents_loop_arrival_block;
+                stringId = R.string.block_contents_loop_arrival_block;
                 break;
         }
 
         // 設定
         xmlBlockInfo.contents = contents;
-        xmlBlockInfo.drawableId = selectDrawableId;
-        xmlBlockInfo.stringId = selectStringId;
+        xmlBlockInfo.drawableId = R.drawable.baseline_block_loop_24;
+        xmlBlockInfo.stringId = stringId;
     }
 
     /*
@@ -331,29 +330,29 @@ public class Gimmick {
     private void setXmlIfBlockInfo(String blockContentsStr, XmlBlockInfo xmlBlockInfo) {
 
         int contents;
-        int selectStringId;
+        int stringId;
 
         switch (blockContentsStr) {
             case "collision-obstacle":
                 contents = IfBlock.PROCESS_CONTENTS_IF_COLLISION_OBSTACLE;
-                selectStringId = R.string.block_contents_if_block;
+                stringId = R.string.block_contents_if_block;
                 break;
 
             case "eatable":
                 contents = IfBlock.PROCESS_CONTENTS_IF_EATABLE;
-                selectStringId = R.string.block_contents_if_eatable;
+                stringId = R.string.block_contents_if_eatable;
                 break;
 
             default:
                 contents = IfBlock.PROCESS_CONTENTS_IF_COLLISION_OBSTACLE;
-                selectStringId = R.string.block_contents_if_block;
+                stringId = R.string.block_contents_if_block;
                 break;
         }
 
         // 設定
         xmlBlockInfo.drawableId = R.drawable.baseline_block_if_24;
         xmlBlockInfo.contents = contents;
-        xmlBlockInfo.stringId = selectStringId;
+        xmlBlockInfo.stringId = stringId;
     }
 
     /*
@@ -362,20 +361,29 @@ public class Gimmick {
     private void setXmlIfElseBlockInfo(String blockContentsStr, XmlBlockInfo xmlBlockInfo) {
 
         int contents;
-        int selectDrawableId = R.drawable.baseline_block_if_else_24;
-        int selectStringId;
+        int stringId;
 
         switch (blockContentsStr) {
-            case "collision-obstacle":
+            case "eatable":
+                contents = IfElseBlock.PROCESS_CONTENTS_IF_ELSE_EATABLE_IN_FRONT;
+                stringId = R.string.block_contents_if_else_eatable;
+                break;
+
+            case "nothing":
+                contents = IfElseBlock.PROCESS_CONTENTS_IF_ELSE_NOTHING_IN_FRONT;
+                stringId = R.string.block_contents_if_else_nothing;
+                break;
+
             default:
-                contents = IfElseBlock.PROCESS_CONTENTS_IF_ELSE_BLOCK;
-                selectStringId = R.string.block_contents_if_else_block;
+                contents = IfElseBlock.PROCESS_CONTENTS_IF_ELSE_EATABLE_IN_FRONT;
+                stringId = R.string.block_contents_if_else_eatable;
+                break;
         }
 
         // 設定
         xmlBlockInfo.contents = contents;
-        xmlBlockInfo.drawableId = selectDrawableId;
-        xmlBlockInfo.stringId = selectStringId;
+        xmlBlockInfo.stringId = stringId;
+        xmlBlockInfo.drawableId = R.drawable.baseline_block_if_else_24;
     }
 
     /*
@@ -384,20 +392,19 @@ public class Gimmick {
     private void setXmlIfElseIfBlockInfo(String blockContentsStr, XmlBlockInfo xmlBlockInfo) {
 
         int contents;
-        int selectDrawableId = R.drawable.baseline_block_if_else_24;
-        int selectStringId;
+        int stringId;
 
         switch (blockContentsStr) {
             case "collision-obstacle":
             default:
                 contents = IfElseIfElseBlock.PROCESS_CONTENTS_IF_ELSEIF_ELSE_BLOCK;
-                selectStringId = R.string.block_contents_if_elseif_else_block;
+                stringId = R.string.block_contents_if_elseif_else_block;
         }
 
         // 設定
         xmlBlockInfo.contents = contents;
-        xmlBlockInfo.drawableId = selectDrawableId;
-        xmlBlockInfo.stringId = selectStringId;
+        xmlBlockInfo.stringId = stringId;
+        xmlBlockInfo.drawableId = R.drawable.baseline_block_if_else_24;
     }
 
     /*

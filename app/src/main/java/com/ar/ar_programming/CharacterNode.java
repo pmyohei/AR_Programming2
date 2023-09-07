@@ -253,10 +253,12 @@ public class CharacterNode extends TransformableNode {
             collisionNode = collidingNode.getName();
 
             if (collisionNode.equals(GimmickManager.NODE_NAME_GOAL)) {
+                Log.i("Eat", "detectCollision() ゴールと衝突");
                 startModelAnimation(MODEL_ANIMATION_STR_GOAL, 2000);
                 break;
 
             } else if (collisionNode.equals(GimmickManager.NODE_NAME_OBSTACLE)) {
+                Log.i("Eat", "detectCollision() 障害物と衝突");
                 startModelAnimation(MODEL_ANIMATION_STR_ERROR, 2000);
                 break;
 
@@ -266,6 +268,7 @@ public class CharacterNode extends TransformableNode {
                 break;
 
             } else if (collisionNode.equals(GimmickManager.NODE_NAME_THROW_AWAY)) {
+                Log.i("Eat", "detectCollision() 捨てるものと衝突");
 //                startModelAnimation(MODEL_ANIMATION_STR_ERROR, 2000);
                 break;
             }
@@ -279,7 +282,7 @@ public class CharacterNode extends TransformableNode {
         //----------------
         mCollisionNodeName = collisionNode;
 
-        Log.i("Eat", "detectCollision() 食べ物と衝突後　mCollisionNodeName=" + mCollisionNodeName);
+        Log.i("Eat", "detectCollision() 衝突後　mCollisionNodeName=" + mCollisionNodeName);
 
         // リスナーコール判定
         if ( !collisionNode.equals(GimmickManager.NODE_NAME_NONE) ) {
@@ -407,9 +410,9 @@ public class CharacterNode extends TransformableNode {
      */
     private void eat() {
 
-        //--------------------------------
+        //----------------
         // 失敗判定
-        //--------------------------------
+        //----------------
         int index = getCollisionIndex(GimmickManager.NODE_NAME_EATABLE);
         // 衝突中Nodeなし or 食べられないNodeと衝突中
         if ( (index == COLLISION_RET_NONE) || (index == COLLISION_RET_OTHRE) ) {
@@ -434,28 +437,24 @@ public class CharacterNode extends TransformableNode {
      */
     private void throwAway() {
 
-        // アクション成否：成功
-        mSuccessAction = true;
-
-        //--------------------------------
-        // 衝突中の捨てる対象NodeをSceneから削除
-        //--------------------------------
+        //----------------
+        // 失敗判定
+        //----------------
         int index = getCollisionIndex(GimmickManager.NODE_NAME_THROW_AWAY);
-        // 衝突中Nodeなし
-        if (index == COLLISION_RET_NONE) {
-            return;
-        }
-
-        // アクション対象外Nodeと衝突中
-        if (index == COLLISION_RET_OTHRE) {
+        // 衝突中Nodeなし or 食べられないNodeと衝突中
+        if ( (index == COLLISION_RET_NONE) || (index == COLLISION_RET_OTHRE) ) {
             // アクション失敗
             mSuccessAction = false;
             return;
         }
 
+        //-----------------
+        // 成功
+        //-----------------
+        // アクション成否：成功
+        mSuccessAction = true;
         // アクション対象Nodeと衝突中なら、Sceneから削除
         removeNodeFromScene( index );
-
         // 衝突中Node情報クリア
         mCollisionNodeName = GimmickManager.NODE_NAME_NONE;
     }
@@ -993,6 +992,14 @@ public class CharacterNode extends TransformableNode {
     public boolean isEatable() {
         Log.i("Eat", "isEatable() mCollisionNodeName=" + mCollisionNodeName);
         return ( mCollisionNodeName.equals( GimmickManager.NODE_NAME_EATABLE ));
+    }
+
+    /*
+     * 目の前に何もないかどうか判定
+     */
+    public boolean isNothingInFront() {
+        Log.i("Eat", "isNothingInFront() mCollisionNodeName=" + mCollisionNodeName);
+        return ( mCollisionNodeName.equals( GimmickManager.NODE_NAME_NONE ));
     }
 
     /*

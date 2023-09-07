@@ -79,7 +79,6 @@ public class IfBlock extends NestBlock {
 
             // 目の前に食べ物があるかどうか
             case PROCESS_CONTENTS_IF_EATABLE:
-                Log.i("Eat", "isCondition() 目の前に食べ物があるか=" + characterNode.isEatable());
                 return characterNode.isEatable();
 
             default:
@@ -87,15 +86,5 @@ public class IfBlock extends NestBlock {
         }
 
         return false;
-
-//        int i = 0;
-//
-//        Block below = mNestStartBlockFirst.getBelowBlock();
-//        while( below != null ){
-//            below = below.getBelowBlock();
-//            i++;
-//        }
-//
-//        return ( i % 2 != 0 );
     }
 }

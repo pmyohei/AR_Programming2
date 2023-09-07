@@ -12,7 +12,7 @@ import com.ar.ar_programming.R;
 
 
 /*
- * ネストあり処理ブロック（if-else if-else文）
+ * ネストあり処理ブロック（if-elseif-else文）
  */
 public class IfElseIfElseBlock extends IfElseBlock {
 
@@ -292,9 +292,13 @@ public class IfElseIfElseBlock extends IfElseBlock {
 
     /*
      * ネストルート判定
-     *
+     *   3分岐の内、どのルートを通る状態であるかを判定する
      */
     public int judgeTrueNestRoot(CharacterNode characterNode) {
+
+        // !contetns状態の持ち方をどうするか検討する必要あり
+        // !新ためて必要なタイミングで実装
+
 
         //-----------------
         // 仮置き中

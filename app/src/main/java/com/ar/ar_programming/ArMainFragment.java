@@ -1121,6 +1121,7 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
                 // Node生成
                 TransformableNode node = new TransformableNode(transformationSystem);
                 node.setName(objectKind);
+                Log.i("ギミック", "setName()=" + objectKind);
                 node.getScaleController().setMinScale(scale);
                 node.getScaleController().setMaxScale(scale * 2);
                 node.setLocalScale(scaleVector);

@@ -75,7 +75,8 @@
     <string name="block_contents_throw_away">捨てる</string>
     <string name="block_contents_if_block">もし ブロックと衝突中なら</string>
     <string name="block_contents_if_eatable">もし 目の前に食べ物があれば</string>
-    <string name="block_contents_if_else_block">もし ブロックなら</string>
+    <string name="block_contents_if_else_eatable">もし 目の前に食べ物があれば</string>
+    <string name="block_contents_if_else_nothing">もし 目の前に何もなければ</string>
     <string name="block_contents_if_elseif_else_block">もし ブロックなら</string>
     <string name="block_contents_loop_arrival_goal">ゴールまでループ</string>
     <string name="block_contents_loop_arrival_block">ブロックまでループ</string>
@@ -154,14 +155,20 @@
     <string name="guide_sub_tutorial_1">～プログラミングをしてみよう～</string>
     <string name="guide_contents_tutorial_1">切り株をよけて、リスのそばまで行こう</string>
     <string name="guide_explanation_tutorial_1">
-        ウサギをリスのそばまで移動させる\nプログラムを作ってみよう！\n\n真ん中にある切り株にあたると失敗だよ！\nうまく避けるようにプログラミングしてね！
+        ウサギをリスのそばまで移動させる\n
+        プログラムを作ってみよう！\n\n
+        真ん中にある切り株にあたると失敗だよ！\n
+        うまく避けるようにプログラミングしてね！
     </string>
 
     <string name="guide_major_tutorial_2">チュートリアル2</string>
     <string name="guide_sub_tutorial_2">～ループ処理をしてみよう～</string>
     <string name="guide_contents_tutorial_2">橋を渡って看板まで運転</string>
     <string name="guide_explanation_tutorial_2">
-        橋の先の看板まで運転する\nプログラムを作ってみよう！\n\n向きの変更がポイントだよ！\nループ処理を使ってうまくプログラミングしてね！
+        橋の先の看板まで運転する\n
+        プログラムを作ってみよう！\n\n
+        向きの変更がポイントだよ！\n
+        ループ処理を使ってうまくプログラミングしてね！
     </string>
 
     <string name="guide_major_tutorial_3">チュートリアル3</string>
@@ -173,9 +180,14 @@
         ループブロックと条件ブロックをうまく組み合わせるのがポイントだよ！\n
     </string>
 
-
-
-
+    <string name="guide_major_tutorial_4">チュートリアル4</string>
+    <string name="guide_sub_tutorial_4">～条件ブロックを組み合わせてみよう～</string>
+    <string name="guide_contents_tutorial_4">ニンジンは食べて、毒キノコは捨てる。家につけばクリア</string>
+    <string name="guide_explanation_tutorial_4">
+        ニンジンを食べて家に帰るプログラムを作ってみよう！\n
+        ただし、途中で毒キノコがあるから、毒キノコは食べずに捨てちゃおう！\n
+        複数の条件ブロックをうまく組み合わせるのがポイントだよ！\n
+    </string>
 
 
     <!-- Strings used for fragments for navigation -->
