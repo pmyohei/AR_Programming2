@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.ar.ar_programming.CharacterNode;
+import com.ar.ar_programming.Gimmick;
 import com.ar.ar_programming.R;
 
 
@@ -34,10 +35,10 @@ public abstract class NestBlock extends ProcessBlock {
         this(context, null);
     }
     public NestBlock(Context context, AttributeSet attrs) {
-        this(context, attrs, 0, 0, 0);
+        this(context, attrs, 0, null);
     }
-    public NestBlock(Context context, AttributeSet attrs, int defStyle, int type, int contents) {
-        super(context, attrs, defStyle, type, contents);
+    public NestBlock(Context context, AttributeSet attrs, int defStyle, Gimmick.XmlBlockInfo xmlBlockInfo) {
+        super(context, attrs, defStyle, xmlBlockInfo);
         createStartBlock();
     }
 
@@ -59,7 +60,7 @@ public abstract class NestBlock extends ProcessBlock {
         // 処理ブロックタッチリスナー
         setBlockTouchListerer();
         // 処理ブロック内の内容を書き換え
-        rewriteProcessContents(mProcessContents);
+        rewriteProcessContents( mXmlBlockInfo.stringId );
     }
 
     /*
@@ -317,7 +318,7 @@ public abstract class NestBlock extends ProcessBlock {
         // ネスト内処理ブロック数チェック
         //-----------------------------
         // ネスト内に処理ブロックがなければ
-        if (!hasNestBlock()) {
+        if ( !hasNestBlock() ) {
             // 次の処理ブロックへ
             tranceNextBlock(characterNode);
             return;
@@ -329,7 +330,7 @@ public abstract class NestBlock extends ProcessBlock {
         // 条件成立の場合
         if ( isCondition(characterNode) ) {
 
-            Log.i("向いている方向ロジック", "ネスト内処理ブロックへ");
+            Log.i("Eat", "ネスト内ブロックの実行へ");
 
             // ネスト内の処理ブロックを実行
             ProcessBlock nextBlock = (ProcessBlock) mNestStartBlockFirst.getBelowBlock();
@@ -337,7 +338,7 @@ public abstract class NestBlock extends ProcessBlock {
             return;
         }
 
-        Log.i("向いている方向ロジック", "ネスト処理終了：条件未成立");
+//        Log.i("向いている方向ロジック", "ネスト処理終了：条件未成立");
 
         // 条件成立の場合、ネストブロックの下のブロックへ
         tranceNextBlock(characterNode);

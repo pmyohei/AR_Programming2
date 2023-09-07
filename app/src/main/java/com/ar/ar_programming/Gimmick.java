@@ -6,7 +6,6 @@ import static com.ar.ar_programming.GimmickManager.BLOCK_VALUE_LIMIT_POS;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.util.Log;
 
 import com.ar.ar_programming.process.Block;
 import com.ar.ar_programming.process.IfElseIfElseBlock;
@@ -69,11 +68,21 @@ public class Gimmick {
      * ブロックプロパティ情報
      */
     public class XmlBlockInfo {
-        public int type;
-        public int contents;
-        public int userSelectDrawableId;
-        public int userSelectStringId;
-        public int valueLimit;
+
+        //----------------------
+        // 例) single_forward_1
+        //      type    ：single
+        //      contents：forward
+        //      userSelectDrawableId  ：singleブロック用のDrawableID
+        //      userSelectStringId    ：ブロック内文字列
+        //      valueLimit：1
+        //----------------------
+        public int type;                // ブロック種別（Single, Loop, If,,,）
+        public int contents;            // ブロック内容（「前へ進む」、「食べる」、、）
+        public int drawableId;          // ブロックイメージID
+        public int stringId;            // ブロック文字列ID
+        public int volumeLimit;          // 処理量制限値
+        public boolean existsVolume;    // 処理量があるブロックかどうか（例えば、「前へ進む」は”あり”。「食べる」であれば”なし”。）
 
         public XmlBlockInfo() {
         }
@@ -216,6 +225,7 @@ public class Gimmick {
         int contents;
         int selectDrawableId;
         int selectStringId;
+        boolean existsVolume = true;
 
         String blockContentsStr = blockSplit[BLOCK_CONTENTS_POS];
         switch (blockContentsStr) {
@@ -247,12 +257,14 @@ public class Gimmick {
                 contents = SingleBlock.PROCESS_CONTENTS_EAT;
                 selectDrawableId = R.drawable.baseline_eat_24;
                 selectStringId = R.string.block_contents_eat;
+                existsVolume = false;
                 break;
 
             case "throwAway":
                 contents = SingleBlock.PROCESS_CONTENTS_THROW_AWAY;
                 selectDrawableId = R.drawable.baseline_throw_away_24;
                 selectStringId = R.string.block_contents_throw_away;
+                existsVolume = false;
                 break;
 
             default:
@@ -265,13 +277,14 @@ public class Gimmick {
         // 処理量制限情報取得
         int valueSettingLimit = getBlockValueSettingLimit(blockSplit);
 
-        Log.i("ブロックxml", "valueSettingLimit=" + valueSettingLimit);
+//        Log.i("ブロックxml", "valueSettingLimit=" + valueSettingLimit);
 
         // 設定
         xmlBlockInfo.contents = contents;
-        xmlBlockInfo.userSelectDrawableId = selectDrawableId;
-        xmlBlockInfo.userSelectStringId = selectStringId;
-        xmlBlockInfo.valueLimit = valueSettingLimit;
+        xmlBlockInfo.drawableId = selectDrawableId;
+        xmlBlockInfo.stringId = selectStringId;
+        xmlBlockInfo.volumeLimit = valueSettingLimit;
+        xmlBlockInfo.existsVolume = existsVolume;
     }
 
     /*
@@ -308,8 +321,8 @@ public class Gimmick {
 
         // 設定
         xmlBlockInfo.contents = contents;
-        xmlBlockInfo.userSelectDrawableId = selectDrawableId;
-        xmlBlockInfo.userSelectStringId = selectStringId;
+        xmlBlockInfo.drawableId = selectDrawableId;
+        xmlBlockInfo.stringId = selectStringId;
     }
 
     /*
@@ -318,11 +331,19 @@ public class Gimmick {
     private void setXmlIfBlockInfo(String blockContentsStr, XmlBlockInfo xmlBlockInfo) {
 
         int contents;
-        int selectDrawableId = R.drawable.baseline_block_if_24;
         int selectStringId;
 
         switch (blockContentsStr) {
             case "collision-obstacle":
+                contents = IfBlock.PROCESS_CONTENTS_IF_COLLISION_OBSTACLE;
+                selectStringId = R.string.block_contents_if_block;
+                break;
+
+            case "eatable":
+                contents = IfBlock.PROCESS_CONTENTS_IF_EATABLE;
+                selectStringId = R.string.block_contents_if_eatable;
+                break;
+
             default:
                 contents = IfBlock.PROCESS_CONTENTS_IF_COLLISION_OBSTACLE;
                 selectStringId = R.string.block_contents_if_block;
@@ -330,9 +351,9 @@ public class Gimmick {
         }
 
         // 設定
+        xmlBlockInfo.drawableId = R.drawable.baseline_block_if_24;
         xmlBlockInfo.contents = contents;
-        xmlBlockInfo.userSelectDrawableId = selectDrawableId;
-        xmlBlockInfo.userSelectStringId = selectStringId;
+        xmlBlockInfo.stringId = selectStringId;
     }
 
     /*
@@ -353,8 +374,8 @@ public class Gimmick {
 
         // 設定
         xmlBlockInfo.contents = contents;
-        xmlBlockInfo.userSelectDrawableId = selectDrawableId;
-        xmlBlockInfo.userSelectStringId = selectStringId;
+        xmlBlockInfo.drawableId = selectDrawableId;
+        xmlBlockInfo.stringId = selectStringId;
     }
 
     /*
@@ -375,8 +396,8 @@ public class Gimmick {
 
         // 設定
         xmlBlockInfo.contents = contents;
-        xmlBlockInfo.userSelectDrawableId = selectDrawableId;
-        xmlBlockInfo.userSelectStringId = selectStringId;
+        xmlBlockInfo.drawableId = selectDrawableId;
+        xmlBlockInfo.stringId = selectStringId;
     }
 
     /*
@@ -729,14 +750,21 @@ public class Gimmick {
      * ギミックで使用可能なブロックリストを設定
      */
     public void setBlock( String block ) {
-        // オブジェクト名を分割
-        String[] strs = splitGimmickValueDelimiter(block);
+        //----------------------
+        // 各ブロック情報をリスト化
+        //----------------------
+        // デリミタで分割して配列化
+        // 例）"single_forward, single_eat" → [0]single_forward  [1]single_eat
+        String[] blocks = splitGimmickValueDelimiter(block);
 
         // リスト生成
         blockList.clear();
-        Collections.addAll(blockList, strs);
+        Collections.addAll(blockList, blocks);
 
-        //xmlブロック情報リストを生成する
+        //----------------------
+        // 各ブロック情報を詳細化
+        //----------------------
+        // xmlブロック情報リストを生成する
         setXmlBlockInfoList( blockList );
     }
 

@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.ar.ar_programming.CharacterNode;
+import com.ar.ar_programming.Gimmick;
 import com.ar.ar_programming.R;
 
 
@@ -29,14 +30,14 @@ public class IfElseIfElseBlock extends IfElseBlock {
     /*
      * コンストラクタ
      */
-    public IfElseIfElseBlock(Context context, int contents) {
-        this(context, null, contents);
+    public IfElseIfElseBlock(Context context, Gimmick.XmlBlockInfo xmlBlockInfo) {
+        this(context, null, xmlBlockInfo);
     }
-    public IfElseIfElseBlock(Context context, AttributeSet attrs, int contents) {
-        this(context, attrs, 0, contents);
+    public IfElseIfElseBlock(Context context, AttributeSet attrs, Gimmick.XmlBlockInfo xmlBlockInfo) {
+        this(context, attrs, 0, xmlBlockInfo);
     }
-    public IfElseIfElseBlock(Context context, AttributeSet attrs, int defStyle, int contents) {
-        super(context, attrs, defStyle, PROCESS_TYPE_IF_ELSEIF_ELSE, contents);
+    public IfElseIfElseBlock(Context context, AttributeSet attrs, int defStyle, Gimmick.XmlBlockInfo xmlBlockInfo) {
+        super(context, attrs, defStyle, xmlBlockInfo);
         setLayout(R.layout.process_block_if_elseif_else);
         init();
     }
@@ -55,31 +56,18 @@ public class IfElseIfElseBlock extends IfElseBlock {
         super.setLayout(layoutID);
 
         // 処理ブロック内の内容を書き換え
-        rewriteProcessContents(mProcessContents);
+        rewriteProcessContents( mXmlBlockInfo.stringId );
     }
 
     /*
      * 処理ブロック内の内容を書き換え
      */
     @Override
-    public void rewriteProcessContents(int contents) {
-
-        // 処理内容文字列ID
-        int contentId;
-
-        // 種別に応じた文言IDを取得
-        switch (contents) {
-            case PROCESS_CONTENTS_IF_ELSE_BLOCK:
-                contentId = R.string.block_contents_if_else_block;
-                break;
-            default:
-                contentId = R.string.block_contents_if_else_block;
-                break;
-        }
+    public void rewriteProcessContents(int stringId) {
 
         // 文言IDをレイアウトに設定
         TextView tv_contents = findViewById(R.id.tv_contents);
-        tv_contents.setText(contentId);
+        tv_contents.setText(stringId);
     }
 
     /*

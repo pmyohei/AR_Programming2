@@ -7,6 +7,7 @@ import android.widget.TextView;
 
 import com.ar.ar_programming.CharacterNode;
 import com.ar.ar_programming.ArMainFragment;
+import com.ar.ar_programming.Gimmick;
 import com.ar.ar_programming.GimmickManager;
 import com.ar.ar_programming.R;
 import com.google.ar.sceneform.Node;
@@ -37,16 +38,16 @@ public class LoopBlock extends NestBlock {
     /*
      * コンストラクタ
      */
-    public LoopBlock(Context context, int contents) {
-        this(context, null, contents);
+    public LoopBlock(Context context, Gimmick.XmlBlockInfo xmlBlockInfo) {
+        this(context, null, xmlBlockInfo);
     }
 
-    public LoopBlock(Context context, AttributeSet attrs, int contents) {
-        this(context, attrs, 0, contents);
+    public LoopBlock(Context context, AttributeSet attrs, Gimmick.XmlBlockInfo xmlBlockInfo) {
+        this(context, attrs, 0, xmlBlockInfo);
     }
 
-    public LoopBlock(Context context, AttributeSet attrs, int defStyle, int contents) {
-        super(context, attrs, defStyle, PROCESS_TYPE_LOOP, contents);
+    public LoopBlock(Context context, AttributeSet attrs, int defStyle, Gimmick.XmlBlockInfo xmlBlockInfo) {
+        super(context, attrs, defStyle, xmlBlockInfo);
         setLayout(R.layout.process_block_loop);
     }
 
@@ -58,40 +59,18 @@ public class LoopBlock extends NestBlock {
         super.setLayout(layoutID);
 
         // 処理ブロック内の内容を書き換え
-        rewriteProcessContents(mProcessContents);
+        rewriteProcessContents( mXmlBlockInfo.stringId );
     }
 
     /*
      * 処理ブロック内の内容を書き換え
      */
     @Override
-    public void rewriteProcessContents(int contents) {
-
-        // 処理内容文字列ID
-        int contentId;
-
-        // 種別に応じた文言IDを取得
-        switch (contents) {
-            case PROCESS_CONTENTS_LOOP_ARRIVAL_GOAL:
-                contentId = R.string.block_contents_loop_arrival_goal;
-                break;
-            case PROCESS_CONTENTS_LOOP_BLOCK:
-                contentId = R.string.block_contents_loop_arrival_block;
-                break;
-            case PROCESS_CONTENTS_LOOP_FACING_GOAL:
-                contentId = R.string.block_contents_loop_facing_goal;
-                break;
-            case PROCESS_CONTENTS_LOOP_FACING_OBSTACLE:
-                contentId = R.string.block_contents_loop_facing_obstacle;
-                break;
-            default:
-                contentId = R.string.block_contents_loop_arrival_goal;
-                break;
-        }
+    public void rewriteProcessContents(int stringID) {
 
         // 文言IDをレイアウトに設定
         TextView tv_contents = findViewById(R.id.tv_contents);
-        tv_contents.setText(contentId);
+        tv_contents.setText(stringID);
     }
 
     /*
@@ -102,10 +81,11 @@ public class LoopBlock extends NestBlock {
     @Override
     public boolean isCondition(CharacterNode characterNode) {
 
-        switch (mProcessContents) {
+        switch ( mXmlBlockInfo.contents ) {
 
             case PROCESS_CONTENTS_LOOP_ARRIVAL_GOAL:
-                break;
+                // ゴール到達＝終了であるため、常にtrue（条件成立）を返す
+                return true;
 
             case PROCESS_CONTENTS_LOOP_BLOCK:
                 break;
@@ -114,14 +94,14 @@ public class LoopBlock extends NestBlock {
             case PROCESS_CONTENTS_LOOP_FACING_OBSTACLE:
                 // キャラクター方向判定
                 // ※向いている＝ループ終了であるため、true（向いている）⇒false（ループ終了／条件不成立）に変換して返す
-                return !isConditionFacing( characterNode, mProcessContents );
+                return !isConditionFacing( characterNode, mXmlBlockInfo.contents );
 
             default:
                 break;
         }
 
         tmploopCount++;
-        Log.i("チャート動作チェック", "tmploopCount=" + tmploopCount);
+//        Log.i("チャート動作チェック", "tmploopCount=" + tmploopCount);
         return (tmploopCount <= 20);
     }
 

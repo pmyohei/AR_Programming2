@@ -4,7 +4,7 @@
 	<gimmick
 		sequence="11"
 		successCondition="knockDown"
-		goalExplanation="guide_major_tutorial_2, guide_sub_tutorial_2, guide_contents_tutorial_2, guide_explanation_tutorial_2"
+		goalExplanation="guide_major_tutorial_3, guide_sub_tutorial_3, guide_contents_tutorial_3, guide_explanation_tutorial_3"
 		stageGlb="models/stage/fantasy_magic_enemy.glb"
 		characterGlb="models/animal/rabit_witch.glb"
 		characterPosition="-4.2 : -1.1 : 1.8"
@@ -39,8 +39,8 @@
 	<gimmick
 		sequence="2"
 		successCondition="goal"
-		goalExplanation="guide_major_tutorial_2, guide_sub_tutorial_2, guide_contents_tutorial_2, guide_explanation_tutorial_2"
-		stageGlb="models/stage/tutorial_stage_2.glb"
+		goalExplanation="guide_major_tutorial_3, guide_sub_tutorial_3, guide_contents_tutorial_3, guide_explanation_tutorial_3"
+		stageGlb="models/stage/tutorial_stage_3.glb"
 		characterGlb="models/vehicle/car.glb"
 		characterPosition="0 : 0.5 : 7.5"
 		characterAngle="-30"
@@ -53,7 +53,7 @@
 	<gimmick
 		sequence="3"
 		successCondition="goal"
-		goalExplanation="guide_major_tutorial_2, guide_sub_tutorial_2, guide_contents_tutorial_2, guide_explanation_tutorial_2"
+		goalExplanation="guide_major_tutorial_3, guide_sub_tutorial_3, guide_contents_tutorial_3, guide_explanation_tutorial_3"
 		stageGlb="models/stage/tutorial_stage_3.glb"
 		characterGlb="models/animal/rabit.glb"
 		characterPosition="0 : 1.4 : 8.7"
@@ -63,16 +63,16 @@
 		goalAngle="0"
 		objectGlb="models/obstacle/carrot.glb"
 		objectNum="1"
-		objectKind="obstacle"
+		objectKind="eatable"
 		objectPositionRandom="false"
 		objectPosition="0 : 1.3 : -5.0"
-		block="single_forward, single_eat, loop_facing-goal"
+		block="single_forward_5, single_eat, loop_arrival-goal, if_eatable"
 		/>
 
 	<gimmick
 		sequence="4"
 		successCondition="goal"
-		goalExplanation="guide_major_tutorial_2, guide_sub_tutorial_2, guide_contents_tutorial_2, guide_explanation_tutorial_2"
+		goalExplanation="guide_major_tutorial_3, guide_sub_tutorial_3, guide_contents_tutorial_3, guide_explanation_tutorial_3"
 		stageGlb="models/stage/tutorial_stage_4.glb"
 		characterGlb="models/animal/rabit.glb"
 		characterPosition="0 : 1.4 : 8.7"

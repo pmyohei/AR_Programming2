@@ -261,11 +261,12 @@ public class CharacterNode extends TransformableNode {
                 break;
 
             } else if (collisionNode.equals(GimmickManager.NODE_NAME_EATABLE)) {
-                startModelAnimation(MODEL_ANIMATION_STR_ERROR, 2000);
+                Log.i("Eat", "detectCollision() 食べ物と衝突");
+//                startModelAnimation(MODEL_ANIMATION_STR_ERROR, 2000);
                 break;
 
             } else if (collisionNode.equals(GimmickManager.NODE_NAME_THROW_AWAY)) {
-                startModelAnimation(MODEL_ANIMATION_STR_ERROR, 2000);
+//                startModelAnimation(MODEL_ANIMATION_STR_ERROR, 2000);
                 break;
             }
 
@@ -278,8 +279,10 @@ public class CharacterNode extends TransformableNode {
         //----------------
         mCollisionNodeName = collisionNode;
 
+        Log.i("Eat", "detectCollision() 食べ物と衝突後　mCollisionNodeName=" + mCollisionNodeName);
+
         // リスナーコール判定
-        if (!collisionNode.equals(GimmickManager.NODE_NAME_NONE)) {
+        if ( !collisionNode.equals(GimmickManager.NODE_NAME_NONE) ) {
             mCollisionDetectListener.onCollisionDetect(collisionNode, mProcessAnimator);
         }
 
@@ -294,7 +297,7 @@ public class CharacterNode extends TransformableNode {
     public void setWalk(float volume) {
 
         // 衝突中は、処理なし
-        if (!mCollisionNodeName.equals(GimmickManager.NODE_NAME_NONE)) {
+        if ( !mCollisionNodeName.equals(GimmickManager.NODE_NAME_NONE) ) {
             return;
         }
 
@@ -404,27 +407,26 @@ public class CharacterNode extends TransformableNode {
      */
     private void eat() {
 
-        // アクション成否：成功
-        mSuccessAction = true;
-
         //--------------------------------
-        // 衝突中の食事可能NodeをSceneから削除
+        // 失敗判定
         //--------------------------------
         int index = getCollisionIndex(GimmickManager.NODE_NAME_EATABLE);
-        // 衝突中Nodeなし
-        if (index == COLLISION_RET_NONE) {
-            return;
-        }
-
-        // アクション対象外Nodeと衝突中
-        if (index == COLLISION_RET_OTHRE) {
+        // 衝突中Nodeなし or 食べられないNodeと衝突中
+        if ( (index == COLLISION_RET_NONE) || (index == COLLISION_RET_OTHRE) ) {
             // アクション失敗
             mSuccessAction = false;
             return;
         }
 
-        // アクション対象外Nodeと衝突中なら、Sceneから削除
+        //-----------------
+        // 成功
+        //-----------------
+        // アクション成否：成功
+        mSuccessAction = true;
+        // アクション対象Nodeと衝突中なら、Sceneから削除
         removeNodeFromScene( index );
+        // 衝突中Node情報クリア
+        mCollisionNodeName = GimmickManager.NODE_NAME_NONE;
     }
 
     /*
@@ -451,8 +453,11 @@ public class CharacterNode extends TransformableNode {
             return;
         }
 
-        // アクション対象外Nodeと衝突中なら、Sceneから削除
+        // アクション対象Nodeと衝突中なら、Sceneから削除
         removeNodeFromScene( index );
+
+        // 衝突中Node情報クリア
+        mCollisionNodeName = GimmickManager.NODE_NAME_NONE;
     }
 
     /*
@@ -632,26 +637,26 @@ public class CharacterNode extends TransformableNode {
     /*
      * 処理ブロックアニメーション終了処理
      */
-    public void setEndProcessAnimation(int processKind, float volume) {
+    public void setEndProcessAnimation(int blockContents, float volume) {
 
         // 状態クリア
-        mCollisionNodeName = GimmickManager.NODE_NAME_NONE;
+//        mCollisionNodeName = GimmickManager.NODE_NAME_NONE;
         mfinishNoneVolume = false;          // 処理量なしアクション：未完了
         mSuccessAction = true;              // アクション成否：成功
 
         Log.i("成功判定", "処理ブロックアニメーション終了処理");
 
         // アニメーション終了時の変化後の値を保持
-        setAnimationEndValue(processKind, volume);
+        setAnimationEndValue(blockContents, volume);
     }
 
     /*
      * アニメーション終了時の変化後の値を保持
      */
-    public void setAnimationEndValue(int processKind, float volume) {
+    public void setAnimationEndValue(int blockContents, float volume) {
 
         // 処理種別に応じた保存処理
-        switch (processKind) {
+        switch (blockContents) {
             // 移動
             case PROCESS_CONTENTS_FORWARD:
             case PROCESS_CONTENTS_BACK:
@@ -662,6 +667,10 @@ public class CharacterNode extends TransformableNode {
             case PROCESS_CONTENTS_RIGHT_ROTATE:
             case PROCESS_CONTENTS_LEFT_ROTATE:
                 saveCurrentAngle(volume);
+                return;
+
+            // それ以外
+            default:
                 return;
         }
     }
@@ -852,6 +861,10 @@ public class CharacterNode extends TransformableNode {
             @Override
             public void onAnimationEnd(Animator animator) {
 
+//                if( contents == PROCESS_CONTENTS_EAT ){
+//                    Log.i("Eat", "eat アニメーション終了");
+//                }
+
                 //----------------------
                 // プログラミング途中終了
                 //----------------------
@@ -928,12 +941,12 @@ public class CharacterNode extends TransformableNode {
      * 3Dモデルアニメーションの開始
      *   Blender側で命名された３Dアニメーション名を取得
      */
-    public void startModelAnimation(int procKind, long duration) {
+    public void startModelAnimation(int contents, long duration) {
 
         String animationName = "";
 
         // アニメーション名を取得
-        switch (procKind) {
+        switch (contents) {
             case PROCESS_CONTENTS_FORWARD:
             case PROCESS_CONTENTS_BACK:
                 animationName = MODEL_ANIMATION_STR_WALK;
@@ -963,15 +976,23 @@ public class CharacterNode extends TransformableNode {
     /*
      * ゴール判定
      */
-    private boolean isGoaled() {
+    public boolean isGoaled() {
         return ( mCollisionNodeName.equals( GimmickManager.NODE_NAME_GOAL ));
     }
 
     /*
      * 障害物判定
      */
-    private boolean isObstacle() {
+    public boolean isObstacle() {
         return ( mCollisionNodeName.equals( GimmickManager.NODE_NAME_OBSTACLE ));
+    }
+
+    /*
+     * 食べもの判定
+     */
+    public boolean isEatable() {
+        Log.i("Eat", "isEatable() mCollisionNodeName=" + mCollisionNodeName);
+        return ( mCollisionNodeName.equals( GimmickManager.NODE_NAME_EATABLE ));
     }
 
     /*

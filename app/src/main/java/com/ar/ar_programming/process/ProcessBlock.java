@@ -9,6 +9,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.ar.ar_programming.CharacterNode;
+import com.ar.ar_programming.Gimmick;
 import com.ar.ar_programming.R;
 
 
@@ -25,7 +26,8 @@ public abstract class ProcessBlock extends Block {
     //---------------------------
     // フィールド変数
     //---------------------------
-    public int mProcessContents;
+//    public int mProcessContents;
+    public Gimmick.XmlBlockInfo mXmlBlockInfo;
     private boolean mDragFlg;
     private ProgrammingListener mProgrammingListener;
 
@@ -34,24 +36,24 @@ public abstract class ProcessBlock extends Block {
         this(context, null);
     }
     public ProcessBlock(Context context, AttributeSet attrs) {
-        this(context, attrs, 0, 0, 0);
+        this(context, attrs, 0, null);
     }
-    public ProcessBlock(Context context, AttributeSet attrs, int defStyle, int type, int contents) {
-        super(context, attrs, defStyle, type);
-        mProcessContents = contents;
+    public ProcessBlock(Context context, AttributeSet attrs, int defStyle, Gimmick.XmlBlockInfo xmlBlockInfo) {
+        super(context, attrs, defStyle, xmlBlockInfo);
+        mXmlBlockInfo = xmlBlockInfo;
         setId(View.generateViewId());
     }
 
     /*
      * 処理ブロックの内容を書き換え
      */
-    public abstract void rewriteProcessContents(int contents);
+    public abstract void rewriteProcessContents(int stringId);
 
     /*
      * 処理ブロック内容取得
      */
     public int getProcessContents() {
-        return mProcessContents;
+        return mXmlBlockInfo.contents;
     }
 
     /*
@@ -180,6 +182,7 @@ public abstract class ProcessBlock extends Block {
                 // ループの場合は、開始処理から
                 parentNest.startProcess(characterNode);
             } else {
+                // 条件ブロックの場合は、条件ブロックの下ブロックから
                 parentNest.tranceNextBlock(characterNode);
             }
 
@@ -190,7 +193,7 @@ public abstract class ProcessBlock extends Block {
         // 下ブロックなし／親ネストなし
         //--------------------------
         // 終了リスナーをコール
-//        mProgrammingListener.onProgrammingEnd( PROGRAMMING_END_ALL_DONE );
+        mProgrammingListener.onProgrammingEnd( PROGRAMMING_END_ALL_DONE );
     }
 
     /*

@@ -25,7 +25,7 @@ public class StartBlock extends Block {
      * コンストラクタ
      */
     public StartBlock(Context context) {
-        this(context, (AttributeSet) null);
+        this(context, null);
     }
     public StartBlock(Context context, AttributeSet attrs) {
         this(context, attrs, 0);

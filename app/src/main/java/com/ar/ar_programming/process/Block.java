@@ -9,6 +9,7 @@ import android.widget.ImageView;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import com.ar.ar_programming.Gimmick;
 import com.ar.ar_programming.R;
 
 
@@ -50,11 +51,19 @@ public abstract class Block extends ConstraintLayout {
         this(context, null);
     }
     public Block(Context context, AttributeSet attrs) {
-        this(context, attrs, 0, 0);
+        this(context, attrs, 0, null);
     }
     public Block(Context context, AttributeSet attrs, int defStyle, int type) {
         super(context, attrs, defStyle);
+
         mProcessType = type;
+        mAboveBlock = null;
+        mBelowBlock = null;
+    }
+    public Block(Context context, AttributeSet attrs, int defStyle, Gimmick.XmlBlockInfo xmlBlockInfo) {
+        super(context, attrs, defStyle);
+
+        mProcessType = xmlBlockInfo.type;
         mAboveBlock = null;
         mBelowBlock = null;
     }

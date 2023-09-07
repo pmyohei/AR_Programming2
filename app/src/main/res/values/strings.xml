@@ -73,9 +73,10 @@
     <string name="block_contents_rorate_left">左に回転</string>
     <string name="block_contents_eat">食べる</string>
     <string name="block_contents_throw_away">捨てる</string>
-    <string name="block_contents_if_block">ifもし、ブロックなら</string>
-    <string name="block_contents_if_else_block">ifeもし、ブロックなら</string>
-    <string name="block_contents_if_elseif_else_block">ifeifもし、ブロックなら</string>
+    <string name="block_contents_if_block">もし ブロックと衝突中なら</string>
+    <string name="block_contents_if_eatable">もし 目の前に食べ物があれば</string>
+    <string name="block_contents_if_else_block">もし ブロックなら</string>
+    <string name="block_contents_if_elseif_else_block">もし ブロックなら</string>
     <string name="block_contents_loop_arrival_goal">ゴールまでループ</string>
     <string name="block_contents_loop_arrival_block">ブロックまでループ</string>
     <string name="block_contents_loop_facing_goal">ゴールを向くまでループ</string>
@@ -163,11 +164,14 @@
         橋の先の看板まで運転する\nプログラムを作ってみよう！\n\n向きの変更がポイントだよ！\nループ処理を使ってうまくプログラミングしてね！
     </string>
 
-
-
-
-
-
+    <string name="guide_major_tutorial_3">チュートリアル3</string>
+    <string name="guide_sub_tutorial_3">～条件ブロックを使ってみよう～</string>
+    <string name="guide_contents_tutorial_3">ニンジンを食べて家に帰る</string>
+    <string name="guide_explanation_tutorial_3">
+        途中でニンジンを食べて家に帰るプログラムを作ってみよう！\n\n
+        ニンジンは目の前にないと食べることができないよ！\n
+        ループブロックと条件ブロックをうまく組み合わせるのがポイントだよ！\n
+    </string>
 
 
 

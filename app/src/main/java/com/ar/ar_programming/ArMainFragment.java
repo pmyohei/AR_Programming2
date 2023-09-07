@@ -424,9 +424,9 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
         // 処理ブロッククリックリスナーの設定
         adapter.setOnBlockClickListener(new UserBlockSelectListAdapter.BlockClickListener() {
             @Override
-            public void onBlockClick(int selectBlockType, int selectBlockContents, int valueLimit) {
+            public void onBlockClick(Gimmick.XmlBlockInfo xmlBlockInfo) {
                 // クリックされたブロックを生成
-                createProcessBlock(selectBlockType, selectBlockContents, valueLimit);
+                createProcessBlock(xmlBlockInfo);
             }
         });
     }
@@ -451,7 +451,8 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
     /*
      * チャート最下部に処理ブロックを生成する
      */
-    private void createProcessBlock(int blockType, int blockContents, int valueLimit) {
+//    private void createProcessBlock(int blockType, int blockContents, int valueLimit) {
+    private void createProcessBlock(Gimmick.XmlBlockInfo xmlBlockInfo) {
 
         ProcessBlock newBlock;
         Context context = getContext();
@@ -459,32 +460,32 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
         //-----------------
         // 処理ブロック生成
         //-----------------
-        switch (blockType) {
+        switch ( xmlBlockInfo.type ) {
             // 単体処理
             case Block.PROCESS_TYPE_SINGLE:
-                newBlock = new SingleBlock(context, getParentFragmentManager(), blockContents, valueLimit);
+                newBlock = new SingleBlock(context, getParentFragmentManager(), xmlBlockInfo);
                 break;
 
             // ネスト処理
             case Block.PROCESS_TYPE_IF:
-                newBlock = new IfBlock(context, blockContents);
+                newBlock = new IfBlock(context, xmlBlockInfo);
                 break;
 
             case Block.PROCESS_TYPE_IF_ELSE:
-                newBlock = new IfElseBlock(context, blockContents);
+                newBlock = new IfElseBlock(context, xmlBlockInfo);
                 break;
 
             case Block.PROCESS_TYPE_IF_ELSEIF_ELSE:
-                newBlock = new IfElseIfElseBlock(context, blockContents);
+                newBlock = new IfElseIfElseBlock(context, xmlBlockInfo);
                 break;
 
             case Block.PROCESS_TYPE_LOOP:
-                newBlock = new LoopBlock(context, blockContents);
+                newBlock = new LoopBlock(context, xmlBlockInfo);
                 break;
 
             default:
                 // 種別指定がおかしければ、何もしない
-                Log.i("ブロックxml", "blockType=" + blockType);
+//                Log.i("ブロックxml", "blockType=" + blockType);
                 return;
         }
 
@@ -950,16 +951,16 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
     }
 
     /*
-     * 3Dモデルレンダリング「aaaaa」の生成
+     * 3Dモデルレンダリング「キャラクターアクション（吹き出し）」の生成
      */
     private void buildRenderableView(Gimmick gimmick) {
 
         Context context = getContext();
         mActionRenderable = null;
 
-        //-------------------
-        // aaaaa
-        //-------------------
+        //-------------------------------
+        // キャラクターアクション（吹き出し）
+        //-------------------------------
         ViewRenderable
                 .builder()
                 .setView(context, R.layout.character_action)

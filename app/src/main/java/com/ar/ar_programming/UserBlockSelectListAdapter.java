@@ -61,8 +61,8 @@ public class UserBlockSelectListAdapter extends RecyclerView.Adapter<UserBlockSe
             final Gimmick.XmlBlockInfo xmlBlockInfo = mXmlBlockInfo.get(position);
 
             // リストitemviewの設定
-            Drawable image = resources.getDrawable(xmlBlockInfo.userSelectDrawableId, null);
-            String description = resources.getString(xmlBlockInfo.userSelectStringId);
+            Drawable image = resources.getDrawable(xmlBlockInfo.drawableId, null);
+            String description = resources.getString(xmlBlockInfo.stringId);
             iv_blockImage.setImageDrawable(image);
             tv_title.setText(description);
 
@@ -72,7 +72,7 @@ public class UserBlockSelectListAdapter extends RecyclerView.Adapter<UserBlockSe
                     public void onClick(View view) {
                         Log.i("ブロックxml", "xmlBlockInfo.type=" + xmlBlockInfo.type);
                         Log.i("ブロックxml", "xmlBlockInfo.contents=" + xmlBlockInfo.contents);
-                        mBlockClickListener.onBlockClick(xmlBlockInfo.type, xmlBlockInfo.contents, xmlBlockInfo.valueLimit);
+                        mBlockClickListener.onBlockClick(xmlBlockInfo);
                     }
                 }
             );
@@ -154,6 +154,6 @@ public class UserBlockSelectListAdapter extends RecyclerView.Adapter<UserBlockSe
      */
     public interface BlockClickListener {
         // 処理ブロッククリックリスナー
-        void onBlockClick(int selectBlockType, int selectBlockContents, int valueLimit );
+        void onBlockClick( Gimmick.XmlBlockInfo xmlBlockInfo );
     }
 }

@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.ar.ar_programming.CharacterNode;
+import com.ar.ar_programming.Gimmick;
 import com.ar.ar_programming.R;
 
 
@@ -29,21 +30,22 @@ public class IfElseBlock extends NestBlock {
     /*
      * コンストラクタ
      */
-    public IfElseBlock(Context context, int contents) {
-        this(context, null, contents);
+    public IfElseBlock(Context context, Gimmick.XmlBlockInfo xmlBlockInfo) {
+        this(context, null, xmlBlockInfo);
     }
-    public IfElseBlock(Context context, AttributeSet attrs, int contents) {
-        this(context, attrs, 0, contents);
+    public IfElseBlock(Context context, AttributeSet attrs, Gimmick.XmlBlockInfo xmlBlockInfo) {
+        this(context, attrs, 0, xmlBlockInfo);
     }
-    public IfElseBlock(Context context, AttributeSet attrs, int defStyle, int contents) {
-        super(context, attrs, defStyle, PROCESS_TYPE_IF_ELSE, contents);
+    public IfElseBlock(Context context, AttributeSet attrs, int defStyle, Gimmick.XmlBlockInfo xmlBlockInfo) {
+        super(context, attrs, defStyle, xmlBlockInfo);
+
         setLayout(R.layout.process_block_if_else);
         init();
     }
-    public IfElseBlock(Context context, AttributeSet attrs, int defStyle, int type, int contents) {
-        super(context, attrs, defStyle, type, contents);
-        init();
-    }
+//    public IfElseBlock(Context context, AttributeSet attrs, int defStyle, Gimmick.XmlBlockInfo xmlBlockInfo) {
+//        super(context, attrs, defStyle, xmlBlockInfo);
+//        init();
+//    }
 
     /*
      * 初期化処理
@@ -59,31 +61,18 @@ public class IfElseBlock extends NestBlock {
         super.setLayout(layoutID);
 
         // 処理ブロック内の内容を書き換え
-        rewriteProcessContents(mProcessContents);
+        rewriteProcessContents( mXmlBlockInfo.stringId );
     }
 
     /*
      * 処理ブロック内の内容を書き換え
      */
     @Override
-    public void rewriteProcessContents(int contents) {
-
-        // 処理内容文字列ID
-        int contentId;
-
-        // 種別に応じた文言IDを取得
-        switch (contents) {
-            case PROCESS_CONTENTS_IF_ELSE_BLOCK:
-                contentId = R.string.block_contents_if_else_block;
-                break;
-            default:
-                contentId = R.string.block_contents_if_else_block;
-                break;
-        }
+    public void rewriteProcessContents(int stringID) {
 
         // 文言IDをレイアウトに設定
         TextView tv_contents = findViewById(R.id.tv_contents);
-        tv_contents.setText(contentId);
+        tv_contents.setText(stringID);
     }
 
     /*

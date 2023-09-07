@@ -2,7 +2,6 @@ package com.ar.ar_programming.process;
 
 import static com.ar.ar_programming.Gimmick.VOLUME_LIMIT_NONE;
 
-import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Context;
@@ -14,11 +13,9 @@ import android.widget.TextView;
 import androidx.fragment.app.FragmentManager;
 
 import com.ar.ar_programming.CharacterNode;
+import com.ar.ar_programming.Gimmick;
 import com.ar.ar_programming.R;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.ar.sceneform.Node;
-
-import java.util.List;
 
 
 /*
@@ -48,26 +45,24 @@ public class SingleBlock extends ProcessBlock {
     /*
      * コンストラクタ
      */
-    public SingleBlock(Context context, FragmentManager fragmentManager, int contents, int valueLimit) {
-        this(context, (AttributeSet) null, contents, valueLimit);
+    public SingleBlock(Context context, FragmentManager fragmentManager, Gimmick.XmlBlockInfo xmlBlockInfo) {
+        this(context, (AttributeSet) null, xmlBlockInfo);
         mFragmentManager = fragmentManager;
-        Log.i("ブロックxml", "SingleBlock 1 valueLimit=" + valueLimit);
     }
 
-    public SingleBlock(Context context, int valueLimit) {
-        this(context, (AttributeSet) null, 0, valueLimit);
+    public SingleBlock(Context context) {
+        this(context, (AttributeSet) null, null);
         Log.i("ブロックxml", "SingleBlock 2");
     }
 
-    public SingleBlock(Context context, AttributeSet attrs, int contents, int valueLimit) {
-        this(context, attrs, 0, contents, valueLimit);
-        Log.i("ブロックxml", "SingleBlock 3 valueLimit=" + valueLimit);
+    public SingleBlock(Context context, AttributeSet attrs, Gimmick.XmlBlockInfo xmlBlockInfo) {
+        this(context, attrs, 0, xmlBlockInfo);
     }
 
-    public SingleBlock(Context context, AttributeSet attrs, int defStyle, int contents, int valueLimit) {
-        super(context, attrs, defStyle, PROCESS_TYPE_SINGLE, contents);
-        Log.i("ブロックxml", "SingleBlock 4 valueLimit=" + valueLimit);
-        init(valueLimit);
+    public SingleBlock(Context context, AttributeSet attrs, int defStyle, Gimmick.XmlBlockInfo xmlBlockInfo) {
+        super(context, attrs, defStyle, xmlBlockInfo);
+//        Log.i("ブロックxml", "SingleBlock 4 valueLimit=" + valueLimit);
+        init( xmlBlockInfo.volumeLimit);
         setLayout(R.layout.process_block_single);
     }
 
@@ -87,9 +82,9 @@ public class SingleBlock extends ProcessBlock {
         super.setLayout(layoutID);
 
         // ブロック内の内容を書き換え
-        rewriteProcessContents(mProcessContents);
+        rewriteProcessContents( mXmlBlockInfo.stringId );
         // ブロックレイアウト設定
-        setBlockLayout(mProcessContents);
+        setBlockLayout( mXmlBlockInfo.contents );
         // ブロックタッチリスナー
         setBlockTouchListerer();
     }
@@ -125,7 +120,7 @@ public class SingleBlock extends ProcessBlock {
     }
 
     /*
-     * 処理量設定リスナー
+     * 処理量なし設定リスナー
      */
     private void setNoVolumeLayout() {
         // 処理量viewを非表示
@@ -168,7 +163,8 @@ public class SingleBlock extends ProcessBlock {
         // 処理量種別種別
         //--------------------
         int volumeKind;
-        if ((mProcessContents == PROCESS_CONTENTS_RIGHT_ROTATE) || (mProcessContents == PROCESS_CONTENTS_LEFT_ROTATE)) {
+        int contents = mXmlBlockInfo.contents;
+        if ((contents == PROCESS_CONTENTS_RIGHT_ROTATE) || (contents == PROCESS_CONTENTS_LEFT_ROTATE)) {
             volumeKind = VolumeDialog.VOLUME_KIND_ANGLE;
         } else {
             volumeKind = VolumeDialog.VOLUME_KIND_CM;
@@ -207,39 +203,11 @@ public class SingleBlock extends ProcessBlock {
      * 処理ブロック内の内容を書き換え
      */
     @Override
-    public void rewriteProcessContents(int contents) {
-
-        // 処理内容文字列ID
-        int contentId;
-
-        // 種別に応じた文言IDを取得
-        switch (contents) {
-            case PROCESS_CONTENTS_FORWARD:
-                contentId = R.string.block_contents_forward;
-                break;
-            case PROCESS_CONTENTS_BACK:
-                contentId = R.string.block_contents_back;
-                break;
-            case PROCESS_CONTENTS_LEFT_ROTATE:
-                contentId = R.string.block_contents_rorate_left;
-                break;
-            case PROCESS_CONTENTS_RIGHT_ROTATE:
-                contentId = R.string.block_contents_rorate_right;
-                break;
-            case PROCESS_CONTENTS_EAT:
-                contentId = R.string.block_contents_eat;
-                break;
-            case PROCESS_CONTENTS_THROW_AWAY:
-                contentId = R.string.block_contents_throw_away;
-                break;
-            default:
-                contentId = R.string.block_contents_forward;
-                break;
-        }
+    public void rewriteProcessContents(int stringID) {
 
         // 文言IDをレイアウトに設定
         TextView tv_contents = findViewById(R.id.tv_contents);
-        tv_contents.setText(contentId);
+        tv_contents.setText(stringID);
     }
 
     /*
@@ -280,7 +248,7 @@ public class SingleBlock extends ProcessBlock {
         float volume = characterNode.getAnimationVolume(contents, setVolume);
         long duration = characterNode.getAnimationDuration(contents, setVolume);
 
-        // 今回の処理用アニメーターを保持させる
+        // 今回の処理用アニメーターをキャラクターに保持させる
         ValueAnimator processAnimator = createProcessBlockAnimator(characterNode, contents, volume, duration);
         characterNode.setAnimator(this, processAnimator, contents, volume);
 
@@ -292,15 +260,11 @@ public class SingleBlock extends ProcessBlock {
         //----------------------------------------
         // モデルに用意されたアニメーションを開始
         characterNode.startModelAnimation(contents, duration);
-        Log.i("不具合", "contents=" + contents);
-        Log.i("不具合", "volume=" + volume);
-        Log.i("不具合", "duration=" + duration);
-        Log.i("不具合", "===========");
 
         //----------------------------------------
         // キャラクターアクションの内容設定
         //----------------------------------------
-        characterNode.setActionWord( mProcessContents );
+        characterNode.setActionWord( mXmlBlockInfo.contents );
     }
 
 }
