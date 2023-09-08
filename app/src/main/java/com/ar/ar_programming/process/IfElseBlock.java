@@ -6,8 +6,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.ar.ar_programming.AnimalNode;
-import com.ar.ar_programming.CharacterNode;
+import com.ar.ar_programming.character.AnimalNode;
+import com.ar.ar_programming.character.CharacterNode;
 import com.ar.ar_programming.Gimmick;
 import com.ar.ar_programming.R;
 

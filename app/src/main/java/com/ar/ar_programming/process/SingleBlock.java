@@ -12,7 +12,7 @@ import android.widget.TextView;
 
 import androidx.fragment.app.FragmentManager;
 
-import com.ar.ar_programming.CharacterNode;
+import com.ar.ar_programming.character.CharacterNode;
 import com.ar.ar_programming.Gimmick;
 import com.ar.ar_programming.R;
 import com.google.android.material.snackbar.Snackbar;

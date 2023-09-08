@@ -2,9 +2,9 @@ package com.ar.ar_programming;
 
 import static android.content.Context.MODE_PRIVATE;
 
-import static com.ar.ar_programming.CharacterNode.ACTION_FAILURE;
-import static com.ar.ar_programming.CharacterNode.ACTION_SUCCESS;
-import static com.ar.ar_programming.CharacterNode.ACTION_WAITING;
+import static com.ar.ar_programming.character.CharacterNode.ACTION_FAILURE;
+import static com.ar.ar_programming.character.CharacterNode.ACTION_SUCCESS;
+import static com.ar.ar_programming.character.CharacterNode.ACTION_WAITING;
 import static com.ar.ar_programming.GimmickManager.PROPERTY_CHARACTER_ANIMAL;
 import static com.ar.ar_programming.SettingActivity.CHARACTER_ANIMAL;
 
@@ -39,6 +39,9 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.ar.ar_programming.character.AnimalNode;
+import com.ar.ar_programming.character.CharacterNode;
+import com.ar.ar_programming.character.VehicleNode;
 import com.ar.ar_programming.databinding.FragmentArBinding;
 import com.ar.ar_programming.process.Block;
 import com.ar.ar_programming.process.IfElseIfElseBlock;

@@ -1,4 +1,4 @@
-package com.ar.ar_programming;
+package com.ar.ar_programming.character;
 
 import static com.ar.ar_programming.process.SingleBlock.PROCESS_CONTENTS_BACK;
 import static com.ar.ar_programming.process.SingleBlock.PROCESS_CONTENTS_EAT;
@@ -7,11 +7,11 @@ import static com.ar.ar_programming.process.SingleBlock.PROCESS_CONTENTS_LEFT_RO
 import static com.ar.ar_programming.process.SingleBlock.PROCESS_CONTENTS_RIGHT_ROTATE;
 import static com.ar.ar_programming.process.SingleBlock.PROCESS_CONTENTS_THROW_AWAY;
 
-import com.ar.ar_programming.process.SingleBlock;
+import com.ar.ar_programming.GimmickManager;
+import com.ar.ar_programming.R;
 import com.google.ar.sceneform.ux.TransformationSystem;
 
 import java.util.HashMap;
-import java.util.Map;
 
 public class AnimalNode extends CharacterNode {
 

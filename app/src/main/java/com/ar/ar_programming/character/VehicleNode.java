@@ -1,12 +1,12 @@
-package com.ar.ar_programming;
+package com.ar.ar_programming.character;
 
 import static com.ar.ar_programming.process.SingleBlock.PROCESS_CONTENTS_BACK;
-import static com.ar.ar_programming.process.SingleBlock.PROCESS_CONTENTS_EAT;
 import static com.ar.ar_programming.process.SingleBlock.PROCESS_CONTENTS_FORWARD;
 import static com.ar.ar_programming.process.SingleBlock.PROCESS_CONTENTS_LEFT_ROTATE;
 import static com.ar.ar_programming.process.SingleBlock.PROCESS_CONTENTS_RIGHT_ROTATE;
 import static com.ar.ar_programming.process.SingleBlock.PROCESS_CONTENTS_THROW_AWAY;
 
+import com.ar.ar_programming.R;
 import com.google.ar.sceneform.ux.TransformationSystem;
 
 import java.util.HashMap;

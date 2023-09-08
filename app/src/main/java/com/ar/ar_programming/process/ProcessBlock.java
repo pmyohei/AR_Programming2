@@ -8,7 +8,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.ar.ar_programming.CharacterNode;
+import com.ar.ar_programming.character.CharacterNode;
 import com.ar.ar_programming.Gimmick;
 import com.ar.ar_programming.R;
 

@@ -2,11 +2,10 @@ package com.ar.ar_programming.process;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.widget.TextView;
 
-import com.ar.ar_programming.AnimalNode;
-import com.ar.ar_programming.CharacterNode;
+import com.ar.ar_programming.character.AnimalNode;
+import com.ar.ar_programming.character.CharacterNode;
 import com.ar.ar_programming.Gimmick;
 import com.ar.ar_programming.R;
 

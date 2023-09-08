@@ -1,4 +1,4 @@
-package com.ar.ar_programming;
+package com.ar.ar_programming.character;
 
 import static com.ar.ar_programming.ArMainFragment.PROGRAMMING_END_ACTION_FAILURE;
 import static com.ar.ar_programming.ArMainFragment.PROGRAMMING_END_ALL_DONE;
@@ -7,7 +7,6 @@ import static com.ar.ar_programming.process.SingleBlock.PROCESS_CONTENTS_BACK;
 import static com.ar.ar_programming.process.SingleBlock.PROCESS_CONTENTS_FORWARD;
 import static com.ar.ar_programming.process.SingleBlock.PROCESS_CONTENTS_LEFT_ROTATE;
 import static com.ar.ar_programming.process.SingleBlock.PROCESS_CONTENTS_RIGHT_ROTATE;
-import static com.ar.ar_programming.process.SingleBlock.PROCESS_CONTENTS_THROW_AWAY;
 
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
@@ -18,6 +17,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.ar.ar_programming.ArMainFragment;
+import com.ar.ar_programming.GimmickManager;
+import com.ar.ar_programming.R;
 import com.ar.ar_programming.process.ProcessBlock;
 import com.ar.ar_programming.process.SingleBlock;
 import com.google.ar.sceneform.Node;
@@ -31,7 +33,6 @@ import com.google.ar.sceneform.ux.TransformableNode;
 import com.google.ar.sceneform.ux.TransformationSystem;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 
 public abstract class CharacterNode extends TransformableNode {
