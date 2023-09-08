@@ -3,6 +3,7 @@
 
 	<gimmick
 		sequence="knockDown"
+		character="animal"
 		successCondition="knockDown"
 		goalExplanation="guide_major_tutorial_3, guide_sub_tutorial_3, guide_contents_tutorial_3, guide_explanation_tutorial_3"
 		stageGlb="models/stage/fantasy_magic_enemy.glb"
@@ -18,7 +19,8 @@
 		/>
 
 	<gimmick
-		sequence="11_animal"
+		sequence="1"
+		character="animal"
 		successCondition="goal"
 		goalExplanation="guide_major_tutorial_1_animal, guide_sub_tutorial_1, guide_contents_tutorial_1, guide_explanation_tutorial_1"
 		stageGlb="models/stage/tutorial_stage_1.glb"
@@ -37,7 +39,8 @@
 		/>
 
 	<gimmick
-		sequence="1"
+		sequence="1car"
+		character="vehicle"
 		successCondition="goal"
 		goalExplanation="guide_major_tutorial_1_vehicle, guide_sub_tutorial_1, guide_contents_tutorial_1, guide_explanation_tutorial_1"
 		stageGlb="models/stage/load_stage.glb"
@@ -57,9 +60,10 @@
 
 	<gimmick
 		sequence="2"
+		character="vehicle"
 		successCondition="goal"
-		goalExplanation="guide_major_tutorial_3, guide_sub_tutorial_3, guide_contents_tutorial_3, guide_explanation_tutorial_3"
-		stageGlb="models/stage/tutorial_stage_3.glb"
+		goalExplanation="guide_major_tutorial_2, guide_sub_tutorial_2, guide_contents_tutorial_2, guide_explanation_tutorial_2"
+		stageGlb="models/stage/tutorial_stage_2.glb"
 		characterGlb="models/vehicle/car.glb"
 		characterPosition="0 : 0.5 : 7.5"
 		characterAngle="-30"
@@ -71,6 +75,7 @@
 
 	<gimmick
 		sequence="3"
+		character="animal"
 		successCondition="goal"
 		goalExplanation="guide_major_tutorial_3, guide_sub_tutorial_3, guide_contents_tutorial_3, guide_explanation_tutorial_3"
 		stageGlb="models/stage/tutorial_stage_3.glb"
@@ -88,9 +93,31 @@
 		block="single_forward_5, single_eat, loop_arrival-goal, if_eatable"
 		/>
 
-	<!-- objectGlb：！先に「mushroom_poison.glb」を記載すること。Renderable生成のタイミング問題。 -->
+	<!-- 「if」ブロックを利用するパターン -->
 	<gimmick
 		sequence="4"
+		character="animal"
+		successCondition="goal"
+		goalExplanation="guide_major_tutorial_4, guide_sub_tutorial_4, guide_contents_tutorial_4, guide_explanation_tutorial_4"
+		stageGlb="models/stage/tutorial_stage_4.glb"
+		characterGlb="models/animal/rabit.glb"
+		characterPosition="0 : 1.4 : 8.7"
+		characterAngle="180"
+		goalGlb="models/goal/house.glb"
+		goalPosition="0 : 3.9 : -18.8"
+		goalAngle="0"
+		objectGlb="models/obstacle/mushroom_poison.glb, models/obstacle/carrot.glb"
+		objectNum="2, 1"
+		objectKind="throwAway, eatable"
+		objectPositionRandom="false"
+		objectPosition="0 : 1.2 : 3, 0 : 1.2 : -10, 0 : 1.1 : -4.1"
+		block="single_forward_5, single_eat, single_throwAway, loop_arrival-goal, if_eatable, if_poison"
+		/>
+
+	<!-- 「if-else」ブロックを利用するパターン -->
+	<gimmick
+		sequence="4-1"
+		character="animal"
 		successCondition="goal"
 		goalExplanation="guide_major_tutorial_4, guide_sub_tutorial_4, guide_contents_tutorial_4, guide_explanation_tutorial_4"
 		stageGlb="models/stage/tutorial_stage_4.glb"
@@ -108,10 +135,10 @@
 		block="single_forward_5, single_eat, single_throwAway, loop_arrival-goal, if-else_eatable, if-else_nothing"
 		/>
 
-	<!-- objectGlb：！先に「mushroom_poison.glb」を記載すること。Renderable生成のタイミング問題。 -->
 	<!-- 「if-elseif-else」ブロックを利用するパターン -->
 	<gimmick
 		sequence="4-2"
+		character="animal"
 		successCondition="goal"
 		goalExplanation="guide_major_tutorial_4, guide_sub_tutorial_4, guide_contents_tutorial_4, guide_explanation_tutorial_4"
 		stageGlb="models/stage/tutorial_stage_4.glb"

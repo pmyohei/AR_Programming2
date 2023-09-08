@@ -118,13 +118,13 @@
 
     <!-- キャラクターアクションワード -->
     <string name="action_success">わーい！</string>
-    <string name="action_failure">残念\.\.\.</string>
-    <string name="action_wait">待機中！</string>
+    <string name="action_failure">失敗\.\.\.</string>
+    <string name="action_wait">待ち中！</string>
     <string name="action_walk_animal">とことこ</string>
-    <string name="action_walk_vehicle">進みます！</string>
-    <string name="action_rotate">向き変更！</string>
-    <string name="action_eat">がぶがぶ</string>
-    <string name="action_throw_away">いらなーい</string>
+    <string name="action_walk_vehicle">Boone！</string>
+    <string name="action_rotate">向きかえよ～</string>
+    <string name="action_eat">ムシャムシャ</string>
+    <string name="action_throw_away">ポイッ！</string>
 
     <!-- ダイアログ -->
     <string name="ar_dialog_title">リトライ</string>

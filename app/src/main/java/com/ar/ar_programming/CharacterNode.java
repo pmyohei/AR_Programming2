@@ -4,7 +4,6 @@ import static com.ar.ar_programming.ArMainFragment.PROGRAMMING_END_ACTION_FAILUR
 import static com.ar.ar_programming.ArMainFragment.PROGRAMMING_END_ALL_DONE;
 import static com.ar.ar_programming.ArMainFragment.PROGRAMMING_END_GOAL;
 import static com.ar.ar_programming.process.SingleBlock.PROCESS_CONTENTS_BACK;
-import static com.ar.ar_programming.process.SingleBlock.PROCESS_CONTENTS_EAT;
 import static com.ar.ar_programming.process.SingleBlock.PROCESS_CONTENTS_FORWARD;
 import static com.ar.ar_programming.process.SingleBlock.PROCESS_CONTENTS_LEFT_ROTATE;
 import static com.ar.ar_programming.process.SingleBlock.PROCESS_CONTENTS_RIGHT_ROTATE;
@@ -35,23 +34,23 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CharacterNode extends TransformableNode {
+public abstract class CharacterNode extends TransformableNode {
 
     //---------------------------
     // 定数
     //---------------------------
-    // アニメーションプロパティ名
+    // アニメーションプロパティ名：キャラクター共通
+    public static final String PROPERTY_NONE = "";
     public static final String PROPERTY_WALK = "walk";
     public static final String PROPERTY_ROTATE = "rotate";
-    public static final String PROPERTY_EAT = "eat";
     public static final String PROPERTY_THROW_AWAY = "throwAway";
 
-    // モデルアニメーション名（Blendarで命名）
+    // モデルアニメーション名（Blendarで命名）：キャラクター共通
+    public static final String MODEL_ANIMATION_STR_NONE = "";
     public static final String MODEL_ANIMATION_STR_GOAL = "goal";
     public static final String MODEL_ANIMATION_STR_WALK = "walk";
     public static final String MODEL_ANIMATION_STR_ROTATE_LEFT = "rotate_left";
     public static final String MODEL_ANIMATION_STR_ROTATE_RIGHT = "rotate_right";
-    public static final String MODEL_ANIMATION_STR_EAT = "eat";
     public static final String MODEL_ANIMATION_STR_THROW_AWAY = "throwAway";
     public static final String MODEL_ANIMATION_STR_ERROR = "error";
 
@@ -64,11 +63,11 @@ public class CharacterNode extends TransformableNode {
     private final float NO_VOLUME_TIME = 3000f;
     private final float NO_VOLUME_VALUE = 1000f;
     private final float NO_VOLUME_START_RATIO = 0.6f;
-    private final float NO_VOLUME_START_VALUE = NO_VOLUME_VALUE * NO_VOLUME_START_RATIO;
+    public final float NO_VOLUME_START_VALUE = NO_VOLUME_VALUE * NO_VOLUME_START_RATIO;
 
     // 指定Node衝突判定結果
-    private final int COLLISION_RET_NONE = -1;       // （ステージを除いて）衝突中Nodeなし
-    private final int COLLISION_RET_OTHRE = -2;      // （ステージを除いて）指定Node以外と衝突中
+    public final int COLLISION_RET_NONE = -1;       // （ステージを除いて）衝突中Nodeなし
+    public final int COLLISION_RET_OTHRE = -2;      // （ステージを除いて）指定Node以外と衝突中
 
     // アクションワード種別
     public static final int ACTION_WAITING = -1;
@@ -76,26 +75,14 @@ public class CharacterNode extends TransformableNode {
     public static final int ACTION_FAILURE = -3;
 
     // ブロック処理とアクションワード紐づけ
-    private final Map<Integer, Integer> ACTION_CONTENTS_MAP = new HashMap<Integer, Integer>() {
-        {
-            put((Integer) ACTION_WAITING, R.string.action_wait);
-            put((Integer) ACTION_SUCCESS, R.string.action_success);
-            put((Integer) ACTION_FAILURE, R.string.action_failure);
-            put((Integer) PROCESS_CONTENTS_FORWARD, R.string.action_walk_animal);
-            put((Integer) PROCESS_CONTENTS_BACK, R.string.action_walk_animal);
-            put((Integer) PROCESS_CONTENTS_RIGHT_ROTATE, R.string.action_rotate);
-            put((Integer) PROCESS_CONTENTS_LEFT_ROTATE, R.string.action_rotate);
-            put((Integer) PROCESS_CONTENTS_EAT, R.string.action_eat);
-            put((Integer) PROCESS_CONTENTS_THROW_AWAY, R.string.action_throw_away);
-        }
-    };
+    public Map<Integer, Integer> ACTION_CONTENTS_MAP;
 
     //---------------------------
     // フィールド変数
     //---------------------------
     private Scene mScene;
     // 衝突中のNode
-    private String mCollisionNodeName;
+    public String mCollisionNodeName;
     // 衝突検知リスナー
     private CollisionDetectListener mCollisionDetectListener;
     // 初期位置の情報
@@ -109,9 +96,9 @@ public class CharacterNode extends TransformableNode {
     // モデルアニメーションの開始と終了を制御する用
     private ObjectAnimator mModelAnimator;
     // 処理量なしのアクションメソッド完了フラグ
-    private boolean mfinishNoneVolume;
+    public boolean mfinishNoneVolume;
     // アクション成否
-    private boolean mSuccessAction;
+    public boolean mSuccessAction;
     // アクション表記Renderable
     private ViewRenderable mActionRenderable;
 
@@ -127,6 +114,9 @@ public class CharacterNode extends TransformableNode {
         mCollisionNodeName = GimmickManager.NODE_NAME_NONE;
         mfinishNoneVolume = false;          // 処理量なしアクション：未完了
         mSuccessAction = true;              // アクション成否：成功
+
+        // アクションワード初期化
+        initActionWords();
     }
 
     /*
@@ -151,7 +141,7 @@ public class CharacterNode extends TransformableNode {
         // 生成済み判定
         //------------------
         // 生成済みなら何もしない
-        if( hasActionWordNode() ){
+        if (hasActionWordNode()) {
             return;
         }
 
@@ -185,12 +175,12 @@ public class CharacterNode extends TransformableNode {
     private boolean hasActionWordNode() {
 
         // レンダラブルなしなら確実に持っていない
-        if( mActionRenderable == null ){
+        if (mActionRenderable == null) {
             return false;
         }
 
         // 子Nodeが１つもなければ、未生成
-        if( getChildren().size() == 0){
+        if (getChildren().size() == 0) {
             return false;
         }
 
@@ -212,9 +202,9 @@ public class CharacterNode extends TransformableNode {
         // 表記中ワード
         String currentStr = tv_action.getText().toString();
         // ブロックに対応するアクションワードを取得
-        String word = getContentsActionWord( view.getContext(), blockContents );
+        String word = getContentsActionWord(view.getContext(), blockContents);
 
-        if( currentStr.equals( word ) ){
+        if (currentStr.equals(word)) {
             // ワードに変化がなければ何もしない
             return;
         }
@@ -222,7 +212,7 @@ public class CharacterNode extends TransformableNode {
         //------------------
         // アクションワード設定
         //------------------
-        tv_action.setText( word );
+        tv_action.setText(word);
     }
 
     /*
@@ -232,7 +222,7 @@ public class CharacterNode extends TransformableNode {
 
         // ブロックコンテンツIDに対応するワードを返す
         Integer stringID = ACTION_CONTENTS_MAP.get(blockContents);
-        return context.getResources().getString( stringID );
+        return context.getResources().getString(stringID);
     }
 
     /*
@@ -285,7 +275,7 @@ public class CharacterNode extends TransformableNode {
         Log.i("Eat", "detectCollision() 衝突後　mCollisionNodeName=" + mCollisionNodeName);
 
         // リスナーコール判定
-        if ( !collisionNode.equals(GimmickManager.NODE_NAME_NONE) ) {
+        if (!collisionNode.equals(GimmickManager.NODE_NAME_NONE)) {
             mCollisionDetectListener.onCollisionDetect(collisionNode, mProcessAnimator);
         }
 
@@ -300,7 +290,7 @@ public class CharacterNode extends TransformableNode {
     public void setWalk(float volume) {
 
         // 衝突中は、処理なし
-        if ( !mCollisionNodeName.equals(GimmickManager.NODE_NAME_NONE) ) {
+        if (!mCollisionNodeName.equals(GimmickManager.NODE_NAME_NONE)) {
             return;
         }
 
@@ -370,24 +360,6 @@ public class CharacterNode extends TransformableNode {
 
 
     /*
-     * 食事アニメーションメソッド
-     *   ※ プロパティ名：eat
-     *   ※ 本メソッド内でアニメーションのための漸次的な処理はなし
-     *      一定時間経過でブロック処理を実行させるために利用する。
-     */
-    public void setEat(float volume) {
-
-        // 一定時間を超過したとき、ブロック処理を実行する
-        if ((volume >= NO_VOLUME_START_VALUE) && !mfinishNoneVolume) {
-            // 処理完了に
-            mfinishNoneVolume = true;
-            // 食べる
-            eat();
-        }
-    }
-
-
-    /*
      * 捨てるアニメーションメソッド
      *   ※ プロパティ名：throwAway
      *   ※ 本メソッド内でアニメーションのための漸次的な処理はなし
@@ -404,34 +376,6 @@ public class CharacterNode extends TransformableNode {
         }
     }
 
-
-    /*
-     * 食べる
-     */
-    private void eat() {
-
-        //----------------
-        // 失敗判定
-        //----------------
-        int index = getCollisionIndex(GimmickManager.NODE_NAME_EATABLE);
-        // 衝突中Nodeなし or 食べられないNodeと衝突中
-        if ( (index == COLLISION_RET_NONE) || (index == COLLISION_RET_OTHRE) ) {
-            // アクション失敗
-            mSuccessAction = false;
-            return;
-        }
-
-        //-----------------
-        // 成功
-        //-----------------
-        // アクション成否：成功
-        mSuccessAction = true;
-        // アクション対象Nodeと衝突中なら、Sceneから削除
-        removeNodeFromScene( index );
-        // 衝突中Node情報クリア
-        mCollisionNodeName = GimmickManager.NODE_NAME_NONE;
-    }
-
     /*
      * 捨てる
      */
@@ -442,7 +386,7 @@ public class CharacterNode extends TransformableNode {
         //----------------
         int index = getCollisionIndex(GimmickManager.NODE_NAME_THROW_AWAY);
         // 衝突中Nodeなし or 食べられないNodeと衝突中
-        if ( (index == COLLISION_RET_NONE) || (index == COLLISION_RET_OTHRE) ) {
+        if ((index == COLLISION_RET_NONE) || (index == COLLISION_RET_OTHRE)) {
             // アクション失敗
             mSuccessAction = false;
             return;
@@ -454,7 +398,7 @@ public class CharacterNode extends TransformableNode {
         // アクション成否：成功
         mSuccessAction = true;
         // アクション対象Nodeと衝突中なら、Sceneから削除
-        removeNodeFromScene( index );
+        removeNodeFromScene(index);
         // 衝突中Node情報クリア
         mCollisionNodeName = GimmickManager.NODE_NAME_NONE;
     }
@@ -462,7 +406,7 @@ public class CharacterNode extends TransformableNode {
     /*
      * SceneからNodeを削除
      */
-    private void removeNodeFromScene(int index) {
+    public void removeNodeFromScene(int index) {
         ArrayList<Node> nodes = mScene.overlapTestAll(this);
         Node deleteNode = nodes.get(index);
         NodeParent parent = deleteNode.getParent();
@@ -473,17 +417,17 @@ public class CharacterNode extends TransformableNode {
      * （ステージを除いた）衝突中判定
      *   指定Nodeと衝突しているか判定する
      */
-    private int getCollisionIndex(String nodeName ) {
+    public int getCollisionIndex(String nodeName) {
 
         ArrayList<Node> nodes = mScene.overlapTestAll(this);
-        for( int i = 0; i < nodes.size(); i++ ){
+        for (int i = 0; i < nodes.size(); i++) {
 
             String overlapNode = nodes.get(i).getName();
 
             if (overlapNode.equals(GimmickManager.NODE_NAME_STAGE)) {
                 // ステージの場合は、次のNodeをチェック
 
-            } else if ( overlapNode.equals(nodeName) ) {
+            } else if (overlapNode.equals(nodeName)) {
                 // 指定Nodeと衝突している場合、indexを返す
                 return i;
 
@@ -733,7 +677,7 @@ public class CharacterNode extends TransformableNode {
         //----------------------------------
         // アクションワードを初期状態へ
         //----------------------------------
-        setActionWord( ACTION_WAITING );
+        setActionWord(ACTION_WAITING);
         // 向きを初期状態にする
         Node node = getChildren().get(0);
         node.setLocalRotation(q);
@@ -747,7 +691,7 @@ public class CharacterNode extends TransformableNode {
     /*
      * 処理種別に応じたメソッドのプロパティ名の取得
      */
-    public static String getPropertyName(int procKind) {
+    public String getPropertyName(int procKind) {
 
         // 処理種別に応じたメソッドのプロパティ名を取得
         switch (procKind) {
@@ -759,14 +703,11 @@ public class CharacterNode extends TransformableNode {
             case PROCESS_CONTENTS_LEFT_ROTATE:
                 return PROPERTY_ROTATE;
 
-            case PROCESS_CONTENTS_EAT:
-                return PROPERTY_EAT;
-
             case SingleBlock.PROCESS_CONTENTS_THROW_AWAY:
                 return PROPERTY_THROW_AWAY;
         }
 
-        return PROPERTY_WALK;
+        return PROPERTY_NONE;
     }
 
     /*
@@ -846,9 +787,11 @@ public class CharacterNode extends TransformableNode {
             @Override
             public void onAnimationCancel(Animator animator) {
             }
+
             @Override
             public void onAnimationRepeat(Animator animator) {
             }
+
             @Override
             public void onAnimationStart(Animator animator) {
             }
@@ -860,27 +803,23 @@ public class CharacterNode extends TransformableNode {
             @Override
             public void onAnimationEnd(Animator animator) {
 
-//                if( contents == PROCESS_CONTENTS_EAT ){
-//                    Log.i("Eat", "eat アニメーション終了");
-//                }
-
                 //----------------------
                 // プログラミング途中終了
                 //----------------------
                 // ゴール判定
-                if ( isGoaled() ) {
-                    executeBlock.end( PROGRAMMING_END_GOAL );
+                if (isGoaled()) {
+                    executeBlock.end(PROGRAMMING_END_GOAL);
                     return;
                 }
                 // アクション成否判定
-                if ( !mSuccessAction ) {
-                    executeBlock.end( PROGRAMMING_END_ACTION_FAILURE );
+                if (!mSuccessAction) {
+                    executeBlock.end(PROGRAMMING_END_ACTION_FAILURE);
                     return;
                 }
                 // 障害物衝突判定
-                if ( isObstacle() ) {
+                if (isObstacle()) {
                     //!必要に応じて、それ用の値設定
-                    executeBlock.end( PROGRAMMING_END_ACTION_FAILURE );
+                    executeBlock.end(PROGRAMMING_END_ACTION_FAILURE);
                     return;
                 }
 
@@ -888,8 +827,8 @@ public class CharacterNode extends TransformableNode {
                 // プログラミング終了
                 //----------------------
                 // 実行ブロックが一番最後のブロックの場合
-                if( executeBlock.isBottomBlock() ){
-                    executeBlock.end( PROGRAMMING_END_ALL_DONE );
+                if (executeBlock.isBottomBlock()) {
+                    executeBlock.end(PROGRAMMING_END_ALL_DONE);
                     return;
                 }
 
@@ -899,7 +838,7 @@ public class CharacterNode extends TransformableNode {
                 // アニメーション終了時の位置を保持
                 setEndProcessAnimation(contents, volume);
                 // 次の処理ブロックへ
-                executeBlock.tranceNextBlock( characterNode );
+                executeBlock.tranceNextBlock(characterNode);
             }
         });
     }
@@ -910,7 +849,7 @@ public class CharacterNode extends TransformableNode {
     public void startModelAnimation(String animationName, long duration) {
 
         // アニメーションがないなら何もしない
-        if( getRenderableInstance().getAnimationCount() == 0 ){
+        if (getRenderableInstance().getAnimationCount() == 0) {
             return;
         }
 
@@ -927,7 +866,7 @@ public class CharacterNode extends TransformableNode {
         //---------------------------------
         // モデルアニメーション開始
         mModelAnimator = getRenderableInstance().animate(animationName);
-        if( mModelAnimator != null ){
+        if (mModelAnimator != null) {
             mModelAnimator.setDuration(duration);
             mModelAnimator.setRepeatCount(0);
             mModelAnimator.start();
@@ -941,6 +880,17 @@ public class CharacterNode extends TransformableNode {
      *   Blender側で命名された３Dアニメーション名を取得
      */
     public void startModelAnimation(int contents, long duration) {
+
+        // アニメーション名を取得
+        String animationName = getModelAnimationName(contents);
+        // モデルアニメーション開始
+        startModelAnimation(animationName, duration);
+    }
+
+    /*
+     * Blender側で命名された３Dアニメーション名を取得
+     */
+    public String getModelAnimationName(int contents) {
 
         String animationName = "";
 
@@ -959,17 +909,16 @@ public class CharacterNode extends TransformableNode {
                 animationName = MODEL_ANIMATION_STR_ROTATE_LEFT;
                 break;
 
-            case PROCESS_CONTENTS_EAT:
-                animationName = MODEL_ANIMATION_STR_EAT;
-                break;
-
             case SingleBlock.PROCESS_CONTENTS_THROW_AWAY:
                 animationName = MODEL_ANIMATION_STR_THROW_AWAY;
                 break;
+
+            default:
+                animationName = MODEL_ANIMATION_STR_NONE;
+                break;
         }
 
-        // モデルアニメーション開始
-        startModelAnimation(animationName, duration);
+        return animationName;
     }
 
     /*
@@ -984,20 +933,6 @@ public class CharacterNode extends TransformableNode {
      */
     public boolean isObstacle() {
         return ( mCollisionNodeName.equals( GimmickManager.NODE_NAME_OBSTACLE ));
-    }
-
-    /*
-     * 食べもの判定
-     */
-    public boolean isEatable() {
-        return ( mCollisionNodeName.equals( GimmickManager.NODE_NAME_EATABLE ));
-    }
-
-    /*
-     * 捨てる物（毒）判定
-     */
-    public boolean isPoison() {
-        return ( mCollisionNodeName.equals( GimmickManager.NODE_NAME_THROW_AWAY ));
     }
 
     /*
@@ -1108,4 +1043,10 @@ public class CharacterNode extends TransformableNode {
         // 衝突検知リスナー
         void onCollisionDetect( String collisionNode, ValueAnimator processAnimator );
     }
+
+    /*
+     * アクションワード紐づけ初期化
+     */
+    public abstract void initActionWords();
+
 }

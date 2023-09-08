@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.ar.ar_programming.AnimalNode;
 import com.ar.ar_programming.CharacterNode;
 import com.ar.ar_programming.Gimmick;
 import com.ar.ar_programming.R;
@@ -322,7 +323,7 @@ public class IfElseIfElseBlock extends IfElseBlock {
         //--------------
         // 条件１判定
         //--------------
-        boolean isEatable = characterNode.isEatable();
+        boolean isEatable = ((AnimalNode)characterNode).isEatable();
         if( isEatable ){
             // ifブロックを通る状態
             return NEST_FIRST;
@@ -331,7 +332,7 @@ public class IfElseIfElseBlock extends IfElseBlock {
         //--------------
         // 条件２判定
         //--------------
-        boolean isPoison = characterNode.isPoison();
+        boolean isPoison = ((AnimalNode)characterNode).isPoison();
         if( isPoison ){
             // else ifブロックを通る状態
             return NEST_SECOND;

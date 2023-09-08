@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.ar.ar_programming.AnimalNode;
 import com.ar.ar_programming.CharacterNode;
 import com.ar.ar_programming.Gimmick;
 import com.ar.ar_programming.R;
@@ -263,7 +264,7 @@ public class IfElseBlock extends NestBlock {
 
             // 目の前に食べ物があるかどうか
             case PROCESS_CONTENTS_IF_ELSE_EATABLE_IN_FRONT:
-                return characterNode.isEatable();
+                return ((AnimalNode)characterNode).isEatable();
 
             // 目の前に何もないか
             case PROCESS_CONTENTS_IF_ELSE_NOTHING_IN_FRONT:

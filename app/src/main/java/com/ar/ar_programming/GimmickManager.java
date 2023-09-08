@@ -46,6 +46,10 @@ public class GimmickManager {
     public static final int BLOCK_CONTENTS_POS = 1;
     public static final int BLOCK_VALUE_LIMIT_POS = 2;
 
+    // characterプロパティの値
+    public static final String PROPERTY_CHARACTER_ANIMAL = "animal";
+    public static final String PROPERTY_CHARACTER_VEHICLE = "vehicle";
+
 
     //---------------------------
     // フィールド変数
@@ -109,6 +113,7 @@ public class GimmickManager {
         // ギミックにreadデータを設定
         //--------------------------
         gimmick.successCondition = parser.getAttributeValue(null, "successCondition");
+        gimmick.character = parser.getAttributeValue(null, "character");
         gimmick.setGoalExplanation( goalExplanation );
         gimmick.stageGlb = parser.getAttributeValue(null, "stageGlb");
         // キャラクター

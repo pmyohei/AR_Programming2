@@ -5,6 +5,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.widget.TextView;
 
+import com.ar.ar_programming.AnimalNode;
 import com.ar.ar_programming.CharacterNode;
 import com.ar.ar_programming.Gimmick;
 import com.ar.ar_programming.R;
@@ -20,6 +21,7 @@ public class IfBlock extends NestBlock {
     //---------------------------
     public static final int PROCESS_CONTENTS_IF_COLLISION_OBSTACLE = 0;
     public static final int PROCESS_CONTENTS_IF_EATABLE = 1;
+    public static final int PROCESS_CONTENTS_IF_POISON = 2;
 
     //---------------------------
     // フィールド変数
@@ -79,7 +81,11 @@ public class IfBlock extends NestBlock {
 
             // 目の前に食べ物があるかどうか
             case PROCESS_CONTENTS_IF_EATABLE:
-                return characterNode.isEatable();
+                return ((AnimalNode)characterNode).isEatable();
+
+            // 目の前に毒があるかどうか
+            case PROCESS_CONTENTS_IF_POISON:
+                return ((AnimalNode)characterNode).isPoison();
 
             default:
                 break;

@@ -37,6 +37,7 @@ public class Gimmick {
     // ギミックプロパティ
     //-----------------
     public String successCondition;
+    public String character;        // 動物 or 乗り物
     public String stageGlb;
     // キャラクター
     public String characterGlb;
@@ -342,6 +343,11 @@ public class Gimmick {
             case "eatable":
                 contents = IfBlock.PROCESS_CONTENTS_IF_EATABLE;
                 stringId = R.string.block_contents_if_eatable;
+                break;
+
+            case "poison":
+                contents = IfBlock.PROCESS_CONTENTS_IF_POISON;
+                stringId = R.string.block_contents_if_poison;
                 break;
 
             default:

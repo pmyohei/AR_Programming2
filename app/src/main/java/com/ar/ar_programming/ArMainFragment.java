@@ -5,6 +5,8 @@ import static android.content.Context.MODE_PRIVATE;
 import static com.ar.ar_programming.CharacterNode.ACTION_FAILURE;
 import static com.ar.ar_programming.CharacterNode.ACTION_SUCCESS;
 import static com.ar.ar_programming.CharacterNode.ACTION_WAITING;
+import static com.ar.ar_programming.GimmickManager.PROPERTY_CHARACTER_ANIMAL;
+import static com.ar.ar_programming.SettingActivity.CHARACTER_ANIMAL;
 
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
@@ -442,10 +444,10 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
         // 選択肢アダプタから全て削除
         ViewGroup root = binding.getRoot();
         RecyclerView rv_selectBlock = root.findViewById(R.id.rv_selectBlock);
-        UserBlockSelectListAdapter adapter = (UserBlockSelectListAdapter)rv_selectBlock.getAdapter();
+        UserBlockSelectListAdapter adapter = (UserBlockSelectListAdapter) rv_selectBlock.getAdapter();
 
         adapter.clearBlockList();
-        adapter.notifyItemRangeRemoved( 0, blockNum );
+        adapter.notifyItemRangeRemoved(0, blockNum);
     }
 
     /*
@@ -460,7 +462,7 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
         //-----------------
         // 処理ブロック生成
         //-----------------
-        switch ( xmlBlockInfo.type ) {
+        switch (xmlBlockInfo.type) {
             // 単体処理
             case Block.PROCESS_TYPE_SINGLE:
                 newBlock = new SingleBlock(context, getParentFragmentManager(), xmlBlockInfo);
@@ -581,7 +583,7 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
         int character = sharedPref.getInt(getString(R.string.saved_character_key), defaultCharacter);
         int difficulty = sharedPref.getInt(getString(R.string.saved_difficulty_key), defaultDifficulty);
 
-        String characterStr = (character == SettingActivity.CHARACTER_ANIMAL ? "animal" : "vehicle");
+        String characterStr = (character == CHARACTER_ANIMAL ? "animal" : "vehicle");
         String difficultyStr = (difficulty == SettingActivity.PLAY_DIFFICULTY_EASY ? "easy" : "difficult");
 
         String arrayName = "gimmick_list_" + characterStr + "_" + difficultyStr;
@@ -1056,7 +1058,7 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
         TransformationSystem transformationSystem = arFragment.getTransformationSystem();
 
         // AnchorNodeを親として、モデル情報からNodeを生成
-        CharacterNode characterNode = new CharacterNode(transformationSystem);
+        CharacterNode characterNode = createCharacterNode(transformationSystem);
         characterNode.getScaleController().setMinScale(scale);
         characterNode.getScaleController().setMaxScale(scale * 2);
         characterNode.setLocalScale(new Vector3(scale, scale, scale));
@@ -1075,6 +1077,19 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
         characterNode.setActionWord(ACTION_WAITING);
 
         return characterNode;
+    }
+
+    /*
+     * キャラクターノード生成：
+     */
+    private CharacterNode createCharacterNode( TransformationSystem transformationSystem ) {
+
+        // ギミックの指定キャラクターに応じて、生成
+        if (mGimmick.character.equals( PROPERTY_CHARACTER_ANIMAL ) ){
+            return new AnimalNode( transformationSystem );
+        } else {
+            return new VehicleNode( transformationSystem );
+        }
     }
 
     /*

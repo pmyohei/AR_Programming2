@@ -220,7 +220,7 @@ public class SingleBlock extends ProcessBlock {
         //------------------------------------------------------
         // 処理に対応するアニメーションプロパティ名を取得
         // ※ setXXX()の「XXX」を取得
-        String methodPropertyName = CharacterNode.getPropertyName(contents);
+        String methodPropertyName = characterNode.getPropertyName(contents);
 
         //----------------------------------
         // アニメーションの生成／開始：処理ブロック用
