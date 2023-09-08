@@ -141,6 +141,9 @@ public class GimmickManager {
      */
     private static Gimmick makeTutorialGimmick(Context context, int tutorial) {
 
+        // チュートリアル終了値
+        final int TUTORIAL_END = context.getResources().getInteger(R.integer.saved_tutorial_end);
+
         Resources resources = context.getResources();
         XmlResourceParser parser = resources.getXml(R.xml.gimmick_tutorial);
 
@@ -153,7 +156,7 @@ public class GimmickManager {
 
                 // 開始タグでタグ名が「gimmick」の場合、読み込み
                 if ((eventType == XmlPullParser.START_TAG) && (Objects.equals(parser.getName(), "gimmick"))) {
-                    int sequence = parser.getAttributeIntValue(null, "sequence", 1);
+                    int sequence = parser.getAttributeIntValue(null, "sequence", TUTORIAL_END);
                     if (sequence == tutorial) {
                         break;
                     }

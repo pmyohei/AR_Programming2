@@ -24,7 +24,7 @@ public class HomeActivity extends AppCompatActivity {
 
 
         //debug-------------------
-        Common.setTutorialDebug(this, 4);
+        Common.setTutorialDebug(this, 1);
         //--------------------
     }
 

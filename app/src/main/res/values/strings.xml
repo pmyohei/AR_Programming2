@@ -152,16 +152,28 @@
 
 
     <!---->
-    <!-- ギミックのゴール説明 -->
+    <!-- ステージ説明 -->
     <!---->
-    <string name="guide_major_tutorial_1">チュートリアル1</string>
-    <string name="guide_sub_tutorial_1">～プログラミングをしてみよう～</string>
-    <string name="guide_contents_tutorial_1">切り株をよけて、リスのそばまで行こう</string>
-    <string name="guide_explanation_tutorial_1">
+    <!-- チュートリアル１：動物 -->
+    <string name="guide_major_tutorial_1_animal">チュートリアル1</string>
+    <string name="guide_sub_tutorial_1_animal">～プログラミングをしてみよう～</string>
+    <string name="guide_contents_tutorial_1_animal">切り株をよけて、リスのそばまで行こう</string>
+    <string name="guide_explanation_tutorial_1_animal">
         ウサギをリスのそばまで移動させる\n
         プログラムを作ってみよう！\n\n
         真ん中にある切り株にあたると失敗だよ！\n
         うまく避けるようにプログラミングしてね！
+    </string>
+
+    <!-- チュートリアル１：乗り物 -->
+    <string name="guide_major_tutorial_1_vehicle">簡単ステージ</string>
+    <string name="guide_sub_tutorial_1_vehicle">～シンプルなプログラミング～</string>
+    <string name="guide_contents_tutorial_1_vehicle">車をよけて、逃走車を捕まえよう</string>
+    <string name="guide_explanation_tutorial_1_vehicle">
+        逃走車（赤いスポーツカー）を捕まえる\n
+        プログラムを作ってみよう！\n\n
+        途中の黄色の車にあたると失敗だよ！\n
+        うまく避けるようなプログラミングをしてね！
     </string>
 
     <string name="guide_major_tutorial_2">チュートリアル2</string>

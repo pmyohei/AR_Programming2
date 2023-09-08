@@ -2,7 +2,7 @@
 <gimmick_list dataNum="4">
 
 	<gimmick
-		sequence="11"
+		sequence="knockDown"
 		successCondition="knockDown"
 		goalExplanation="guide_major_tutorial_3, guide_sub_tutorial_3, guide_contents_tutorial_3, guide_explanation_tutorial_3"
 		stageGlb="models/stage/fantasy_magic_enemy.glb"
@@ -18,9 +18,9 @@
 		/>
 
 	<gimmick
-		sequence="1"
+		sequence="11_animal"
 		successCondition="goal"
-		goalExplanation="guide_major_tutorial_1, guide_sub_tutorial_1, guide_contents_tutorial_1, guide_explanation_tutorial_1"
+		goalExplanation="guide_major_tutorial_1_animal, guide_sub_tutorial_1, guide_contents_tutorial_1, guide_explanation_tutorial_1"
 		stageGlb="models/stage/tutorial_stage_1.glb"
 		characterGlb="models/animal/rabit.glb"
 		characterPosition="-3.8 : 1.5 : 9.1"
@@ -33,6 +33,25 @@
 		objectKind="obstacle"
 		objectPositionRandom="false"
 		objectPosition="0 : 1.4 : 0.6"
+		block="single_forward, single_rotateRight, single_rotateLeft"
+		/>
+
+	<gimmick
+		sequence="1"
+		successCondition="goal"
+		goalExplanation="guide_major_tutorial_1_vehicle, guide_sub_tutorial_1, guide_contents_tutorial_1, guide_explanation_tutorial_1"
+		stageGlb="models/stage/load_stage.glb"
+		characterGlb="models/vehicle/police_car.glb"
+		characterPosition="-3.8 : 0.8 : 0.0"
+		characterAngle="180"
+		goalGlb="models/vehicle/sports_car.glb"
+		goalPosition="-3.0 : 0.67 : -53.7"
+		goalAngle="180"
+		objectGlb="models/vehicle/yellow_car.glb"
+		objectNum="2"
+		objectKind="obstacle"
+		objectPositionRandom="false"
+		objectPosition="-3.8 : 0.67 : -15.0, 4.1 : 0.67 : -34"
 		block="single_forward, single_rotateRight, single_rotateLeft"
 		/>
 
