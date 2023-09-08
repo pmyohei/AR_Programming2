@@ -105,8 +105,13 @@ public class StageFailureDialogFragment extends DialogFragment {
 
         // サイズ反映
         window.setAttributes(lp);
-    }
 
+        //--------------
+        // 可視情報
+        //--------------
+        // ダイアログ背景の暗転を無効化
+        window.clearFlags( WindowManager.LayoutParams.FLAG_DIM_BEHIND );
+    }
 
     /*
      * リスナー設定
