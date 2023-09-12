@@ -204,6 +204,18 @@
         複数の条件ブロックをうまく組み合わせるのがポイントだよ！\n
     </string>
 
+    <string name="guide_major_tutorial_2_animal">チュートリアル2</string>
+    <string name="guide_sub_tutorial_2_animal">～ループブロックを組み合わせてみよう～</string>
+    <string name="guide_contents_tutorial_2_animal">蜂を退治して、はちみつの所までいこう</string>
+    <string name="guide_explanation_tutorial_2_animal">
+        蜂を退治してはちみつの所まで移動するプログラムを作ってみよう！\n
+        はちみつの所へ行く前に蜂を退治してね！\n
+        蜂退治は蜂のそばまで移動する必要があるよ\n
+        うまくプログラムしてはちみつをゲットしよう！
+    </string>
+
+
+
 
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>
