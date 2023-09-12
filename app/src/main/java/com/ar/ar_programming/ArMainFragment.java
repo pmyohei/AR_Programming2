@@ -1051,7 +1051,7 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
 
         // キャラクターに向かせる角度
         float angle = mGimmick.characterAngle;
-        Quaternion facingDirection = getCharacterInitFacingDirection(angle);
+        Quaternion facingDirection = convertAngleToQuaternion(angle);
         // 位置
         Vector3 position = new Vector3(mGimmick.characterPositionVec.x * scale, mGimmick.characterPositionVec.y * scale, mGimmick.characterPositionVec.z * scale);
 
@@ -1112,8 +1112,8 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
         //-----------------------------
         // オブジェクトのNode生成
         //-----------------------------
-        int objKindIndex = 0;
-        int objPosIndex = 0;
+        int objIndex = 0;       // 全体数Index
+        int objKindIndex = 0;   // 種別用Index
         for (ModelRenderable renderable : mObjectRenderable) {
 
             // オブジェクトの種類をNode名として設定する
@@ -1123,20 +1123,22 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
             // Node生成
             for (int num = 0; num < objectNum; num++) {
 
+                //-------------
+                // 位置
+                //-------------
                 Vector3 pos;
                 if (mGimmick.objectPositionRandom) {
                     // ランダム位置を生成
                     pos = getRandomPosition(stageScale);
                 } else {
                     // 指定位置に設定
-                    pos = mGimmick.objectPositionVecList.get(objPosIndex);
+                    pos = mGimmick.objectPositionVecList.get(objIndex);
                     pos = new Vector3(pos.x * scale, pos.y * scale, pos.z * scale);
-
-                    // 位置indexを次へ
-                    objPosIndex++;
                 }
 
+                //-------------
                 // Node生成
+                //-------------
                 TransformableNode node = new TransformableNode(transformationSystem);
                 node.setName(objectKind);
                 Log.i("ギミック", "setName()=" + objectKind);
@@ -1147,8 +1149,22 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
                 node.setLocalPosition(pos);
                 node.setRenderable(renderable);
                 node.select();
+
+                // 角度指定あれば設定
+                if( mGimmick.objectAngleList.size() > 0 ){
+                    // Quaternion算出
+                    float angle = mGimmick.objectAngleList.get(objIndex);
+                    Quaternion facingDirection = convertAngleToQuaternion(angle);
+                    // Nodeに設定
+                    node.setLocalRotation(facingDirection);
+                }
+
+
+                // 全体数indexを次へ
+                objIndex++;
             }
 
+            // 種別用Indexを加算
             objKindIndex++;
         }
     }
@@ -1304,7 +1320,7 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
 
         // ゴールの角度
         float angle = mGimmick.goalAngle;
-        Quaternion facingDirection = getCharacterInitFacingDirection(angle);
+        Quaternion facingDirection = convertAngleToQuaternion(angle);
         // 位置
         Vector3 scalePos = new Vector3(mGimmick.goalPositionVec.x * scale, mGimmick.goalPositionVec.y * scale, mGimmick.goalPositionVec.z * scale);
 
@@ -1567,9 +1583,9 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
     }
 
     /*
-     * キャラクターが配置された四辺に応じて、向きを設定するためのQuaternion値を取得
+     * 指定角度をQuaternion値に変換
      */
-    private Quaternion getCharacterInitFacingDirection(float angle) {
+    private Quaternion convertAngleToQuaternion(float angle) {
 
         // w／y値
         float w = CharacterNode.calcQuaternionWvalue(angle);

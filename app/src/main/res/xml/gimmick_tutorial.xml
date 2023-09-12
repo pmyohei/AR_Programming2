@@ -90,6 +90,7 @@
 		objectKind="eatable"
 		objectPositionRandom="false"
 		objectPosition="0 : 1.3 : -5.0"
+		objectAngle="90"
 		block="single_forward_5, single_eat, loop_arrival-goal, if_eatable"
 		/>
 

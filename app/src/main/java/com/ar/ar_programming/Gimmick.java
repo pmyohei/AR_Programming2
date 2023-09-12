@@ -54,6 +54,7 @@ public class Gimmick {
     public ArrayList<Integer> objectNumList;
     public ArrayList<String> objectKindList;
     public ArrayList<Vector3> objectPositionVecList;
+    public ArrayList<Float> objectAngleList;
     // 敵
     public boolean enemyNumRandom;
     public ArrayList<String> enemyGlbList;
@@ -103,6 +104,7 @@ public class Gimmick {
         objectNumList = new ArrayList<>();
         objectKindList = new ArrayList<>();
         objectPositionVecList = new ArrayList<>();
+        objectAngleList = new ArrayList<>();
 
         enemyGlbList = new ArrayList<>();
         enemyNumList = new ArrayList<>();
@@ -632,7 +634,28 @@ public class Gimmick {
             objectPositionVecList.add( pos );
         }
     }
-    
+
+    /*
+     * オブジェクト角度を設定
+     */
+    public void setObjectAngle( String objectAngle ) {
+
+        // プロパティなし
+        if( objectAngle == null ){
+            return;
+        }
+
+        // オブジェクト名を分割
+        String[] strs = splitGimmickValueDelimiter(objectAngle);
+
+        // リスト生成
+        objectAngleList.clear();
+        for( String angleOrg: strs ){
+            Float angle = Float.parseFloat(angleOrg);
+            objectAngleList.add( angle );
+        }
+    }
+
     /*
      * 敵名を設定
      */

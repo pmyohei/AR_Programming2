@@ -99,6 +99,7 @@ public class GimmickManager {
         String objectKind = parser.getAttributeValue(null, "objectKind");
         String objectPositionRandom = parser.getAttributeValue(null, "objectPositionRandom");
         String objectPosition = parser.getAttributeValue(null, "objectPosition");
+        String objectAngle = parser.getAttributeValue(null, "objectAngle");
         // 敵
         String enemyGlb = parser.getAttributeValue(null, "enemyGlb");
         String enemyNum = parser.getAttributeValue(null, "enemyNum");
@@ -130,6 +131,7 @@ public class GimmickManager {
         gimmick.setObjectKind( objectKind );
         gimmick.setObjectPositionRandom( objectPositionRandom );
         gimmick.setObjectPositionVecList( objectPosition );
+        gimmick.setObjectAngle( objectAngle );
         // 敵
         gimmick.setEnemyGlb( enemyGlb );
         gimmick.setEnemyNum( enemyNum );
