@@ -262,6 +262,10 @@ public abstract class CharacterNode extends TransformableNode {
                 Log.i("Eat", "detectCollision() 捨てるものと衝突");
 //                startModelAnimation(MODEL_ANIMATION_STR_ERROR, 2000);
                 break;
+
+            } else if (collisionNode.equals(GimmickManager.NODE_NAME_ENEMY)) {
+//                startModelAnimation(MODEL_ANIMATION_STR_ERROR, 2000);
+                break;
             }
 
             // 衝突中ノードクリア

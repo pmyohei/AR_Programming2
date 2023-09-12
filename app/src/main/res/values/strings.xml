@@ -73,6 +73,7 @@
     <string name="block_contents_rorate_left">左に回転</string>
     <string name="block_contents_eat">食べる</string>
     <string name="block_contents_throw_away">捨てる</string>
+    <string name="block_contents_attack">やっつける</string>
     <string name="block_contents_if_block">もし ブロックと衝突中なら</string>
     <string name="block_contents_if_eatable">もし 目の前に食べ物があれば</string>
     <string name="block_contents_if_poison">もし 目の前に毒があれば</string>
@@ -125,6 +126,7 @@
     <string name="action_rotate">向きかえよ～</string>
     <string name="action_eat">ムシャムシャ</string>
     <string name="action_throw_away">ポイッ！</string>
+    <string name="action_attack">えいッ！</string>
 
     <!-- ダイアログ -->
     <string name="ar_dialog_title">リトライ</string>

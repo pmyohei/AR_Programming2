@@ -32,6 +32,7 @@ public class SingleBlock extends ProcessBlock {
     public static final int PROCESS_CONTENTS_LEFT_ROTATE = 3;
     public static final int PROCESS_CONTENTS_EAT = 4;
     public static final int PROCESS_CONTENTS_THROW_AWAY = 5;
+    public static final int PROCESS_CONTENTS_ATTACK = 6;
 
     private final String VOLUME_FORMAT = "%03d";
 
@@ -112,6 +113,7 @@ public class SingleBlock extends ProcessBlock {
             //------------------------
             case PROCESS_CONTENTS_EAT:
             case PROCESS_CONTENTS_THROW_AWAY:
+            case PROCESS_CONTENTS_ATTACK:
             default:
                 // 処理量なしのブロックレイアウト設定
                 setNoVolumeLayout();

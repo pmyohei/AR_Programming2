@@ -271,6 +271,13 @@ public class Gimmick {
                 existsVolume = false;
                 break;
 
+            case "attack":
+                contents = SingleBlock.PROCESS_CONTENTS_ATTACK;
+                selectDrawableId = R.drawable.baseline_attack_24;
+                selectStringId = R.string.block_contents_attack;
+                existsVolume = false;
+                break;
+
             default:
                 contents = SingleBlock.PROCESS_CONTENTS_FORWARD;
                 selectDrawableId = R.drawable.baseline_block_forward_24;

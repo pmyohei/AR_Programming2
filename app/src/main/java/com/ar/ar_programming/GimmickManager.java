@@ -32,6 +32,7 @@ public class GimmickManager {
     public static final String NODE_NAME_OBSTACLE = "obstacle";
     public static final String NODE_NAME_EATABLE = "eatable";
     public static final String NODE_NAME_THROW_AWAY = "throwAway";
+    public static final String NODE_NAME_ENEMY = "enemy";
     public static final String NODE_NAME_ENEMY_BAT = "bat";
     public static final String NODE_NAME_ENEMY_GHOST = "ghost";
 
@@ -45,6 +46,15 @@ public class GimmickManager {
     public static final int BLOCK_TYPE_POS = 0;
     public static final int BLOCK_CONTENTS_POS = 1;
     public static final int BLOCK_VALUE_LIMIT_POS = 2;
+
+    // フォーマット文字列；Block
+    public static final String BLOCK_CONTENTS_FORWARD = "forward";
+    public static final String BLOCK_CONTENTS_BACK = "back";
+    public static final String BLOCK_CONTENTS_ROTATE_RIGHT = "rotateRight";
+    public static final String BLOCK_CONTENTS_ROTATE_LEFT = "rotateLeft";
+    public static final String BLOCK_CONTENTS_EAT = "eat";
+    public static final String BLOCK_CONTENTS_THROW_AWAY = "throwAway";
+    public static final String BLOCK_CONTENTS_ATTACK = "attack";
 
     // characterプロパティの値
     public static final String PROPERTY_CHARACTER_ANIMAL = "animal";
