@@ -47,6 +47,7 @@ public abstract class CharacterNode extends TransformableNode {
     public static final String PROPERTY_WALK = "walk";
     public static final String PROPERTY_ROTATE = "rotate";
     public static final String PROPERTY_THROW_AWAY = "throwAway";
+    public static final String PROPERTY_ATTACK = "attack";
 
     // モデルアニメーション名（Blendarで命名）：キャラクター共通
     public static final String MODEL_ANIMATION_STR_NONE = "";
@@ -55,6 +56,7 @@ public abstract class CharacterNode extends TransformableNode {
     public static final String MODEL_ANIMATION_STR_ROTATE_LEFT = "rotate_left";
     public static final String MODEL_ANIMATION_STR_ROTATE_RIGHT = "rotate_right";
     public static final String MODEL_ANIMATION_STR_THROW_AWAY = "throwAway";
+    public static final String MODEL_ANIMATION_STR_ATTACK = "attack";
     public static final String MODEL_ANIMATION_STR_ERROR = "error";
 
     // 移動1cm当たりのアニメーション時間(ms)
@@ -412,6 +414,51 @@ public abstract class CharacterNode extends TransformableNode {
         mCollisionNodeName = GimmickManager.NODE_NAME_NONE;
     }
 
+
+    /*
+     * 攻撃
+     */
+    private void attack() {
+
+        //----------------
+        // 失敗判定
+        //----------------
+        int index = getCollisionIndex(GimmickManager.NODE_NAME_ENEMY);
+        // 衝突中Nodeなし or 敵ではないNodeと衝突中
+        if ((index == COLLISION_RET_NONE) || (index == COLLISION_RET_OTHRE)) {
+            // アクション失敗
+            mSuccessAction = false;
+            return;
+        }
+
+        //-----------------
+        // 成功
+        //-----------------
+        // アクション成否：成功
+        mSuccessAction = true;
+        // アクション対象Nodeと衝突中なら、Sceneから削除
+        removeNodeFromScene(index);
+        // 衝突中Node情報クリア
+        mCollisionNodeName = GimmickManager.NODE_NAME_NONE;
+    }
+
+    /*
+     * 攻撃アニメーションメソッド
+     *   ※ プロパティ名：attack
+     *   ※ 本メソッド内でアニメーションのための漸次的な処理はなし
+     *      一定時間経過でブロック処理を実行させるために利用する。
+     */
+    public void setAttack(float volume) {
+
+        // 一定時間を超過したとき、ブロック処理を実行する
+        if ((volume >= NO_VOLUME_START_VALUE) && !mfinishNoneVolume) {
+            // 処理完了に
+            mfinishNoneVolume = true;
+            // 攻撃
+            attack();
+        }
+    }
+
     /*
      * SceneからNodeを削除
      */
@@ -714,6 +761,9 @@ public abstract class CharacterNode extends TransformableNode {
 
             case SingleBlock.PROCESS_CONTENTS_THROW_AWAY:
                 return PROPERTY_THROW_AWAY;
+
+            case SingleBlock.PROCESS_CONTENTS_ATTACK:
+                return PROPERTY_ATTACK;
         }
 
         return PROPERTY_NONE;
