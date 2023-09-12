@@ -7,6 +7,7 @@ import static com.ar.ar_programming.process.SingleBlock.PROCESS_CONTENTS_LEFT_RO
 import static com.ar.ar_programming.process.SingleBlock.PROCESS_CONTENTS_RIGHT_ROTATE;
 import static com.ar.ar_programming.process.SingleBlock.PROCESS_CONTENTS_THROW_AWAY;
 
+import com.ar.ar_programming.Gimmick;
 import com.ar.ar_programming.GimmickManager;
 import com.ar.ar_programming.R;
 import com.google.ar.sceneform.ux.TransformationSystem;
@@ -24,8 +25,8 @@ public class AnimalNode extends CharacterNode {
     /*
      * コンストラクタ
      */
-    public AnimalNode(TransformationSystem transformationSystem) {
-        super(transformationSystem);
+    public AnimalNode(TransformationSystem transformationSystem, Gimmick gimmick) {
+        super(transformationSystem, gimmick);
     }
 
     /*

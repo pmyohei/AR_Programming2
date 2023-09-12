@@ -87,9 +87,9 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
     // 定数
     //---------------------------
     // プログラミング終了ステータス
-    public static final int PROGRAMMING_END_GOAL = 0;
-    public static final int PROGRAMMING_END_ACTION_FAILURE = 1;
-    public static final int PROGRAMMING_END_ALL_DONE = 2;
+    public static final int PROGRAMMING_NOT_END = 0;
+    public static final int PROGRAMMING_SUCCESS = 1;
+    public static final int PROGRAMMING_FAILURE = -1;
 
     // ステージ4辺
     private final int STAGE_BOTTOM = 0;
@@ -1089,9 +1089,9 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
 
         // ギミックの指定キャラクターに応じて、生成
         if (mGimmick.character.equals( PROPERTY_CHARACTER_ANIMAL ) ){
-            return new AnimalNode( transformationSystem );
+            return new AnimalNode( transformationSystem, mGimmick );
         } else {
-            return new VehicleNode( transformationSystem );
+            return new VehicleNode( transformationSystem, mGimmick );
         }
     }
 
@@ -2135,20 +2135,13 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
     @Override
     public void onProgrammingEnd(int programmingEndState) {
 
-        Log.i("成功判定", "onProgrammingEnd() programmingEndState=" + programmingEndState);
+        if( programmingEndState == PROGRAMMING_SUCCESS ){
+            // ステージクリア
+            stageClear();
 
-        switch ( programmingEndState ){
-            case PROGRAMMING_END_GOAL:
-                // ステージクリア
-                stageClear();
-                break;
-
-            case PROGRAMMING_END_ALL_DONE:
-            case PROGRAMMING_END_ACTION_FAILURE:
-            default:
-                // ステージクリア失敗
-                stageClearFailure();
-                break;
+        } else {
+            // ステージクリア失敗
+            stageClearFailure();
         }
     }
 

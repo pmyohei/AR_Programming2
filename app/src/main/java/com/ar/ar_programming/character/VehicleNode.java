@@ -6,6 +6,7 @@ import static com.ar.ar_programming.process.SingleBlock.PROCESS_CONTENTS_LEFT_RO
 import static com.ar.ar_programming.process.SingleBlock.PROCESS_CONTENTS_RIGHT_ROTATE;
 import static com.ar.ar_programming.process.SingleBlock.PROCESS_CONTENTS_THROW_AWAY;
 
+import com.ar.ar_programming.Gimmick;
 import com.ar.ar_programming.R;
 import com.google.ar.sceneform.ux.TransformationSystem;
 
@@ -16,8 +17,8 @@ public class VehicleNode extends CharacterNode {
     /*
      * コンストラクタ
      */
-    public VehicleNode(TransformationSystem transformationSystem) {
-        super(transformationSystem);
+    public VehicleNode(TransformationSystem transformationSystem, Gimmick gimmick) {
+        super(transformationSystem, gimmick);
     }
 
     /*

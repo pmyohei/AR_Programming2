@@ -1,8 +1,8 @@
 package com.ar.ar_programming.character;
 
-import static com.ar.ar_programming.ArMainFragment.PROGRAMMING_END_ACTION_FAILURE;
-import static com.ar.ar_programming.ArMainFragment.PROGRAMMING_END_ALL_DONE;
-import static com.ar.ar_programming.ArMainFragment.PROGRAMMING_END_GOAL;
+import static com.ar.ar_programming.ArMainFragment.PROGRAMMING_FAILURE;
+import static com.ar.ar_programming.ArMainFragment.PROGRAMMING_NOT_END;
+import static com.ar.ar_programming.ArMainFragment.PROGRAMMING_SUCCESS;
 import static com.ar.ar_programming.process.SingleBlock.PROCESS_CONTENTS_BACK;
 import static com.ar.ar_programming.process.SingleBlock.PROCESS_CONTENTS_FORWARD;
 import static com.ar.ar_programming.process.SingleBlock.PROCESS_CONTENTS_LEFT_ROTATE;
@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.ar.ar_programming.ArMainFragment;
+import com.ar.ar_programming.Gimmick;
 import com.ar.ar_programming.GimmickManager;
 import com.ar.ar_programming.R;
 import com.ar.ar_programming.process.ProcessBlock;
@@ -33,6 +34,7 @@ import com.google.ar.sceneform.ux.TransformableNode;
 import com.google.ar.sceneform.ux.TransformationSystem;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public abstract class CharacterNode extends TransformableNode {
@@ -82,6 +84,7 @@ public abstract class CharacterNode extends TransformableNode {
     // フィールド変数
     //---------------------------
     private Scene mScene;
+    private Gimmick mGimmick;
     // 衝突中のNode
     public String mCollisionNodeName;
     // 衝突検知リスナー
@@ -104,7 +107,7 @@ public abstract class CharacterNode extends TransformableNode {
     private ViewRenderable mActionRenderable;
 
 
-    public CharacterNode(TransformationSystem transformationSystem) {
+    public CharacterNode(TransformationSystem transformationSystem, Gimmick gimmick) {
         super(transformationSystem);
 
         //----------------------------------------
@@ -115,6 +118,7 @@ public abstract class CharacterNode extends TransformableNode {
         mCollisionNodeName = GimmickManager.NODE_NAME_NONE;
         mfinishNoneVolume = false;          // 処理量なしアクション：未完了
         mSuccessAction = true;              // アクション成否：成功
+        mGimmick = gimmick;
 
         // アクションワード初期化
         initActionWords();
@@ -808,32 +812,23 @@ public abstract class CharacterNode extends TransformableNode {
             @Override
             public void onAnimationEnd(Animator animator) {
 
-                //----------------------
-                // プログラミング途中終了
-                //----------------------
-                // ゴール判定
-                if (isGoaled()) {
-                    executeBlock.end(PROGRAMMING_END_GOAL);
-                    return;
-                }
-                // アクション成否判定
-                if (!mSuccessAction) {
-                    executeBlock.end(PROGRAMMING_END_ACTION_FAILURE);
-                    return;
-                }
-                // 障害物衝突判定
-                if (isObstacle()) {
-                    //!必要に応じて、それ用の値設定
-                    executeBlock.end(PROGRAMMING_END_ACTION_FAILURE);
+                //------------------------
+                // プログラミング途中終了判定
+                //------------------------
+                // 途中終了する条件が成立しているかどうか
+                int programmingEndState = shouldFinishProgram();
+                if (programmingEndState != PROGRAMMING_NOT_END) {
+                    // ステージ終了処理へ
+                    executeBlock.end(programmingEndState);
                     return;
                 }
 
                 //----------------------
-                // プログラミング終了
+                // 全ブロック終了判定
                 //----------------------
                 // 実行ブロックが一番最後のブロックの場合
                 if (executeBlock.isBottomBlock()) {
-                    executeBlock.end(PROGRAMMING_END_ALL_DONE);
+                    executeBlock.end(PROGRAMMING_FAILURE);
                     return;
                 }
 
@@ -927,10 +922,68 @@ public abstract class CharacterNode extends TransformableNode {
     }
 
     /*
+     * プログラムの実行を終了する条件が満了したかどうか
+     */
+    private int shouldFinishProgram() {
+
+        // ゴール判定
+        if (isGoaled()) {
+            return PROGRAMMING_SUCCESS;
+        }
+        // アクション成否判定
+        if (!mSuccessAction) {
+            return PROGRAMMING_FAILURE;
+        }
+        // 障害物衝突判定
+        if (isObstacle()) {
+            //!必要に応じて、それ用の値設定
+            return PROGRAMMING_FAILURE;
+        }
+
+        return PROGRAMMING_NOT_END;
+    }
+
+    /*
      * ゴール判定
      */
     public boolean isGoaled() {
-        return ( mCollisionNodeName.equals( GimmickManager.NODE_NAME_GOAL ));
+
+        //-------------------
+        // 敵を全て倒しているか
+        //-------------------
+        // ステージのゴール条件が「敵を倒してゴール」であれば、
+        // まず、全ての敵を倒しているかを判定
+        boolean isAttackAndGoal = mGimmick.successCondition.equals("attack_and_goal");
+        if ( isAttackAndGoal ) {
+            boolean isAllAttack = isAttackAllEnemy();
+            if( !isAllAttack ){
+                // 全敵を倒していないなら、未ゴール
+                return false;
+            }
+        }
+
+        //-------------------
+        // ゴール判定
+        //-------------------
+        return ( mCollisionNodeName.equals(GimmickManager.NODE_NAME_GOAL) );
+    }
+
+    /*
+     * 全敵を撃破
+     */
+    public boolean isAttackAllEnemy() {
+
+        // 全Node検索
+        List<Node> nodes = mScene.getChildren();
+        for (Node node : nodes) {
+            if (node.getName().equals( GimmickManager.NODE_NAME_ENEMY )) {
+                // 敵NodeがScene上にあれば、未撃破
+                return false;
+            }
+        }
+
+        // 全撃破
+        return true;
     }
 
     /*
