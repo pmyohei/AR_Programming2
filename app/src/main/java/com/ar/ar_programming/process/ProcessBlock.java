@@ -1,12 +1,13 @@
 package com.ar.ar_programming.process;
 
-import static com.ar.ar_programming.ArMainFragment.PROGRAMMING_END_ALL_DONE;
+import static com.ar.ar_programming.ArMainFragment.PROGRAMMING_FAILURE;
 
 import android.content.Context;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.TextView;
 
 import com.ar.ar_programming.character.CharacterNode;
 import com.ar.ar_programming.Gimmick;
@@ -42,12 +43,31 @@ public abstract class ProcessBlock extends Block {
         super(context, attrs, defStyle, xmlBlockInfo);
         mXmlBlockInfo = xmlBlockInfo;
         setId(View.generateViewId());
+
+        Log.i("置換", "コール？");
     }
 
     /*
      * 処理ブロックの内容を書き換え
      */
-    public abstract void rewriteProcessContents(int stringId);
+    public void rewriteProcessContents(){
+
+        //------------------
+        // ブロック文
+        //------------------
+        // 文言IDをレイアウトに設定
+        TextView tv_contents = findViewById(R.id.tv_contents);
+        tv_contents.setText( mXmlBlockInfo.stringId );
+
+        //------------------
+        // ブロック内ワード
+        //------------------
+        String contentsStr = tv_contents.getText().toString();
+        String contentsWithNodeName = replaceNodeName( getContext(), contentsStr, mXmlBlockInfo.nodeNameStringId );
+        if( contentsWithNodeName != null ){
+            tv_contents.setText( contentsWithNodeName );
+        }
+    }
 
     /*
      * 処理ブロック内容取得
@@ -193,7 +213,7 @@ public abstract class ProcessBlock extends Block {
         // 下ブロックなし／親ネストなし
         //--------------------------
         // 終了リスナーをコール
-        mProgrammingListener.onProgrammingEnd( PROGRAMMING_END_ALL_DONE );
+        mProgrammingListener.onProgrammingEnd( PROGRAMMING_FAILURE );
     }
 
     /*
@@ -208,6 +228,26 @@ public abstract class ProcessBlock extends Block {
      */
     public void end( int programmingEndState ) {
         mProgrammingListener.onProgrammingEnd( programmingEndState );
+    }
+
+
+    /*
+     *
+     */
+    public static String replaceNodeName( Context context, String contentsStr, int nodeNameStringId ) {
+
+        //------------
+        // 置換可能判定
+        //------------
+        // ブロック文に置換文字列があり、かつ、置換先文字列を保持している場合
+        if( contentsStr.contains( "xxx" ) && nodeNameStringId != -1 ){
+            // ブロック文にNode名を埋め込み
+            String nodeName = context.getString( nodeNameStringId );
+            return contentsStr.replace( "xxx", nodeName );
+        }
+
+        // 置換不可
+        return null;
     }
 
     /*

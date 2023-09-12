@@ -3,6 +3,11 @@ package com.ar.ar_programming;
 import static com.ar.ar_programming.GimmickManager.BLOCK_CONTENTS_POS;
 import static com.ar.ar_programming.GimmickManager.BLOCK_TYPE_POS;
 import static com.ar.ar_programming.GimmickManager.BLOCK_VALUE_LIMIT_POS;
+import static com.ar.ar_programming.process.SingleBlock.PROCESS_CONTENTS_BACK;
+import static com.ar.ar_programming.process.SingleBlock.PROCESS_CONTENTS_FORWARD;
+import static com.ar.ar_programming.process.SingleBlock.PROCESS_CONTENTS_LEFT_ROTATE;
+import static com.ar.ar_programming.process.SingleBlock.PROCESS_CONTENTS_RIGHT_ROTATE;
+import static com.ar.ar_programming.process.SingleBlock.PROCESS_CONTENTS_THROW_AWAY;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -17,6 +22,8 @@ import com.google.ar.sceneform.math.Vector3;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Gimmick {
 
@@ -66,6 +73,9 @@ public class Gimmick {
     public ArrayList<XmlBlockInfo> xmlBlockInfoList;
     public ArrayList<String> blockList;
 
+    // glbファイル：物体名（処理ブロックに埋め込まれる）
+    public Map<String, Integer> GLB_NODENAME_MAP;
+
     /*
      * ブロックプロパティ情報
      */
@@ -84,10 +94,12 @@ public class Gimmick {
         public int drawableId;          // ブロックイメージID
         public int stringId;            // ブロック文字列ID
         public int stringIdElseIf;      // ブロック文字列ID（else if 条件文）
+        public int nodeNameStringId;    // ブロック文字列内Node名ID
         public int volumeLimit;         // 処理量制限値
         public boolean existsVolume;    // 処理量があるブロックかどうか（例えば、「前へ進む」は”あり”。「食べる」であれば”なし”。）
 
         public XmlBlockInfo() {
+            nodeNameStringId = -1;
         }
     }
 
@@ -113,6 +125,20 @@ public class Gimmick {
 
         blockList = new ArrayList<>();
         xmlBlockInfoList = new ArrayList<>();
+
+        // glbファイル名とNode名の対応マップ
+        GLB_NODENAME_MAP = new HashMap<String, Integer>() {
+            {
+                put("house.glb", R.string.node_house);
+                put("fox_and_tree.glb", R.string.node_squirrel);
+                put("carrot.glb", R.string.node_carrot);
+                put("mushroom_poison.glb", R.string.node_mushroom_poison);
+                put("bee.glb", R.string.node_bee);
+                put("honey.glb", R.string.node_honey);
+                put("sports_car.glb", R.string.node_sports_car);
+                put("signboard_stop.glb", R.string.node_signboard_stop);
+            }
+        };
     }
 
     /*
@@ -141,7 +167,7 @@ public class Gimmick {
         // dataなしの場合
         //----------------------
         // 明示的に異常フォーマットとする
-        if( str == null ){
+        if (str == null) {
             return new String[]{""};
         }
 
@@ -191,7 +217,7 @@ public class Gimmick {
     private void setXmlBlockInfo(String[] blockSplit, XmlBlockInfo xmlBlockInfo) {
 
         // ブロック識別値
-        final int blockType = convertBlockType( blockSplit[BLOCK_TYPE_POS] );
+        final int blockType = convertBlockType(blockSplit[BLOCK_TYPE_POS]);
         // 設定
         xmlBlockInfo.type = blockType;
 
@@ -227,61 +253,65 @@ public class Gimmick {
     private void setXmlSingleBlockInfo(String[] blockSplit, XmlBlockInfo xmlBlockInfo) {
 
         int contents;
-        int selectDrawableId;
-        int selectStringId;
+        int drawableId;
+        int blockStringId;
+        int nodeNameInBlockStringId = -1;
         boolean existsVolume = true;
 
         String blockContentsStr = blockSplit[BLOCK_CONTENTS_POS];
         switch (blockContentsStr) {
             case "forward":
                 contents = SingleBlock.PROCESS_CONTENTS_FORWARD;
-                selectDrawableId = R.drawable.baseline_block_forward_24;
-                selectStringId = R.string.block_contents_forward;
+                drawableId = R.drawable.baseline_block_forward_24;
+                blockStringId = R.string.block_contents_forward;
                 break;
 
             case "back":
                 contents = SingleBlock.PROCESS_CONTENTS_BACK;
-                selectDrawableId = R.drawable.baseline_block_back_24;
-                selectStringId = R.string.block_contents_back;
+                drawableId = R.drawable.baseline_block_back_24;
+                blockStringId = R.string.block_contents_back;
                 break;
 
             case "rotateRight":
                 contents = SingleBlock.PROCESS_CONTENTS_RIGHT_ROTATE;
-                selectDrawableId = R.drawable.baseline_block_rotate_right_24;
-                selectStringId = R.string.block_contents_rorate_right;
+                drawableId = R.drawable.baseline_block_rotate_right_24;
+                blockStringId = R.string.block_contents_rorate_right;
                 break;
 
             case "rotateLeft":
                 contents = SingleBlock.PROCESS_CONTENTS_LEFT_ROTATE;
-                selectDrawableId = R.drawable.baseline_block_rotate_left_24;
-                selectStringId = R.string.block_contents_rorate_left;
+                drawableId = R.drawable.baseline_block_rotate_left_24;
+                blockStringId = R.string.block_contents_rorate_left;
                 break;
 
             case "eat":
                 contents = SingleBlock.PROCESS_CONTENTS_EAT;
-                selectDrawableId = R.drawable.baseline_eat_24;
-                selectStringId = R.string.block_contents_eat;
+                drawableId = R.drawable.baseline_eat_24;
+                blockStringId = R.string.block_contents_eat;
+                nodeNameInBlockStringId = getObjectNameInBlock( "eatable", objectKindList ,objectGlbList );
                 existsVolume = false;
                 break;
 
             case "throwAway":
                 contents = SingleBlock.PROCESS_CONTENTS_THROW_AWAY;
-                selectDrawableId = R.drawable.baseline_throw_away_24;
-                selectStringId = R.string.block_contents_throw_away;
+                drawableId = R.drawable.baseline_throw_away_24;
+                blockStringId = R.string.block_contents_throw_away;
+                nodeNameInBlockStringId = getObjectNameInBlock( "throwAway", objectKindList ,objectGlbList );
                 existsVolume = false;
                 break;
 
             case "attack":
                 contents = SingleBlock.PROCESS_CONTENTS_ATTACK;
-                selectDrawableId = R.drawable.baseline_attack_24;
-                selectStringId = R.string.block_contents_attack;
+                drawableId = R.drawable.baseline_attack_24;
+                blockStringId = R.string.block_contents_attack;
+                //!マージ後
                 existsVolume = false;
                 break;
 
             default:
                 contents = SingleBlock.PROCESS_CONTENTS_FORWARD;
-                selectDrawableId = R.drawable.baseline_block_forward_24;
-                selectStringId = R.string.block_contents_forward;
+                drawableId = R.drawable.baseline_block_forward_24;
+                blockStringId = R.string.block_contents_forward;
                 break;
         }
 
@@ -292,8 +322,9 @@ public class Gimmick {
 
         // 設定
         xmlBlockInfo.contents = contents;
-        xmlBlockInfo.drawableId = selectDrawableId;
-        xmlBlockInfo.stringId = selectStringId;
+        xmlBlockInfo.drawableId = drawableId;
+        xmlBlockInfo.stringId = blockStringId;
+        xmlBlockInfo.nodeNameStringId = nodeNameInBlockStringId;
         xmlBlockInfo.volumeLimit = valueSettingLimit;
         xmlBlockInfo.existsVolume = existsVolume;
     }
@@ -304,35 +335,41 @@ public class Gimmick {
     private void setXmlLoopBlockInfo(String blockContentsStr, XmlBlockInfo xmlBlockInfo) {
 
         int contents;
-        int stringId;
+        int blockStringId;
+        int nodeNameInBlockStringId;
 
         switch (blockContentsStr) {
             case "facing-goal":
                 contents = LoopBlock.PROCESS_CONTENTS_LOOP_FACING_GOAL;
-                stringId = R.string.block_contents_loop_facing_goal;
+                blockStringId = R.string.block_contents_loop_facing_goal;
+                nodeNameInBlockStringId = getObjectNameInBlock(goalGlb);
                 break;
 
-            case "facing-obstacle":
-                contents = LoopBlock.PROCESS_CONTENTS_LOOP_FACING_OBSTACLE;
-                stringId = R.string.block_contents_loop_facing_obstacle;
-                break;
+//            case "facing-obstacle":
+//                contents = LoopBlock.PROCESS_CONTENTS_LOOP_FACING_OBSTACLE;
+//                blockStringId = R.string.block_contents_loop_facing_obstacle;
+//                break;
 
             case "arrival-goal":
+            default:
                 contents = LoopBlock.PROCESS_CONTENTS_LOOP_ARRIVAL_GOAL;
-                stringId = R.string.block_contents_loop_arrival_goal;
+                blockStringId = R.string.block_contents_loop_arrival_goal;
+                nodeNameInBlockStringId = getObjectNameInBlock(goalGlb);
                 break;
 
-            case "arrival-obstacle":
-            default:
-                contents = LoopBlock.PROCESS_CONTENTS_LOOP_ARRIVAL_OBSTACLE;
-                stringId = R.string.block_contents_loop_arrival_block;
-                break;
+//            case "arrival-obstacle":
+//            default:
+//                contents = LoopBlock.PROCESS_CONTENTS_LOOP_ARRIVAL_OBSTACLE;
+//                blockStringId = R.string.block_contents_loop_arrival_block;
+//                nodeNameInBlockStringId = getObjectNameInBlock( goalGlb );
+//                break;
         }
 
         // 設定
         xmlBlockInfo.contents = contents;
         xmlBlockInfo.drawableId = R.drawable.baseline_block_loop_24;
-        xmlBlockInfo.stringId = stringId;
+        xmlBlockInfo.stringId = blockStringId;
+        xmlBlockInfo.nodeNameStringId = nodeNameInBlockStringId;
     }
 
     /*
@@ -342,6 +379,7 @@ public class Gimmick {
 
         int contents;
         int stringId;
+        int nodeNameInBlockStringId = -1;
 
         switch (blockContentsStr) {
             case "collision-obstacle":
@@ -352,11 +390,13 @@ public class Gimmick {
             case "eatable":
                 contents = IfBlock.PROCESS_CONTENTS_IF_EATABLE;
                 stringId = R.string.block_contents_if_eatable;
+                nodeNameInBlockStringId = getObjectNameInBlock( "eatable", objectKindList ,objectGlbList );
                 break;
 
             case "poison":
                 contents = IfBlock.PROCESS_CONTENTS_IF_POISON;
                 stringId = R.string.block_contents_if_poison;
+                nodeNameInBlockStringId = getObjectNameInBlock( "throwAway", objectKindList ,objectGlbList );
                 break;
 
             default:
@@ -369,6 +409,7 @@ public class Gimmick {
         xmlBlockInfo.drawableId = R.drawable.baseline_block_if_24;
         xmlBlockInfo.contents = contents;
         xmlBlockInfo.stringId = stringId;
+        xmlBlockInfo.nodeNameStringId = nodeNameInBlockStringId;
     }
 
     /*
@@ -378,11 +419,13 @@ public class Gimmick {
 
         int contents;
         int stringId;
+        int nodeNameInBlockStringId = -1;
 
         switch (blockContentsStr) {
             case "eatable":
                 contents = IfElseBlock.PROCESS_CONTENTS_IF_ELSE_EATABLE_IN_FRONT;
                 stringId = R.string.block_contents_if_else_eatable;
+                nodeNameInBlockStringId = getObjectNameInBlock( "eatable", objectKindList ,objectGlbList );
                 break;
 
             case "nothing":
@@ -397,9 +440,10 @@ public class Gimmick {
         }
 
         // 設定
+        xmlBlockInfo.drawableId = R.drawable.baseline_block_if_else_24;
         xmlBlockInfo.contents = contents;
         xmlBlockInfo.stringId = stringId;
-        xmlBlockInfo.drawableId = R.drawable.baseline_block_if_else_24;
+        xmlBlockInfo.nodeNameStringId = nodeNameInBlockStringId;
     }
 
     /*
@@ -430,47 +474,47 @@ public class Gimmick {
     /*
      * ブロック処理量制限値を取得
      */
-    private int getBlockValueSettingLimit( String[] blockSplit ) {
+    private int getBlockValueSettingLimit(String[] blockSplit) {
 
         // 制限情報がない場合
         // 例）「single_forward」⇒「制限なし」とみなす
-        if( blockSplit.length <= 2 ){
+        if (blockSplit.length <= 2) {
             return VOLUME_LIMIT_NONE;
         }
 
         // 制限情報がある場合、制限値をそのまま返す
         // 例）「single_forward_1」⇒「1」を返す
-        return Integer.parseInt( blockSplit[BLOCK_VALUE_LIMIT_POS] );
+        return Integer.parseInt(blockSplit[BLOCK_VALUE_LIMIT_POS]);
     }
 
     /*
      * キャラクター座標を設定
      */
-    public void setCharacterPosition( String position ) {
+    public void setCharacterPosition(String position) {
 
         String[] strs = splitGimmickPositionDelimiter(position);
 
         // 正常フォーマットの場合
-        if( strs.length == 3 ){
+        if (strs.length == 3) {
             // 位置形式に変換
-            float x = Float.parseFloat( strs[0] );
-            float y = Float.parseFloat( strs[1] );
-            float z = Float.parseFloat( strs[2] );
-            characterPositionVec = new Vector3( x, y, z );
+            float x = Float.parseFloat(strs[0]);
+            float y = Float.parseFloat(strs[1]);
+            float z = Float.parseFloat(strs[2]);
+            characterPositionVec = new Vector3(x, y, z);
             return;
         }
 
         // フォーマット異常の場合
-        characterPositionVec = new Vector3( 0f, 0f, 0f );
+        characterPositionVec = new Vector3(0f, 0f, 0f);
     }
 
     /*
      * キャラクターモデルの角度を設定
      */
-    public void setCharacterAngle( String angle ) {
+    public void setCharacterAngle(String angle) {
 
         // 設定なしなら、未設定用値を設定して終了
-        if( (angle == null) || angle.isEmpty() ){
+        if ((angle == null) || angle.isEmpty()) {
             characterAngle = NO_DATA_GOAL_ANGLE;
             return;
         }
@@ -482,31 +526,31 @@ public class Gimmick {
     /*
      * ゴール座標を設定
      */
-    public void setGoalPosition( String position ) {
+    public void setGoalPosition(String position) {
 
         String[] strs = splitGimmickPositionDelimiter(position);
 
         // 正常フォーマットの場合
-        if( strs.length == 3 ){
+        if (strs.length == 3) {
             // 位置形式に変換
-            float x = Float.parseFloat( strs[0] );
-            float y = Float.parseFloat( strs[1] );
-            float z = Float.parseFloat( strs[2] );
-            goalPositionVec = new Vector3( x, y, z );
+            float x = Float.parseFloat(strs[0]);
+            float y = Float.parseFloat(strs[1]);
+            float z = Float.parseFloat(strs[2]);
+            goalPositionVec = new Vector3(x, y, z);
             return;
         }
 
         // フォーマット異常の場合
-        goalPositionVec = new Vector3( 1f, 1f, 1f );
+        goalPositionVec = new Vector3(1f, 1f, 1f);
     }
 
     /*
      * ゴールモデルの角度を設定
      */
-    public void setGoalAngle( String angle ) {
+    public void setGoalAngle(String angle) {
 
         // 設定なしなら、未設定用値を設定して終了
-        if( (angle == null) || angle.isEmpty() ){
+        if ((angle == null) || angle.isEmpty()) {
             goalAngle = NO_DATA_GOAL_ANGLE;
             return;
         }
@@ -519,27 +563,27 @@ public class Gimmick {
      * ゴール説明文言リストの設定
      *   文言からstringIDを生成
      */
-    public void setGoalExplanation( String goalExplanation ) {
+    public void setGoalExplanation(String goalExplanation) {
         Resources resources = mContext.getResources();
 
         goalExplanationIdList.clear();
 
         // ゴール説明ID文字列をintに変換して、リストに格納
         String[] strs = splitGimmickValueDelimiter(goalExplanation);
-        for( String word: strs ){
+        for (String word : strs) {
             // 文字列からID値に変換
             int stringId = resources.getIdentifier(word, "string", mContext.getPackageName());
-            goalExplanationIdList.add( stringId );
+            goalExplanationIdList.add(stringId);
         }
     }
 
     /*
      * オブジェクト名を設定
      */
-    public void setObjectGlb( String objectGlb ) {
+    public void setObjectGlb(String objectGlb) {
 
         // プロパティなし
-        if( objectGlb == null ){
+        if (objectGlb == null) {
             return;
         }
 
@@ -554,10 +598,10 @@ public class Gimmick {
     /*
      * オブジェクト数を設定
      */
-    public void setObjectNum( String objectNum ) {
+    public void setObjectNum(String objectNum) {
 
         // プロパティなし
-        if( objectNum == null ){
+        if (objectNum == null) {
             return;
         }
 
@@ -566,18 +610,18 @@ public class Gimmick {
 
         // リスト生成
         objectNumList.clear();
-        for( String num: strs ){
-            objectNumList.add( Integer.parseInt(num) );
+        for (String num : strs) {
+            objectNumList.add(Integer.parseInt(num));
         }
     }
 
     /*
      * オブジェクト種別を設定
      */
-    public void setObjectKind( String objectKind ) {
+    public void setObjectKind(String objectKind) {
 
         // プロパティなし
-        if( objectKind == null ){
+        if (objectKind == null) {
             return;
         }
 
@@ -592,23 +636,23 @@ public class Gimmick {
     /*
      * オブジェクト座標のランダムの有無
      */
-    public void setObjectPositionRandom( String random ) {
+    public void setObjectPositionRandom(String random) {
 
         // プロパティなし
-        if( random == null ){
+        if (random == null) {
             return;
         }
 
-        objectPositionRandom = random.equals( "true" );
+        objectPositionRandom = random.equals("true");
     }
 
     /*
      * オブジェクト座標を設定
      */
-    public void setObjectPositionVecList(String position ) {
+    public void setObjectPositionVecList(String position) {
 
         // プロパティなし
-        if( position == null ){
+        if (position == null) {
             return;
         }
 
@@ -619,7 +663,7 @@ public class Gimmick {
         //-----------------------
         // 位置情報分、リストに格納
         //-----------------------
-        for( String posStr: valueSplit ){
+        for (String posStr : valueSplit) {
 
             // 位置情報を座標毎に分割
             // 例)「0:0:0」 → 「0」「0」「0」
@@ -627,28 +671,28 @@ public class Gimmick {
 
             // 正常フォーマットの場合
             Vector3 pos;
-            if( posSplit.length == 3 ){
+            if (posSplit.length == 3) {
                 // 位置形式に変換
-                float x = Float.parseFloat( posSplit[0] );
-                float y = Float.parseFloat( posSplit[1] );
-                float z = Float.parseFloat( posSplit[2] );
-                pos = new Vector3( x, y, z );
+                float x = Float.parseFloat(posSplit[0]);
+                float y = Float.parseFloat(posSplit[1]);
+                float z = Float.parseFloat(posSplit[2]);
+                pos = new Vector3(x, y, z);
             } else {
                 // フォーマット異常の場合
-                pos = new Vector3( 0, 0, 0 );
+                pos = new Vector3(0, 0, 0);
             }
 
-            objectPositionVecList.add( pos );
+            objectPositionVecList.add(pos);
         }
     }
 
     /*
      * オブジェクト角度を設定
      */
-    public void setObjectAngle( String objectAngle ) {
+    public void setObjectAngle(String objectAngle) {
 
         // プロパティなし
-        if( objectAngle == null ){
+        if (objectAngle == null) {
             return;
         }
 
@@ -657,19 +701,19 @@ public class Gimmick {
 
         // リスト生成
         objectAngleList.clear();
-        for( String angleOrg: strs ){
+        for (String angleOrg : strs) {
             Float angle = Float.parseFloat(angleOrg);
-            objectAngleList.add( angle );
+            objectAngleList.add(angle);
         }
     }
 
     /*
      * 敵名を設定
      */
-    public void setEnemyGlb( String enemyGlb ) {
+    public void setEnemyGlb(String enemyGlb) {
 
         // プロパティなし
-        if( enemyGlb == null ){
+        if (enemyGlb == null) {
             return;
         }
 
@@ -684,10 +728,10 @@ public class Gimmick {
     /*
      * 敵数を設定
      */
-    public void setEnemyNum( String enemyNum ) {
+    public void setEnemyNum(String enemyNum) {
 
         // プロパティなし
-        if( enemyNum == null ){
+        if (enemyNum == null) {
             return;
         }
 
@@ -696,32 +740,32 @@ public class Gimmick {
 
         // リスト生成
         enemyNumList.clear();
-        for( String num: strs ){
-            enemyNumList.add( Integer.parseInt(num) );
+        for (String num : strs) {
+            enemyNumList.add(Integer.parseInt(num));
         }
     }
 
     /*
      * 敵数ランダムの有無を設定
      */
-    public void setEnemyNumRandom( String random ) {
+    public void setEnemyNumRandom(String random) {
 
         // プロパティなし
-        if( random == null ){
+        if (random == null) {
             return;
         }
 
         // ランダム有無を反映
-        enemyNumRandom = random.equals( "true" );
+        enemyNumRandom = random.equals("true");
     }
 
     /*
      * 敵種別を設定
      */
-    public void setEnemyKind( String enemyKind ) {
+    public void setEnemyKind(String enemyKind) {
 
         // プロパティなし
-        if( enemyKind == null ){
+        if (enemyKind == null) {
             return;
         }
 
@@ -736,10 +780,10 @@ public class Gimmick {
     /*
      * 敵座標を設定
      */
-    public void setEnemyPositionVecList(String position ) {
+    public void setEnemyPositionVecList(String position) {
 
         // プロパティなし
-        if( position == null ){
+        if (position == null) {
             return;
         }
 
@@ -750,7 +794,7 @@ public class Gimmick {
         //-----------------------
         // 位置情報分、リストに格納
         //-----------------------
-        for( String posStr: valueSplit ){
+        for (String posStr : valueSplit) {
 
             // 位置情報を座標毎に分割
             // 例)「0:0:0」 → 「0」「0」「0」
@@ -758,46 +802,46 @@ public class Gimmick {
 
             // 正常フォーマットの場合
             Vector3 pos;
-            if( posSplit.length == 3 ){
+            if (posSplit.length == 3) {
                 // 位置形式に変換
-                float x = Float.parseFloat( posSplit[0] );
-                float y = Float.parseFloat( posSplit[1] );
-                float z = Float.parseFloat( posSplit[2] );
-                pos = new Vector3( x, y, z );
+                float x = Float.parseFloat(posSplit[0]);
+                float y = Float.parseFloat(posSplit[1]);
+                float z = Float.parseFloat(posSplit[2]);
+                pos = new Vector3(x, y, z);
             } else {
                 // フォーマット異常の場合
-                pos = new Vector3( 0, 0, 0 );
+                pos = new Vector3(0, 0, 0);
             }
 
-            enemyPositionVecList.add( pos );
+            enemyPositionVecList.add(pos);
         }
     }
 
     /*
      * 敵移動終点座標を設定
      */
-    public void setEnemyEndPosition( String position ) {
+    public void setEnemyEndPosition(String position) {
 
         String[] strs = splitGimmickPositionDelimiter(position);
 
         // 正常フォーマットの場合
-        if( strs.length == 3 ){
+        if (strs.length == 3) {
             // 位置形式に変換
-            float x = Float.parseFloat( strs[0] );
-            float y = Float.parseFloat( strs[1] );
-            float z = Float.parseFloat( strs[2] );
-            enemyEndPositionVec = new Vector3( x, y, z );
+            float x = Float.parseFloat(strs[0]);
+            float y = Float.parseFloat(strs[1]);
+            float z = Float.parseFloat(strs[2]);
+            enemyEndPositionVec = new Vector3(x, y, z);
             return;
         }
 
         // フォーマット異常の場合
-        enemyEndPositionVec = new Vector3( 1f, 1f, 1f );
+        enemyEndPositionVec = new Vector3(1f, 1f, 1f);
     }
 
     /*
      * ギミックで使用可能なブロックリストを設定
      */
-    public void setBlock( String block ) {
+    public void setBlock(String block) {
         //----------------------
         // 各ブロック情報をリスト化
         //----------------------
@@ -813,28 +857,69 @@ public class Gimmick {
         // 各ブロック情報を詳細化
         //----------------------
         // xmlブロック情報リストを生成する
-        setXmlBlockInfoList( blockList );
+        setXmlBlockInfoList(blockList);
     }
 
     /*
      * ギミックで使用可能なブロックリストを設定
      */
-    private void setXmlBlockInfoList( ArrayList<String> blockList ) {
+    private void setXmlBlockInfoList(ArrayList<String> blockList) {
 
-        for( String blockItemStr: blockList ){
+        for (String blockItemStr : blockList) {
 
             XmlBlockInfo xmlBlockInfo = new XmlBlockInfo();
 
             // ブロック文字列を分割
             // 例)「single_rotate-right_1」⇒「single」「rotate-right」「1」
-            String[] blockSplit = Gimmick.splitGimmickBlockDelimiter( blockItemStr );
+            String[] blockSplit = Gimmick.splitGimmickBlockDelimiter(blockItemStr);
             // ブロック文字列をxml情報として解析して設定
-            setXmlBlockInfo( blockSplit, xmlBlockInfo );
+            setXmlBlockInfo(blockSplit, xmlBlockInfo);
 
             // リストに追加
-            xmlBlockInfoList.add( xmlBlockInfo );
+            xmlBlockInfoList.add(xmlBlockInfo);
         }
     }
 
+    /*
+     * 処理ブロックに埋め込む物体名の取得
+     *   para1：path付きglbファイル名
+     *          例)"models/goal/house.glb"
+     */
+    private int getObjectNameInBlock(String glbNameWithPath) {
 
+        //--------------------------
+        // glbファイル名を取得
+        //--------------------------
+        // Glbプロパティの値を分割
+        // 例）"models/goal/house.glb" ⇒ [0]models [1]goal [2]house.glb
+        String[] goalGlbStr = glbNameWithPath.split("/");
+        int lastIndex = goalGlbStr.length - 1;
+
+        // glbファイル名を取得
+        // 例）house.glb を取得
+        String glbName = goalGlbStr[lastIndex];
+
+        //---------------------------
+        // glbファイル に対応する名前
+        //---------------------------
+        // これが処理ブロックに埋め込まれる
+        return GLB_NODENAME_MAP.get(glbName);
+    }
+
+    /*
+     * 処理ブロックに埋め込む物体名の取得
+     */
+    private int getObjectNameInBlock( String kind, ArrayList<String> objectKindList, ArrayList<String> objectGlbList ) {
+
+        int index = 0;
+        for( String objectKind: objectKindList ){
+            if( objectKind.equals( kind ) ){
+                break;
+            }
+            index++;
+        }
+
+        String objectGlb = objectGlbList.get(index);
+        return getObjectNameInBlock( objectGlb );
+    }
 }

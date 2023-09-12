@@ -50,17 +50,20 @@ public class IfElseIfElseBlock extends IfElseBlock {
      */
     private void init() {
         // 処理ブロック内の内容を書き換え
-        rewriteProcessContents(mXmlBlockInfo.stringId);
+        rewriteProcessContents();
     }
 
     /*
      * 処理ブロック内の内容を書き換え
      */
     @Override
-    public void rewriteProcessContents(int stringId) {
+    public void rewriteProcessContents() {
+        super.rewriteProcessContents();
 
+        //------------------------
+        // else if文
+        //------------------------
         // 文言IDをレイアウトに設定
-        TextView tv_contents = findViewById(R.id.tv_contents);
         TextView tv_elseIfContents = findViewById(R.id.tv_elseIfContents);
 
         // 接頭語
@@ -70,7 +73,6 @@ public class IfElseIfElseBlock extends IfElseBlock {
         String elseIfContents = elseIfPrefix.concat( elseIfText );
 
         // 設定
-        tv_contents.setText( mXmlBlockInfo.stringId );
         tv_elseIfContents.setText( elseIfContents );
     }
 

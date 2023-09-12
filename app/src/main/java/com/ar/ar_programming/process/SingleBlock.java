@@ -83,7 +83,7 @@ public class SingleBlock extends ProcessBlock {
         super.setLayout(layoutID);
 
         // ブロック内の内容を書き換え
-        rewriteProcessContents( mXmlBlockInfo.stringId );
+        rewriteProcessContents();
         // ブロックレイアウト設定
         setBlockLayout( mXmlBlockInfo.contents );
         // ブロックタッチリスナー
@@ -199,17 +199,6 @@ public class SingleBlock extends ProcessBlock {
      */
     public int getProcessVolume() {
         return mProcessVolume;
-    }
-
-    /*
-     * 処理ブロック内の内容を書き換え
-     */
-    @Override
-    public void rewriteProcessContents(int stringID) {
-
-        // 文言IDをレイアウトに設定
-        TextView tv_contents = findViewById(R.id.tv_contents);
-        tv_contents.setText(stringID);
     }
 
     /*

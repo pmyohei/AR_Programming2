@@ -13,6 +13,8 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.ar.ar_programming.process.ProcessBlock;
+
 import java.util.ArrayList;
 
 /*
@@ -60,11 +62,20 @@ public class UserBlockSelectListAdapter extends RecyclerView.Adapter<UserBlockSe
             // ブロック情報
             final Gimmick.XmlBlockInfo xmlBlockInfo = mXmlBlockInfo.get(position);
 
-            // リストitemviewの設定
+            //-----------------------------
+            // リストitem view レイアウト設定
+            // ----------------------------
             Drawable image = resources.getDrawable(xmlBlockInfo.drawableId, null);
             String description = resources.getString(xmlBlockInfo.stringId);
             iv_blockImage.setImageDrawable(image);
             tv_title.setText(description);
+
+            // ブロック文内のNode名置き換え
+            String contentsStr = tv_title.getText().toString();
+            String contentsWithNodeName = ProcessBlock.replaceNodeName( cl_parent.getContext(), contentsStr, xmlBlockInfo.nodeNameStringId );
+            if( contentsWithNodeName != null ){
+                tv_title.setText( contentsWithNodeName );
+            }
 
             // ブロッククリックリスナー
             cl_parent.setOnClickListener(new View.OnClickListener() {

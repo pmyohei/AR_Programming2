@@ -60,7 +60,7 @@ public abstract class NestBlock extends ProcessBlock {
         // 処理ブロックタッチリスナー
         setBlockTouchListerer();
         // 処理ブロック内の内容を書き換え
-        rewriteProcessContents( mXmlBlockInfo.stringId );
+        rewriteProcessContents();
     }
 
     /*
