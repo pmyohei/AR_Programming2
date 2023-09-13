@@ -304,7 +304,7 @@ public class Gimmick {
                 contents = SingleBlock.PROCESS_CONTENTS_ATTACK;
                 drawableId = R.drawable.baseline_attack_24;
                 blockStringId = R.string.block_contents_attack;
-                //!マージ後
+                nodeNameInBlockStringId = getObjectNameInBlock( "enemy", objectKindList ,objectGlbList );
                 existsVolume = false;
                 break;
 
@@ -345,6 +345,12 @@ public class Gimmick {
                 nodeNameInBlockStringId = getObjectNameInBlock(goalGlb);
                 break;
 
+            case "facing-enemy":
+                contents = LoopBlock.PROCESS_CONTENTS_LOOP_FACING_ENEMY;
+                blockStringId = R.string.block_contents_loop_facing_enemy;
+                nodeNameInBlockStringId = getObjectNameInBlock( "enemy", objectKindList ,objectGlbList );
+                break;
+                
 //            case "facing-obstacle":
 //                contents = LoopBlock.PROCESS_CONTENTS_LOOP_FACING_OBSTACLE;
 //                blockStringId = R.string.block_contents_loop_facing_obstacle;

@@ -1,5 +1,6 @@
 package com.ar.ar_programming.character;
 
+import static com.ar.ar_programming.process.SingleBlock.PROCESS_CONTENTS_ATTACK;
 import static com.ar.ar_programming.process.SingleBlock.PROCESS_CONTENTS_BACK;
 import static com.ar.ar_programming.process.SingleBlock.PROCESS_CONTENTS_EAT;
 import static com.ar.ar_programming.process.SingleBlock.PROCESS_CONTENTS_FORWARD;
@@ -46,6 +47,7 @@ public class AnimalNode extends CharacterNode {
                 put((Integer) PROCESS_CONTENTS_LEFT_ROTATE, R.string.action_rotate);
                 put((Integer) PROCESS_CONTENTS_EAT, R.string.action_eat);
                 put((Integer) PROCESS_CONTENTS_THROW_AWAY, R.string.action_throw_away);
+                put((Integer) PROCESS_CONTENTS_ATTACK, R.string.action_attack);
             }
         };
     }

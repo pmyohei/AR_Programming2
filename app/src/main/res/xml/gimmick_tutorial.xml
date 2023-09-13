@@ -62,8 +62,8 @@
 		sequence="2car"
 		character="vehicle"
 		successCondition="goal"
-		goalExplanation="guide_major_tutorial_2, guide_sub_tutorial_2, guide_contents_tutorial_2, guide_explanation_tutorial_2"
-		stageGlb="models/stage/tutorial_stage_2.glb"
+		goalExplanation="guide_major_tutorial_2_animal, guide_sub_tutorial_2_animal, guide_contents_tutorial_2_animal, guide_explanation_tutorial_2_animal"
+		stageGlb="models/stage/tutorial_stage_2_animal.glb"
 		characterGlb="models/vehicle/car.glb"
 		characterPosition="0 : 0.5 : 7.5"
 		characterAngle="-30"
@@ -77,7 +77,7 @@
 		sequence="2"
 		character="animal"
 		successCondition="goal"
-		goalExplanation="guide_major_tutorial_2, guide_sub_tutorial_2, guide_contents_tutorial_2, guide_explanation_tutorial_2"
+		goalExplanation="guide_major_tutorial_2_animal, guide_sub_tutorial_2_animal, guide_contents_tutorial_2_animal, guide_explanation_tutorial_2_animal"
 		stageGlb="models/stage/tutorial_stage_1.glb"
 		characterGlb="models/animal/bear.glb"
 		characterPosition="0.2 : 1.26 : 9.2"
@@ -88,9 +88,10 @@
 		objectGlb="models/enemy/bee.glb"
 		objectNum="1"
 		objectKind="enemy"
+		objectAngle="45"
 		objectPositionRandom="false"
 		objectPosition="-4.8 : 2.2 : 0.5"
-		block="single_forward, single_rotateRight_1, single_rotateLeft_1, loop_facing-goal, loop_facing-enemy"
+		block="single_forward, single_rotateRight_1, single_rotateLeft_1, single_attack, loop_facing-goal, loop_facing-enemy"
 		/>
 
 	<gimmick

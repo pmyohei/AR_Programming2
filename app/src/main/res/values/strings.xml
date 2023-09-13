@@ -84,7 +84,7 @@
     <string name="block_contents_loop_arrival_block">ブロックまでループ</string>
     <string name="block_contents_loop_facing_goal">xxxの方を向くまでループ</string>
     <string name="block_contents_loop_facing_obstacle">障害物を向くまでループ</string>
-    <string name="block_contents_loop_facing_enemy">敵の方を向くまでループ</string>
+    <string name="block_contents_loop_facing_enemy">xxxの方を向くまでループ</string>
     <!--  処理ブロック 処理量の単位  -->
     <string name="block_unit_walk">cm</string>
     <string name="block_unit_rotate">度</string>
@@ -189,6 +189,7 @@
         うまく避けるようなプログラミングをしてね！
     </string>
 
+    <!-- チュートリアル１：乗り物 -->
     <string name="guide_major_tutorial_2">チュートリアル2</string>
     <string name="guide_sub_tutorial_2">～ループ処理をしてみよう～</string>
     <string name="guide_contents_tutorial_2">橋を渡って看板まで運転</string>
@@ -197,6 +198,17 @@
         プログラムを作ってみよう！\n\n
         向きの変更がポイントだよ！\n
         ループ処理を使ってうまくプログラミングしてね！
+    </string>
+
+    <!-- チュートリアル１：動物 -->
+    <string name="guide_major_tutorial_2_animal">チュートリアル2</string>
+    <string name="guide_sub_tutorial_2_animal">～ループブロックを組み合わせてみよう～</string>
+    <string name="guide_contents_tutorial_2_animal">蜂を退治して、はちみつをゲットしよう</string>
+    <string name="guide_explanation_tutorial_2_animal">
+        蜂を退治してはちみつの所まで移動するプログラムを作ってみよう！\n
+        はちみつの所へ行く前に蜂を退治してね！\n
+        蜂退治は蜂のそばまで移動する必要があるよ\n
+        うまくプログラムしてはちみつをゲットしよう！
     </string>
 
     <string name="guide_major_tutorial_3">チュートリアル3</string>
@@ -217,15 +229,7 @@
         複数の条件ブロックをうまく組み合わせるのがポイントだよ！\n
     </string>
 
-    <string name="guide_major_tutorial_2_animal">チュートリアル2</string>
-    <string name="guide_sub_tutorial_2_animal">～ループブロックを組み合わせてみよう～</string>
-    <string name="guide_contents_tutorial_2_animal">蜂を退治して、はちみつの所までいこう</string>
-    <string name="guide_explanation_tutorial_2_animal">
-        蜂を退治してはちみつの所まで移動するプログラムを作ってみよう！\n
-        はちみつの所へ行く前に蜂を退治してね！\n
-        蜂退治は蜂のそばまで移動する必要があるよ\n
-        うまくプログラムしてはちみつをゲットしよう！
-    </string>
+
 
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>
