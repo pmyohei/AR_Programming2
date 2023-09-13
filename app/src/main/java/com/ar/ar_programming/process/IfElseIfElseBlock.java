@@ -68,7 +68,7 @@ public class IfElseIfElseBlock extends IfElseBlock {
 
         // 接頭語
         String elseIfPrefix = tv_elseIfContents.getText().toString();
-        String elseIfText = getContext().getString( mXmlBlockInfo.stringIdElseIf );
+        String elseIfText = getContext().getString( mXmlBlockInfo.statementElseIfId);
         // elseif文 生成
         String elseIfContents = elseIfPrefix.concat( elseIfText );
 

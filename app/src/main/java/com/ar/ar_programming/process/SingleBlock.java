@@ -26,13 +26,13 @@ public class SingleBlock extends ProcessBlock {
     //---------------------------
     // 定数
     //---------------------------
-    public static final int PROCESS_CONTENTS_FORWARD = 0;
-    public static final int PROCESS_CONTENTS_BACK = 1;
-    public static final int PROCESS_CONTENTS_RIGHT_ROTATE = 2;
-    public static final int PROCESS_CONTENTS_LEFT_ROTATE = 3;
-    public static final int PROCESS_CONTENTS_EAT = 4;
-    public static final int PROCESS_CONTENTS_THROW_AWAY = 5;
-    public static final int PROCESS_CONTENTS_ATTACK = 6;
+//    public static final int PROCESS_CONTENTS_FORWARD = 0;
+//    public static final int PROCESS_CONTENTS_BACK = 1;
+//    public static final int PROCESS_CONTENTS_RIGHT_ROTATE = 2;
+//    public static final int PROCESS_CONTENTS_LEFT_ROTATE = 3;
+//    public static final int PROCESS_CONTENTS_EAT = 4;
+//    public static final int PROCESS_CONTENTS_THROW_AWAY = 5;
+//    public static final int PROCESS_CONTENTS_ATTACK = 6;
 
     private final String VOLUME_FORMAT = "%03d";
 

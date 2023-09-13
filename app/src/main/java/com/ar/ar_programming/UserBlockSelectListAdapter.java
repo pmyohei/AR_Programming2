@@ -66,13 +66,13 @@ public class UserBlockSelectListAdapter extends RecyclerView.Adapter<UserBlockSe
             // リストitem view レイアウト設定
             // ----------------------------
             Drawable image = resources.getDrawable(xmlBlockInfo.drawableId, null);
-            String description = resources.getString(xmlBlockInfo.stringId);
+            String description = resources.getString(xmlBlockInfo.statementId);
             iv_blockImage.setImageDrawable(image);
             tv_title.setText(description);
 
             // ブロック文内のNode名置き換え
             String contentsStr = tv_title.getText().toString();
-            String contentsWithNodeName = ProcessBlock.replaceNodeName( cl_parent.getContext(), contentsStr, xmlBlockInfo.nodeNameStringId );
+            String contentsWithNodeName = ProcessBlock.replaceNodeName( cl_parent.getContext(), contentsStr, xmlBlockInfo.nodeNameId);
             if( contentsWithNodeName != null ){
                 tv_title.setText( contentsWithNodeName );
             }

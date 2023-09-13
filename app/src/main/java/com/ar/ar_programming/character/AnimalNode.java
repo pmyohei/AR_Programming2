@@ -163,7 +163,7 @@ public class AnimalNode extends CharacterNode {
      * 毒判定
      */
     public boolean isPoison() {
-        return ( mCollisionNodeName.equals( GimmickManager.NODE_NAME_THROW_AWAY ));
+        return ( mCollisionNodeName.equals( GimmickManager.NODE_NAME_POISON));
     }
 
 }

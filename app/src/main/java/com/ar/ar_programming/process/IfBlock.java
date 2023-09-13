@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.TextView;
 
+import com.ar.ar_programming.GimmickManager;
 import com.ar.ar_programming.character.AnimalNode;
 import com.ar.ar_programming.character.CharacterNode;
 import com.ar.ar_programming.Gimmick;
@@ -18,9 +19,9 @@ public class IfBlock extends NestBlock {
     //---------------------------
     // 定数
     //---------------------------
-    public static final int PROCESS_CONTENTS_IF_COLLISION_OBSTACLE = 0;
-    public static final int PROCESS_CONTENTS_IF_EATABLE = 1;
-    public static final int PROCESS_CONTENTS_IF_POISON = 2;
+//    public static final int PROCESS_CONTENTS_IF_COLLISION_OBSTACLE = 0;
+//    public static final int PROCESS_CONTENTS_IF_EATABLE = 1;
+//    public static final int PROCESS_CONTENTS_IF_POISON = 2;
 
     //---------------------------
     // フィールド変数
@@ -60,24 +61,32 @@ public class IfBlock extends NestBlock {
     public boolean isCondition(CharacterNode characterNode) {
 
         //--------------------
-        // if文に応じた条件判定
+        // 動作に応じて条件判定
         //--------------------
-        switch (mXmlBlockInfo.contents) {
-            // 障害物と衝突中かどうか
-            case PROCESS_CONTENTS_IF_COLLISION_OBSTACLE:
-                return characterNode.isObstacle();
+        // 「xxxが目の前にあるか」
+        if( mXmlBlockInfo.conditionMotion.equals(GimmickManager.BLOCK_CONDITION_FACING) ){
 
-            // 目の前に食べ物があるかどうか
-            case PROCESS_CONTENTS_IF_EATABLE:
-                return ((AnimalNode)characterNode).isEatable();
+            //----------------
+            // 物体で条件判定
+            //----------------
+            switch (mXmlBlockInfo.conditionObject) {
+                // 障害物と衝突中かどうか
+                case GimmickManager.NODE_NAME_OBSTACLE:
+                    return characterNode.isObstacle();
 
-            // 目の前に毒があるかどうか
-            case PROCESS_CONTENTS_IF_POISON:
-                return ((AnimalNode)characterNode).isPoison();
+                // 目の前に食べ物があるかどうか
+                case GimmickManager.NODE_NAME_EATABLE:
+                    return ((AnimalNode)characterNode).isEatable();
 
-            default:
-                break;
+                // 目の前に毒があるかどうか
+                case GimmickManager.NODE_NAME_POISON:
+                    return ((AnimalNode)characterNode).isPoison();
+
+                default:
+                    break;
+            }
         }
+
 
         return false;
     }

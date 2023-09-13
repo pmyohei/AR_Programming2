@@ -57,13 +57,13 @@ public abstract class ProcessBlock extends Block {
         //------------------
         // 文言IDをレイアウトに設定
         TextView tv_contents = findViewById(R.id.tv_contents);
-        tv_contents.setText( mXmlBlockInfo.stringId );
+        tv_contents.setText( mXmlBlockInfo.statementId);
 
         //------------------
         // ブロック内ワード
         //------------------
         String contentsStr = tv_contents.getText().toString();
-        String contentsWithNodeName = replaceNodeName( getContext(), contentsStr, mXmlBlockInfo.nodeNameStringId );
+        String contentsWithNodeName = replaceNodeName( getContext(), contentsStr, mXmlBlockInfo.nodeNameId);
         if( contentsWithNodeName != null ){
             tv_contents.setText( contentsWithNodeName );
         }

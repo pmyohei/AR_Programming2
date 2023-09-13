@@ -5,7 +5,7 @@ import static android.content.Context.MODE_PRIVATE;
 import static com.ar.ar_programming.character.CharacterNode.ACTION_FAILURE;
 import static com.ar.ar_programming.character.CharacterNode.ACTION_SUCCESS;
 import static com.ar.ar_programming.character.CharacterNode.ACTION_WAITING;
-import static com.ar.ar_programming.GimmickManager.PROPERTY_CHARACTER_ANIMAL;
+import static com.ar.ar_programming.GimmickManager.GIMMICK_MAIN_ANIMAL;
 import static com.ar.ar_programming.SettingActivity.CHARACTER_ANIMAL;
 
 import android.animation.Animator;
@@ -1088,7 +1088,7 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
     private CharacterNode createCharacterNode( TransformationSystem transformationSystem ) {
 
         // ギミックの指定キャラクターに応じて、生成
-        if (mGimmick.character.equals( PROPERTY_CHARACTER_ANIMAL ) ){
+        if (mGimmick.character.equals(GIMMICK_MAIN_ANIMAL) ){
             return new AnimalNode( transformationSystem, mGimmick );
         } else {
             return new VehicleNode( transformationSystem, mGimmick );

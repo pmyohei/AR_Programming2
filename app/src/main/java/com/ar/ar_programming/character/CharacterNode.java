@@ -264,7 +264,7 @@ public abstract class CharacterNode extends TransformableNode {
 //                startModelAnimation(MODEL_ANIMATION_STR_ERROR, 2000);
                 break;
 
-            } else if (collisionNode.equals(GimmickManager.NODE_NAME_THROW_AWAY)) {
+            } else if (collisionNode.equals(GimmickManager.NODE_NAME_POISON)) {
                 Log.i("Eat", "detectCollision() 捨てるものと衝突");
 //                startModelAnimation(MODEL_ANIMATION_STR_ERROR, 2000);
                 break;
@@ -395,7 +395,7 @@ public abstract class CharacterNode extends TransformableNode {
         //----------------
         // 失敗判定
         //----------------
-        int index = getCollisionIndex(GimmickManager.NODE_NAME_THROW_AWAY);
+        int index = getCollisionIndex(GimmickManager.NODE_NAME_POISON);
         // 衝突中Nodeなし or 食べられないNodeと衝突中
         if ((index == COLLISION_RET_NONE) || (index == COLLISION_RET_OTHRE)) {
             // アクション失敗

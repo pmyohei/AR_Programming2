@@ -21,19 +21,10 @@ public class LoopBlock extends NestBlock {
     //---------------------------
     // 定数
     //---------------------------
-    public static final int PROCESS_CONTENTS_LOOP_ARRIVAL_GOAL = 0;
-    public static final int PROCESS_CONTENTS_LOOP_ARRIVAL_OBSTACLE = 1;
-    public static final int PROCESS_CONTENTS_LOOP_BLOCK = 2;
-    public static final int PROCESS_CONTENTS_LOOP_FACING_GOAL = 10;
-    public static final int PROCESS_CONTENTS_LOOP_FACING_OBSTACLE = 11;
-    public static final int PROCESS_CONTENTS_LOOP_FACING_ENEMY = 12;
-    public static final int PROCESS_CONTENTS_LOOP_FACING_EATABLE = 13;
-    public static final int PROCESS_CONTENTS_LOOP_COLLECT_EATABLE = 20;
 
     //---------------------------
     // フィールド変数
     //---------------------------
-    private int tmploopCount = 0;
 
     /*
      * コンストラクタ
@@ -70,29 +61,45 @@ public class LoopBlock extends NestBlock {
     @Override
     public boolean isCondition(CharacterNode characterNode) {
 
-        switch ( mXmlBlockInfo.contents ) {
+        if( mXmlBlockInfo.conditionMotion.equals( GimmickManager.BLOCK_CONDITION_ARRIVAL ) ) {
 
-            case PROCESS_CONTENTS_LOOP_ARRIVAL_GOAL:
-                // ゴール到達＝終了であるため、常にtrue（条件成立）を返す
-                return true;
+            switch ( mXmlBlockInfo.conditionObject ) {
+                case GimmickManager.NODE_NAME_GOAL:
+                    // ゴール到達＝終了であるため、常にtrue（条件成立）を返す
+                    return true;
 
-            case PROCESS_CONTENTS_LOOP_BLOCK:
-                break;
+                default:
+                    return false;
+            }
 
-            case PROCESS_CONTENTS_LOOP_FACING_GOAL:
-            case PROCESS_CONTENTS_LOOP_FACING_OBSTACLE:
-            case PROCESS_CONTENTS_LOOP_FACING_ENEMY:
-            case PROCESS_CONTENTS_LOOP_FACING_EATABLE:
-                // キャラクター方向判定
-                // ※向いている＝ループ終了であるため、true（向いている）⇒false（ループ終了／条件不成立）に変換して返す
-                return !isConditionFacing( characterNode, mXmlBlockInfo.contents );
+        } else if (mXmlBlockInfo.conditionMotion.equals( GimmickManager.BLOCK_CONDITION_FACING )) {
 
-            case PROCESS_CONTENTS_LOOP_COLLECT_EATABLE:
-                // 収集判定
-                return isConditionCollect( characterNode, mXmlBlockInfo.contents );
+            switch ( mXmlBlockInfo.conditionObject ) {
+                case GimmickManager.NODE_NAME_GOAL:
+                case GimmickManager.NODE_NAME_OBSTACLE:
+                case GimmickManager.NODE_NAME_EATABLE:
+                case GimmickManager.NODE_NAME_ENEMY:
+                    // キャラクター方向判定
+                    // ※向いている＝ループ終了であるため、true（向いている）⇒false（ループ終了／条件不成立）に変換して返す
+                    return !isConditionFacing( characterNode, mXmlBlockInfo.nodeNameId );
 
-            default:
-                break;
+                default:
+                    return false;
+            }
+
+        } else if (mXmlBlockInfo.conditionMotion.equals( GimmickManager.BLOCK_CONDITION_COLLECT )) {
+
+            switch ( mXmlBlockInfo.conditionObject ) {
+                case GimmickManager.NODE_NAME_OBSTACLE:
+                case GimmickManager.NODE_NAME_EATABLE:
+                case GimmickManager.NODE_NAME_ENEMY:
+                    // キャラクター方向判定
+                    // ※向いている＝ループ終了であるため、true（向いている）⇒false（ループ終了／条件不成立）に変換して返す
+                    return isConditionCollect( characterNode, mXmlBlockInfo.nodeNameId );
+
+                default:
+                    return false;
+            }
         }
 
         return false;
@@ -102,7 +109,7 @@ public class LoopBlock extends NestBlock {
     /*
      * ループ条件：指定オブジェクト方向をキャラクターが向いているか判定
      */
-    public boolean isConditionFacing(CharacterNode characterNode, int contents) {
+    public boolean isConditionFacing(CharacterNode characterNode, String contents) {
 
         //------------------
         // 判定対象Nodeを取得
@@ -143,7 +150,7 @@ public class LoopBlock extends NestBlock {
      * 　@para1：！anchorNodeを渡すこと
      * 　@para2：ループ条件コンテンツ
      */
-    public Node getFacingTargetNode(NodeParent parentNode, int contents) {
+    public Node getFacingTargetNode(NodeParent parentNode, String contents) {
 
         //----------------------
         // 対象Node名を取得

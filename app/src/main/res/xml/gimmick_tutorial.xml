@@ -22,7 +22,7 @@
 		sequence="1"
 		character="animal"
 		successCondition="goal"
-		goalExplanation="guide_major_collect_animal_animal, guide_sub_collect_animal, guide_contents_collect_animal, guide_explanation_collect_animal"
+		goalExplanation="guide_major_tutorial_1_animal, guide_sub_tutorial_1_animal, guide_contents_tutorial_1_animal, guide_explanation_tutorial_1_animal"
 		stageGlb="models/stage/tutorial_stage_1.glb"
 		characterGlb="models/animal/rabit.glb"
 		characterPosition="-3.8 : 1.5 : 9.1"
@@ -112,7 +112,7 @@
 		objectPositionRandom="false"
 		objectPosition="0 : 1.3 : -5.0"
 		objectAngle="90"
-		block="single_forward_5, single_eat, loop_arrival-goal, if_eatable"
+		block="single_forward_5, single_eat, loop_arrival-goal, if_front-eatable"
 		/>
 
 	<!-- 集める -->
@@ -148,10 +148,10 @@
 		goalAngle="0"
 		objectGlb="models/obstacle/mushroom_poison.glb, models/obstacle/carrot.glb"
 		objectNum="2, 1"
-		objectKind="throwAway, eatable"
+		objectKind="poison, eatable"
 		objectPositionRandom="false"
 		objectPosition="0 : 1.2 : 3, 0 : 1.2 : -10, 0 : 1.1 : -4.1"
-		block="single_forward_5, single_eat, single_throwAway, loop_arrival-goal, if_eatable, if_poison"
+		block="single_forward_5, single_eat, single_throwAway, loop_arrival-goal, if_front-eatable, if_front-poison"
 		/>
 
 	<!-- 「if-else」ブロックを利用するパターン -->
@@ -169,10 +169,10 @@
 		goalAngle="0"
 		objectGlb="models/obstacle/mushroom_poison.glb, models/obstacle/carrot.glb"
 		objectNum="2, 1"
-		objectKind="throwAway, eatable"
+		objectKind="poison, eatable"
 		objectPositionRandom="false"
 		objectPosition="0 : 1.2 : 3, 0 : 1.2 : -10, 0 : 1.1 : -4.1"
-		block="single_forward_5, single_eat, single_throwAway, loop_arrival-goal, if-else_eatable, if-else_nothing"
+		block="single_forward_5, single_eat, single_throwAway, loop_arrival-goal, if-else_front-eatable, if-else_front-nothing"
 		/>
 
 	<!-- 「if-elseif-else」ブロックを利用するパターン -->
@@ -190,10 +190,10 @@
 		goalAngle="0"
 		objectGlb="models/obstacle/mushroom_poison.glb, models/obstacle/carrot.glb"
 		objectNum="2, 1"
-		objectKind="throwAway, eatable"
+		objectKind="poison, eatable"
 		objectPositionRandom="false"
 		objectPosition="0 : 1.2 : 3, 0 : 1.2 : -10, 0 : 1.1 : -4.1"
-		block="single_forward_5, single_eat, single_throwAway, loop_arrival-goal, if-elseif-else_eatable-poison"
+		block="single_forward_5, single_eat, single_throwAway, loop_arrival-goal, if-elseif-else_front-eatable-poison"
 		/>
 
 

@@ -1,23 +1,16 @@
 package com.ar.ar_programming;
 
+import static com.ar.ar_programming.GimmickManager.BLOCK_CONDITION_ARRIVAL;
+import static com.ar.ar_programming.GimmickManager.BLOCK_CONDITION_COLLECT;
+import static com.ar.ar_programming.GimmickManager.BLOCK_CONDITION_FACING;
 import static com.ar.ar_programming.GimmickManager.BLOCK_CONTENTS_POS;
 import static com.ar.ar_programming.GimmickManager.BLOCK_TYPE_POS;
 import static com.ar.ar_programming.GimmickManager.BLOCK_VALUE_LIMIT_POS;
-import static com.ar.ar_programming.process.SingleBlock.PROCESS_CONTENTS_BACK;
-import static com.ar.ar_programming.process.SingleBlock.PROCESS_CONTENTS_FORWARD;
-import static com.ar.ar_programming.process.SingleBlock.PROCESS_CONTENTS_LEFT_ROTATE;
-import static com.ar.ar_programming.process.SingleBlock.PROCESS_CONTENTS_RIGHT_ROTATE;
-import static com.ar.ar_programming.process.SingleBlock.PROCESS_CONTENTS_THROW_AWAY;
 
 import android.content.Context;
 import android.content.res.Resources;
 
 import com.ar.ar_programming.process.Block;
-import com.ar.ar_programming.process.IfElseIfElseBlock;
-import com.ar.ar_programming.process.IfElseBlock;
-import com.ar.ar_programming.process.IfBlock;
-import com.ar.ar_programming.process.LoopBlock;
-import com.ar.ar_programming.process.SingleBlock;
 import com.google.ar.sceneform.math.Vector3;
 
 import java.util.ArrayList;
@@ -30,7 +23,6 @@ public class Gimmick {
     //---------------------------
     // 定数
     //---------------------------
-
     // 異常値
     public static final int VOLUME_LIMIT_NONE = 0;
     public static final int NO_DATA_GOAL_ANGLE = 0;
@@ -73,33 +65,58 @@ public class Gimmick {
     public ArrayList<XmlBlockInfo> xmlBlockInfoList;
     public ArrayList<String> blockList;
 
-    // glbファイル：物体名（処理ブロックに埋め込まれる）
-    public Map<String, Integer> GLB_NODENAME_MAP;
+    //-----------------
+    // 対応表
+    //-----------------
+    // 実行ブロック「実行内容」　：　ブロック文ID
+//    public Map<String, Integer> Map_blockExe__statementId;
+    // 条件ブロック」条件（動作）」　：　条件文ID
+    public Map<String, Integer> Map_blockConditionMotion__statementId;
+    // glbファイル　：　(具体的な)Node名
+    public Map<String, Integer> Map_glb__nodeName;
+
+
+
 
     /*
      * ブロックプロパティ情報
      */
     public class XmlBlockInfo {
 
-        //----------------------
-        // 例) single_forward_1
-        //      type    ：single
-        //      contents：forward
-        //      userSelectDrawableId  ：singleブロック用のDrawableID
-        //      userSelectStringId    ：ブロック内文字列
-        //      valueLimit：1
-        //----------------------
+        //---------------
+        // 共通
+        //---------------
         public int type;                // ブロック種別（Single, Loop, If,,,）
-        public int contents;            // ブロック内容（「前へ進む」、「食べる」、、）
+        public String contents;         // ブロック内容（「forward」、「facing-goal」、、）
         public int drawableId;          // ブロックイメージID
-        public int stringId;            // ブロック文字列ID
-        public int stringIdElseIf;      // ブロック文字列ID（else if 条件文）
-        public int nodeNameStringId;    // ブロック文字列内Node名ID
+        public int statementId;         // ブロック文字列ID
+        public int nodeNameId;          // ブロック文字列内Node名ID
+
+        //---------------
+        // 実行ブロックのみ
+        //---------------
         public int volumeLimit;         // 処理量制限値
         public boolean existsVolume;    // 処理量があるブロックかどうか（例えば、「前へ進む」は”あり”。「食べる」であれば”なし”。）
 
+        //---------------
+        // 制御ブロックのみ
+        //---------------
+        public String conditionMotion;  // 条件文：動作（「facing」、、、）
+        public String conditionObject;  // 条件文：対象（「eatable」、、、）
+
+        //---------------------------
+        // if elseif else ブロックのみ
+        //---------------------------
+        // else if側の情報
+        public String conditionObjectElseIf;    // 条件文：対象（「poison」、、、）
+        public int statementElseIfId;           // ブロック文字列ID（else if 条件文）
+        public int nodeNameElseIfId;            // ブロック文字列内Node名ID
+
+        /*
+         * コンストラクタ
+         */
         public XmlBlockInfo() {
-            nodeNameStringId = -1;
+            nodeNameId = -1;
         }
     }
 
@@ -126,8 +143,19 @@ public class Gimmick {
         blockList = new ArrayList<>();
         xmlBlockInfoList = new ArrayList<>();
 
-        // glbファイル名とNode名の対応マップ
-        GLB_NODENAME_MAP = new HashMap<String, Integer>() {
+
+        //----------------------
+        // 対応表
+        //----------------------
+        Map_blockConditionMotion__statementId = new HashMap<String, Integer>() {
+            {
+                put(BLOCK_CONDITION_FACING, R.string.block_contents_loop_facing);
+                put(BLOCK_CONDITION_COLLECT, R.string.block_contents_loop_collect);
+                put(BLOCK_CONDITION_ARRIVAL, R.string.block_contents_loop_arrival);
+            }
+        };
+
+        Map_glb__nodeName = new HashMap<String, Integer>() {
             {
                 put("house.glb", R.string.node_house);
                 put("fox_and_tree.glb", R.string.node_squirrel);
@@ -139,12 +167,7 @@ public class Gimmick {
                 put("signboard_stop.glb", R.string.node_signboard_stop);
             }
         };
-    }
 
-    /*
-     * tmp
-     */
-    private void tmp() {
     }
 
     /*
@@ -192,19 +215,19 @@ public class Gimmick {
     private int convertBlockType(String blockTypeStr) {
 
         switch (blockTypeStr) {
-            case "single":
+            case GimmickManager.BLOCK_TYPE_SINGLE:
                 return Block.PROCESS_TYPE_SINGLE;
 
-            case "loop":
+            case GimmickManager.BLOCK_TYPE_LOOP:
                 return Block.PROCESS_TYPE_LOOP;
 
-            case "if":
+            case GimmickManager.BLOCK_TYPE_IF:
                 return Block.PROCESS_TYPE_IF;
 
-            case "if-else":
+            case GimmickManager.BLOCK_TYPE_IF_ELSE:
                 return Block.PROCESS_TYPE_IF_ELSE;
 
-            case "if-elseif-else":
+            case GimmickManager.BLOCK_TYPE_IE_ELSEIF:
                 return Block.PROCESS_TYPE_IF_ELSEIF_ELSE;
         }
 
@@ -216,12 +239,11 @@ public class Gimmick {
      */
     private void setXmlBlockInfo(String[] blockSplit, XmlBlockInfo xmlBlockInfo) {
 
-        // ブロック識別値
+        // ブロック種別
         final int blockType = convertBlockType(blockSplit[BLOCK_TYPE_POS]);
-        // 設定
         xmlBlockInfo.type = blockType;
 
-        String blockContentsStr = blockSplit[BLOCK_CONTENTS_POS];
+        String blockContents = blockSplit[BLOCK_CONTENTS_POS];
 
         switch (blockType) {
             case Block.PROCESS_TYPE_SINGLE:
@@ -229,20 +251,20 @@ public class Gimmick {
                 break;
 
             case Block.PROCESS_TYPE_LOOP:
-                setXmlLoopBlockInfo(blockContentsStr, xmlBlockInfo);
+                setXmlLoopBlockInfo(blockContents, xmlBlockInfo);
                 break;
 
             case Block.PROCESS_TYPE_IF:
-                setXmlIfBlockInfo(blockContentsStr, xmlBlockInfo);
+                setXmlIfBlockInfo(blockContents, xmlBlockInfo);
                 break;
 
             case Block.PROCESS_TYPE_IF_ELSE:
-                setXmlIfElseBlockInfo(blockContentsStr, xmlBlockInfo);
+                setXmlIfElseBlockInfo(blockContents, xmlBlockInfo);
                 break;
 
             case Block.PROCESS_TYPE_IF_ELSEIF_ELSE:
             default:
-                setXmlIfElseIfBlockInfo(blockContentsStr, xmlBlockInfo);
+                setXmlIfElseIfBlockInfo(blockContents, xmlBlockInfo);
                 break;
         }
     }
@@ -252,79 +274,70 @@ public class Gimmick {
      */
     private void setXmlSingleBlockInfo(String[] blockSplit, XmlBlockInfo xmlBlockInfo) {
 
-        int contents;
         int drawableId;
-        int blockStringId;
-        int nodeNameInBlockStringId = -1;
+        int statementId;
+        int nodeNameId = -1;
         boolean existsVolume = true;
 
-        String blockContentsStr = blockSplit[BLOCK_CONTENTS_POS];
-        switch (blockContentsStr) {
-            case "forward":
-                contents = SingleBlock.PROCESS_CONTENTS_FORWARD;
+        String blockContents = blockSplit[BLOCK_CONTENTS_POS];
+        switch (blockContents) {
+            case GimmickManager.BLOCK_EXE_FORWARD:
                 drawableId = R.drawable.baseline_block_forward_24;
-                blockStringId = R.string.block_contents_forward;
+                statementId = R.string.block_contents_forward;
                 break;
 
-            case "back":
-                contents = SingleBlock.PROCESS_CONTENTS_BACK;
+            case GimmickManager.BLOCK_EXE_BACK:
                 drawableId = R.drawable.baseline_block_back_24;
-                blockStringId = R.string.block_contents_back;
+                statementId = R.string.block_contents_back;
                 break;
 
-            case "rotateRight":
-                contents = SingleBlock.PROCESS_CONTENTS_RIGHT_ROTATE;
+            case GimmickManager.BLOCK_EXE_ROTATE_RIGHT:
                 drawableId = R.drawable.baseline_block_rotate_right_24;
-                blockStringId = R.string.block_contents_rorate_right;
+                statementId = R.string.block_contents_rorate_right;
                 break;
 
-            case "rotateLeft":
-                contents = SingleBlock.PROCESS_CONTENTS_LEFT_ROTATE;
+            case GimmickManager.BLOCK_EXE_ROTATE_LEFT:
                 drawableId = R.drawable.baseline_block_rotate_left_24;
-                blockStringId = R.string.block_contents_rorate_left;
+                statementId = R.string.block_contents_rorate_left;
                 break;
 
-            case "eat":
-                contents = SingleBlock.PROCESS_CONTENTS_EAT;
+            case GimmickManager.BLOCK_EXE_EAT:
                 drawableId = R.drawable.baseline_eat_24;
-                blockStringId = R.string.block_contents_eat;
-                nodeNameInBlockStringId = getObjectNameInBlock( "eatable", objectKindList ,objectGlbList );
+                statementId = R.string.block_contents_eat;
+                nodeNameId = getObjectNameInBlock( "eatable", objectKindList ,objectGlbList );
                 existsVolume = false;
                 break;
 
-            case "throwAway":
-                contents = SingleBlock.PROCESS_CONTENTS_THROW_AWAY;
+            case GimmickManager.BLOCK_EXE_THROW_AWAY:
                 drawableId = R.drawable.baseline_throw_away_24;
-                blockStringId = R.string.block_contents_throw_away;
-                nodeNameInBlockStringId = getObjectNameInBlock( "throwAway", objectKindList ,objectGlbList );
+                statementId = R.string.block_contents_throw_away;
+                nodeNameId = getObjectNameInBlock( "poison", objectKindList ,objectGlbList );
                 existsVolume = false;
                 break;
 
-            case "attack":
-                contents = SingleBlock.PROCESS_CONTENTS_ATTACK;
+            case GimmickManager.BLOCK_EXE_ATTACK:
                 drawableId = R.drawable.baseline_attack_24;
-                blockStringId = R.string.block_contents_attack;
-                nodeNameInBlockStringId = getObjectNameInBlock( "enemy", objectKindList ,objectGlbList );
+                statementId = R.string.block_contents_attack;
+                nodeNameId = getObjectNameInBlock( "enemy", objectKindList ,objectGlbList );
                 existsVolume = false;
                 break;
 
             default:
-                contents = SingleBlock.PROCESS_CONTENTS_FORWARD;
                 drawableId = R.drawable.baseline_block_forward_24;
-                blockStringId = R.string.block_contents_forward;
+                statementId = R.string.block_contents_forward;
                 break;
         }
 
         // 処理量制限情報取得
         int valueSettingLimit = getBlockValueSettingLimit(blockSplit);
 
-//        Log.i("ブロックxml", "valueSettingLimit=" + valueSettingLimit);
-
+        //--------------------
         // 設定
-        xmlBlockInfo.contents = contents;
+        //--------------------
+        xmlBlockInfo.contents = blockContents;
         xmlBlockInfo.drawableId = drawableId;
-        xmlBlockInfo.stringId = blockStringId;
-        xmlBlockInfo.nodeNameStringId = nodeNameInBlockStringId;
+        xmlBlockInfo.statementId = statementId;
+        xmlBlockInfo.nodeNameId = nodeNameId;
         xmlBlockInfo.volumeLimit = valueSettingLimit;
         xmlBlockInfo.existsVolume = existsVolume;
     }
@@ -332,160 +345,189 @@ public class Gimmick {
     /*
      * ブロック内容を解析して、xml情報として設定：Loop
      */
-    private void setXmlLoopBlockInfo(String blockContentsStr, XmlBlockInfo xmlBlockInfo) {
+    private void setXmlLoopBlockInfo(String blockContents, XmlBlockInfo xmlBlockInfo) {
 
-        int contents;
-        int blockStringId;
-        int nodeNameInBlockStringId = -1;
+        int statementId;
+        int nodeNameId = -1;
 
-        switch (blockContentsStr) {
-            case "facing-goal":
-                contents = LoopBlock.PROCESS_CONTENTS_LOOP_FACING_GOAL;
-                blockStringId = R.string.block_contents_loop_facing_goal;
-                nodeNameInBlockStringId = getObjectNameInBlock(goalGlb);
+        //-------------
+        // 条件文分割
+        //-------------
+        String[] conditionData = blockContents.split(GimmickManager.GIMMICK_DELIMITER_CONDITION);
+        String conditionMotion = conditionData[GimmickManager.BLOCK_CONDITION_MOTION_POS];
+        String conditionObject = conditionData[GimmickManager.BLOCK_CONDITION_OBJECT_POS];
+
+        //-------------
+        // 条件文
+        //-------------
+        // 動作に対応する条件文を取得
+        statementId = Map_blockConditionMotion__statementId.get( conditionMotion );
+
+        // 対象に対応するNode名を取得
+        switch ( conditionObject ) {
+            case GimmickManager.NODE_NAME_GOAL:
+                nodeNameId = getObjectNameInBlock(goalGlb);
                 break;
 
-            case "facing-enemy":
-                contents = LoopBlock.PROCESS_CONTENTS_LOOP_FACING_ENEMY;
-                blockStringId = R.string.block_contents_loop_facing_enemy;
-                nodeNameInBlockStringId = getObjectNameInBlock( "enemy", objectKindList ,objectGlbList );
+            case GimmickManager.NODE_NAME_ENEMY:
+            case GimmickManager.NODE_NAME_EATABLE:
+                nodeNameId = getObjectNameInBlock( conditionObject, objectKindList ,objectGlbList );
                 break;
-
-            case "facing-eatable":
-                contents = LoopBlock.PROCESS_CONTENTS_LOOP_FACING_EATABLE;
-                blockStringId = R.string.block_contents_loop_facing_eatable;
-                nodeNameInBlockStringId = getObjectNameInBlock( "eatable", objectKindList ,objectGlbList );
-                break;
-
-//            case "facing-obstacle":
-//                contents = LoopBlock.PROCESS_CONTENTS_LOOP_FACING_OBSTACLE;
-//                blockStringId = R.string.block_contents_loop_facing_obstacle;
-//                break;
-
-            case "collect-eatable":
-                contents = LoopBlock.PROCESS_CONTENTS_LOOP_COLLECT_EATABLE;
-                blockStringId = R.string.block_contents_loop_collect_eatable;
-                break;
-
-            case "arrival-goal":
-            default:
-                contents = LoopBlock.PROCESS_CONTENTS_LOOP_ARRIVAL_GOAL;
-                blockStringId = R.string.block_contents_loop_arrival_goal;
-                nodeNameInBlockStringId = getObjectNameInBlock(goalGlb);
-                break;
-
-//            case "arrival-obstacle":
-//            default:
-//                contents = LoopBlock.PROCESS_CONTENTS_LOOP_ARRIVAL_OBSTACLE;
-//                blockStringId = R.string.block_contents_loop_arrival_block;
-//                nodeNameInBlockStringId = getObjectNameInBlock( goalGlb );
-//                break;
         }
 
+        //--------------------
         // 設定
-        xmlBlockInfo.contents = contents;
+        //--------------------
+        xmlBlockInfo.contents = blockContents;
         xmlBlockInfo.drawableId = R.drawable.baseline_block_loop_24;
-        xmlBlockInfo.stringId = blockStringId;
-        xmlBlockInfo.nodeNameStringId = nodeNameInBlockStringId;
+        xmlBlockInfo.statementId = statementId;
+        xmlBlockInfo.nodeNameId = nodeNameId;
+        xmlBlockInfo.conditionMotion = conditionMotion;
+        xmlBlockInfo.conditionObject = conditionObject;
     }
 
     /*
      * ブロック内容を解析して、xml情報として設定：If
      */
-    private void setXmlIfBlockInfo(String blockContentsStr, XmlBlockInfo xmlBlockInfo) {
+    private void setXmlIfBlockInfo(String blockContents, XmlBlockInfo xmlBlockInfo) {
 
-        int contents;
-        int stringId;
-        int nodeNameInBlockStringId = -1;
+        int statementId;
+        int nodeNameId = -1;
 
-        switch (blockContentsStr) {
-            case "collision-obstacle":
-                contents = IfBlock.PROCESS_CONTENTS_IF_COLLISION_OBSTACLE;
-                stringId = R.string.block_contents_if_block;
-                break;
+        //-------------
+        // 条件文分割
+        //-------------
+        String[] conditionData = blockContents.split(GimmickManager.GIMMICK_DELIMITER_CONDITION);
+        String conditionMotion = conditionData[GimmickManager.BLOCK_CONDITION_MOTION_POS];
+        String conditionObject = conditionData[GimmickManager.BLOCK_CONDITION_OBJECT_POS];
 
-            case "eatable":
-                contents = IfBlock.PROCESS_CONTENTS_IF_EATABLE;
-                stringId = R.string.block_contents_if_eatable;
-                nodeNameInBlockStringId = getObjectNameInBlock( "eatable", objectKindList ,objectGlbList );
-                break;
+        //-------------
+        // 条件文
+        //-------------
+        // 動作に対応する条件文を取得
+        statementId = Map_blockConditionMotion__statementId.get( conditionMotion );
 
-            case "poison":
-                contents = IfBlock.PROCESS_CONTENTS_IF_POISON;
-                stringId = R.string.block_contents_if_poison;
-                nodeNameInBlockStringId = getObjectNameInBlock( "throwAway", objectKindList ,objectGlbList );
-                break;
-
-            default:
-                contents = IfBlock.PROCESS_CONTENTS_IF_COLLISION_OBSTACLE;
-                stringId = R.string.block_contents_if_block;
+        // 対象に対応するNode名を取得
+        switch ( conditionObject ) {
+            case GimmickManager.NODE_NAME_ENEMY:
+            case GimmickManager.NODE_NAME_EATABLE:
+            case GimmickManager.NODE_NAME_POISON:
+                nodeNameId = getObjectNameInBlock( conditionObject, objectKindList ,objectGlbList );
                 break;
         }
 
+        //--------------------
         // 設定
+        //--------------------
         xmlBlockInfo.drawableId = R.drawable.baseline_block_if_24;
-        xmlBlockInfo.contents = contents;
-        xmlBlockInfo.stringId = stringId;
-        xmlBlockInfo.nodeNameStringId = nodeNameInBlockStringId;
+        xmlBlockInfo.contents = blockContents;
+        xmlBlockInfo.statementId = statementId;
+        xmlBlockInfo.nodeNameId = nodeNameId;
+        xmlBlockInfo.conditionMotion = conditionMotion;
+        xmlBlockInfo.conditionObject = conditionObject;
     }
 
     /*
      * ブロック内容を解析して、xml情報として設定：IfElse
      */
-    private void setXmlIfElseBlockInfo(String blockContentsStr, XmlBlockInfo xmlBlockInfo) {
+    private void setXmlIfElseBlockInfo(String blockContents, XmlBlockInfo xmlBlockInfo) {
 
-        int contents;
-        int stringId;
-        int nodeNameInBlockStringId = -1;
+        int statementId;
+        int nodeNameId = -1;
 
-        switch (blockContentsStr) {
-            case "eatable":
-                contents = IfElseBlock.PROCESS_CONTENTS_IF_ELSE_EATABLE_IN_FRONT;
-                stringId = R.string.block_contents_if_else_eatable;
-                nodeNameInBlockStringId = getObjectNameInBlock( "eatable", objectKindList ,objectGlbList );
+        //-------------
+        // 条件文分割
+        //-------------
+        String[] conditionData = blockContents.split(GimmickManager.GIMMICK_DELIMITER_CONDITION);
+        String conditionMotion = conditionData[GimmickManager.BLOCK_CONDITION_MOTION_POS];
+        String conditionObject = conditionData[GimmickManager.BLOCK_CONDITION_OBJECT_POS];
+
+        //-------------
+        // 条件文
+        //-------------
+        // 動作に対応する条件文を取得
+        statementId = Map_blockConditionMotion__statementId.get( conditionMotion );
+
+        // 対象に対応するNode名を取得
+        switch ( conditionObject ) {
+            case GimmickManager.NODE_NAME_ENEMY:
+            case GimmickManager.NODE_NAME_EATABLE:
+            case GimmickManager.NODE_NAME_POISON:
+                nodeNameId = getObjectNameInBlock( conditionObject, objectKindList ,objectGlbList );
                 break;
-
-            case "nothing":
-                contents = IfElseBlock.PROCESS_CONTENTS_IF_ELSE_NOTHING_IN_FRONT;
-                stringId = R.string.block_contents_if_else_nothing;
-                break;
-
-            default:
-                contents = IfElseBlock.PROCESS_CONTENTS_IF_ELSE_EATABLE_IN_FRONT;
-                stringId = R.string.block_contents_if_else_eatable;
+            case GimmickManager.NODE_NAME_NOTHING:
                 break;
         }
 
+        //--------------------
         // 設定
+        //--------------------
         xmlBlockInfo.drawableId = R.drawable.baseline_block_if_else_24;
-        xmlBlockInfo.contents = contents;
-        xmlBlockInfo.stringId = stringId;
-        xmlBlockInfo.nodeNameStringId = nodeNameInBlockStringId;
+        xmlBlockInfo.contents = blockContents;
+        xmlBlockInfo.statementId = statementId;
+        xmlBlockInfo.nodeNameId = nodeNameId;
+        xmlBlockInfo.conditionMotion = conditionMotion;
+        xmlBlockInfo.conditionObject = conditionObject;
     }
 
     /*
      * ブロック内容を解析して、xml情報として設定：IfElseifElse
      */
-    private void setXmlIfElseIfBlockInfo(String blockContentsStr, XmlBlockInfo xmlBlockInfo) {
+    private void setXmlIfElseIfBlockInfo(String blockContents, XmlBlockInfo xmlBlockInfo) {
 
-        int contents;
-        int stringId;
-        int stringIdElseIf;
+        int statementId;
+        int statementElseIfId;
+        int nodeNameId = -1;
+        int nodeNameElseIfId = -1;
 
-        switch (blockContentsStr) {
-            case "eatable-poison":
-            default:
-                contents = IfElseIfElseBlock.PROCESS_CONTENTS_IF_ELSEIF_ELSE_EATABLE_POISON;
-                stringId = R.string.block_contents_if_eatable;
-                stringIdElseIf = R.string.block_contents_if_poison;
+        //-------------
+        // 条件文分割
+        //-------------
+        String[] conditionData = blockContents.split(GimmickManager.GIMMICK_DELIMITER_CONDITION);
+        String conditionMotion = conditionData[GimmickManager.BLOCK_CONDITION_MOTION_POS];
+        String conditionObject = conditionData[GimmickManager.BLOCK_CONDITION_OBJECT_POS];
+        String conditionElseIfObject = conditionData[GimmickManager.BLOCK_CONDITION_ELSEIF_OBJECT_POS];
+
+        //-------------
+        // 条件文
+        //-------------
+        // 動作に対応する条件文を取得
+        statementId = Map_blockConditionMotion__statementId.get( conditionMotion );
+        statementElseIfId = statementId;
+
+        // 対象に対応するNode名を取得
+        switch ( conditionObject ) {
+            case GimmickManager.NODE_NAME_ENEMY:
+            case GimmickManager.NODE_NAME_EATABLE:
+            case GimmickManager.NODE_NAME_POISON:
+                nodeNameId = getObjectNameInBlock( conditionObject, objectKindList ,objectGlbList );
+                break;
+            case GimmickManager.NODE_NAME_NOTHING:
                 break;
         }
 
+        switch ( conditionElseIfObject ) {
+            case GimmickManager.NODE_NAME_ENEMY:
+            case GimmickManager.NODE_NAME_EATABLE:
+            case GimmickManager.NODE_NAME_POISON:
+                nodeNameElseIfId = getObjectNameInBlock( conditionObject, objectKindList ,objectGlbList );
+                break;
+            case GimmickManager.NODE_NAME_NOTHING:
+                break;
+        }
+
+        //--------------------
         // 設定
-        xmlBlockInfo.contents = contents;
-        xmlBlockInfo.stringId = stringId;
-        xmlBlockInfo.stringIdElseIf = stringIdElseIf;
+        //--------------------
         xmlBlockInfo.drawableId = R.drawable.baseline_block_if_else_24;
+        xmlBlockInfo.contents = blockContents;
+        xmlBlockInfo.statementId = statementId;
+        xmlBlockInfo.statementElseIfId = statementElseIfId;
+        xmlBlockInfo.nodeNameId = nodeNameId;
+        xmlBlockInfo.nodeNameElseIfId = nodeNameElseIfId;
+        xmlBlockInfo.conditionMotion = conditionMotion;
+        xmlBlockInfo.conditionObject = conditionObject;
+        xmlBlockInfo.conditionObjectElseIf = conditionElseIfObject;
     }
 
     /*
@@ -920,7 +962,7 @@ public class Gimmick {
         // glbファイル に対応する名前
         //---------------------------
         // これが処理ブロックに埋め込まれる
-        return GLB_NODENAME_MAP.get(glbName);
+        return Map_glb__nodeName.get(glbName);
     }
 
     /*

@@ -20,50 +20,91 @@ import java.util.Random;
 public class GimmickManager {
 
     //---------------------------
-    // 定数
+    // ブロック種別
     //---------------------------
+    public static final String BLOCK_TYPE_SINGLE = "single";
+    public static final String BLOCK_TYPE_LOOP = "loop";
+    public static final String BLOCK_TYPE_IF = "if";
+    public static final String BLOCK_TYPE_IF_ELSE = "if-else";
+    public static final String BLOCK_TYPE_IE_ELSEIF = "if-elseif-else";
+
+    //---------------------------
+    // ブロック 実行ブロック処理
+    //---------------------------
+    public static final String BLOCK_EXE_FORWARD = "forward";
+    public static final String BLOCK_EXE_BACK = "back";
+    public static final String BLOCK_EXE_ROTATE_RIGHT = "rotateRight";
+    public static final String BLOCK_EXE_ROTATE_LEFT = "rotateLeft";
+    public static final String BLOCK_EXE_EAT = "eat";
+    public static final String BLOCK_EXE_THROW_AWAY = "throwAway";
+    public static final String BLOCK_EXE_ATTACK = "attack";
+
+    //------------------------------
+    // ブロック 制御ブロック  条件：動詞
+    //------------------------------
+    public static final String BLOCK_CONDITION_FACING = "facing";
+    public static final String BLOCK_CONDITION_COLLECT = "collect";
+    public static final String BLOCK_CONDITION_ARRIVAL = "arrival";
+    public static final String BLOCK_CONDITION_FRONT = "front";
+
+    //------------------------------
     // Node名
-    // （objectKindの文言もここに含まれる）
-    public static final String NODE_NAME_NONE = "none";
+    //------------------------------
+    public static final String NODE_NAME_NONE = "";
     public static final String NODE_NAME_GOAL_GUIDE_UI = "goalGuideUI";
     public static final String NODE_NAME_ANCHOR = "anchor";
     public static final String NODE_NAME_STAGE = "stage";
     public static final String NODE_NAME_GOAL = "goal";
     public static final String NODE_NAME_OBSTACLE = "obstacle";
     public static final String NODE_NAME_EATABLE = "eatable";
-    public static final String NODE_NAME_THROW_AWAY = "throwAway";
+    public static final String NODE_NAME_POISON = "poison";
     public static final String NODE_NAME_ENEMY = "enemy";
-    public static final String NODE_NAME_ENEMY_BAT = "bat";
-    public static final String NODE_NAME_ENEMY_GHOST = "ghost";
+    public static final String NODE_NAME_NOTHING = "nothing";   // ※条件文で何もなしを示す
 
-    // フォーマット位置；ゴール説明
+    //------------------------------
+    // ギミック 主体種別
+    //------------------------------
+    // characterプロパティの値
+    public static final String GIMMICK_MAIN_ANIMAL = "animal";
+    public static final String GIMMICK_MAIN_VEHICLE = "vehicle";
+
+    //------------------------------
+    // フォーマット位置関連：デリミタ
+    //------------------------------
+    // プロパティの各情報
+    public static final String GIMMICK_DELIMITER_INFO = " *, *";
+    // 座標
+    public static final String GIMMICK_DELIMITER_COORDINATE = " *: *";
+    // 情報内単語  例）single_forward
+    public static final String GIMMICK_DELIMITER_WORD = "_";
+    // 制御ブロックの条件　動詞と名詞   例）facing-eatable
+    public static final String GIMMICK_DELIMITER_CONDITION = "-";
+    // パス
+    public static final String GIMMICK_DELIMITER_PATH = "/";
+
+    //------------------------------
+    // フォーマット位置関連：ゴール説明
+    //------------------------------
+    // 例）guide_major_tutorial_1
     public static final int GOAl_EXP_MAJOR_POS = 0;
     public static final int GOAl_EXP_SUB_POS = 1;
     public static final int GOAl_EXP_CONTENTS_POS = 2;
     public static final int GOAl_EXP_EXPLANATION_POS = 3;
 
-    // フォーマット位置；Block
+    //------------------------------
+    // フォーマット位置関連：ブロック
+    //------------------------------
+    // ブロック情報共通
     public static final int BLOCK_TYPE_POS = 0;
-    public static final int BLOCK_CONTENTS_POS = 1;
-    public static final int BLOCK_VALUE_LIMIT_POS = 2;
+    public static final int BLOCK_CONTENTS_POS = 1;                 // 例）「forward」や「facing-eatable」の位置
+    // 実行ブロック  例）single_forward_1
+    public static final int BLOCK_VALUE_LIMIT_POS = 2;              // 例）「1」の位置
+    // 制御ブロック  例）loop_facing-eatable
+    public static final int BLOCK_CONDITION_MOTION_POS = 0;         // 例）「facing」の位置
+    public static final int BLOCK_CONDITION_OBJECT_POS = 1;         // 例）「eatable」の位置
+    // 制御ブロック  例）if-elseif-else_front-eatable-poison
+    public static final int BLOCK_CONDITION_ELSEIF_OBJECT_POS = 2;  // 例）「poison」の位置
 
-    // フォーマット文字列；Block
-    public static final String BLOCK_CONTENTS_FORWARD = "forward";
-    public static final String BLOCK_CONTENTS_BACK = "back";
-    public static final String BLOCK_CONTENTS_ROTATE_RIGHT = "rotateRight";
-    public static final String BLOCK_CONTENTS_ROTATE_LEFT = "rotateLeft";
-    public static final String BLOCK_CONTENTS_EAT = "eat";
-    public static final String BLOCK_CONTENTS_THROW_AWAY = "throwAway";
-    public static final String BLOCK_CONTENTS_ATTACK = "attack";
-
-    // characterプロパティの値
-    public static final String PROPERTY_CHARACTER_ANIMAL = "animal";
-    public static final String PROPERTY_CHARACTER_VEHICLE = "vehicle";
-
-
-    //---------------------------
-    // フィールド変数
-    //---------------------------
 
     /*
      * コンストラクタ
