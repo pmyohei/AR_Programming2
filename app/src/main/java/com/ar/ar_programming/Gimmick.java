@@ -336,7 +336,7 @@ public class Gimmick {
 
         int contents;
         int blockStringId;
-        int nodeNameInBlockStringId;
+        int nodeNameInBlockStringId = -1;
 
         switch (blockContentsStr) {
             case "facing-goal":
@@ -350,11 +350,22 @@ public class Gimmick {
                 blockStringId = R.string.block_contents_loop_facing_enemy;
                 nodeNameInBlockStringId = getObjectNameInBlock( "enemy", objectKindList ,objectGlbList );
                 break;
-                
+
+            case "facing-eatable":
+                contents = LoopBlock.PROCESS_CONTENTS_LOOP_FACING_EATABLE;
+                blockStringId = R.string.block_contents_loop_facing_eatable;
+                nodeNameInBlockStringId = getObjectNameInBlock( "eatable", objectKindList ,objectGlbList );
+                break;
+
 //            case "facing-obstacle":
 //                contents = LoopBlock.PROCESS_CONTENTS_LOOP_FACING_OBSTACLE;
 //                blockStringId = R.string.block_contents_loop_facing_obstacle;
 //                break;
+
+            case "collect-eatable":
+                contents = LoopBlock.PROCESS_CONTENTS_LOOP_COLLECT_EATABLE;
+                blockStringId = R.string.block_contents_loop_collect_eatable;
+                break;
 
             case "arrival-goal":
             default:

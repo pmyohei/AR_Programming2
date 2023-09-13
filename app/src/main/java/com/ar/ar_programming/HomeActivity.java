@@ -22,9 +22,8 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-
         //debug-------------------
-        Common.setTutorialDebug(this, 2);
+        Common.setTutorialDebug(this, 4);
         //--------------------
     }
 

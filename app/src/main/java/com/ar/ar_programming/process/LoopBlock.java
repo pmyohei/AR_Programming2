@@ -2,7 +2,6 @@ package com.ar.ar_programming.process;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.widget.TextView;
 
 import com.ar.ar_programming.character.CharacterNode;
 import com.ar.ar_programming.Gimmick;
@@ -25,9 +24,11 @@ public class LoopBlock extends NestBlock {
     public static final int PROCESS_CONTENTS_LOOP_ARRIVAL_GOAL = 0;
     public static final int PROCESS_CONTENTS_LOOP_ARRIVAL_OBSTACLE = 1;
     public static final int PROCESS_CONTENTS_LOOP_BLOCK = 2;
-    public static final int PROCESS_CONTENTS_LOOP_FACING_GOAL = 3;
-    public static final int PROCESS_CONTENTS_LOOP_FACING_OBSTACLE = 4;
-    public static final int PROCESS_CONTENTS_LOOP_FACING_ENEMY = 5;
+    public static final int PROCESS_CONTENTS_LOOP_FACING_GOAL = 10;
+    public static final int PROCESS_CONTENTS_LOOP_FACING_OBSTACLE = 11;
+    public static final int PROCESS_CONTENTS_LOOP_FACING_ENEMY = 12;
+    public static final int PROCESS_CONTENTS_LOOP_FACING_EATABLE = 13;
+    public static final int PROCESS_CONTENTS_LOOP_COLLECT_EATABLE = 20;
 
     //---------------------------
     // フィールド変数
@@ -81,9 +82,14 @@ public class LoopBlock extends NestBlock {
             case PROCESS_CONTENTS_LOOP_FACING_GOAL:
             case PROCESS_CONTENTS_LOOP_FACING_OBSTACLE:
             case PROCESS_CONTENTS_LOOP_FACING_ENEMY:
+            case PROCESS_CONTENTS_LOOP_FACING_EATABLE:
                 // キャラクター方向判定
                 // ※向いている＝ループ終了であるため、true（向いている）⇒false（ループ終了／条件不成立）に変換して返す
                 return !isConditionFacing( characterNode, mXmlBlockInfo.contents );
+
+            case PROCESS_CONTENTS_LOOP_COLLECT_EATABLE:
+                // 収集判定
+                return isConditionCollect( characterNode, mXmlBlockInfo.contents );
 
             default:
                 break;
@@ -103,7 +109,7 @@ public class LoopBlock extends NestBlock {
         //------------------
         // AR上のNodeは、全てanchorNodeを親としているため、characterNodeの親Node（=anchorNode）を検索用に渡す
         NodeParent parentNode = characterNode.getParentNode();
-        Node targetNode = getFacingTargerNode( parentNode, contents );
+        Node targetNode = getFacingTargetNode( parentNode, contents );
         if( targetNode == null ){
             // 対象Nodeがなければ、条件不成立とみなす
             return false;
@@ -116,11 +122,28 @@ public class LoopBlock extends NestBlock {
     }
 
     /*
+     * ループ条件：指定物体を全て収集しているか判定
+     *           未収集の物がある場合、ループする必要があるため、trueを返す
+     */
+    public boolean isConditionCollect(CharacterNode characterNode, int contents) {
+
+        // 収集対象
+        // !後で
+
+        //---------------
+        //
+        //---------------
+        // 全て収集していなければ、falseを返す
+        boolean exists = characterNode.existsNodeOnScene( GimmickManager.NODE_NAME_EATABLE );
+        return exists;
+    }
+
+    /*
      * 条件コンテンツに該当するNodeを取得
      * 　@para1：！anchorNodeを渡すこと
      * 　@para2：ループ条件コンテンツ
      */
-    public Node getFacingTargerNode(NodeParent parentNode, int contents) {
+    public Node getFacingTargetNode(NodeParent parentNode, int contents) {
 
         //----------------------
         // 対象Node名を取得
@@ -138,6 +161,10 @@ public class LoopBlock extends NestBlock {
 
             case PROCESS_CONTENTS_LOOP_FACING_ENEMY:
                 nodeName = GimmickManager.NODE_NAME_ENEMY;
+                break;
+
+            case PROCESS_CONTENTS_LOOP_FACING_EATABLE:
+                nodeName = GimmickManager.NODE_NAME_EATABLE;
                 break;
 
             default:

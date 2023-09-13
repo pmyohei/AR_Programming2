@@ -60,9 +60,9 @@ public abstract class CharacterNode extends TransformableNode {
     public static final String MODEL_ANIMATION_STR_ERROR = "error";
 
     // 移動1cm当たりのアニメーション時間(ms)
-    private final float WALK_TIME_PER_CM = 100f;
+    private final float WALK_TIME_PER_CM = 50f;
     // 回転1度当たりのアニメーション時間(ms)
-    private final float ROTATE_TIME_PER_ANGLE = 10f;
+    private final float ROTATE_TIME_PER_ANGLE = 5f;
 
     // 処理量のない処理の仮量と仮時間(ms)
     private final float NO_VOLUME_TIME = 3000f;
@@ -878,7 +878,8 @@ public abstract class CharacterNode extends TransformableNode {
                 //----------------------
                 // 実行ブロックが一番最後のブロックの場合
                 if (executeBlock.isBottomBlock()) {
-                    executeBlock.end(PROGRAMMING_FAILURE);
+                    int resultProgramming = judgeProgrammingResult();
+                    executeBlock.end(resultProgramming);
                     return;
                 }
 
@@ -994,6 +995,29 @@ public abstract class CharacterNode extends TransformableNode {
     }
 
     /*
+     * プログラムの結果判定
+     */
+    private int judgeProgrammingResult() {
+
+        int result = PROGRAMMING_FAILURE;
+
+        switch (mGimmick.successCondition) {
+            case "collect":
+                // 全て収集しているなら、成功
+                //!集めるものが食べ物限定になっているため、可変になるように対応する
+                boolean leftovers = existsNodeOnScene( "eatable" );
+                if( !leftovers ){
+                    result = PROGRAMMING_SUCCESS;
+                }
+
+            default:
+                break;
+        }
+
+        return result;
+    }
+
+    /*
      * ゴール判定
      */
     public boolean isGoaled() {
@@ -1024,7 +1048,7 @@ public abstract class CharacterNode extends TransformableNode {
     public boolean isAttackAllEnemy() {
 
         // 全Node検索
-        List<Node> nodes = mScene.getChildren();
+        List<Node> nodes = getParent().getChildren();
         for (Node node : nodes) {
             if (node.getName().equals( GimmickManager.NODE_NAME_ENEMY )) {
                 // 敵NodeがScene上にあれば、未撃破
@@ -1034,6 +1058,27 @@ public abstract class CharacterNode extends TransformableNode {
 
         // 全撃破
         return true;
+    }
+
+    /*
+     * 指定NodeがScene上に存在しているかどうか
+     */
+    public boolean existsNodeOnScene( String searchNodeName ) {
+
+        // 全Node検索
+        List<Node> nodes = getParent().getChildren();
+        for (Node node : nodes) {
+            Log.i("収集", "検索=" + node.getName());
+            if ( node.getName().equals( searchNodeName ) ) {
+                // Scene上にあり
+                Log.i("収集", "あり searchNodeName=" + searchNodeName);
+                return true;
+            }
+        }
+
+        // Scene上になし
+        Log.i("収集", "なし");
+        return false;
     }
 
     /*

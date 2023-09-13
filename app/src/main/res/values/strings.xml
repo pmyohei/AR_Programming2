@@ -83,8 +83,10 @@
     <string name="block_contents_loop_arrival_goal">xxxに着くまでループ</string>
     <string name="block_contents_loop_arrival_block">ブロックまでループ</string>
     <string name="block_contents_loop_facing_goal">xxxの方を向くまでループ</string>
-    <string name="block_contents_loop_facing_obstacle">障害物を向くまでループ</string>
+    <string name="block_contents_loop_facing_obstacle">xxxの方を向くまでループ</string>
     <string name="block_contents_loop_facing_enemy">xxxの方を向くまでループ</string>
+    <string name="block_contents_loop_facing_eatable">xxxの方を向くまでループ</string>
+    <string name="block_contents_loop_collect_eatable">食べ物を全て集めるまでループ</string>
     <!--  処理ブロック 処理量の単位  -->
     <string name="block_unit_walk">cm</string>
     <string name="block_unit_rotate">度</string>
@@ -229,6 +231,14 @@
         複数の条件ブロックをうまく組み合わせるのがポイントだよ！\n
     </string>
 
+    <string name="guide_major_collect_animal">食べ物集め</string>
+    <string name="guide_sub_collect_animal">～食べ物を全部食べよう～</string>
+    <string name="guide_contents_collect_animal">全部の食べ物を食べればクリア</string>
+    <string name="guide_explanation_collect_animal">
+        森の中にある食べ物を全部食べるプログラムを作ってみよう！\n
+        食べ物はそばまでいかないと食べられないよ\n
+        食べ物の方をうまく向いて最後の食べ物まで食べるプログラムを作ってね！\n
+    </string>
 
 
     <!-- Strings used for fragments for navigation -->

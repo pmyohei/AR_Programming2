@@ -22,7 +22,7 @@
 		sequence="1"
 		character="animal"
 		successCondition="goal"
-		goalExplanation="guide_major_tutorial_1_animal, guide_sub_tutorial_1, guide_contents_tutorial_1, guide_explanation_tutorial_1"
+		goalExplanation="guide_major_collect_animal_animal, guide_sub_collect_animal, guide_contents_collect_animal, guide_explanation_collect_animal"
 		stageGlb="models/stage/tutorial_stage_1.glb"
 		characterGlb="models/animal/rabit.glb"
 		characterPosition="-3.8 : 1.5 : 9.1"
@@ -42,7 +42,7 @@
 		sequence="1car"
 		character="vehicle"
 		successCondition="goal"
-		goalExplanation="guide_major_tutorial_1_vehicle, guide_sub_tutorial_1, guide_contents_tutorial_1, guide_explanation_tutorial_1"
+		goalExplanation="guide_major_collect_animal_vehicle, guide_sub_collect_animal, guide_contents_collect_animal, guide_explanation_collect_animal"
 		stageGlb="models/stage/load_stage.glb"
 		characterGlb="models/vehicle/police_car.glb"
 		characterPosition="-3.8 : 0.8 : 0.0"
@@ -115,9 +115,27 @@
 		block="single_forward_5, single_eat, loop_arrival-goal, if_eatable"
 		/>
 
-	<!-- 「if」ブロックを利用するパターン -->
+	<!-- 集める -->
 	<gimmick
 		sequence="4"
+		character="animal"
+		successCondition="collect"
+		goalExplanation="guide_major_collect_animal, guide_sub_collect_animal, guide_contents_collect_animal, guide_explanation_collect_animal"
+		stageGlb="models/stage/forest.glb"
+		characterGlb="models/animal/rabit.glb"
+		characterPosition="0.47 : 1.4 : -7.97"
+		characterAngle="0"
+		objectGlb="models/obstacle/carrot.glb, models/obstacle/pumpkin.glb, models/obstacle/green_apple.glb"
+		objectNum="2, 2, 2"
+		objectKind="eatable, eatable, eatable"
+		objectPositionRandom="false"
+		objectPosition="-1.3 : 1.4 : 8.5, -6.3 : 1.4 : -2.69, 1.48 : 1.4 : -0.27, 9.04 : 1.4 : 1.5, 6.3 : 1.4 : 8.4, -4.75 : 1.4 : 2.41"
+		block="single_forward, single_rotateRight_1, single_rotateLeft_1, single_eat, loop_facing-eatable, loop_collect-eatable"
+		/>
+
+	<!-- 「if」ブロックを利用するパターン -->
+	<gimmick
+		sequence="4if"
 		character="animal"
 		successCondition="goal"
 		goalExplanation="guide_major_tutorial_4, guide_sub_tutorial_4, guide_contents_tutorial_4, guide_explanation_tutorial_4"
