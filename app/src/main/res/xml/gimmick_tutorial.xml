@@ -59,7 +59,7 @@
 		/>
 
 	<gimmick
-		sequence="2"
+		sequence="2car"
 		character="vehicle"
 		successCondition="goal"
 		goalExplanation="guide_major_tutorial_2, guide_sub_tutorial_2, guide_contents_tutorial_2, guide_explanation_tutorial_2"
@@ -71,6 +71,26 @@
 		goalPosition="0 : -0.6 : -8.8"
 		goalAngle="0"
 		block="single_forward, single_rotateRight_1, loop_facing-goal"
+		/>
+
+	<gimmick
+		sequence="2"
+		character="animal"
+		successCondition="goal"
+		goalExplanation="guide_major_tutorial_2, guide_sub_tutorial_2, guide_contents_tutorial_2, guide_explanation_tutorial_2"
+		stageGlb="models/stage/tutorial_stage_1.glb"
+		characterGlb="models/animal/bear.glb"
+		characterPosition="0.2 : 1.26 : 9.2"
+		characterAngle="180"
+		goalGlb="models/goal/honey.glb"
+		goalPosition="5.7 : 0.7 : -2.4"
+		goalAngle="0"
+		objectGlb="models/enemy/bee.glb"
+		objectNum="1"
+		objectKind="enemy"
+		objectPositionRandom="false"
+		objectPosition="-4.8 : 2.2 : 0.5"
+		block="single_forward, single_rotateRight_1, single_rotateLeft_1, loop_facing-goal, loop_facing-enemy"
 		/>
 
 	<gimmick

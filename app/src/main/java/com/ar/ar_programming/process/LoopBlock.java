@@ -27,6 +27,7 @@ public class LoopBlock extends NestBlock {
     public static final int PROCESS_CONTENTS_LOOP_BLOCK = 2;
     public static final int PROCESS_CONTENTS_LOOP_FACING_GOAL = 3;
     public static final int PROCESS_CONTENTS_LOOP_FACING_OBSTACLE = 4;
+    public static final int PROCESS_CONTENTS_LOOP_FACING_ENEMY = 5;
 
     //---------------------------
     // フィールド変数
@@ -79,6 +80,7 @@ public class LoopBlock extends NestBlock {
 
             case PROCESS_CONTENTS_LOOP_FACING_GOAL:
             case PROCESS_CONTENTS_LOOP_FACING_OBSTACLE:
+            case PROCESS_CONTENTS_LOOP_FACING_ENEMY:
                 // キャラクター方向判定
                 // ※向いている＝ループ終了であるため、true（向いている）⇒false（ループ終了／条件不成立）に変換して返す
                 return !isConditionFacing( characterNode, mXmlBlockInfo.contents );
@@ -87,9 +89,7 @@ public class LoopBlock extends NestBlock {
                 break;
         }
 
-        tmploopCount++;
-//        Log.i("チャート動作チェック", "tmploopCount=" + tmploopCount);
-        return (tmploopCount <= 20);
+        return false;
     }
 
 
@@ -131,9 +131,15 @@ public class LoopBlock extends NestBlock {
             case PROCESS_CONTENTS_LOOP_FACING_GOAL:
                 nodeName = GimmickManager.NODE_NAME_GOAL;
                 break;
+
             case PROCESS_CONTENTS_LOOP_FACING_OBSTACLE:
                 nodeName = GimmickManager.NODE_NAME_OBSTACLE;
                 break;
+
+            case PROCESS_CONTENTS_LOOP_FACING_ENEMY:
+                nodeName = GimmickManager.NODE_NAME_ENEMY;
+                break;
+
             default:
                 nodeName = GimmickManager.NODE_NAME_GOAL;
                 break;

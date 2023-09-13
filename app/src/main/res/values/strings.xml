@@ -84,6 +84,7 @@
     <string name="block_contents_loop_arrival_block">ブロックまでループ</string>
     <string name="block_contents_loop_facing_goal">xxxの方を向くまでループ</string>
     <string name="block_contents_loop_facing_obstacle">障害物を向くまでループ</string>
+    <string name="block_contents_loop_facing_enemy">敵の方を向くまでループ</string>
     <!--  処理ブロック 処理量の単位  -->
     <string name="block_unit_walk">cm</string>
     <string name="block_unit_rotate">度</string>
@@ -225,9 +226,6 @@
         蜂退治は蜂のそばまで移動する必要があるよ\n
         うまくプログラムしてはちみつをゲットしよう！
     </string>
-
-
-
 
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>
