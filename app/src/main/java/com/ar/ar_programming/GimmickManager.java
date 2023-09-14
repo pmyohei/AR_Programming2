@@ -38,6 +38,7 @@ public class GimmickManager {
     public static final String BLOCK_EXE_EAT = "eat";
     public static final String BLOCK_EXE_THROW_AWAY = "throwAway";
     public static final String BLOCK_EXE_ATTACK = "attack";
+    public static final String BLOCK_EXE_PICKUP = "pickup";
 
     //------------------------------
     // ブロック 制御ブロック  条件：動詞
@@ -51,6 +52,7 @@ public class GimmickManager {
     // Node名
     //------------------------------
     public static final String NODE_NAME_NONE = "";
+    public static final String NODE_NAME_NOTHING = "nothing";   // ※条件文で何もなしを示す
     public static final String NODE_NAME_GOAL_GUIDE_UI = "goalGuideUI";
     public static final String NODE_NAME_ANCHOR = "anchor";
     public static final String NODE_NAME_STAGE = "stage";
@@ -59,7 +61,7 @@ public class GimmickManager {
     public static final String NODE_NAME_EATABLE = "eatable";
     public static final String NODE_NAME_POISON = "poison";
     public static final String NODE_NAME_ENEMY = "enemy";
-    public static final String NODE_NAME_NOTHING = "nothing";   // ※条件文で何もなしを示す
+    public static final String NODE_NAME_PICKUP = "pickup";
 
     //------------------------------
     // ギミック 主体種別
@@ -72,9 +74,10 @@ public class GimmickManager {
     // ステージ成功条件：successCondition
     //-----------------------------------
     public static final String SUCCESS_CONDITION_GOAL = "goal";
-    public static final String SUCCESS_CONDITION_ATTACK_AND_GOAL = "attack_and_goal";
     public static final String SUCCESS_CONDITION_COLLECT = "collect";
     public static final String SUCCESS_CONDITION_ALL_EAT = "all_eat";
+    public static final String SUCCESS_CONDITION_ATTACK_AND_GOAL = "attack_and_goal";
+    public static final String SUCCESS_CONDITION_PICKUP_AND_GOAL = "pickup_and_goal";
 
     //------------------------------
     // ギミック 真偽値

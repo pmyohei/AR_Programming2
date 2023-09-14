@@ -268,6 +268,10 @@ public abstract class CharacterNode extends TransformableNode {
             } else if (collisionNode.equals(GimmickManager.NODE_NAME_ENEMY)) {
 //                startModelAnimation(MODEL_ANIMATION_STR_ERROR, 2000);
                 break;
+
+            } else if (collisionNode.equals(GimmickManager.NODE_NAME_PICKUP)) {
+//                startModelAnimation(MODEL_ANIMATION_STR_ERROR, 2000);
+                break;
             }
 
             // 衝突中ノードクリア
@@ -774,20 +778,20 @@ public abstract class CharacterNode extends TransformableNode {
         // 前進／後退
         //-----------------------------------------
         // 単位変換：cm → m
-        if (contents.equals( GimmickManager.BLOCK_EXE_FORWARD)) {
+        if (contents.equals(GimmickManager.BLOCK_EXE_FORWARD)) {
             return (float) procVolume / 100f;
         }
-        if (contents.equals( GimmickManager.BLOCK_EXE_BACK )) {
+        if (contents.equals(GimmickManager.BLOCK_EXE_BACK)) {
             return (procVolume / 100f) * -1;
         }
 
         //-----------------------------------------
         // 回転
         //-----------------------------------------
-        if (contents.equals( GimmickManager.BLOCK_EXE_ROTATE_LEFT )) {
+        if (contents.equals(GimmickManager.BLOCK_EXE_ROTATE_LEFT)) {
             return (float) procVolume;
         }
-        if (contents.equals( GimmickManager.BLOCK_EXE_ROTATE_RIGHT )) {
+        if (contents.equals(GimmickManager.BLOCK_EXE_ROTATE_RIGHT)) {
             return (float) procVolume * -1;
         }
 
@@ -805,7 +809,7 @@ public abstract class CharacterNode extends TransformableNode {
         //-------------------
         // 前進／後退
         //-------------------
-        if ((contents.equals( GimmickManager.BLOCK_EXE_FORWARD )) || (contents.equals( GimmickManager.BLOCK_EXE_BACK ))) {
+        if ((contents.equals(GimmickManager.BLOCK_EXE_FORWARD)) || (contents.equals(GimmickManager.BLOCK_EXE_BACK))) {
             // スケールに応じた処理時間に変換
             Vector3 scale = getLocalScale();
             float ratio = (ArMainFragment.NODE_SIZE_S * ArMainFragment.NODE_SIZE_TMP_RATIO) / scale.x;
@@ -816,7 +820,7 @@ public abstract class CharacterNode extends TransformableNode {
         //-------------------
         // 回転
         //-------------------
-        if ((contents.equals( GimmickManager.BLOCK_EXE_ROTATE_RIGHT )) || (contents.equals( GimmickManager.BLOCK_EXE_ROTATE_LEFT ))) {
+        if ((contents.equals(GimmickManager.BLOCK_EXE_ROTATE_RIGHT)) || (contents.equals(GimmickManager.BLOCK_EXE_ROTATE_LEFT))) {
             return (long) (procVolume * ROTATE_TIME_PER_ANGLE);
         }
 
@@ -962,7 +966,7 @@ public abstract class CharacterNode extends TransformableNode {
     private int shouldFinishProgram() {
 
         // ゴール判定
-        if ( isGoaled() ) {
+        if (isGoaled()) {
             return PROGRAMMING_SUCCESS;
         }
         // アクション成否判定
@@ -970,7 +974,7 @@ public abstract class CharacterNode extends TransformableNode {
             return PROGRAMMING_FAILURE;
         }
         // 障害物衝突判定
-        if ( isFrontNode( GimmickManager.NODE_NAME_OBSTACLE ) ) {
+        if (isFrontNode(GimmickManager.NODE_NAME_OBSTACLE)) {
             return PROGRAMMING_FAILURE;
         }
 
@@ -990,9 +994,9 @@ public abstract class CharacterNode extends TransformableNode {
 
             case GimmickManager.SUCCESS_CONDITION_ALL_EAT:
                 // 全て食べているなら、成功
-                boolean leftovers = existsNodeOnScene( GimmickManager.NODE_NAME_EATABLE );
+                boolean leftovers = existsNodeOnScene(GimmickManager.NODE_NAME_EATABLE);
                 Log.i("ギミック変更", "leftovers=" + leftovers);
-                if( !leftovers ){
+                if (!leftovers) {
                     result = PROGRAMMING_SUCCESS;
                 }
 
@@ -1008,41 +1012,65 @@ public abstract class CharacterNode extends TransformableNode {
      */
     public boolean isGoaled() {
 
-        //-------------------
-        // 敵を全て倒しているか
-        //-------------------
-        // ステージのゴール条件が「敵を倒してゴール」であれば、
-        // まず、全ての敵を倒しているかを判定
-        boolean isAttackAndGoal = mGimmick.successCondition.equals( GimmickManager.SUCCESS_CONDITION_ATTACK_AND_GOAL );
-        if ( isAttackAndGoal ) {
-            boolean isAllAttack = isAttackAllEnemy();
-            if( !isAllAttack ){
-                // 全敵を倒していないなら、未ゴール
-                return false;
-            }
+        //---------------------------
+        // ゴール前のクリア条件達成判定
+        //---------------------------
+        boolean isPreGoal = isPreGoal();
+        if( !isPreGoal ){
+            // 未達成なら、未ゴール
+            return false;
         }
 
         //-------------------
         // ゴール判定
         //-------------------
-        return ( mCollisionNodeName.equals(GimmickManager.NODE_NAME_GOAL) );
+        return (mCollisionNodeName.equals(GimmickManager.NODE_NAME_GOAL));
+    }
+
+
+    /*
+     * ゴール前のクリア条件達成判定
+     */
+    public boolean isPreGoal() {
+
+        boolean isAchieved;
+
+        switch (mGimmick.successCondition) {
+
+            // ゴール前に「敵を撃破」する必要あり
+            case GimmickManager.SUCCESS_CONDITION_ATTACK_AND_GOAL:
+                isAchieved = isAllEraseNode( GimmickManager.NODE_NAME_ENEMY );
+                break;
+
+            // ゴール前に「物を拾う」する必要あり
+            case GimmickManager.SUCCESS_CONDITION_PICKUP_AND_GOAL:
+                isAchieved = isAllEraseNode( GimmickManager.NODE_NAME_PICKUP );
+                break;
+
+            default:
+                // 成功条件にゴール前条件がなければ、条件達成されている状態
+                isAchieved = true;
+                break;
+        }
+
+        return isAchieved;
     }
 
     /*
-     * 全敵を撃破
+     * 指定NodeをSceneから全て削除したかどうか
      */
-    public boolean isAttackAllEnemy() {
+    public boolean isAllEraseNode( String nodeName ) {
 
         // 全Node検索
         List<Node> nodes = getParent().getChildren();
         for (Node node : nodes) {
-            if (node.getName().equals( GimmickManager.NODE_NAME_ENEMY )) {
+            if (node.getName().equals( nodeName )) {
                 // 敵NodeがScene上にあれば、未撃破
                 return false;
             }
         }
 
-        // 全撃破
+        // 全削除
         return true;
     }
 

@@ -23,7 +23,7 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home);
 
         //debug-------------------
-        Common.setTutorialDebug(this, 4);
+        Common.setTutorialDebug(this, 1);
         //--------------------
     }
 

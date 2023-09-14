@@ -74,6 +74,7 @@
     <string name="block_contents_eat">xxxを食べる</string>
     <string name="block_contents_throw_away">xxxを捨てる</string>
     <string name="block_contents_attack">xxxをやっつける</string>
+    <string name="block_contents_pickup">xxxを拾う</string>
     <string name="block_contents_if_block">もし ブロックと衝突中なら</string>
     <string name="block_contents_if_eatable">もし 目の前にxxxがあれば</string>
     <string name="block_contents_if_poison">もし 目の前にxxxがあれば</string>
@@ -142,6 +143,7 @@
     <string name="action_eat">ムシャムシャ</string>
     <string name="action_throw_away">ポイッ！</string>
     <string name="action_attack">えいッ！</string>
+    <string name="action_pickup">ゲット～</string>
 
     <!-- 処理ブロックに埋め込む物体名 -->
     <string name="node_house">家</string>
@@ -152,6 +154,7 @@
     <string name="node_honey">はちみつ</string>
     <string name="node_sports_car">スポーツカー</string>
     <string name="node_signboard_stop">看板</string>
+    <string name="node_present">プレゼント</string>
 
     <!-- ダイアログ -->
     <string name="ar_dialog_title">リトライ</string>

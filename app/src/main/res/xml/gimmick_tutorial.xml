@@ -19,6 +19,27 @@
 		/>
 
 	<gimmick
+		sequence="1"
+		character="vehicle"
+		successCondition="pickup_and_goal"
+		goalExplanation="guide_major_tutorial_1_vehicle, guide_sub_tutorial_1_vehicle, guide_contents_tutorial_1_vehicle, guide_explanation_tutorial_1_vehicle"
+		stageGlb="models/stage/crooked_road.glb"
+		characterGlb="models/vehicle/car.glb"
+		characterPosition="-1.64 : 5.1 : 8.1"
+		characterAngle="0"
+		goalGlb="models/animal/rabit.glb"
+		goalPosition="6.4 : 4.98 : -14"
+		goalAngle="-65"
+		objectGlb="models/obstacle/present.glb"
+		objectNum="2"
+		objectKind="pickup"
+		objectPositionRandom="false"
+		objectPosition="-6.76 : 5.2 : 0.6, -1.5 : 5.2 : -9.8"
+		block="single_forward_100, single_rotateRight_2, single_pickup, loop_facing-pickup"
+		/>
+
+
+	<gimmick
 		sequence="1animal"
 		character="animal"
 		successCondition="goal"
@@ -39,7 +60,7 @@
 		/>
 
 	<gimmick
-		sequence="1"
+		sequence="1ve"
 		character="vehicle"
 		successCondition="goal"
 		goalExplanation="guide_major_tutorial_1_vehicle, guide_sub_tutorial_1_vehicle, guide_contents_tutorial_1_vehicle, guide_explanation_tutorial_1_vehicle"

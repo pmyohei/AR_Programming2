@@ -62,7 +62,10 @@ public abstract class ProcessBlock extends Block {
         // ブロック内ワード
         //------------------
         String contentsStr = tv_contents.getText().toString();
+        Log.i("ワード置き換え", "contentsStr=" + contentsStr);
+        Log.i("ワード置き換え", "mXmlBlockInfo.nodeNameId=" + mXmlBlockInfo.nodeNameId);
         String contentsWithNodeName = replaceNodeName( getContext(), contentsStr, mXmlBlockInfo.nodeNameId);
+        Log.i("ワード置き換え", "contentsWithNodeName=" + contentsWithNodeName);
         if( contentsWithNodeName != null ){
             tv_contents.setText( contentsWithNodeName );
         }

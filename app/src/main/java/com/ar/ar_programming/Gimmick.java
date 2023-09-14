@@ -167,6 +167,7 @@ public class Gimmick {
                 put("honey.glb", R.string.node_honey);
                 put("sports_car.glb", R.string.node_sports_car);
                 put("signboard_stop.glb", R.string.node_signboard_stop);
+                put("present.glb", R.string.node_present);
             }
         };
 
@@ -324,6 +325,13 @@ public class Gimmick {
                 existsVolume = false;
                 break;
 
+            case GimmickManager.BLOCK_EXE_PICKUP:
+                drawableId = R.drawable.baseline_attack_24;
+                statementId = R.string.block_contents_pickup;
+                nodeNameId = getObjectNameInBlock( GimmickManager.NODE_NAME_PICKUP, objectKindList ,objectGlbList );
+                existsVolume = false;
+                break;
+
             default:
                 drawableId = R.drawable.baseline_block_forward_24;
                 statementId = R.string.block_contents_forward;
@@ -373,6 +381,7 @@ public class Gimmick {
 
             case GimmickManager.NODE_NAME_ENEMY:
             case GimmickManager.NODE_NAME_EATABLE:
+            case GimmickManager.NODE_NAME_PICKUP:
                 nodeNameId = getObjectNameInBlock( conditionObject, objectKindList ,objectGlbList );
                 break;
         }
@@ -953,12 +962,12 @@ public class Gimmick {
         //--------------------------
         // Glbプロパティの値を分割
         // 例）"models/goal/house.glb" ⇒ [0]models [1]goal [2]house.glb
-        String[] goalGlbStr = glbNameWithPath.split(GimmickManager.GIMMICK_DELIMITER_PATH);
-        int lastIndex = goalGlbStr.length - 1;
+        String[] glbData = glbNameWithPath.split(GimmickManager.GIMMICK_DELIMITER_PATH);
+        int lastIndex = glbData.length - 1;
 
         // glbファイル名を取得
         // 例）house.glb を取得
-        String glbName = goalGlbStr[lastIndex];
+        String glbName = glbData[lastIndex];
 
         //---------------------------
         // glbファイル に対応する名前
