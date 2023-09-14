@@ -68,6 +68,21 @@ public class GimmickManager {
     public static final String GIMMICK_MAIN_ANIMAL = "animal";
     public static final String GIMMICK_MAIN_VEHICLE = "vehicle";
 
+    //-----------------------------------
+    // ステージ成功条件：successCondition
+    //-----------------------------------
+    public static final String SUCCESS_CONDITION_GOAL = "goal";
+    public static final String SUCCESS_CONDITION_ATTACK_AND_GOAL = "attack_and_goal";
+    public static final String SUCCESS_CONDITION_COLLECT = "collect";
+    public static final String SUCCESS_CONDITION_ALL_EAT = "all_eat";
+
+    //------------------------------
+    // ギミック 真偽値
+    //------------------------------
+    public static final String GIMMICK_TRUE = "true";
+    public static final String GIMMICK_FALSE = "false";
+
+
     //------------------------------
     // フォーマット位置関連：デリミタ
     //------------------------------

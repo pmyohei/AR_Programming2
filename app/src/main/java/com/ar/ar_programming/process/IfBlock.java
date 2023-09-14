@@ -2,6 +2,7 @@ package com.ar.ar_programming.process;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.widget.TextView;
 
 import com.ar.ar_programming.GimmickManager;
@@ -34,11 +35,11 @@ public class IfBlock extends NestBlock {
         this(context, null, xmlBlockInfo);
     }
     public IfBlock(Context context, AttributeSet attrs, Gimmick.XmlBlockInfo xmlBlockInfo) {
-        this(context, attrs, 0, xmlBlockInfo);
+        this(context, attrs, 0, xmlBlockInfo, R.layout.process_block_if_else);
     }
-    public IfBlock(Context context, AttributeSet attrs, int defStyle, Gimmick.XmlBlockInfo xmlBlockInfo) {
+    public IfBlock(Context context, AttributeSet attrs, int defStyle, Gimmick.XmlBlockInfo xmlBlockInfo, int layout) {
         super(context, attrs, defStyle, xmlBlockInfo);
-        setLayout( R.layout.process_block_if );
+        setLayout(layout);
     }
 
     /*
@@ -46,7 +47,7 @@ public class IfBlock extends NestBlock {
      */
     @Override
     public void setLayout(int layoutID) {
-        super.setLayout( layoutID );
+        super.setLayout(layoutID);
 
         // 処理ブロック内の内容を書き換え
         rewriteProcessContents();
@@ -60,34 +61,40 @@ public class IfBlock extends NestBlock {
     @Override
     public boolean isCondition(CharacterNode characterNode) {
 
-        //--------------------
-        // 動作に応じて条件判定
-        //--------------------
-        // 「xxxが目の前にあるか」
-        if( mXmlBlockInfo.conditionMotion.equals(GimmickManager.BLOCK_CONDITION_FACING) ){
+        boolean result;
 
-            //----------------
-            // 物体で条件判定
-            //----------------
-            switch (mXmlBlockInfo.conditionObject) {
-                // 障害物と衝突中かどうか
-                case GimmickManager.NODE_NAME_OBSTACLE:
-                    return characterNode.isObstacle();
+        Log.i("ギミック変更", "ifブロック isCondition()");
 
-                // 目の前に食べ物があるかどうか
-                case GimmickManager.NODE_NAME_EATABLE:
-                    return ((AnimalNode)characterNode).isEatable();
+        //-----------------------------
+        // if文：動作　に応じた判定
+        //-----------------------------
+        switch (mXmlBlockInfo.conditionMotion) {
 
-                // 目の前に毒があるかどうか
-                case GimmickManager.NODE_NAME_POISON:
-                    return ((AnimalNode)characterNode).isPoison();
+            // 「xxxが目の前にあるか」
+            case GimmickManager.BLOCK_CONDITION_FRONT:
+                result = isConditionFacing(characterNode);
+                break;
 
-                default:
-                    break;
-            }
+            default:
+                result = false;
+                break;
         }
 
+        return result;
+    }
 
-        return false;
+
+    /*
+     * 条件成立判定：目の前にxxxがあるか
+     *   @return：条件成立- true
+     *   @return：条件不成立- false
+     */
+    public boolean isConditionFacing(CharacterNode characterNode) {
+
+        //----------------
+        // 物体で条件判定
+        //----------------
+        Log.i("ギミック変更", "ifブロック isConditionFacing()");
+        return characterNode.isFrontNode( mXmlBlockInfo.conditionObject );
     }
 }

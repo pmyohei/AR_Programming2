@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.ar.ar_programming.GimmickManager;
 import com.ar.ar_programming.character.AnimalNode;
 import com.ar.ar_programming.character.CharacterNode;
 import com.ar.ar_programming.Gimmick;
@@ -15,13 +16,11 @@ import com.ar.ar_programming.R;
 /*
  * ネストあり処理ブロック（if文）
  */
-public class IfElseBlock extends NestBlock {
+public class IfElseBlock extends IfBlock {
 
     //---------------------------
     // 定数
     //---------------------------
-    public static final int PROCESS_CONTENTS_IF_ELSE_EATABLE_IN_FRONT = 0;      // 目の前に食べ物があれば
-    public static final int PROCESS_CONTENTS_IF_ELSE_NOTHING_IN_FRONT = 1;      // 目の前に何もなければ
 
     //---------------------------
     // フィールド変数
@@ -39,26 +38,7 @@ public class IfElseBlock extends NestBlock {
         this(context, attrs, 0, xmlBlockInfo, layout);
     }
     public IfElseBlock(Context context, AttributeSet attrs, int defStyle, Gimmick.XmlBlockInfo xmlBlockInfo, int layout) {
-        super(context, attrs, defStyle, xmlBlockInfo);
-        setLayout( layout );
-        init();
-    }
-
-    /*
-     * 初期化処理
-     */
-    private void init() {
-    }
-
-    /*
-     * レイアウト設定
-     */
-    @Override
-    public void setLayout(int layoutID) {
-        super.setLayout(layoutID);
-
-        // 処理ブロック内の内容を書き換え
-        rewriteProcessContents();
+        super(context, attrs, defStyle, xmlBlockInfo, layout);
     }
 
     /*
@@ -71,7 +51,7 @@ public class IfElseBlock extends NestBlock {
         //------------------------------
         // else内ブロックを半透明化
         //------------------------------
-        Block block = getStartBlockForNest( NEST_SECOND );
+        Block block = getStartBlockForNest(NEST_SECOND);
         while (block != null) {
             block.tranceOnDrag();
             block = block.getBelowBlock();
@@ -88,7 +68,7 @@ public class IfElseBlock extends NestBlock {
         //--------------------------
         // else内ブロックの透明化を解除
         //--------------------------
-        Block block = getStartBlockForNest( NEST_SECOND );
+        Block block = getStartBlockForNest(NEST_SECOND);
         while (block != null) {
             block.tranceOffDrag();
             block = block.getBelowBlock();
@@ -144,17 +124,17 @@ public class IfElseBlock extends NestBlock {
      */
     @Override
     public void resizeNestHeight(Block calledBlock) {
-        super.resizeNestHeight( calledBlock );
+        super.resizeNestHeight(calledBlock);
 
         //--------------------------------------------------------------
         // 他ネスト（リサイズ対象ネストよりも下にあるネスト）内ブロックの位置更新
         //--------------------------------------------------------------
         // リサイズ対象がネスト１の場合、ネスト２のブロック位置を更新
-        int targetNest = whichInNest( calledBlock );
-        if( targetNest == NEST_FIRST ){
+        int targetNest = whichInNest(calledBlock);
+        if (targetNest == NEST_FIRST) {
 
             // ネスト１view確定時、ネスト２位置を更新
-            ViewGroup nestView = getNestViewForNest( targetNest );
+            ViewGroup nestView = getNestViewForNest(targetNest);
             nestView.post(() -> {
                 mNestStartBlockSecond.updatePosition();
             });
@@ -165,14 +145,14 @@ public class IfElseBlock extends NestBlock {
      * ブロック削除
      */
     @Override
-    public void removeOnChart(){
+    public void removeOnChart() {
         super.removeOnChart();
 
         //------------------------
         // elseネスト内ブロックを削除
         //------------------------
-        Block block = getStartBlockForNest( NEST_SECOND );
-        while( block != null ){
+        Block block = getStartBlockForNest(NEST_SECOND);
+        while (block != null) {
             block.removeOnChart();
             block = block.getBelowBlock();
         }
@@ -182,13 +162,13 @@ public class IfElseBlock extends NestBlock {
      * ネスト内に指定されたブロックがあるか
      */
     @Override
-    public boolean hasBlock(Block checkBlock ) {
+    public boolean hasBlock(Block checkBlock) {
         //---------------------
         // if側のネストをチェック
         //---------------------
         // あれば判定終了
-        boolean firstNest = super.hasBlock( checkBlock );
-        if( firstNest ){
+        boolean firstNest = super.hasBlock(checkBlock);
+        if (firstNest) {
             return true;
         }
 
@@ -196,21 +176,21 @@ public class IfElseBlock extends NestBlock {
         // else側のネストをチェック
         //---------------------
         // else側のネストを検索
-        return searchBlockInNest( NEST_SECOND, checkBlock );
+        return searchBlockInNest(NEST_SECOND, checkBlock);
     }
 
     /*
      * 指定ブロックがどのネストにいるか
      */
     @Override
-    public int whichInNest(Block calledBlock ) {
+    public int whichInNest(Block calledBlock) {
 
         //----------------
         // ネスト１内を検索
         //----------------
         Block block = mNestStartBlockFirst;
-        while( block != null ){
-            if( block == calledBlock ){
+        while (block != null) {
+            if (block == calledBlock) {
                 // 指定ブロックがあれば、ネスト１を返す
                 return NEST_FIRST;
             }
@@ -225,17 +205,17 @@ public class IfElseBlock extends NestBlock {
      * 指定ネストのスタートブロックを取得
      */
     @Override
-    public Block getStartBlockForNest( int nest ) {
-        return ( nest == NEST_FIRST ? mNestStartBlockFirst : mNestStartBlockSecond );
+    public Block getStartBlockForNest(int nest) {
+        return (nest == NEST_FIRST ? mNestStartBlockFirst : mNestStartBlockSecond);
     }
 
     /*
      * 指定ネストのネストviewを取得
      */
     @Override
-    public ViewGroup getNestViewForNest( int nest ) {
-        int id = ( nest == NEST_FIRST ? R.id.ll_firstNestRoot : R.id.ll_secondNestRoot );
-        return findViewById( id );
+    public ViewGroup getNestViewForNest(int nest) {
+        int id = (nest == NEST_FIRST ? R.id.ll_firstNestRoot : R.id.ll_secondNestRoot);
+        return findViewById(id);
     }
 
     /*
@@ -243,28 +223,10 @@ public class IfElseBlock extends NestBlock {
      *   @return：条件成立- true
      *   @return：条件不成立- false
      */
-    @Override
-    public boolean isCondition(CharacterNode characterNode) {
-
-        //--------------------
-        // if文に応じた条件判定
-        //--------------------
-        switch (mXmlBlockInfo.contents) {
-
-            // 目の前に食べ物があるかどうか
-            case PROCESS_CONTENTS_IF_ELSE_EATABLE_IN_FRONT:
-                return ((AnimalNode)characterNode).isEatable();
-
-            // 目の前に何もないか
-            case PROCESS_CONTENTS_IF_ELSE_NOTHING_IN_FRONT:
-                return characterNode.isNothingInFront();
-
-            default:
-                break;
-        }
-
-        return false;
-    }
+//    @Override
+//    public boolean isCondition(CharacterNode characterNode) {
+//        return super.isCondition( characterNode );
+//    }
 
     /*
      * ブロック処理開始

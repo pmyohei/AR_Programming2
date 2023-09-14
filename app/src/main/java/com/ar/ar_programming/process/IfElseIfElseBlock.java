@@ -2,10 +2,12 @@ package com.ar.ar_programming.process;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.ar.ar_programming.GimmickManager;
 import com.ar.ar_programming.character.AnimalNode;
 import com.ar.ar_programming.character.CharacterNode;
 import com.ar.ar_programming.Gimmick;
@@ -34,11 +36,9 @@ public class IfElseIfElseBlock extends IfElseBlock {
     public IfElseIfElseBlock(Context context, Gimmick.XmlBlockInfo xmlBlockInfo) {
         this(context, null, xmlBlockInfo);
     }
-
     public IfElseIfElseBlock(Context context, AttributeSet attrs, Gimmick.XmlBlockInfo xmlBlockInfo) {
         this(context, attrs, 0, xmlBlockInfo);
     }
-
     public IfElseIfElseBlock(Context context, AttributeSet attrs, int defStyle, Gimmick.XmlBlockInfo xmlBlockInfo) {
         super(context, attrs, defStyle, xmlBlockInfo, R.layout.process_block_if_elseif_else);
         // !レイアウトの設定は「IfElseBlock」クラスで行う
@@ -49,16 +49,14 @@ public class IfElseIfElseBlock extends IfElseBlock {
      * 初期化処理
      */
     private void init() {
-        // 処理ブロック内の内容を書き換え
-        rewriteProcessContents();
+        // 処理ブロック内（else if文）の内容を書き換え
+        rewriteElseIfContents();
     }
 
     /*
-     * 処理ブロック内の内容を書き換え
+     * 処理ブロック内の内容を書き換え：else if文
      */
-    @Override
-    public void rewriteProcessContents() {
-        super.rewriteProcessContents();
+    public void rewriteElseIfContents() {
 
         //------------------------
         // else if文
@@ -74,6 +72,13 @@ public class IfElseIfElseBlock extends IfElseBlock {
 
         // 設定
         tv_elseIfContents.setText( elseIfContents );
+
+        // ブロック内ワードの置き換え
+        String contentsStr = tv_elseIfContents.getText().toString();
+        String contentsWithNodeName = replaceNodeName( getContext(), contentsStr, mXmlBlockInfo.nodeNameElseIfId);
+        if( contentsWithNodeName != null ){
+            tv_elseIfContents.setText( contentsWithNodeName );
+        }
     }
 
     /*
@@ -302,11 +307,11 @@ public class IfElseIfElseBlock extends IfElseBlock {
      */
     public int judgeTrueNestRoot(CharacterNode characterNode) {
 
-        switch (mXmlBlockInfo.contents) {
+        switch (mXmlBlockInfo.conditionMotion) {
 
-            // 目の前に食べ物／毒があるかどうか
-            case PROCESS_CONTENTS_IF_ELSEIF_ELSE_EATABLE_POISON:
-                return judgeTrueNestRootEatablePoison(characterNode);
+            // 目の前にxxxがあるか
+            case GimmickManager.BLOCK_CONDITION_FRONT:
+                return judgeTrueNestRootOnFront(characterNode);
 
             default:
                 break;
@@ -316,17 +321,15 @@ public class IfElseIfElseBlock extends IfElseBlock {
     }
 
     /*
-     * ネストルート判定
-     * 　　条件１：目の前に食べ物があるかどうか
-     * 　　条件２：目の前に毒があるかどうか
+     * ネストルート判定：条件動作：目の前にxxxがあるかどうか
      */
-    public int judgeTrueNestRootEatablePoison(CharacterNode characterNode) {
+    public int judgeTrueNestRootOnFront(CharacterNode characterNode) {
 
         //--------------
         // 条件１判定
         //--------------
-        boolean isEatable = ((AnimalNode)characterNode).isEatable();
-        if( isEatable ){
+        boolean isFirstCondition = ((AnimalNode)characterNode).isFrontNode( mXmlBlockInfo.conditionObject );
+        if( isFirstCondition ){
             // ifブロックを通る状態
             return NEST_FIRST;
         }
@@ -334,8 +337,8 @@ public class IfElseIfElseBlock extends IfElseBlock {
         //--------------
         // 条件２判定
         //--------------
-        boolean isPoison = ((AnimalNode)characterNode).isPoison();
-        if( isPoison ){
+        boolean isSecondCondition = ((AnimalNode)characterNode).isFrontNode( mXmlBlockInfo.conditionObjectElseIf );
+        if( isSecondCondition ){
             // else ifブロックを通る状態
             return NEST_SECOND;
         }

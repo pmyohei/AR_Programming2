@@ -3,6 +3,7 @@ package com.ar.ar_programming;
 import static com.ar.ar_programming.GimmickManager.BLOCK_CONDITION_ARRIVAL;
 import static com.ar.ar_programming.GimmickManager.BLOCK_CONDITION_COLLECT;
 import static com.ar.ar_programming.GimmickManager.BLOCK_CONDITION_FACING;
+import static com.ar.ar_programming.GimmickManager.BLOCK_CONDITION_FRONT;
 import static com.ar.ar_programming.GimmickManager.BLOCK_CONTENTS_POS;
 import static com.ar.ar_programming.GimmickManager.BLOCK_TYPE_POS;
 import static com.ar.ar_programming.GimmickManager.BLOCK_VALUE_LIMIT_POS;
@@ -152,6 +153,7 @@ public class Gimmick {
                 put(BLOCK_CONDITION_FACING, R.string.block_contents_loop_facing);
                 put(BLOCK_CONDITION_COLLECT, R.string.block_contents_loop_collect);
                 put(BLOCK_CONDITION_ARRIVAL, R.string.block_contents_loop_arrival);
+                put(BLOCK_CONDITION_FRONT, R.string.block_contents_if_front);
             }
         };
 
@@ -176,7 +178,7 @@ public class Gimmick {
      *   例）","、", "、" ,"、" , "
      */
     private String[] splitGimmickValueDelimiter(String str) {
-        return str.split(" *, *");
+        return str.split(GimmickManager.GIMMICK_DELIMITER_INFO);
     }
 
     /*
@@ -195,7 +197,7 @@ public class Gimmick {
         }
 
         // 分割
-        return str.split(" *: *");
+        return str.split(GimmickManager.GIMMICK_DELIMITER_COORDINATE);
     }
 
     /*
@@ -204,7 +206,7 @@ public class Gimmick {
      *   例）"_"
      */
     public static String[] splitGimmickBlockDelimiter(String str) {
-        return str.split("_");
+        return str.split(GimmickManager.GIMMICK_DELIMITER_WORD);
     }
 
     /*
@@ -304,21 +306,21 @@ public class Gimmick {
             case GimmickManager.BLOCK_EXE_EAT:
                 drawableId = R.drawable.baseline_eat_24;
                 statementId = R.string.block_contents_eat;
-                nodeNameId = getObjectNameInBlock( "eatable", objectKindList ,objectGlbList );
+                nodeNameId = getObjectNameInBlock( GimmickManager.NODE_NAME_EATABLE, objectKindList ,objectGlbList );
                 existsVolume = false;
                 break;
 
             case GimmickManager.BLOCK_EXE_THROW_AWAY:
                 drawableId = R.drawable.baseline_throw_away_24;
                 statementId = R.string.block_contents_throw_away;
-                nodeNameId = getObjectNameInBlock( "poison", objectKindList ,objectGlbList );
+                nodeNameId = getObjectNameInBlock( GimmickManager.NODE_NAME_POISON, objectKindList ,objectGlbList );
                 existsVolume = false;
                 break;
 
             case GimmickManager.BLOCK_EXE_ATTACK:
                 drawableId = R.drawable.baseline_attack_24;
                 statementId = R.string.block_contents_attack;
-                nodeNameId = getObjectNameInBlock( "enemy", objectKindList ,objectGlbList );
+                nodeNameId = getObjectNameInBlock( GimmickManager.NODE_NAME_ENEMY, objectKindList ,objectGlbList );
                 existsVolume = false;
                 break;
 
@@ -510,7 +512,7 @@ public class Gimmick {
             case GimmickManager.NODE_NAME_ENEMY:
             case GimmickManager.NODE_NAME_EATABLE:
             case GimmickManager.NODE_NAME_POISON:
-                nodeNameElseIfId = getObjectNameInBlock( conditionObject, objectKindList ,objectGlbList );
+                nodeNameElseIfId = getObjectNameInBlock( conditionElseIfObject, objectKindList ,objectGlbList );
                 break;
             case GimmickManager.NODE_NAME_NOTHING:
                 break;
@@ -702,7 +704,7 @@ public class Gimmick {
             return;
         }
 
-        objectPositionRandom = random.equals("true");
+        objectPositionRandom = random.equals( GimmickManager.GIMMICK_TRUE );
     }
 
     /*
@@ -815,7 +817,7 @@ public class Gimmick {
         }
 
         // ランダム有無を反映
-        enemyNumRandom = random.equals("true");
+        enemyNumRandom = random.equals( GimmickManager.GIMMICK_TRUE );
     }
 
     /*
@@ -951,7 +953,7 @@ public class Gimmick {
         //--------------------------
         // Glbプロパティの値を分割
         // 例）"models/goal/house.glb" ⇒ [0]models [1]goal [2]house.glb
-        String[] goalGlbStr = glbNameWithPath.split("/");
+        String[] goalGlbStr = glbNameWithPath.split(GimmickManager.GIMMICK_DELIMITER_PATH);
         int lastIndex = goalGlbStr.length - 1;
 
         // glbファイル名を取得

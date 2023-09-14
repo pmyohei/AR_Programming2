@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import androidx.fragment.app.FragmentManager;
 
+import com.ar.ar_programming.GimmickManager;
 import com.ar.ar_programming.character.CharacterNode;
 import com.ar.ar_programming.Gimmick;
 import com.ar.ar_programming.R;
@@ -26,14 +27,6 @@ public class SingleBlock extends ProcessBlock {
     //---------------------------
     // 定数
     //---------------------------
-//    public static final int PROCESS_CONTENTS_FORWARD = 0;
-//    public static final int PROCESS_CONTENTS_BACK = 1;
-//    public static final int PROCESS_CONTENTS_RIGHT_ROTATE = 2;
-//    public static final int PROCESS_CONTENTS_LEFT_ROTATE = 3;
-//    public static final int PROCESS_CONTENTS_EAT = 4;
-//    public static final int PROCESS_CONTENTS_THROW_AWAY = 5;
-//    public static final int PROCESS_CONTENTS_ATTACK = 6;
-
     private final String VOLUME_FORMAT = "%03d";
 
     //---------------------------
@@ -94,16 +87,16 @@ public class SingleBlock extends ProcessBlock {
     /*
      * 単体ブロックレイアウト設定
      */
-    private void setBlockLayout(int contents) {
+    private void setBlockLayout(String contents) {
 
         switch (contents) {
             //------------------------
             // 処理量をユーザーが変更可能
             //------------------------
-            case PROCESS_CONTENTS_FORWARD:
-            case PROCESS_CONTENTS_BACK:
-            case PROCESS_CONTENTS_LEFT_ROTATE:
-            case PROCESS_CONTENTS_RIGHT_ROTATE:
+            case GimmickManager.BLOCK_EXE_FORWARD:
+            case GimmickManager.BLOCK_EXE_BACK:
+            case GimmickManager.BLOCK_EXE_ROTATE_RIGHT:
+            case GimmickManager.BLOCK_EXE_ROTATE_LEFT:
                 // 処理量設定リスナー
                 setVolumeListener();
                 break;
@@ -111,9 +104,9 @@ public class SingleBlock extends ProcessBlock {
             //------------------------
             // 処理量なし
             //------------------------
-            case PROCESS_CONTENTS_EAT:
-            case PROCESS_CONTENTS_THROW_AWAY:
-            case PROCESS_CONTENTS_ATTACK:
+            case GimmickManager.BLOCK_EXE_EAT:
+            case GimmickManager.BLOCK_EXE_THROW_AWAY:
+            case GimmickManager.BLOCK_EXE_ATTACK:
             default:
                 // 処理量なしのブロックレイアウト設定
                 setNoVolumeLayout();
@@ -165,8 +158,8 @@ public class SingleBlock extends ProcessBlock {
         // 処理量種別種別
         //--------------------
         int volumeKind;
-        int contents = mXmlBlockInfo.contents;
-        if ((contents == PROCESS_CONTENTS_RIGHT_ROTATE) || (contents == PROCESS_CONTENTS_LEFT_ROTATE)) {
+        String contents = mXmlBlockInfo.contents;
+        if ((contents.equals( GimmickManager.BLOCK_EXE_ROTATE_RIGHT )) || (contents.equals( GimmickManager.BLOCK_EXE_ROTATE_LEFT ))) {
             volumeKind = VolumeDialog.VOLUME_KIND_ANGLE;
         } else {
             volumeKind = VolumeDialog.VOLUME_KIND_CM;
@@ -204,7 +197,7 @@ public class SingleBlock extends ProcessBlock {
     /*
      * 処理ブロックアニメーターの生成
      */
-    public ValueAnimator createProcessBlockAnimator(CharacterNode characterNode, int contents, float volume, long duration) {
+    public ValueAnimator createProcessBlockAnimator(CharacterNode characterNode, String contents, float volume, long duration) {
 
         //------------------------------------------------------
         // 処理種別と処理量からアニメーション量とアニメーション時間を取得
@@ -233,7 +226,7 @@ public class SingleBlock extends ProcessBlock {
         // ブロックアニメーションデータからアニメータを生成
         //----------------------------------------
         // 処理種別と処理量
-        int contents = getProcessContents();
+        String contents = getProcessContents();
         int setVolume = getProcessVolume();
         // アニメーション量とアニメーション時間
         float volume = characterNode.getAnimationVolume(contents, setVolume);
@@ -249,8 +242,9 @@ public class SingleBlock extends ProcessBlock {
         //----------------------------------------
         // アニメーションの開始：モデルアニメーション用
         //----------------------------------------
-        // モデルに用意されたアニメーションを開始
-        characterNode.startModelAnimation(contents, duration);
+        // 3Dモデルに用意されたアニメーションを開始
+        String animationName = characterNode.getModelAnimationName(contents);
+        characterNode.startModelAnimation(animationName, duration);
 
         //----------------------------------------
         // キャラクターアクションの内容設定

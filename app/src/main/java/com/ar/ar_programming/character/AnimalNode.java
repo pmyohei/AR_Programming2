@@ -1,12 +1,5 @@
 package com.ar.ar_programming.character;
 
-import static com.ar.ar_programming.process.SingleBlock.PROCESS_CONTENTS_ATTACK;
-import static com.ar.ar_programming.process.SingleBlock.PROCESS_CONTENTS_BACK;
-import static com.ar.ar_programming.process.SingleBlock.PROCESS_CONTENTS_EAT;
-import static com.ar.ar_programming.process.SingleBlock.PROCESS_CONTENTS_FORWARD;
-import static com.ar.ar_programming.process.SingleBlock.PROCESS_CONTENTS_LEFT_ROTATE;
-import static com.ar.ar_programming.process.SingleBlock.PROCESS_CONTENTS_RIGHT_ROTATE;
-import static com.ar.ar_programming.process.SingleBlock.PROCESS_CONTENTS_THROW_AWAY;
 
 import com.ar.ar_programming.Gimmick;
 import com.ar.ar_programming.GimmickManager;
@@ -36,18 +29,18 @@ public class AnimalNode extends CharacterNode {
     @Override
     public void initActionWords() {
 
-        ACTION_CONTENTS_MAP = new HashMap<Integer, Integer>() {
+        ACTION_CONTENTS_MAP = new HashMap<String, Integer>() {
             {
-                put((Integer) ACTION_WAITING, R.string.action_wait);
-                put((Integer) ACTION_SUCCESS, R.string.action_success);
-                put((Integer) ACTION_FAILURE, R.string.action_failure);
-                put((Integer) PROCESS_CONTENTS_FORWARD, R.string.action_walk_animal);
-                put((Integer) PROCESS_CONTENTS_BACK, R.string.action_walk_animal);
-                put((Integer) PROCESS_CONTENTS_RIGHT_ROTATE, R.string.action_rotate);
-                put((Integer) PROCESS_CONTENTS_LEFT_ROTATE, R.string.action_rotate);
-                put((Integer) PROCESS_CONTENTS_EAT, R.string.action_eat);
-                put((Integer) PROCESS_CONTENTS_THROW_AWAY, R.string.action_throw_away);
-                put((Integer) PROCESS_CONTENTS_ATTACK, R.string.action_attack);
+                put( ACTION_WAITING, R.string.action_wait);
+                put( ACTION_SUCCESS, R.string.action_success);
+                put( ACTION_FAILURE, R.string.action_failure);
+                put( GimmickManager.BLOCK_EXE_FORWARD, R.string.action_walk_animal);
+                put( GimmickManager.BLOCK_EXE_BACK, R.string.action_walk_animal);
+                put( GimmickManager.BLOCK_EXE_ROTATE_RIGHT, R.string.action_rotate);
+                put( GimmickManager.BLOCK_EXE_ROTATE_LEFT, R.string.action_rotate);
+                put( GimmickManager.BLOCK_EXE_EAT, R.string.action_eat);
+                put( GimmickManager.BLOCK_EXE_THROW_AWAY, R.string.action_throw_away);
+                put( GimmickManager.BLOCK_EXE_ATTACK, R.string.action_attack);
             }
         };
     }
@@ -56,12 +49,12 @@ public class AnimalNode extends CharacterNode {
      * 処理種別に応じたメソッドのプロパティ名の取得
      */
     @Override
-    public String getPropertyName(int procKind) {
+    public String getPropertyName(String contents) {
 
         //-----------------
         // キャラクター共通か
         //-----------------
-        String name = super.getPropertyName(procKind);
+        String name = super.getPropertyName(contents);
         if (!name.equals(PROPERTY_NONE)) {
             return name;
         }
@@ -70,8 +63,8 @@ public class AnimalNode extends CharacterNode {
         // 本クラス固有か
         //-----------------
         // 処理種別に応じたメソッドのプロパティ名を取得
-        switch (procKind) {
-            case PROCESS_CONTENTS_EAT:
+        switch (contents) {
+            case GimmickManager.BLOCK_EXE_EAT:
                 return PROPERTY_EAT;
 
         }
@@ -83,7 +76,7 @@ public class AnimalNode extends CharacterNode {
      * Blender側で命名された３Dアニメーション名を取得
      */
     @Override
-    public String getModelAnimationName(int contents) {
+    public String getModelAnimationName(String contents) {
 
         //-----------------
         // キャラクター共通か
@@ -98,7 +91,7 @@ public class AnimalNode extends CharacterNode {
         //-----------------
         // 処理種別に応じたメソッドのプロパティ名を取得
         switch (contents) {
-            case PROCESS_CONTENTS_EAT:
+            case GimmickManager.BLOCK_EXE_EAT:
             default:
                 animationName = MODEL_ANIMATION_STR_EAT;
                 break;
@@ -151,19 +144,4 @@ public class AnimalNode extends CharacterNode {
         // 衝突中Node情報クリア
         mCollisionNodeName = GimmickManager.NODE_NAME_NONE;
     }
-
-    /*
-     * 食べもの判定
-     */
-    public boolean isEatable() {
-        return ( mCollisionNodeName.equals( GimmickManager.NODE_NAME_EATABLE ));
-    }
-
-    /*
-     * 毒判定
-     */
-    public boolean isPoison() {
-        return ( mCollisionNodeName.equals( GimmickManager.NODE_NAME_POISON));
-    }
-
 }

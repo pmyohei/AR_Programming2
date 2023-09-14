@@ -16,7 +16,6 @@ import com.ar.ar_programming.R;
 
 /*
  * 処理ブロック
- * 　　「SingleProcessView」「NestProcessView」等の基本クラス
  */
 public abstract class ProcessBlock extends Block {
 
@@ -72,7 +71,7 @@ public abstract class ProcessBlock extends Block {
     /*
      * 処理ブロック内容取得
      */
-    public int getProcessContents() {
+    public String getProcessContents() {
         return mXmlBlockInfo.contents;
     }
 
@@ -213,7 +212,8 @@ public abstract class ProcessBlock extends Block {
         // 下ブロックなし／親ネストなし
         //--------------------------
         // 終了リスナーをコール
-        mProgrammingListener.onProgrammingEnd( PROGRAMMING_FAILURE );
+        int resultProgramming = characterNode.isCompleteSuccessCondition();
+        mProgrammingListener.onProgrammingEnd( resultProgramming );
     }
 
     /*
