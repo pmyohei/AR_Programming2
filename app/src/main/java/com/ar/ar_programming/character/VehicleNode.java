@@ -22,7 +22,7 @@ public class VehicleNode extends CharacterNode {
     @Override
     public void initActionWords() {
 
-        ACTION_CONTENTS_MAP = new HashMap<String, Integer>() {
+        Map_contents__actionWord = new HashMap<String, Integer>() {
             {
                 put( ACTION_WAITING, R.string.action_wait);
                 put( ACTION_SUCCESS, R.string.action_success);

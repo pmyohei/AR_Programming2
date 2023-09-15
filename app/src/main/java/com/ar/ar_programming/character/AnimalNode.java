@@ -29,7 +29,7 @@ public class AnimalNode extends CharacterNode {
     @Override
     public void initActionWords() {
 
-        ACTION_CONTENTS_MAP = new HashMap<String, Integer>() {
+        Map_contents__actionWord = new HashMap<String, Integer>() {
             {
                 put( ACTION_WAITING, R.string.action_wait);
                 put( ACTION_SUCCESS, R.string.action_success);
@@ -41,6 +41,7 @@ public class AnimalNode extends CharacterNode {
                 put( GimmickManager.BLOCK_EXE_EAT, R.string.action_eat);
                 put( GimmickManager.BLOCK_EXE_THROW_AWAY, R.string.action_throw_away);
                 put( GimmickManager.BLOCK_EXE_ATTACK, R.string.action_attack);
+                put( GimmickManager.BLOCK_EXE_PICKUP, R.string.action_pickup);
             }
         };
     }

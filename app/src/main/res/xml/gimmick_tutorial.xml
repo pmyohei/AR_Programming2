@@ -20,7 +20,7 @@
 
 	<!-- プレゼントを拾ってうさぎのところへ -->
 	<gimmick
-		sequence="1"
+		sequence="present"
 		character="vehicle"
 		successCondition="pickup_and_goal"
 		goalExplanation="guide_major_pickup_vehicle, guide_sub_pickup_vehicle, guide_contents_pickup_vehicle, guide_explanation_pickup_vehicle"
@@ -37,6 +37,29 @@
 		objectPositionRandom="false"
 		objectPosition="-6.76 : 5.2 : 0.6, -1.5 : 5.2 : -9.8"
 		block="single_forward_100, single_rotateRight_2, single_pickup, loop_facing-pickup, loop_facing-goal"
+		/>
+
+	<!-- お菓子を拾ってお菓子の家へ -->
+	<!-- 4つ目のチュートリアルとやってることは同じ -->
+	<gimmick
+		sequence="1"
+		character="animal"
+		successCondition="goal"
+		goalExplanation="guide_major_pickup_vehicle, guide_sub_pickup_vehicle, guide_contents_pickup_vehicle, guide_explanation_pickup_vehicle"
+		stageGlb="models/stage/sweet_terrace.glb"
+		characterGlb="models/animal/squirrel.glb"
+		characterPosition="-14.4 : 2.29 : -8.25"
+		characterAngle="115"
+		goalGlb="models/goal/sweet_house.glb"
+		goalPosition="14.6 : 2.2 : -20.1"
+		goalAngle="-80"
+		objectGlb="models/obstacle/donuts.glb, models/obstacle/chocolate.glb, models/obstacle/carrot.glb"
+		objectNum="1, 1, 1"
+		objectKind="pickup, pickup, poison"
+		objectPositionRandom="false"
+		objectPosition="-8.47 : 2.29 : -10.69, -1.97 : 2.29 : -13.4, 5.74 : 2.29 : -16.2"
+		blockNodeWord="goal_sweetHouse, throwAway_vegetable, pickup_sweets, poison_vegetable"
+		block="single_forward_50, single_pickup, single_throwAway, loop_arrival-goal, if_front-pickup, if_front-poison"
 		/>
 
 	<gimmick

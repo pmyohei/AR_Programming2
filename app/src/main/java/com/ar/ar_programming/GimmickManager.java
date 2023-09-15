@@ -85,6 +85,33 @@ public class GimmickManager {
     public static final String GIMMICK_TRUE = "true";
     public static final String GIMMICK_FALSE = "false";
 
+    //------------------------------
+    // 具体名
+    //------------------------------
+    // ゴール関連
+    public static final String SPECIFIC_NAME_HOUSE = "house";
+    public static final String SPECIFIC_NAME_SWEET_HOUSE = "sweetHouse";
+    // 動物
+    public static final String SPECIFIC_NAME_RABIT = "rabit";
+    public static final String SPECIFIC_NAME_BEAR = "bear";
+    public static final String SPECIFIC_NAME_FOX = "fox";
+    public static final String SPECIFIC_NAME_SQUIRREL = "squirrel";
+    public static final String SPECIFIC_NAME_BEE = "bee";
+    // 乗り物
+    public static final String SPECIFIC_NAME_CAR = "car";
+    public static final String SPECIFIC_NAME_SPORTS_CAR = "sportsCar";
+    // 食べ物
+    public static final String SPECIFIC_NAME_VEGETABLE = "vegetable";
+    public static final String SPECIFIC_NAME_CARROT = "carrot";
+    public static final String SPECIFIC_NAME_MASHROOM_POISON = "mushroomPoison";
+    public static final String SPECIFIC_NAME_HONEY = "honey";
+    public static final String SPECIFIC_NAME_DONUTS = "donuts";
+    public static final String SPECIFIC_NAME_CHOCOLATE = "chocolate";
+    public static final String SPECIFIC_NAME_GREEN_APPLE = "greenApple";
+    public static final String SPECIFIC_NAME_PUMPKIN = "pumpkin";
+    // 物体
+    public static final String SPECIFIC_NAME_SIGNBOARD_STOP = "signboardStop";
+    public static final String SPECIFIC_NAME_PRESENT = "present";
 
     //------------------------------
     // フォーマット位置関連：デリミタ
@@ -177,6 +204,7 @@ public class GimmickManager {
         String enemyPosition = parser.getAttributeValue(null, "enemyPosition");
         String enemyEndPosition = parser.getAttributeValue(null, "enemyEndPosition");
         // ブロック
+        String blockNodeWord = parser.getAttributeValue(null, "blockNodeWord");
         String block = parser.getAttributeValue(null, "block");
 
         //--------------------------
@@ -209,6 +237,7 @@ public class GimmickManager {
         gimmick.setEnemyPositionVecList( enemyPosition );
         gimmick.setEnemyEndPosition( enemyEndPosition );
         // ブロック
+        gimmick.setBlockNodeWord( blockNodeWord );
         gimmick.setBlock( block );
     }
 

@@ -14,6 +14,7 @@
     <!-- 共通 -->
     <!---->
     <string name="menu_save">保存</string>
+    <string name="none"></string>
 
     <!---->
     <!-- Home画面 -->
@@ -146,16 +147,21 @@
     <string name="action_pickup">ゲット～</string>
 
     <!-- 処理ブロックに埋め込む物体名 -->
-    <string name="node_house">家</string>
-    <string name="node_rabit">うさぎ</string>
-    <string name="node_squirrel">リス</string>
-    <string name="node_carrot">にんじん</string>
-    <string name="node_mushroom_poison">毒きのこ</string>
-    <string name="node_bee">ハチ</string>
-    <string name="node_honey">はちみつ</string>
-    <string name="node_sports_car">スポーツカー</string>
-    <string name="node_signboard_stop">看板</string>
-    <string name="node_present">プレゼント</string>
+    <string name="house">家</string>
+    <string name="sweetHouse">お菓子の家</string>
+    <string name="rabit">うさぎ</string>
+    <string name="squirrel">リス</string>
+    <string name="vegetable">野菜</string>
+    <string name="sweets">お菓子</string>
+    <string name="carrot">にんじん</string>
+    <string name="mushroomPoison">毒きのこ</string>
+    <string name="bee">ハチ</string>
+    <string name="honey">はちみつ</string>
+    <string name="donuts">ドーナッツ</string>
+    <string name="chocolate">チョコレート</string>
+    <string name="sportsCar">スポーツカー</string>
+    <string name="signboardStop">看板</string>
+    <string name="present">プレゼント</string>
 
     <!-- ダイアログ -->
     <string name="ar_dialog_title">リトライ</string>

@@ -10,6 +10,7 @@ import static com.ar.ar_programming.GimmickManager.BLOCK_VALUE_LIMIT_POS;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.util.Log;
 
 import com.ar.ar_programming.process.Block;
 import com.google.ar.sceneform.math.Vector3;
@@ -64,6 +65,7 @@ public class Gimmick {
     public Vector3 enemyEndPositionVec;
     // ブロック
     public ArrayList<XmlBlockInfo> xmlBlockInfoList;
+    public ArrayList<String> blockNodeWordList;
     public ArrayList<String> blockList;
 
     //-----------------
@@ -76,6 +78,10 @@ public class Gimmick {
     // glbファイル　：　(具体的な)Node名
     public Map<String, Integer> Map_glb__nodeName;
 
+    // Node種別　：　Node単語
+    public Map<String, String> Map_nodeKind__nodeWord;
+    // 単語　：　名称  ※不要かも
+    public Map<String, Integer> Map_word__nameInBlock;
 
 
 
@@ -92,6 +98,7 @@ public class Gimmick {
         public int drawableId;          // ブロックイメージID
         public int statementId;         // ブロック文字列ID
         public int nodeNameId;          // ブロック文字列内Node名ID
+        public String targetNodeResName;   // 対象Node名 !後で
 
         //---------------
         // 実行ブロックのみ
@@ -141,8 +148,9 @@ public class Gimmick {
         enemyKindList = new ArrayList<>();
         enemyPositionVecList = new ArrayList<>();
 
-        blockList = new ArrayList<>();
         xmlBlockInfoList = new ArrayList<>();
+        blockNodeWordList = new ArrayList<>();
+        blockList = new ArrayList<>();
 
 
         //----------------------
@@ -159,18 +167,47 @@ public class Gimmick {
 
         Map_glb__nodeName = new HashMap<String, Integer>() {
             {
-                put("house.glb", R.string.node_house);
-                put("rabit.glb", R.string.node_rabit);
-                put("fox_and_tree.glb", R.string.node_squirrel);
-                put("carrot.glb", R.string.node_carrot);
-                put("mushroom_poison.glb", R.string.node_mushroom_poison);
-                put("bee.glb", R.string.node_bee);
-                put("honey.glb", R.string.node_honey);
-                put("sports_car.glb", R.string.node_sports_car);
-                put("signboard_stop.glb", R.string.node_signboard_stop);
-                put("present.glb", R.string.node_present);
+                put("house.glb", R.string.house);
+                put("sweet_house.glb", R.string.sweetHouse);
+                put("rabit.glb", R.string.rabit);
+                put("fox_and_tree.glb", R.string.squirrel);
+                put("carrot.glb", R.string.carrot);
+                put("mushroom_poison.glb", R.string.mushroomPoison);
+                put("bee.glb", R.string.bee);
+                put("honey.glb", R.string.honey);
+                put("donuts.glb", R.string.donuts);
+                put("chocolate.glb", R.string.chocolate);
+                put("sports_car.glb", R.string.sportsCar);
+                put("signboard_stop.glb", R.string.signboardStop);
+                put("present.glb", R.string.present);
             }
         };
+
+        Map_nodeKind__nodeWord = new HashMap<String, String>();
+
+
+        Map_word__nameInBlock = new HashMap<String, Integer>() {
+            {
+                put("SPECIFIC_NAME_HOUSE", R.string.house);
+                put("SPECIFIC_NAME_SWEET_HOUSE-house", R.string.sweetHouse);
+                put("SPECIFIC_NAME_RABIT", R.string.rabit);
+                put("SPECIFIC_NAME_BEAR", R.string.rabit);
+                put("SPECIFIC_NAME_SQUIRREL", R.string.squirrel);
+                put("SPECIFIC_NAME_BEE", R.string.bee);
+                put("SPECIFIC_NAME_VEGETABLE", R.string.vegetable);
+                put("SPECIFIC_NAME_SWEETS", R.string.sweets);
+                put("SPECIFIC_NAME_CARROT", R.string.carrot);
+                put("SPECIFIC_NAME_MASHROOM_POISON", R.string.mushroomPoison);
+                put("SPECIFIC_NAME_HONEY", R.string.honey);
+                put("SPECIFIC_NAME_DONUTS", R.string.donuts);
+                put("SPECIFIC_NAME_CHOCOLATE", R.string.chocolate);
+                put("SPECIFIC_NAME_SPORTS_CAR", R.string.sportsCar);
+                put("SPECIFIC_NAME_SIGNBOARD_STOP", R.string.signboardStop);
+                put("SPECIFIC_NAME_PRESENT", R.string.present);
+            }
+        };
+
+
 
     }
 
@@ -207,7 +244,7 @@ public class Gimmick {
      *   想定デリミタ："_"
      *   例）"_"
      */
-    public static String[] splitGimmickBlockDelimiter(String str) {
+    public static String[] splitGimmickWordDelimiter(String str) {
         return str.split(GimmickManager.GIMMICK_DELIMITER_WORD);
     }
 
@@ -243,7 +280,11 @@ public class Gimmick {
      */
     private void setXmlBlockInfo(String[] blockSplit, XmlBlockInfo xmlBlockInfo) {
 
+        String nodeNameKey = "";
+
+        //----------------
         // ブロック種別
+        //----------------
         final int blockType = convertBlockType(blockSplit[BLOCK_TYPE_POS]);
         xmlBlockInfo.type = blockType;
 
@@ -252,25 +293,45 @@ public class Gimmick {
         switch (blockType) {
             case Block.PROCESS_TYPE_SINGLE:
                 setXmlSingleBlockInfo(blockSplit, xmlBlockInfo);
+                nodeNameKey = xmlBlockInfo.contents;
                 break;
 
             case Block.PROCESS_TYPE_LOOP:
                 setXmlLoopBlockInfo(blockContents, xmlBlockInfo);
+                nodeNameKey = xmlBlockInfo.conditionObject;
                 break;
 
             case Block.PROCESS_TYPE_IF:
                 setXmlIfBlockInfo(blockContents, xmlBlockInfo);
+                nodeNameKey = xmlBlockInfo.conditionObject;
                 break;
 
             case Block.PROCESS_TYPE_IF_ELSE:
                 setXmlIfElseBlockInfo(blockContents, xmlBlockInfo);
+                nodeNameKey = xmlBlockInfo.conditionObject;
                 break;
 
             case Block.PROCESS_TYPE_IF_ELSEIF_ELSE:
             default:
                 setXmlIfElseIfBlockInfo(blockContents, xmlBlockInfo);
+                nodeNameKey = xmlBlockInfo.conditionObject;
                 break;
         }
+
+        //-------------------
+        // 全ブロック共通の設定
+        //-------------------
+        // !後でコメント
+        String targetNodeResName = Map_nodeKind__nodeWord.get( nodeNameKey );
+        if( targetNodeResName == null ){
+            targetNodeResName = "none";
+        }
+
+//        int stringId = mContext.getResources().getIdentifier(targetNodeResName, "string", mContext.getPackageName());
+        Log.i("xxx置換新規作成", "nodeNameKey=" + nodeNameKey);
+        Log.i("xxx置換新規作成", "targetNodeResName=" + targetNodeResName);
+        xmlBlockInfo.nodeNameId = mContext.getResources().getIdentifier(targetNodeResName, "string", mContext.getPackageName());;
+        Log.i("xxx置換新規作成", "getString()の名前=" + mContext.getResources().getString( xmlBlockInfo.nodeNameId ));
     }
 
     /*
@@ -916,6 +977,33 @@ public class Gimmick {
     /*
      * ギミックで使用可能なブロックリストを設定
      */
+    public void setBlockNodeWord(String value) {
+        //--------------------------
+        // 各ブロック内ワード情報をリスト化
+        //--------------------------
+        // デリミタで分割して配列化
+        // 例）"goal_house, throwAway_vegetable" → [0]goal_house  [1]throwAway_vegetable
+        String[] words = splitGimmickValueDelimiter(value);
+
+        // リスト生成
+        blockNodeWordList.clear();
+        Collections.addAll(blockNodeWordList, words);
+
+        //---------------------------
+        // 各ブロック内ワード情報をMap化
+        //---------------------------
+        for( String word: blockNodeWordList ){
+            // データを分割
+            // 例）"goal_house" → [0]goal  [1]house
+            String[] nodeKind_nodeWord = splitGimmickWordDelimiter(word);
+            // データをマップに追加
+            Map_nodeKind__nodeWord.put( nodeKind_nodeWord[0], nodeKind_nodeWord[1] );
+        }
+    }
+
+    /*
+     * ギミックで使用可能なブロックリストを設定
+     */
     public void setBlock(String block) {
         //----------------------
         // 各ブロック情報をリスト化
@@ -946,7 +1034,7 @@ public class Gimmick {
 
             // ブロック文字列を分割
             // 例)「single_rotate-right_1」⇒「single」「rotate-right」「1」
-            String[] blockSplit = Gimmick.splitGimmickBlockDelimiter(blockItemStr);
+            String[] blockSplit = Gimmick.splitGimmickWordDelimiter(blockItemStr);
             // ブロック文字列をxml情報として解析して設定
             setXmlBlockInfo(blockSplit, xmlBlockInfo);
 

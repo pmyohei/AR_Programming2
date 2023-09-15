@@ -42,8 +42,6 @@ public abstract class ProcessBlock extends Block {
         super(context, attrs, defStyle, xmlBlockInfo);
         mXmlBlockInfo = xmlBlockInfo;
         setId(View.generateViewId());
-
-        Log.i("置換", "コール？");
     }
 
     /*

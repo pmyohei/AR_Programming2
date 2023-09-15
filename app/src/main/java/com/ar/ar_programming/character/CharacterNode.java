@@ -77,7 +77,7 @@ public abstract class CharacterNode extends TransformableNode {
     public static final String ACTION_FAILURE = "failure";
 
     // ブロック処理とアクションワード紐づけ
-    public Map<String, Integer> ACTION_CONTENTS_MAP;
+    public Map<String, Integer> Map_contents__actionWord;
 
     //---------------------------
     // フィールド変数
@@ -226,7 +226,7 @@ public abstract class CharacterNode extends TransformableNode {
     private String getContentsActionWord(Context context, String action) {
 
         // ブロックコンテンツIDに対応するワードを返す
-        Integer stringID = ACTION_CONTENTS_MAP.get(action);
+        Integer stringID = Map_contents__actionWord.get(action);
         return context.getResources().getString(stringID);
     }
 
