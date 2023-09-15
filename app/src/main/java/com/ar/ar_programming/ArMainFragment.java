@@ -465,7 +465,7 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
         //-----------------
         // 処理ブロック生成
         //-----------------
-        switch (xmlBlockInfo.type) {
+        switch (xmlBlockInfo.typeInt) {
             // 単体処理
             case Block.PROCESS_TYPE_SINGLE:
                 newBlock = new SingleBlock(context, getParentFragmentManager(), xmlBlockInfo);

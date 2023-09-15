@@ -82,7 +82,7 @@ public class UserBlockSelectListAdapter extends RecyclerView.Adapter<UserBlockSe
             cl_parent.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Log.i("ブロックxml", "xmlBlockInfo.type=" + xmlBlockInfo.type);
+                        Log.i("ブロックxml", "xmlBlockInfo.type=" + xmlBlockInfo.typeInt);
                         Log.i("ブロックxml", "xmlBlockInfo.contents=" + xmlBlockInfo.contents);
                         mBlockClickListener.onBlockClick(xmlBlockInfo);
                     }

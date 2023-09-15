@@ -63,7 +63,7 @@ public abstract class Block extends ConstraintLayout {
     public Block(Context context, AttributeSet attrs, int defStyle, Gimmick.XmlBlockInfo xmlBlockInfo) {
         super(context, attrs, defStyle);
 
-        mProcessType = xmlBlockInfo.type;
+        mProcessType = xmlBlockInfo.typeInt;
         mAboveBlock = null;
         mBelowBlock = null;
     }

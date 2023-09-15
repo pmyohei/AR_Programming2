@@ -90,10 +90,16 @@ public class Gimmick {
      */
     public class XmlBlockInfo {
 
+        public String type;             // ブロック種別（Single, Loop, If,,,）
+        public String action;           // アクション／条件：動作
+        public String targetNode_1;     // 対象Node1
+        public String targetNode_2;     // 対象Node2 elseif
+        public String fixVolume;        // 固定処理量
+
         //---------------
         // 共通
         //---------------
-        public int type;                // ブロック種別（Single, Loop, If,,,）
+        public int typeInt;                // ブロック種別（Single, Loop, If,,,）
         public String contents;         // ブロック内容（「forward」、「facing-goal」、、）
         public int drawableId;          // ブロックイメージID
         public int statementId;         // ブロック文字列ID
@@ -286,7 +292,7 @@ public class Gimmick {
         // ブロック種別
         //----------------
         final int blockType = convertBlockType(blockSplit[BLOCK_TYPE_POS]);
-        xmlBlockInfo.type = blockType;
+        xmlBlockInfo.typeInt = blockType;
 
         String blockContents = blockSplit[BLOCK_CONTENTS_POS];
 
