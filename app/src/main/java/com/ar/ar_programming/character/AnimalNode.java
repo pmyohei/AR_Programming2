@@ -49,12 +49,12 @@ public class AnimalNode extends CharacterNode {
      * 処理種別に応じたメソッドのプロパティ名の取得
      */
     @Override
-    public String getPropertyName(String contents) {
+    public String getMethodPropertyName(String contents) {
 
         //-----------------
         // キャラクター共通か
         //-----------------
-        String name = super.getPropertyName(contents);
+        String name = super.getMethodPropertyName(contents);
         if (!name.equals(PROPERTY_NONE)) {
             return name;
         }
@@ -122,26 +122,7 @@ public class AnimalNode extends CharacterNode {
      * 食べる
      */
     private void eat() {
-
-        //----------------
-        // 失敗判定
-        //----------------
-        int index = getCollisionIndex(GimmickManager.NODE_NAME_EATABLE);
-        // 衝突中Nodeなし or 食べられないNodeと衝突中
-        if ( (index == COLLISION_RET_NONE) || (index == COLLISION_RET_OTHRE) ) {
-            // アクション失敗
-            mSuccessAction = false;
-            return;
-        }
-
-        //-----------------
-        // 成功
-        //-----------------
-        // アクション成否：成功
-        mSuccessAction = true;
-        // アクション対象Nodeと衝突中なら、Sceneから削除
-        removeNodeFromScene( index );
-        // 衝突中Node情報クリア
-        mCollisionNodeName = GimmickManager.NODE_NAME_NONE;
+        String targetCollisionNode = GimmickManager.NODE_NAME_EATABLE;
+        deleteNodeAction( targetCollisionNode );
     }
 }

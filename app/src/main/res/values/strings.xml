@@ -147,6 +147,7 @@
 
     <!-- 処理ブロックに埋め込む物体名 -->
     <string name="node_house">家</string>
+    <string name="node_rabit">うさぎ</string>
     <string name="node_squirrel">リス</string>
     <string name="node_carrot">にんじん</string>
     <string name="node_mushroom_poison">毒きのこ</string>
@@ -255,6 +256,16 @@
         食べ物の方をうまく向いて最後の食べ物まで食べるプログラムを作ってね！\n
     </string>
 
+    <string name="guide_major_pickup_vehicle">プレゼント集め</string>
+    <string name="guide_sub_pickup_vehicle">～うさぎにプレゼントをあげよう～</string>
+    <string name="guide_contents_pickup_vehicle">プレゼントを全部拾って、うさぎの所へいけばクリア</string>
+    <string name="guide_explanation_pickup_vehicle">
+        プレゼントを拾ってうさぎに届けるプログラムを作ってみよう！\n
+        プレゼントはそばまでいかないと拾えないよ\n
+        道にあるプレゼントは全部拾ってね\n
+        全部あつめずにうさぎのところへ行くと失敗だよ\n
+        ループブロックを使ってうまく車の方向を決めてね！\n
+    </string>
 
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>

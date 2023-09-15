@@ -160,6 +160,7 @@ public class Gimmick {
         Map_glb__nodeName = new HashMap<String, Integer>() {
             {
                 put("house.glb", R.string.node_house);
+                put("rabit.glb", R.string.node_rabit);
                 put("fox_and_tree.glb", R.string.node_squirrel);
                 put("carrot.glb", R.string.node_carrot);
                 put("mushroom_poison.glb", R.string.node_mushroom_poison);
@@ -423,6 +424,7 @@ public class Gimmick {
             case GimmickManager.NODE_NAME_ENEMY:
             case GimmickManager.NODE_NAME_EATABLE:
             case GimmickManager.NODE_NAME_POISON:
+            case GimmickManager.NODE_NAME_PICKUP:
                 nodeNameId = getObjectNameInBlock( conditionObject, objectKindList ,objectGlbList );
                 break;
         }
@@ -464,6 +466,7 @@ public class Gimmick {
             case GimmickManager.NODE_NAME_ENEMY:
             case GimmickManager.NODE_NAME_EATABLE:
             case GimmickManager.NODE_NAME_POISON:
+            case GimmickManager.NODE_NAME_PICKUP:
                 nodeNameId = getObjectNameInBlock( conditionObject, objectKindList ,objectGlbList );
                 break;
             case GimmickManager.NODE_NAME_NOTHING:
@@ -511,6 +514,7 @@ public class Gimmick {
             case GimmickManager.NODE_NAME_ENEMY:
             case GimmickManager.NODE_NAME_EATABLE:
             case GimmickManager.NODE_NAME_POISON:
+            case GimmickManager.NODE_NAME_PICKUP:
                 nodeNameId = getObjectNameInBlock( conditionObject, objectKindList ,objectGlbList );
                 break;
             case GimmickManager.NODE_NAME_NOTHING:
@@ -521,6 +525,7 @@ public class Gimmick {
             case GimmickManager.NODE_NAME_ENEMY:
             case GimmickManager.NODE_NAME_EATABLE:
             case GimmickManager.NODE_NAME_POISON:
+            case GimmickManager.NODE_NAME_PICKUP:
                 nodeNameElseIfId = getObjectNameInBlock( conditionElseIfObject, objectKindList ,objectGlbList );
                 break;
             case GimmickManager.NODE_NAME_NOTHING:

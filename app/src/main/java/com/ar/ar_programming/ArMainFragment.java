@@ -1114,13 +1114,14 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
         //-----------------------------
         int objIndex = 0;       // 全体数Index
         int objKindIndex = 0;   // 種別用Index
+        // 生成するモデルの種類だけループ
         for (ModelRenderable renderable : mObjectRenderable) {
 
             // オブジェクトの種類をNode名として設定する
             String objectKind = mGimmick.objectKindList.get(objKindIndex);
             int objectNum = mGimmick.objectNumList.get(objKindIndex);
 
-            // Node生成
+            // ギミックにて指定された数だけ、あるモデルのNodeを生成
             for (int num = 0; num < objectNum; num++) {
 
                 //-------------
