@@ -15,9 +15,8 @@
 		enemyKind="bat, ghost"
 		enemyPosition="12 : 4.0 : 3.7"
 		enemyEndPosition="12 : 4.0 : 3.7"
-		block="single_forward, single_eat, single_throwAway, loop_facing-goal"
+		block="exe_forward, exe_eat, exe_throwAway, loop_facing-goal"
 		/>
-
 	<!-- プレゼントを拾ってうさぎのところへ -->
 	<gimmick
 		sequence="present"
@@ -36,7 +35,7 @@
 		objectKind="pickup"
 		objectPositionRandom="false"
 		objectPosition="-6.76 : 5.2 : 0.6, -1.5 : 5.2 : -9.8"
-		block="single_forward_100, single_rotateRight_2, single_pickup, loop_facing-pickup, loop_facing-goal"
+		block="exe_forward_100, exe_rotateRight_2, exe_pickup, loop_facing-pickup, loop_facing-goal"
 		/>
 
 	<!-- お菓子を拾ってお菓子の家へ -->
@@ -59,7 +58,7 @@
 		objectPositionRandom="false"
 		objectPosition="-8.47 : 2.29 : -10.69, -1.97 : 2.29 : -13.4, 5.74 : 2.29 : -16.2"
 		blockNodeWord="goal_sweetHouse, throwAway_vegetable, pickup_sweets, poison_vegetable"
-		block="single_forward_50, single_pickup, single_throwAway, loop_arrival-goal, if_front-pickup, if_front-poison"
+		block="exe_forward_50, exe_pickup, exe_throwAway, loop_arrival-goal, if_front-pickup, if_front-poison"
 		/>
 
 	<gimmick
@@ -79,7 +78,7 @@
 		objectKind="obstacle"
 		objectPositionRandom="false"
 		objectPosition="0 : 1.4 : 0.6"
-		block="single_forward, single_rotateRight, single_rotateLeft"
+		block="exe_forward, exe_rotateRight, exe_rotateLeft"
 		/>
 
 	<gimmick
@@ -99,7 +98,7 @@
 		objectKind="obstacle"
 		objectPositionRandom="false"
 		objectPosition="-3.8 : 0.67 : -15.0, 4.1 : 0.67 : -34"
-		block="single_forward, single_rotateRight, single_rotateLeft"
+		block="exe_forward, exe_rotateRight, exe_rotateLeft"
 		/>
 
 	<gimmick
@@ -114,7 +113,7 @@
 		goalGlb="models/goal/signboard_stop.glb"
 		goalPosition="0 : -0.6 : -8.8"
 		goalAngle="0"
-		block="single_forward, single_rotateRight_1, loop_facing-goal"
+		block="exe_forward, exe_rotateRight_1, loop_facing-goal"
 		/>
 
 	<gimmick
@@ -135,7 +134,7 @@
 		objectAngle="45"
 		objectPositionRandom="false"
 		objectPosition="-4.8 : 2.2 : 0.5"
-		block="single_forward, single_rotateRight_1, single_rotateLeft_1, single_attack, loop_facing-goal, loop_facing-enemy"
+		block="exe_forward, exe_rotateRight_1, exe_rotateLeft_1, exe_attack, loop_facing-goal, loop_facing-enemy"
 		/>
 
 	<gimmick
@@ -156,7 +155,7 @@
 		objectPositionRandom="false"
 		objectPosition="0 : 1.3 : -5.0"
 		objectAngle="90"
-		block="single_forward_5, single_eat, loop_arrival-goal, if_front-eatable"
+		block="exe_forward_5, exe_eat, loop_arrival-goal, if_front-eatable"
 		/>
 
 	<!-- 全て食べる -->
@@ -174,7 +173,7 @@
 		objectKind="eatable, eatable, eatable"
 		objectPositionRandom="false"
 		objectPosition="-1.3 : 1.4 : 8.5, -6.3 : 1.4 : -2.69, 1.48 : 1.4 : -0.27, 9.04 : 1.4 : 1.5, 6.3 : 1.4 : 8.4, -4.75 : 1.4 : 2.41"
-		block="single_forward, single_rotateRight_1, single_rotateLeft_1, single_eat, loop_facing-eatable, loop_collect-eatable"
+		block="exe_forward, exe_rotateRight_1, exe_rotateLeft_1, exe_eat, loop_facing-eatable, loop_collect-eatable"
 		/>
 
 	<!-- 「if」ブロックを利用するパターン -->
@@ -195,7 +194,7 @@
 		objectKind="poison, eatable"
 		objectPositionRandom="false"
 		objectPosition="0 : 1.2 : 3, 0 : 1.2 : -10, 0 : 1.1 : -4.1"
-		block="single_forward_5, single_eat, single_throwAway, loop_arrival-goal, if_front-eatable, if_front-poison"
+		block="exe_forward_5, exe_eat, exe_throwAway, loop_arrival-goal, if_front-eatable, if_front-poison"
 		/>
 
 	<!-- 「if-else」ブロックを利用するパターン -->
@@ -216,7 +215,7 @@
 		objectKind="poison, eatable"
 		objectPositionRandom="false"
 		objectPosition="0 : 1.2 : 3, 0 : 1.2 : -10, 0 : 1.1 : -4.1"
-		block="single_forward_5, single_eat, single_throwAway, loop_arrival-goal, if-else_front-eatable, if-else_front-poison"
+		block="exe_forward_5, exe_eat, exe_throwAway, loop_arrival-goal, if-else_front-eatable, if-else_front-poison"
 		/>
 
 	<!-- 「if-elseif-else」ブロックを利用するパターン -->
@@ -237,7 +236,7 @@
 		objectKind="poison, eatable"
 		objectPositionRandom="false"
 		objectPosition="0 : 1.2 : 3, 0 : 1.2 : -10, 0 : 1.1 : -4.1"
-		block="single_forward_5, single_eat, single_throwAway, loop_arrival-goal, if-elseif-else_front-eatable-poison"
+		block="exe_forward_5, exe_eat, exe_throwAway, loop_arrival-goal, if-elseif-else_front-eatable-poison"
 		/>
 
 

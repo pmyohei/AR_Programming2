@@ -9,6 +9,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
 
+import com.ar.ar_programming.GimmickManager;
 import com.ar.ar_programming.character.CharacterNode;
 import com.ar.ar_programming.Gimmick;
 import com.ar.ar_programming.R;
@@ -54,19 +55,8 @@ public abstract class ProcessBlock extends Block {
         //------------------
         // 文言IDをレイアウトに設定
         TextView tv_contents = findViewById(R.id.tv_contents);
-        tv_contents.setText( mXmlBlockInfo.statementId);
-
-        //------------------
-        // ブロック内ワード
-        //------------------
-        String contentsStr = tv_contents.getText().toString();
-        Log.i("ワード置き換え", "contentsStr=" + contentsStr);
-        Log.i("ワード置き換え", "mXmlBlockInfo.nodeNameId=" + mXmlBlockInfo.nodeNameId);
-        String contentsWithNodeName = replaceNodeName( getContext(), contentsStr, mXmlBlockInfo.nodeNameId);
-        Log.i("ワード置き換え", "contentsWithNodeName=" + contentsWithNodeName);
-        if( contentsWithNodeName != null ){
-            tv_contents.setText( contentsWithNodeName );
-        }
+        String statement = GimmickManager.buildBlockStatementId( getContext(), mXmlBlockInfo.type, mXmlBlockInfo.action, mXmlBlockInfo.targetNode_1);
+        tv_contents.setText( statement);
     }
 
     /*

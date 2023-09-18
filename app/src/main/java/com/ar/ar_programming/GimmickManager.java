@@ -6,11 +6,13 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.content.res.XmlResourceParser;
+import android.graphics.drawable.Drawable;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Random;
 
@@ -22,7 +24,7 @@ public class GimmickManager {
     //---------------------------
     // ブロック種別
     //---------------------------
-    public static final String BLOCK_TYPE_SINGLE = "single";
+    public static final String BLOCK_TYPE_SINGLE = "exe";
     public static final String BLOCK_TYPE_LOOP = "loop";
     public static final String BLOCK_TYPE_IF = "if";
     public static final String BLOCK_TYPE_IF_ELSE = "if-else";
@@ -142,10 +144,12 @@ public class GimmickManager {
     // ブロック情報共通
     public static final int BLOCK_TYPE_POS = 0;
     public static final int BLOCK_CONTENTS_POS = 1;                 // 例）「forward」や「facing-eatable」の位置
+    public static final int BLOCK_ACTION_POS = 1;                 // 例）「forward」や「facing-eatable」の位置
+    public static final int BLOCK_CONDITION_POS = 1;                 // 例）「forward」や「facing-eatable」の位置
     // 実行ブロック  例）single_forward_1
     public static final int BLOCK_VALUE_LIMIT_POS = 2;              // 例）「1」の位置
     // 制御ブロック  例）loop_facing-eatable
-    public static final int BLOCK_CONDITION_MOTION_POS = 0;         // 例）「facing」の位置
+    public static final int BLOCK_CONDITION_ACTION_POS = 0;         // 例）「facing」の位置
     public static final int BLOCK_CONDITION_OBJECT_POS = 1;         // 例）「eatable」の位置
     // 制御ブロック  例）if-elseif-else_front-eatable-poison
     public static final int BLOCK_CONDITION_ELSEIF_OBJECT_POS = 2;  // 例）「poison」の位置
@@ -163,13 +167,13 @@ public class GimmickManager {
     public static Gimmick getGimmick(Context context) {
 
         // チュートリアルかチュートリアル終了しているかでギミック選定を分ける
-        boolean finishTutorial = Common.isFisishTutorial( context );
+        boolean finishTutorial = Common.isFisishTutorial(context);
         if (finishTutorial) {
             // ユーザー設定に応じたギミックを生成
             return makeUserGimmick(context);
         } else {
             // チュートリアルからギミックを生成
-            int tutorial = Common.getTutorialSequence( context );
+            int tutorial = Common.getTutorialSequence(context);
             return makeTutorialGimmick(context, tutorial);
         }
     }
@@ -212,33 +216,33 @@ public class GimmickManager {
         //--------------------------
         gimmick.successCondition = parser.getAttributeValue(null, "successCondition");
         gimmick.character = parser.getAttributeValue(null, "character");
-        gimmick.setGoalExplanation( goalExplanation );
+        gimmick.setGoalExplanation(goalExplanation);
         gimmick.stageGlb = parser.getAttributeValue(null, "stageGlb");
         // キャラクター
         gimmick.characterGlb = parser.getAttributeValue(null, "characterGlb");
-        gimmick.setCharacterPosition( characterPosition );
-        gimmick.setCharacterAngle( characterAngle );
+        gimmick.setCharacterPosition(characterPosition);
+        gimmick.setCharacterAngle(characterAngle);
         // ゴール
         gimmick.goalGlb = parser.getAttributeValue(null, "goalGlb");
-        gimmick.setGoalAngle( goalAngle );
-        gimmick.setGoalPosition( goalPosition );
+        gimmick.setGoalAngle(goalAngle);
+        gimmick.setGoalPosition(goalPosition);
         // オブジェクト
-        gimmick.setObjectGlb( objectGlb );
-        gimmick.setObjectNum( objectNum );
-        gimmick.setObjectKind( objectKind );
-        gimmick.setObjectPositionRandom( objectPositionRandom );
-        gimmick.setObjectPositionVecList( objectPosition );
-        gimmick.setObjectAngle( objectAngle );
+        gimmick.setObjectGlb(objectGlb);
+        gimmick.setObjectNum(objectNum);
+        gimmick.setObjectKind(objectKind);
+        gimmick.setObjectPositionRandom(objectPositionRandom);
+        gimmick.setObjectPositionVecList(objectPosition);
+        gimmick.setObjectAngle(objectAngle);
         // 敵
-        gimmick.setEnemyGlb( enemyGlb );
-        gimmick.setEnemyNum( enemyNum );
-        gimmick.setEnemyKind( enemyKind );
-        gimmick.setEnemyNumRandom( enemyNumRandom );
-        gimmick.setEnemyPositionVecList( enemyPosition );
-        gimmick.setEnemyEndPosition( enemyEndPosition );
+        gimmick.setEnemyGlb(enemyGlb);
+        gimmick.setEnemyNum(enemyNum);
+        gimmick.setEnemyKind(enemyKind);
+        gimmick.setEnemyNumRandom(enemyNumRandom);
+        gimmick.setEnemyPositionVecList(enemyPosition);
+        gimmick.setEnemyEndPosition(enemyEndPosition);
         // ブロック
-        gimmick.setBlockNodeWord( blockNodeWord );
-        gimmick.setBlock( block );
+        gimmick.setBlockNodeWord(blockNodeWord);
+        gimmick.setBlock(block);
     }
 
     /*
@@ -278,7 +282,7 @@ public class GimmickManager {
         //-----------------------------------------
         // ギミック生成
         //-----------------------------------------
-        Gimmick gimmick = new Gimmick( context );
+        Gimmick gimmick = new Gimmick(context);
         readGimmickData(gimmick, parser);
 
         // parser閉じる
@@ -344,7 +348,7 @@ public class GimmickManager {
         //-----------------------------------------
         // ギミック生成
         //-----------------------------------------
-        Gimmick gimmick = new Gimmick( context );
+        Gimmick gimmick = new Gimmick(context);
         readGimmickData(gimmick, parser);
 
         // parser閉じる
@@ -384,7 +388,7 @@ public class GimmickManager {
     /*
      * ユーザー設定に応じたギミックXMLファイルIDを取得
      */
-    private static int getUserGimmickXmlFileNameID( Context context ){
+    private static int getUserGimmickXmlFileNameID(Context context) {
 
         Resources resources = context.getResources();
         SharedPreferences sharedPref = context.getSharedPreferences(context.getString(R.string.preference_file_key), MODE_PRIVATE);
@@ -415,5 +419,87 @@ public class GimmickManager {
         }
 
         return xmlID;
+    }
+
+    /*
+     * ブロック文向け文字列の構築
+     */
+    public static String buildBlockStatementId(Context context, String type, String action, String targetNode) {
+
+        //--------------------------------------
+        // 文字列リソースの生成
+        //--------------------------------------
+        // 文字列リソースIDの文字列を構築
+        // 例）block_exe_forward
+        final String PREFIX = "block";
+        String resourceStr = PREFIX + GIMMICK_DELIMITER_WORD + type + GIMMICK_DELIMITER_WORD + action;
+
+        // 文字列リソースID生成
+        Resources resources = context.getResources();
+        String packageName = context.getPackageName();
+
+        int statementId = resources.getIdentifier(resourceStr, "string", packageName);
+        String statement = context.getString(statementId);
+
+        //-------------------------------------
+        // ブロック文内のNode名設定
+        //-------------------------------------
+        // 置換前のワード
+        final String preReplaceWord = "xxx";
+
+        // 置換前のワードがなければ、置換なし
+        if (!statement.contains(preReplaceWord)) {
+            return statement;
+        }
+
+        // 対象Node名を取得
+        int targetNodeId = resources.getIdentifier(targetNode, "string", packageName);
+        String targetNodeName = context.getString(targetNodeId);
+
+        // ブロック文に対象Node名を埋め込み
+        // （「xxx」を「Node名」に置換）
+        return statement.replace(preReplaceWord, targetNodeName);
+    }
+
+    /*
+     * ブロックアイコン向けdrawableリソースIDの構築
+     */
+    public static Drawable buildBlockIconId( Context context, String type, String action ) {
+
+        //--------------------------------------
+        // drawableリソースの生成
+        //--------------------------------------
+        // drawableリソースIDの文字列を構築
+        // 例）block_eat, block_loop
+        final String PREFIX = "block";
+
+        // 「block_」に連結するワード
+        String word;
+        switch ( type ){
+            case BLOCK_TYPE_SINGLE:
+                word = action;
+                break;
+
+            case BLOCK_TYPE_LOOP:
+                word = type;
+                break;
+
+            case BLOCK_TYPE_IF:
+            case BLOCK_TYPE_IF_ELSE:
+            case BLOCK_TYPE_IE_ELSEIF:
+            default:
+                word = "if";
+                break;
+        }
+
+        // drawableリソースID文字列の生成
+        String resourceStr = PREFIX + GIMMICK_DELIMITER_WORD + word;
+
+        // drawableリソースID生成
+        Resources resources = context.getResources();
+        String packageName = context.getPackageName();
+
+        int drawableId = resources.getIdentifier(resourceStr, "drawable", packageName);
+        return context.getDrawable(drawableId);
     }
 }

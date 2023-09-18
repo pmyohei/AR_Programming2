@@ -1,9 +1,11 @@
 package com.ar.ar_programming;
 
+import static com.ar.ar_programming.GimmickManager.BLOCK_ACTION_POS;
 import static com.ar.ar_programming.GimmickManager.BLOCK_CONDITION_ARRIVAL;
 import static com.ar.ar_programming.GimmickManager.BLOCK_CONDITION_COLLECT;
 import static com.ar.ar_programming.GimmickManager.BLOCK_CONDITION_FACING;
 import static com.ar.ar_programming.GimmickManager.BLOCK_CONDITION_FRONT;
+import static com.ar.ar_programming.GimmickManager.BLOCK_CONDITION_POS;
 import static com.ar.ar_programming.GimmickManager.BLOCK_CONTENTS_POS;
 import static com.ar.ar_programming.GimmickManager.BLOCK_TYPE_POS;
 import static com.ar.ar_programming.GimmickManager.BLOCK_VALUE_LIMIT_POS;
@@ -84,7 +86,6 @@ public class Gimmick {
     public Map<String, Integer> Map_word__nameInBlock;
 
 
-
     /*
      * ブロックプロパティ情報
      */
@@ -94,7 +95,7 @@ public class Gimmick {
         public String action;           // アクション／条件：動作
         public String targetNode_1;     // 対象Node1
         public String targetNode_2;     // 対象Node2 elseif
-        public String fixVolume;        // 固定処理量
+        public int fixVolume;        // 固定処理量
 
         //---------------
         // 共通
@@ -164,10 +165,10 @@ public class Gimmick {
         //----------------------
         Map_blockConditionMotion__statementId = new HashMap<String, Integer>() {
             {
-                put(BLOCK_CONDITION_FACING, R.string.block_contents_loop_facing);
-                put(BLOCK_CONDITION_COLLECT, R.string.block_contents_loop_collect);
-                put(BLOCK_CONDITION_ARRIVAL, R.string.block_contents_loop_arrival);
-                put(BLOCK_CONDITION_FRONT, R.string.block_contents_if_front);
+                put(BLOCK_CONDITION_FACING, R.string.block_loop_facing);
+                put(BLOCK_CONDITION_COLLECT, R.string.block_loop_collect);
+                put(BLOCK_CONDITION_ARRIVAL, R.string.block_loop_arrival);
+                put(BLOCK_CONDITION_FRONT, R.string.block_if_front);
             }
         };
 
@@ -212,7 +213,6 @@ public class Gimmick {
                 put("SPECIFIC_NAME_PRESENT", R.string.present);
             }
         };
-
 
 
     }
@@ -286,6 +286,109 @@ public class Gimmick {
      */
     private void setXmlBlockInfo(String[] blockSplit, XmlBlockInfo xmlBlockInfo) {
 
+        //----------------
+        // ブロック種別
+        //----------------
+        xmlBlockInfo.type = blockSplit[BLOCK_TYPE_POS];
+
+        //------------------------------------
+        // ブロック種別に応じて、設定を切り分け
+        //------------------------------------
+        switch (xmlBlockInfo.type) {
+
+            //----------------------
+            // 実行ブロック
+            //----------------------
+            case GimmickManager.BLOCK_TYPE_SINGLE:
+                setXmlExeBlockInfo( blockSplit, xmlBlockInfo );
+                break;
+
+            //----------------------
+            // ネストブロック（条件１つ）
+            //----------------------
+            case GimmickManager.BLOCK_TYPE_LOOP:
+            case GimmickManager.BLOCK_TYPE_IF:
+            case GimmickManager.BLOCK_TYPE_IF_ELSE:
+                setXmlOneConditionBlockInfo( blockSplit, xmlBlockInfo );
+                break;
+
+            //----------------------
+            // ネストブロック（条件２つ）
+            //----------------------
+            case GimmickManager.BLOCK_TYPE_IE_ELSEIF:
+                setXmlTwoConditionBlockInfo( blockSplit, xmlBlockInfo );
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    /*
+     * ブロック内容を解析して、xml情報として設定：Exeブロック
+     */
+    private void setXmlExeBlockInfo(String[] blockSplit, XmlBlockInfo xmlBlockInfo) {
+
+        //---------------
+        // アクション
+        //---------------
+        xmlBlockInfo.action = blockSplit[BLOCK_ACTION_POS];
+
+        //---------------
+        // 固定処理量
+        //---------------
+        // 固定処理量の記載があれば、設定する
+        if( blockSplit.length > BLOCK_VALUE_LIMIT_POS ){
+            xmlBlockInfo.fixVolume = Integer.parseInt( blockSplit[BLOCK_VALUE_LIMIT_POS] );
+            return;
+        }
+
+        // 固定処理量なし
+        xmlBlockInfo.fixVolume = VOLUME_LIMIT_NONE;
+    }
+
+    /*
+     * ブロック内容を解析して、xml情報として設定：条件１つブロック
+     */
+    private void setXmlOneConditionBlockInfo(String[] blockSplit, XmlBlockInfo xmlBlockInfo) {
+
+        //-------------
+        // 条件文分割
+        //-------------
+        // 条件文情報を「条件：動作」と「条件：対象①」に分割
+        // 例)「facing-eatable」 ⇒ [0]facing  [1]eatable
+        String condition = blockSplit[BLOCK_CONDITION_POS];
+        String[] conditionData = condition.split( GimmickManager.GIMMICK_DELIMITER_CONDITION );
+
+        // 設定
+        xmlBlockInfo.action       = conditionData[GimmickManager.BLOCK_CONDITION_ACTION_POS];
+        xmlBlockInfo.targetNode_1 = conditionData[GimmickManager.BLOCK_CONDITION_OBJECT_POS];
+    }
+
+    /*
+     * ブロック内容を解析して、xml情報として設定：条件２つブロック
+     */
+    private void setXmlTwoConditionBlockInfo(String[] blockSplit, XmlBlockInfo xmlBlockInfo) {
+
+        //-------------
+        // 条件文分割
+        //-------------
+        // 条件文情報を「条件：動作」と「条件：対象①」「条件：対象②」に分割
+        // 例)「front-eatable-poison」 ⇒ [0]facing  [1]eatable  [2]poison
+        String condition = blockSplit[BLOCK_CONDITION_POS];
+        String[] conditionData = condition.split( GimmickManager.GIMMICK_DELIMITER_CONDITION );
+
+        // 設定
+        xmlBlockInfo.action       = conditionData[GimmickManager.BLOCK_CONDITION_ACTION_POS];
+        xmlBlockInfo.targetNode_1 = conditionData[GimmickManager.BLOCK_CONDITION_OBJECT_POS];
+        xmlBlockInfo.targetNode_2 = conditionData[GimmickManager.BLOCK_CONDITION_ELSEIF_OBJECT_POS];
+    }
+
+    /*
+     * ブロック内容を解析して、xml情報として設定
+     */
+    private void setXmlBlockInfoOld(String[] blockSplit, XmlBlockInfo xmlBlockInfo) {
+
         String nodeNameKey = "";
 
         //----------------
@@ -333,11 +436,7 @@ public class Gimmick {
             targetNodeResName = "none";
         }
 
-//        int stringId = mContext.getResources().getIdentifier(targetNodeResName, "string", mContext.getPackageName());
-        Log.i("xxx置換新規作成", "nodeNameKey=" + nodeNameKey);
-        Log.i("xxx置換新規作成", "targetNodeResName=" + targetNodeResName);
         xmlBlockInfo.nodeNameId = mContext.getResources().getIdentifier(targetNodeResName, "string", mContext.getPackageName());;
-        Log.i("xxx置換新規作成", "getString()の名前=" + mContext.getResources().getString( xmlBlockInfo.nodeNameId ));
     }
 
     /*
@@ -354,55 +453,55 @@ public class Gimmick {
         switch (blockContents) {
             case GimmickManager.BLOCK_EXE_FORWARD:
                 drawableId = R.drawable.baseline_block_forward_24;
-                statementId = R.string.block_contents_forward;
+                statementId = R.string.block_exe_forward;
                 break;
 
             case GimmickManager.BLOCK_EXE_BACK:
                 drawableId = R.drawable.baseline_block_back_24;
-                statementId = R.string.block_contents_back;
+                statementId = R.string.block_exe_back;
                 break;
 
             case GimmickManager.BLOCK_EXE_ROTATE_RIGHT:
                 drawableId = R.drawable.baseline_block_rotate_right_24;
-                statementId = R.string.block_contents_rorate_right;
+                statementId = R.string.block_exe_rorateRight;
                 break;
 
             case GimmickManager.BLOCK_EXE_ROTATE_LEFT:
                 drawableId = R.drawable.baseline_block_rotate_left_24;
-                statementId = R.string.block_contents_rorate_left;
+                statementId = R.string.block_exe_rorateLeft;
                 break;
 
             case GimmickManager.BLOCK_EXE_EAT:
                 drawableId = R.drawable.baseline_eat_24;
-                statementId = R.string.block_contents_eat;
+                statementId = R.string.block_exe_eat;
                 nodeNameId = getObjectNameInBlock( GimmickManager.NODE_NAME_EATABLE, objectKindList ,objectGlbList );
                 existsVolume = false;
                 break;
 
             case GimmickManager.BLOCK_EXE_THROW_AWAY:
                 drawableId = R.drawable.baseline_throw_away_24;
-                statementId = R.string.block_contents_throw_away;
+                statementId = R.string.block_exe_throwAway;
                 nodeNameId = getObjectNameInBlock( GimmickManager.NODE_NAME_POISON, objectKindList ,objectGlbList );
                 existsVolume = false;
                 break;
 
             case GimmickManager.BLOCK_EXE_ATTACK:
                 drawableId = R.drawable.baseline_attack_24;
-                statementId = R.string.block_contents_attack;
+                statementId = R.string.block_exe_attack;
                 nodeNameId = getObjectNameInBlock( GimmickManager.NODE_NAME_ENEMY, objectKindList ,objectGlbList );
                 existsVolume = false;
                 break;
 
             case GimmickManager.BLOCK_EXE_PICKUP:
                 drawableId = R.drawable.baseline_attack_24;
-                statementId = R.string.block_contents_pickup;
+                statementId = R.string.block_exe_pickup;
                 nodeNameId = getObjectNameInBlock( GimmickManager.NODE_NAME_PICKUP, objectKindList ,objectGlbList );
                 existsVolume = false;
                 break;
 
             default:
                 drawableId = R.drawable.baseline_block_forward_24;
-                statementId = R.string.block_contents_forward;
+                statementId = R.string.block_exe_forward;
                 break;
         }
 
@@ -432,7 +531,7 @@ public class Gimmick {
         // 条件文分割
         //-------------
         String[] conditionData = blockContents.split(GimmickManager.GIMMICK_DELIMITER_CONDITION);
-        String conditionMotion = conditionData[GimmickManager.BLOCK_CONDITION_MOTION_POS];
+        String conditionMotion = conditionData[GimmickManager.BLOCK_CONDITION_ACTION_POS];
         String conditionObject = conditionData[GimmickManager.BLOCK_CONDITION_OBJECT_POS];
 
         //-------------
@@ -477,7 +576,7 @@ public class Gimmick {
         // 条件文分割
         //-------------
         String[] conditionData = blockContents.split(GimmickManager.GIMMICK_DELIMITER_CONDITION);
-        String conditionMotion = conditionData[GimmickManager.BLOCK_CONDITION_MOTION_POS];
+        String conditionMotion = conditionData[GimmickManager.BLOCK_CONDITION_ACTION_POS];
         String conditionObject = conditionData[GimmickManager.BLOCK_CONDITION_OBJECT_POS];
 
         //-------------
@@ -519,7 +618,7 @@ public class Gimmick {
         // 条件文分割
         //-------------
         String[] conditionData = blockContents.split(GimmickManager.GIMMICK_DELIMITER_CONDITION);
-        String conditionMotion = conditionData[GimmickManager.BLOCK_CONDITION_MOTION_POS];
+        String conditionMotion = conditionData[GimmickManager.BLOCK_CONDITION_ACTION_POS];
         String conditionObject = conditionData[GimmickManager.BLOCK_CONDITION_OBJECT_POS];
 
         //-------------
@@ -565,7 +664,7 @@ public class Gimmick {
         // 条件文分割
         //-------------
         String[] conditionData = blockContents.split(GimmickManager.GIMMICK_DELIMITER_CONDITION);
-        String conditionMotion = conditionData[GimmickManager.BLOCK_CONDITION_MOTION_POS];
+        String conditionMotion = conditionData[GimmickManager.BLOCK_CONDITION_ACTION_POS];
         String conditionObject = conditionData[GimmickManager.BLOCK_CONDITION_OBJECT_POS];
         String conditionElseIfObject = conditionData[GimmickManager.BLOCK_CONDITION_ELSEIF_OBJECT_POS];
 
@@ -1034,8 +1133,12 @@ public class Gimmick {
      */
     private void setXmlBlockInfoList(ArrayList<String> blockList) {
 
+        //---------------------
+        // ブロック情報分繰り返し
+        //---------------------
         for (String blockItemStr : blockList) {
 
+            // xml情報新規生成
             XmlBlockInfo xmlBlockInfo = new XmlBlockInfo();
 
             // ブロック文字列を分割
@@ -1043,6 +1146,7 @@ public class Gimmick {
             String[] blockSplit = Gimmick.splitGimmickWordDelimiter(blockItemStr);
             // ブロック文字列をxml情報として解析して設定
             setXmlBlockInfo(blockSplit, xmlBlockInfo);
+//            setXmlBlockInfoOld(blockSplit, xmlBlockInfo);
 
             // リストに追加
             xmlBlockInfoList.add(xmlBlockInfo);

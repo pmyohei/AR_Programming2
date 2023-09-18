@@ -104,9 +104,6 @@ public class SingleBlock extends ProcessBlock {
             //------------------------
             // 処理量なし
             //------------------------
-            case GimmickManager.BLOCK_EXE_EAT:
-            case GimmickManager.BLOCK_EXE_THROW_AWAY:
-            case GimmickManager.BLOCK_EXE_ATTACK:
             default:
                 // 処理量なしのブロックレイアウト設定
                 setNoVolumeLayout();
@@ -250,6 +247,7 @@ public class SingleBlock extends ProcessBlock {
         // キャラクターアクションの内容設定
         //----------------------------------------
         characterNode.setActionWord( mXmlBlockInfo.contents );
+        characterNode.setTargetNode( mXmlBlockInfo.targetNode_1 );
     }
 
 }

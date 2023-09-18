@@ -100,6 +100,8 @@ public abstract class CharacterNode extends TransformableNode {
     private ObjectAnimator mModelAnimator;
     // 処理量なしのアクションメソッド完了フラグ
     public boolean mfinishNoneVolume;
+    // アクション対象Node
+    public String mTargetNode;
     // アクション成否
     public boolean mSuccessAction;
     // アクション表記Renderable
@@ -190,6 +192,13 @@ public abstract class CharacterNode extends TransformableNode {
 
         // あり
         return true;
+    }
+
+    /*
+     * アクション対象Node名の設定
+     */
+    public void setTargetNode(String targetNode) {
+        mTargetNode = targetNode;
     }
 
     /*
@@ -430,8 +439,8 @@ public abstract class CharacterNode extends TransformableNode {
      * 捨てる
      */
     private void throwAway() {
-        String targetCollisionNode = GimmickManager.NODE_NAME_POISON;
-        deleteNodeAction( targetCollisionNode );
+//        String targetCollisionNode = GimmickManager.NODE_NAME_POISON;
+        deleteNodeAction( mTargetNode );
     }
 
 
@@ -442,8 +451,8 @@ public abstract class CharacterNode extends TransformableNode {
 
         Log.i("衝突中判定", "attack()");
 
-        String targetCollisionNode = GimmickManager.NODE_NAME_ENEMY;
-        deleteNodeAction( targetCollisionNode );
+//        String targetCollisionNode = GimmickManager.NODE_NAME_ENEMY;
+        deleteNodeAction( mTargetNode );
     }
 
     /*
@@ -470,8 +479,8 @@ public abstract class CharacterNode extends TransformableNode {
     private void pickup() {
         Log.i("衝突中判定", "pickup()");
 
-        String targetCollisionNode = GimmickManager.NODE_NAME_PICKUP;
-        deleteNodeAction( targetCollisionNode );
+//        String targetCollisionNode = GimmickManager.NODE_NAME_PICKUP;
+        deleteNodeAction( mTargetNode );
     }
 
 

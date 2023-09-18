@@ -72,7 +72,6 @@ public class UserBlockSelectListAdapter extends RecyclerView.Adapter<UserBlockSe
 
             // ブロック文内のNode名置き換え
             String contentsStr = tv_title.getText().toString();
-            Log.i("xxx置換新規作成", "アダプタ内 nodeNameId=" + cl_parent.getContext().getResources().getString( xmlBlockInfo.nodeNameId ));
             String contentsWithNodeName = ProcessBlock.replaceNodeName( cl_parent.getContext(), contentsStr, xmlBlockInfo.nodeNameId);
             if( contentsWithNodeName != null ){
                 tv_title.setText( contentsWithNodeName );
@@ -82,8 +81,6 @@ public class UserBlockSelectListAdapter extends RecyclerView.Adapter<UserBlockSe
             cl_parent.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Log.i("ブロックxml", "xmlBlockInfo.type=" + xmlBlockInfo.typeInt);
-                        Log.i("ブロックxml", "xmlBlockInfo.contents=" + xmlBlockInfo.contents);
                         mBlockClickListener.onBlockClick(xmlBlockInfo);
                     }
                 }
