@@ -50,7 +50,7 @@ import com.ar.ar_programming.process.IfBlock;
 import com.ar.ar_programming.process.LoopBlock;
 import com.ar.ar_programming.process.NestBlock;
 import com.ar.ar_programming.process.ProcessBlock;
-import com.ar.ar_programming.process.SingleBlock;
+import com.ar.ar_programming.process.ExecuteBlock;
 import com.ar.ar_programming.process.StartBlock;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -465,26 +465,26 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
         //-----------------
         // 処理ブロック生成
         //-----------------
-        switch (xmlBlockInfo.typeInt) {
+        switch (xmlBlockInfo.type) {
             // 単体処理
-            case Block.PROCESS_TYPE_SINGLE:
-                newBlock = new SingleBlock(context, getParentFragmentManager(), xmlBlockInfo);
+            case GimmickManager.BLOCK_TYPE_EXE:
+                newBlock = new ExecuteBlock(context, getParentFragmentManager(), xmlBlockInfo);
                 break;
 
             // ネスト処理
-            case Block.PROCESS_TYPE_IF:
+            case GimmickManager.BLOCK_TYPE_IF:
                 newBlock = new IfBlock(context, xmlBlockInfo);
                 break;
 
-            case Block.PROCESS_TYPE_IF_ELSE:
+            case GimmickManager.BLOCK_TYPE_IF_ELSE:
                 newBlock = new IfElseBlock(context, xmlBlockInfo);
                 break;
 
-            case Block.PROCESS_TYPE_IF_ELSEIF_ELSE:
+            case GimmickManager.BLOCK_TYPE_IE_ELSEIF:
                 newBlock = new IfElseIfElseBlock(context, xmlBlockInfo);
                 break;
 
-            case Block.PROCESS_TYPE_LOOP:
+            case GimmickManager.BLOCK_TYPE_LOOP:
                 newBlock = new LoopBlock(context, xmlBlockInfo);
                 break;
 
@@ -680,8 +680,8 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
         //------------------
         // ネスト処理ブロック
         //------------------
-        int type = block.getProcessType();
-        if (type != ProcessBlock.PROCESS_TYPE_SINGLE) {
+        String type = block.getType();
+        if ( !type.equals(GimmickManager.BLOCK_TYPE_EXE)) {
             // ネスト内にマークブロックがあるかどうか
             return block.hasBlock(mMarkedBlock);
         }
@@ -1076,7 +1076,7 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
         characterNode.startPosData(position, angle);
 
         // キャラクターアクション表記Nodeの作成
-        characterNode.createActionRenderable(mActionRenderable);
+        characterNode.createActionRenderable(mActionRenderable, angle);
         characterNode.setActionWord(ACTION_WAITING);
 
         return characterNode;
@@ -1327,7 +1327,7 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
 
         // Node生成
         TransformableNode node = new TransformableNode(transformationSystem);
-        node.setName(GimmickManager.NODE_NAME_GOAL);
+        node.setName( mGimmick.goalName );
         node.getScaleController().setMinScale(scale);
         node.getScaleController().setMaxScale(scale * 2);
         node.setLocalScale(scaleVector);
@@ -1349,32 +1349,15 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
         final float scale = getNodeScale();
         Vector3 scaleVector = new Vector3(scale, scale, scale);
 
-        //!コード整理
-        /*// ステージの広さ
-        float stageScale = getStageScale();
-        // ランダム位置を生成
-        Vector3 pos = getRandomPosition(stageScale);
-        */
-
-        // キャラクターに向かせる角度
-        //!xmlで管理するかも
-//        float angle = mGimmick.goalAngle;
-        // キャラクターに向かせる方向のQuaternion値
-//        Quaternion facingDirection = getCharacterInitFacingDirection(angle);
-
-//        Vector3 pos = new Vector3(mGimmick.goalPositionVec.x * scale, mGimmick.goalPositionVec.y * scale, mGimmick.goalPositionVec.z * scale);
         Vector3 pos = new Vector3(0f, 0f, 0f);
 
         // Node生成
         TransformableNode node = new TransformableNode(transformationSystem);
-//        node.setName( GimmickManager.NODE_NAME_GOAL );
         node.getScaleController().setMinScale(scale);
         node.getScaleController().setMaxScale(scale * 2);
         node.setLocalScale(scaleVector);
         node.setParent(anchorNode);
-//        node.setLocalPosition( mGimmick.goalPositionVec );
         node.setLocalPosition(pos);
-//        node.setLocalRotation(facingDirection);
         node.setRenderable(mSuccessRenderable);
         node.select();
 
@@ -2105,30 +2088,6 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
         //----------------
         // 処理ブロック側のアニメーション終了
         processAnimator.cancel();
-
-        //----------------
-        // 衝突Node毎の対応
-        //----------------
-        switch (collisionNode) {
-
-            // 衝突Node：ゴール
-            case GimmickManager.NODE_NAME_GOAL:
-                // ゴール成功処理
-//                stageClear();
-                break;
-
-            // 衝突Node：障害物
-            case GimmickManager.NODE_NAME_OBSTACLE:
-                // ゴール失敗処理
-//                stageClearFailure();
-                break;
-
-            // 衝突Node：食事可
-            case GimmickManager.NODE_NAME_EATABLE:
-                break;
-        }
-
-
     }
 
     /*

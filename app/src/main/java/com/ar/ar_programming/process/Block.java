@@ -21,14 +21,6 @@ public abstract class Block extends ConstraintLayout {
     //---------------------------
     // 定数
     //---------------------------
-    // ブロック種別
-    public static final int PROCESS_TYPE_START = 0;
-    public static final int PROCESS_TYPE_SINGLE = 1;
-    public static final int PROCESS_TYPE_IF = 2;
-    public static final int PROCESS_TYPE_IF_ELSE = 3;
-    public static final int PROCESS_TYPE_IF_ELSEIF_ELSE = 4;
-    public static final int PROCESS_TYPE_LOOP = 5;
-
     // ドラッグ中（選択中）状態の半透明値
     public static final float TRANCE_ON_DRAG = 0.6f;
     public static final float TRANCE_OFF_DRAG = 1.0f;
@@ -40,30 +32,25 @@ public abstract class Block extends ConstraintLayout {
     //---------------------------
     // フィールド変数
     //---------------------------
-    public int mProcessType;
+    public Gimmick.XmlBlockInfo mXmlBlockInfo;
     // 本ブロックが組み込まれているネストブロック（ない場合はnull）
     public NestBlock mOwnNestBlock;
     private Block mAboveBlock;
     private Block mBelowBlock;
 
-
+    /*
+     * コンストラクタ
+     */
     public Block(Context context) {
         this(context, null);
     }
     public Block(Context context, AttributeSet attrs) {
         this(context, attrs, 0, null);
     }
-    public Block(Context context, AttributeSet attrs, int defStyle, int type) {
-        super(context, attrs, defStyle);
-
-        mProcessType = type;
-        mAboveBlock = null;
-        mBelowBlock = null;
-    }
     public Block(Context context, AttributeSet attrs, int defStyle, Gimmick.XmlBlockInfo xmlBlockInfo) {
         super(context, attrs, defStyle);
 
-        mProcessType = xmlBlockInfo.typeInt;
+        mXmlBlockInfo = xmlBlockInfo;
         mAboveBlock = null;
         mBelowBlock = null;
     }
@@ -91,8 +78,8 @@ public abstract class Block extends ConstraintLayout {
     /*
      * 処理ブロックタイプ設定
      */
-    public int getProcessType() {
-        return mProcessType;
+    public String getType() {
+        return mXmlBlockInfo.type;
     }
 
     /*

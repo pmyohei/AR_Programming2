@@ -7,12 +7,12 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.content.res.XmlResourceParser;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Random;
 
@@ -24,7 +24,8 @@ public class GimmickManager {
     //---------------------------
     // ブロック種別
     //---------------------------
-    public static final String BLOCK_TYPE_SINGLE = "exe";
+    public static final String BLOCK_TYPE_START = "start";
+    public static final String BLOCK_TYPE_EXE = "exe";
     public static final String BLOCK_TYPE_LOOP = "loop";
     public static final String BLOCK_TYPE_IF = "if";
     public static final String BLOCK_TYPE_IF_ELSE = "if-else";
@@ -35,10 +36,10 @@ public class GimmickManager {
     //---------------------------
     public static final String BLOCK_EXE_FORWARD = "forward";
     public static final String BLOCK_EXE_BACK = "back";
-    public static final String BLOCK_EXE_ROTATE_RIGHT = "rotateRight";
-    public static final String BLOCK_EXE_ROTATE_LEFT = "rotateLeft";
+    public static final String BLOCK_EXE_ROTATE_RIGHT = "rotateright";
+    public static final String BLOCK_EXE_ROTATE_LEFT = "rotateleft";
     public static final String BLOCK_EXE_EAT = "eat";
-    public static final String BLOCK_EXE_THROW_AWAY = "throwAway";
+    public static final String BLOCK_EXE_THROW = "throw";
     public static final String BLOCK_EXE_ATTACK = "attack";
     public static final String BLOCK_EXE_PICKUP = "pickup";
 
@@ -47,6 +48,7 @@ public class GimmickManager {
     //------------------------------
     public static final String BLOCK_CONDITION_FACING = "facing";
     public static final String BLOCK_CONDITION_COLLECT = "collect";
+    public static final String BLOCK_CONDITION_EAT = "eat";
     public static final String BLOCK_CONDITION_ARRIVAL = "arrival";
     public static final String BLOCK_CONDITION_FRONT = "front";
 
@@ -58,12 +60,7 @@ public class GimmickManager {
     public static final String NODE_NAME_GOAL_GUIDE_UI = "goalGuideUI";
     public static final String NODE_NAME_ANCHOR = "anchor";
     public static final String NODE_NAME_STAGE = "stage";
-    public static final String NODE_NAME_GOAL = "goal";
     public static final String NODE_NAME_OBSTACLE = "obstacle";
-    public static final String NODE_NAME_EATABLE = "eatable";
-    public static final String NODE_NAME_POISON = "poison";
-    public static final String NODE_NAME_ENEMY = "enemy";
-    public static final String NODE_NAME_PICKUP = "pickup";
 
     //------------------------------
     // ギミック 主体種別
@@ -193,6 +190,7 @@ public class GimmickManager {
         // ゴール
         String goalPosition = parser.getAttributeValue(null, "goalPosition");
         String goalAngle = parser.getAttributeValue(null, "goalAngle");
+        String goalName = parser.getAttributeValue(null, "goalName");
         // オブジェクト
         String objectGlb = parser.getAttributeValue(null, "objectGlb");
         String objectNum = parser.getAttributeValue(null, "objectNum");
@@ -225,6 +223,7 @@ public class GimmickManager {
         // ゴール
         gimmick.goalGlb = parser.getAttributeValue(null, "goalGlb");
         gimmick.setGoalAngle(goalAngle);
+        gimmick.setGoalName(goalName);
         gimmick.setGoalPosition(goalPosition);
         // オブジェクト
         gimmick.setObjectGlb(objectGlb);
@@ -241,7 +240,6 @@ public class GimmickManager {
         gimmick.setEnemyPositionVecList(enemyPosition);
         gimmick.setEnemyEndPosition(enemyEndPosition);
         // ブロック
-        gimmick.setBlockNodeWord(blockNodeWord);
         gimmick.setBlock(block);
     }
 
@@ -422,9 +420,23 @@ public class GimmickManager {
     }
 
     /*
-     * ブロック文向け文字列の構築
+     * 条件ブロックのブロック種別表記を統一
      */
-    public static String buildBlockStatementId(Context context, String type, String action, String targetNode) {
+    public static String unificationConditionType(String type) {
+
+        // 「if-else」「if-elseif-else」の場合は「if」と統一させる
+        if( type.equals( BLOCK_TYPE_IF_ELSE ) || type.equals( BLOCK_TYPE_IE_ELSEIF )){
+            return BLOCK_TYPE_IF;
+        }
+
+        // それ以外はそのまま
+        return type;
+    }
+
+    /*
+     * ブロック文向け文字列の構築／文字列の取得
+     */
+    public static String getBlockStatement(Context context, String type, String action, String targetNode) {
 
         //--------------------------------------
         // 文字列リソースの生成
@@ -432,12 +444,14 @@ public class GimmickManager {
         // 文字列リソースIDの文字列を構築
         // 例）block_exe_forward
         final String PREFIX = "block";
+        type = unificationConditionType(type);
         String resourceStr = PREFIX + GIMMICK_DELIMITER_WORD + type + GIMMICK_DELIMITER_WORD + action;
 
         // 文字列リソースID生成
         Resources resources = context.getResources();
         String packageName = context.getPackageName();
 
+        Log.i("ギミック改修", "resourceStr=" + resourceStr);
         int statementId = resources.getIdentifier(resourceStr, "string", packageName);
         String statement = context.getString(statementId);
 
@@ -453,6 +467,9 @@ public class GimmickManager {
         }
 
         // 対象Node名を取得
+        Log.i("ギミック改修", "type=" + type);
+        Log.i("ギミック改修", "action=" + action);
+        Log.i("ギミック改修", "targetNode=" + targetNode);
         int targetNodeId = resources.getIdentifier(targetNode, "string", packageName);
         String targetNodeName = context.getString(targetNodeId);
 
@@ -462,9 +479,9 @@ public class GimmickManager {
     }
 
     /*
-     * ブロックアイコン向けdrawableリソースIDの構築
+     * ブロックアイコン向けdrawableリソースIDの構築／drawableの取得
      */
-    public static Drawable buildBlockIconId( Context context, String type, String action ) {
+    public static Drawable getBlockIcon( Context context, String type, String action ) {
 
         //--------------------------------------
         // drawableリソースの生成
@@ -476,7 +493,7 @@ public class GimmickManager {
         // 「block_」に連結するワード
         String word;
         switch ( type ){
-            case BLOCK_TYPE_SINGLE:
+            case BLOCK_TYPE_EXE:
                 word = action;
                 break;
 
@@ -485,10 +502,13 @@ public class GimmickManager {
                 break;
 
             case BLOCK_TYPE_IF:
+                word = "if";
+                break;
+
             case BLOCK_TYPE_IF_ELSE:
             case BLOCK_TYPE_IE_ELSEIF:
             default:
-                word = "if";
+                word = "if_else";
                 break;
         }
 

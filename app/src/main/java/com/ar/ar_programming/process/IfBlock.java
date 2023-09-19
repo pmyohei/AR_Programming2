@@ -3,10 +3,8 @@ package com.ar.ar_programming.process;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.widget.TextView;
 
 import com.ar.ar_programming.GimmickManager;
-import com.ar.ar_programming.character.AnimalNode;
 import com.ar.ar_programming.character.CharacterNode;
 import com.ar.ar_programming.Gimmick;
 import com.ar.ar_programming.R;
@@ -20,9 +18,6 @@ public class IfBlock extends NestBlock {
     //---------------------------
     // 定数
     //---------------------------
-//    public static final int PROCESS_CONTENTS_IF_COLLISION_OBSTACLE = 0;
-//    public static final int PROCESS_CONTENTS_IF_EATABLE = 1;
-//    public static final int PROCESS_CONTENTS_IF_POISON = 2;
 
     //---------------------------
     // フィールド変数
@@ -35,7 +30,7 @@ public class IfBlock extends NestBlock {
         this(context, null, xmlBlockInfo);
     }
     public IfBlock(Context context, AttributeSet attrs, Gimmick.XmlBlockInfo xmlBlockInfo) {
-        this(context, attrs, 0, xmlBlockInfo, R.layout.process_block_if_else);
+        this(context, attrs, 0, xmlBlockInfo, R.layout.process_block_if);
     }
     public IfBlock(Context context, AttributeSet attrs, int defStyle, Gimmick.XmlBlockInfo xmlBlockInfo, int layout) {
         super(context, attrs, defStyle, xmlBlockInfo);
@@ -63,16 +58,16 @@ public class IfBlock extends NestBlock {
 
         boolean result;
 
-        Log.i("ギミック変更", "ifブロック isCondition()");
+        Log.i("ブロック処理の流れ", "ifブロック isCondition()開始");
 
         //-----------------------------
         // if文：動作　に応じた判定
         //-----------------------------
-        switch (mXmlBlockInfo.conditionMotion) {
+        switch ( mXmlBlockInfo.action ) {
 
             // 「xxxが目の前にあるか」
             case GimmickManager.BLOCK_CONDITION_FRONT:
-                result = isConditionFacing(characterNode);
+                result = isConditionFront(characterNode);
                 break;
 
             default:
@@ -89,12 +84,12 @@ public class IfBlock extends NestBlock {
      *   @return：条件成立- true
      *   @return：条件不成立- false
      */
-    public boolean isConditionFacing(CharacterNode characterNode) {
+    public boolean isConditionFront(CharacterNode characterNode) {
 
         //----------------
         // 物体で条件判定
         //----------------
-        Log.i("ギミック変更", "ifブロック isConditionFacing()");
-        return characterNode.isFrontNode( mXmlBlockInfo.conditionObject );
+        Log.i("ブロック処理の流れ", "ifブロック isConditionFacing()");
+        return characterNode.isFrontNode( mXmlBlockInfo.targetNode_1 );
     }
 }

@@ -41,7 +41,7 @@ public abstract class CharacterNode extends TransformableNode {
     public static final String PROPERTY_NONE = "";
     public static final String PROPERTY_WALK = "walk";
     public static final String PROPERTY_ROTATE = "rotate";
-    public static final String PROPERTY_THROW_AWAY = "throwAway";
+    public static final String PROPERTY_THROW = "throw";
     public static final String PROPERTY_ATTACK = "attack";
     public static final String PROPERTY_PICKUP = "pickup";
 
@@ -51,7 +51,7 @@ public abstract class CharacterNode extends TransformableNode {
     public static final String MODEL_ANIMATION_STR_WALK = "walk";
     public static final String MODEL_ANIMATION_STR_ROTATE_LEFT = "rotate_left";
     public static final String MODEL_ANIMATION_STR_ROTATE_RIGHT = "rotate_right";
-    public static final String MODEL_ANIMATION_STR_THROW_AWAY = "throwAway";
+    public static final String MODEL_ANIMATION_STR_THROW = "throw";
     public static final String MODEL_ANIMATION_STR_ATTACK = "attack";
     public static final String MODEL_ANIMATION_STR_PICKUP = "pickup";
     public static final String MODEL_ANIMATION_STR_ERROR = "error";
@@ -141,7 +141,7 @@ public abstract class CharacterNode extends TransformableNode {
     /*
      * キャラクターアクション表記Nodeの生成
      */
-    public void createActionRenderable(ViewRenderable renderable) {
+    public void createActionRenderable(ViewRenderable renderable, float characterAngle) {
 
         //------------------
         // 生成済み判定
@@ -156,7 +156,9 @@ public abstract class CharacterNode extends TransformableNode {
         //---------------------------
         mActionRenderable = renderable;
 
-        // 位置
+        //--------
+        // 位置情報
+        //--------
         Vector3 pos = new Vector3(0f, 3.5f, 0.0f);
         // サイズ設定：固定サイズ
         // !リビングサイズ用も用意しないとダメ？
@@ -167,11 +169,25 @@ public abstract class CharacterNode extends TransformableNode {
             }
         });
 
+        //--------
+        // 角度情報
+        //--------
+        // キャラクターNodeに設定した角度と反対の角度になるよう、Quaternionを算出
+        // 例）キャラクターの初期向きが「90度」なら、「-90度」して正面を向くようにする。という対応
+        float w = calcQuaternionWvalue(characterAngle);
+        float y = calcQuaternionYvalue(characterAngle);
+
+        Quaternion qAction = getLocalRotation();
+        qAction.set(0f, -y, 0f, w);
+
+        //-----------
         // Node生成
+        //-----------
         TransformationSystem transformationSystem = getTransformationSystem();
         TransformableNode node = new TransformableNode(transformationSystem);
         node.setParent(this);
         node.setLocalPosition(pos);
+        node.setLocalRotation(qAction);
         node.setRenderable(mActionRenderable);
     }
 
@@ -251,43 +267,16 @@ public abstract class CharacterNode extends TransformableNode {
         // 衝突の検証
         //------------
         ArrayList<Node> nodes = mScene.overlapTestAll(this);
-        for (Node collidingNode : nodes) {
+        for (Node overlapNode : nodes) {
 
-            // 衝突中のノード名
-            collisionNode = collidingNode.getName();
-
-            if (collisionNode.equals(GimmickManager.NODE_NAME_GOAL)) {
-                Log.i("衝突", "detectCollision() ゴールと衝突");
-                startModelAnimation(MODEL_ANIMATION_STR_GOAL, 2000);
-                break;
-
-            } else if (collisionNode.equals(GimmickManager.NODE_NAME_OBSTACLE)) {
-                Log.i("衝突", "detectCollision() 障害物と衝突");
-                startModelAnimation(MODEL_ANIMATION_STR_ERROR, 2000);
-                break;
-
-            } else if (collisionNode.equals(GimmickManager.NODE_NAME_EATABLE)) {
-                Log.i("衝突", "detectCollision() 食べ物と衝突");
-//                startModelAnimation(MODEL_ANIMATION_STR_ERROR, 2000);
-                break;
-
-            } else if (collisionNode.equals(GimmickManager.NODE_NAME_POISON)) {
-                Log.i("衝突", "detectCollision() POISONと衝突");
-//                startModelAnimation(MODEL_ANIMATION_STR_ERROR, 2000);
-                break;
-
-            } else if (collisionNode.equals(GimmickManager.NODE_NAME_ENEMY)) {
-                Log.i("衝突", "detectCollision() ENEMYと衝突");
-//                startModelAnimation(MODEL_ANIMATION_STR_ERROR, 2000);
-                break;
-
-            } else if (collisionNode.equals(GimmickManager.NODE_NAME_PICKUP)) {
-                Log.i("衝突", "detectCollision() PICKUPと衝突");
-//                startModelAnimation(MODEL_ANIMATION_STR_ERROR, 2000);
+            // 衝突中のノード名を取得
+            collisionNode = overlapNode.getName();
+            if( !collisionNode.equals(GimmickManager.NODE_NAME_STAGE) ){
+                // ステージ以外と検出した場合、検証終了
                 break;
             }
 
-            // 衝突中ノードクリア
+            // 衝突中ノード名クリア
             collisionNode = GimmickManager.NODE_NAME_NONE;
         }
 
@@ -314,7 +303,8 @@ public abstract class CharacterNode extends TransformableNode {
     public void setWalk(float volume) {
 
         // 衝突中は、処理なし
-        if (!mCollisionNodeName.equals(GimmickManager.NODE_NAME_NONE)) {
+        if ( !mCollisionNodeName.equals(GimmickManager.NODE_NAME_NONE) ) {
+//            Log.i("ブロック処理の流れ", "キャラクター setWalk() 衝突中のため停止 mCollisionNodeName=" + mCollisionNodeName);
             return;
         }
 
@@ -385,11 +375,11 @@ public abstract class CharacterNode extends TransformableNode {
 
     /*
      * 捨てるアニメーションメソッド
-     *   ※ プロパティ名：throwAway
+     *   ※ プロパティ名：throw
      *   ※ 本メソッド内でアニメーションのための漸次的な処理はなし
      *      一定時間経過でブロック処理を実行させるために利用する。
      */
-    public void setThrowAway(float volume) {
+    public void setThrow(float volume) {
 
         // 一定時間を超過したとき、ブロック処理を実行する
         if ((volume >= NO_VOLUME_START_VALUE) && !mfinishNoneVolume) {
@@ -791,8 +781,8 @@ public abstract class CharacterNode extends TransformableNode {
             case GimmickManager.BLOCK_EXE_ROTATE_LEFT:
                 return PROPERTY_ROTATE;
 
-            case GimmickManager.BLOCK_EXE_THROW_AWAY:
-                return PROPERTY_THROW_AWAY;
+            case GimmickManager.BLOCK_EXE_THROW:
+                return PROPERTY_THROW;
 
             case GimmickManager.BLOCK_EXE_ATTACK:
                 return PROPERTY_ATTACK;
@@ -807,27 +797,27 @@ public abstract class CharacterNode extends TransformableNode {
     /*
      * 処理ブロックに応じたアニメーション量を取得
      */
-    public float getAnimationVolume(String contents, int procVolume) {
+    public float getAnimationVolume(String action, int volume) {
 
         //-----------------------------------------
         // 前進／後退
         //-----------------------------------------
         // 単位変換：cm → m
-        if (contents.equals(GimmickManager.BLOCK_EXE_FORWARD)) {
-            return (float) procVolume / 100f;
+        if (action.equals(GimmickManager.BLOCK_EXE_FORWARD)) {
+            return (float) volume / 100f;
         }
-        if (contents.equals(GimmickManager.BLOCK_EXE_BACK)) {
-            return (procVolume / 100f) * -1;
+        if (action.equals(GimmickManager.BLOCK_EXE_BACK)) {
+            return (volume / 100f) * -1;
         }
 
         //-----------------------------------------
         // 回転
         //-----------------------------------------
-        if (contents.equals(GimmickManager.BLOCK_EXE_ROTATE_LEFT)) {
-            return (float) procVolume;
+        if (action.equals(GimmickManager.BLOCK_EXE_ROTATE_LEFT)) {
+            return (float) volume;
         }
-        if (contents.equals(GimmickManager.BLOCK_EXE_ROTATE_RIGHT)) {
-            return (float) procVolume * -1;
+        if (action.equals(GimmickManager.BLOCK_EXE_ROTATE_RIGHT)) {
+            return (float) volume * -1;
         }
 
         //-----------------------------------------
@@ -839,24 +829,24 @@ public abstract class CharacterNode extends TransformableNode {
     /*
      * 処理ブロックに応じたアニメーション時間を取得
      */
-    public long getAnimationDuration(String contents, int procVolume) {
+    public long getAnimationDuration(String action, int volume) {
 
         //-------------------
         // 前進／後退
         //-------------------
-        if ((contents.equals(GimmickManager.BLOCK_EXE_FORWARD)) || (contents.equals(GimmickManager.BLOCK_EXE_BACK))) {
+        if ((action.equals(GimmickManager.BLOCK_EXE_FORWARD)) || (action.equals(GimmickManager.BLOCK_EXE_BACK))) {
             // スケールに応じた処理時間に変換
             Vector3 scale = getLocalScale();
             float ratio = (ArMainFragment.NODE_SIZE_S * ArMainFragment.NODE_SIZE_TMP_RATIO) / scale.x;
 
-            return (long) (procVolume * WALK_TIME_PER_CM * ratio);
+            return (long) (volume * WALK_TIME_PER_CM * ratio);
         }
 
         //-------------------
         // 回転
         //-------------------
-        if ((contents.equals(GimmickManager.BLOCK_EXE_ROTATE_RIGHT)) || (contents.equals(GimmickManager.BLOCK_EXE_ROTATE_LEFT))) {
-            return (long) (procVolume * ROTATE_TIME_PER_ANGLE);
+        if ((action.equals(GimmickManager.BLOCK_EXE_ROTATE_RIGHT)) || (action.equals(GimmickManager.BLOCK_EXE_ROTATE_LEFT))) {
+            return (long) (volume * ROTATE_TIME_PER_ANGLE);
         }
 
         //-----------------------------------------
@@ -869,7 +859,7 @@ public abstract class CharacterNode extends TransformableNode {
      * 本NodeのアニメーションメソッドをコールするAnimatorを設定
      *   @para1：実行ブロック
      */
-    public void setAnimator(ProcessBlock executeBlock, ValueAnimator animator, String contents, float volume) {
+    public void setAnimator(ProcessBlock executeBlock, ValueAnimator animator, String action, float volume) {
         mProcessAnimator = animator;
 
         CharacterNode characterNode = this;
@@ -904,6 +894,7 @@ public abstract class CharacterNode extends TransformableNode {
                 int programmingEndState = shouldFinishProgram();
                 if (programmingEndState != PROGRAMMING_NOT_END) {
                     // ステージ終了処理へ
+                    Log.i("プログラミング終了シーケンス", "CharacterNode onAnimationEnd() 途中終了条件成立");
                     executeBlock.end(programmingEndState);
                     return;
                 }
@@ -923,7 +914,7 @@ public abstract class CharacterNode extends TransformableNode {
                 // 次の処理ブロックへ
                 //-------------------------------
                 // アニメーション終了時の位置を保持
-                setEndProcessAnimation(contents, volume);
+                setEndProcessAnimation(action, volume);
                 // 次の処理ブロックへ
                 executeBlock.tranceNextBlock(characterNode);
             }
@@ -983,8 +974,8 @@ public abstract class CharacterNode extends TransformableNode {
                 animationName = MODEL_ANIMATION_STR_ROTATE_LEFT;
                 break;
 
-            case GimmickManager.BLOCK_EXE_THROW_AWAY:
-                animationName = MODEL_ANIMATION_STR_THROW_AWAY;
+            case GimmickManager.BLOCK_EXE_THROW:
+                animationName = MODEL_ANIMATION_STR_THROW;
                 break;
 
             case GimmickManager.BLOCK_EXE_PICKUP:
@@ -1005,7 +996,8 @@ public abstract class CharacterNode extends TransformableNode {
     private int shouldFinishProgram() {
 
         // ゴール判定
-        if (isGoaled()) {
+        if ( isGoaled() ) {
+            Log.i("プログラミング終了シーケンス", "CharacterNode shouldFinishProgram() ゴール到達");
             return PROGRAMMING_SUCCESS;
         }
         // アクション成否判定
@@ -1014,7 +1006,7 @@ public abstract class CharacterNode extends TransformableNode {
             return PROGRAMMING_FAILURE;
         }
         // 障害物衝突判定
-        if (isFrontNode(GimmickManager.NODE_NAME_OBSTACLE)) {
+        if ( isFrontNode(GimmickManager.NODE_NAME_OBSTACLE) ) {
             Log.i("プログラミング終了シーケンス", "CharacterNode shouldFinishProgram() 障害物と衝突中");
             return PROGRAMMING_FAILURE;
         }
@@ -1029,14 +1021,11 @@ public abstract class CharacterNode extends TransformableNode {
 
         int result = PROGRAMMING_FAILURE;
 
-        Log.i("ギミック変更", "judgeProgrammingResult()");
-
         switch (mGimmick.successCondition) {
 
             case GimmickManager.SUCCESS_CONDITION_ALL_EAT:
                 // 全て食べているなら、成功
-                boolean leftovers = existsNodeOnScene(GimmickManager.NODE_NAME_EATABLE);
-                Log.i("ギミック変更", "leftovers=" + leftovers);
+                boolean leftovers = existsNodeOnScene( mTargetNode );
                 if (!leftovers) {
                     result = PROGRAMMING_SUCCESS;
                 }
@@ -1053,6 +1042,11 @@ public abstract class CharacterNode extends TransformableNode {
      */
     public boolean isGoaled() {
 
+        // ゴール自体ないギミックであれば、未クリア扱い
+        if( mGimmick.goalName.isEmpty() ){
+            return false;
+        }
+
         //---------------------------
         // ゴール前のクリア条件達成判定
         //---------------------------
@@ -1065,7 +1059,7 @@ public abstract class CharacterNode extends TransformableNode {
         //-------------------
         // ゴール判定
         //-------------------
-        return (mCollisionNodeName.equals(GimmickManager.NODE_NAME_GOAL));
+        return (mCollisionNodeName.equals( mGimmick.goalName) );
     }
 
 
@@ -1079,13 +1073,10 @@ public abstract class CharacterNode extends TransformableNode {
         switch (mGimmick.successCondition) {
 
             // ゴール前に「敵を撃破」する必要あり
-            case GimmickManager.SUCCESS_CONDITION_ATTACK_AND_GOAL:
-                isAchieved = isAllEraseNode( GimmickManager.NODE_NAME_ENEMY );
-                break;
-
             // ゴール前に「物を拾う」する必要あり
+            case GimmickManager.SUCCESS_CONDITION_ATTACK_AND_GOAL:
             case GimmickManager.SUCCESS_CONDITION_PICKUP_AND_GOAL:
-                isAchieved = isAllEraseNode( GimmickManager.NODE_NAME_PICKUP );
+                isAchieved = isAllEraseNode( mTargetNode );
                 break;
 
             default:
@@ -1226,6 +1217,20 @@ public abstract class CharacterNode extends TransformableNode {
 
         // 180度超過分は、「0度～-180度」の範囲に変換して返す
         return degree - 360;
+    }
+
+    /*
+     * ゴールNode名の取得
+     */
+    public String getGoalNode() {
+        return mGimmick.goalName;
+    }
+
+    /*
+     * 衝突中Nodeの取得
+     */
+    public String getCollisionNode() {
+        return mCollisionNodeName;
     }
 
     /*

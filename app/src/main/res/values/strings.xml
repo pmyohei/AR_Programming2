@@ -57,48 +57,24 @@
     <!---->
     <!-- 処理ブロック -->
     <!---->
-    <!--  処理ブロックリストタイトル  -->
-    <string name="block_forward">前へ進む</string>
-    <string name="block_back">後ろに戻る</string>
-    <string name="block_rorate_right">右に回転</string>
-    <string name="block_rorate_left">左に回転</string>
-    <string name="block_nest_if">もし、、なら</string>
-    <string name="block_nest_if_else">もし、、でそうでなければ</string>
-    <string name="block_nest_if_elseif_else">もし、、もし、、それ以外</string>
-    <string name="block_nest_loop">..までループ</string>
-
     <!--  処理ブロック 処理内容  -->
     <string name="block_exe_forward">前へ進む</string>
     <string name="block_exe_back">後ろに戻る</string>
-    <string name="block_exe_rorateRight">右に回転</string>
-    <string name="block_exe_rorateLeft">左に回転</string>
+    <string name="block_exe_rotateright">右に回転</string>
+    <string name="block_exe_rotateleft">左に回転</string>
     <string name="block_exe_eat">xxxを食べる</string>
-    <string name="block_exe_throwAway">xxxを捨てる</string>
+    <string name="block_exe_throw">xxxを捨てる</string>
     <string name="block_exe_attack">xxxをやっつける</string>
     <string name="block_exe_pickup">xxxを拾う</string>
 
     <string name="block_loop_arrival">xxxに着くまでループ</string>
     <string name="block_loop_facing">xxxの方を向くまでループ</string>
     <string name="block_loop_collect">xxxを全て集めるまでループ</string>
+    <string name="block_loop_eat">xxxを全て食べるまでループ</string>
 
     <string name="block_if_front">もし 目の前にxxxがあれば</string>
     <string name="block_if_nothing">もし 目の前に何もなければ</string>
 
-
-    <string name="block_contents_if_block">もし ブロックと衝突中なら</string>
-    <string name="block_contents_if_eatable">もし 目の前にxxxがあれば</string>
-    <string name="block_contents_if_poison">もし 目の前にxxxがあれば</string>
-    <string name="block_contents_if_else_eatable">もし 目の前にxxxがあれば</string>
-    <string name="block_contents_if_else_nothing">もし 目の前に何もなければ</string>
-    <string name="block_contents_if_elseif_else_block">もし ブロックなら</string>
-
-    <string name="block_contents_loop_arrival_goal">xxxに着くまでループ</string>
-    <string name="block_contents_loop_arrival_block">ブロックまでループ</string>
-    <string name="block_contents_loop_facing_goal">xxxの方を向くまでループ</string>
-    <string name="block_contents_loop_facing_obstacle">xxxの方を向くまでループ</string>
-    <string name="block_contents_loop_facing_enemy">xxxの方を向くまでループ</string>
-    <string name="block_contents_loop_facing_eatable">xxxの方を向くまでループ</string>
-    <string name="block_contents_loop_collect_eatable">食べ物を全て集めるまでループ</string>
     <!--  処理ブロック 処理量の単位  -->
     <string name="block_unit_walk">cm</string>
     <string name="block_unit_rotate">度</string>
@@ -140,7 +116,7 @@
     <string name="action_walk_vehicle">Boone！</string>
     <string name="action_rotate">向きかえよ～</string>
     <string name="action_eat">ムシャムシャ</string>
-    <string name="action_throw_away">ポイッ！</string>
+    <string name="action_throw">ポイッ！</string>
     <string name="action_attack">えいッ！</string>
     <string name="action_pickup">ゲット～</string>
 
@@ -160,6 +136,7 @@
     <string name="sportsCar">スポーツカー</string>
     <string name="signboardStop">看板</string>
     <string name="present">プレゼント</string>
+    <string name="stamp">切り株</string>
 
     <!-- ダイアログ -->
     <string name="ar_dialog_title">リトライ</string>

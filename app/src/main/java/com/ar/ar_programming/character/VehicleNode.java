@@ -31,7 +31,7 @@ public class VehicleNode extends CharacterNode {
                 put( GimmickManager.BLOCK_EXE_BACK, R.string.action_walk_vehicle);
                 put( GimmickManager.BLOCK_EXE_ROTATE_RIGHT, R.string.action_rotate);
                 put( GimmickManager.BLOCK_EXE_ROTATE_LEFT, R.string.action_rotate);
-                put( GimmickManager.BLOCK_EXE_THROW_AWAY, R.string.action_throw_away);
+                put( GimmickManager.BLOCK_EXE_THROW, R.string.action_throw);
                 put( GimmickManager.BLOCK_EXE_PICKUP, R.string.action_pickup);
             }
         };

@@ -314,6 +314,9 @@ public abstract class NestBlock extends ProcessBlock {
     @Override
     public void startProcess(CharacterNode characterNode) {
 
+        Log.i("ブロック処理の流れ", "NestBlock startProcess()開始 type=" + mXmlBlockInfo.type);
+        Log.i("ブロック処理の流れ", "NestBlock startProcess()開始 action=" + mXmlBlockInfo.action);
+
         //-----------------------------
         // ネスト内処理ブロック数チェック
         //-----------------------------
@@ -330,15 +333,11 @@ public abstract class NestBlock extends ProcessBlock {
         // 条件成立の場合
         if ( isCondition(characterNode) ) {
 
-            Log.i("Eat", "ネスト内ブロックの実行へ");
-
             // ネスト内の処理ブロックを実行
             ProcessBlock nextBlock = (ProcessBlock) mNestStartBlockFirst.getBelowBlock();
             nextBlock.startProcess(characterNode);
             return;
         }
-
-//        Log.i("向いている方向ロジック", "ネスト処理終了：条件未成立");
 
         // 条件成立の場合、ネストブロックの下のブロックへ
         tranceNextBlock(characterNode);

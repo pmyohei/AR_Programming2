@@ -20,9 +20,9 @@ import com.google.android.material.snackbar.Snackbar;
 
 
 /*
- * 単体処理ビュー
+ * 実行ブロック
  */
-public class SingleBlock extends ProcessBlock {
+public class ExecuteBlock extends ProcessBlock {
 
     //---------------------------
     // 定数
@@ -34,30 +34,29 @@ public class SingleBlock extends ProcessBlock {
     //---------------------------
     private FragmentManager mFragmentManager;
     private int mProcessVolume;
-    private int mProcessVolumeLimit;
 
     /*
      * コンストラクタ
      */
-    public SingleBlock(Context context, FragmentManager fragmentManager, Gimmick.XmlBlockInfo xmlBlockInfo) {
+    public ExecuteBlock(Context context, FragmentManager fragmentManager, Gimmick.XmlBlockInfo xmlBlockInfo) {
         this(context, (AttributeSet) null, xmlBlockInfo);
         mFragmentManager = fragmentManager;
     }
 
-    public SingleBlock(Context context) {
+    public ExecuteBlock(Context context) {
         this(context, (AttributeSet) null, null);
         Log.i("ブロックxml", "SingleBlock 2");
     }
 
-    public SingleBlock(Context context, AttributeSet attrs, Gimmick.XmlBlockInfo xmlBlockInfo) {
+    public ExecuteBlock(Context context, AttributeSet attrs, Gimmick.XmlBlockInfo xmlBlockInfo) {
         this(context, attrs, 0, xmlBlockInfo);
     }
 
-    public SingleBlock(Context context, AttributeSet attrs, int defStyle, Gimmick.XmlBlockInfo xmlBlockInfo) {
+    public ExecuteBlock(Context context, AttributeSet attrs, int defStyle, Gimmick.XmlBlockInfo xmlBlockInfo) {
         super(context, attrs, defStyle, xmlBlockInfo);
 //        Log.i("ブロックxml", "SingleBlock 4 valueLimit=" + valueLimit);
-        init( xmlBlockInfo.volumeLimit);
-        setLayout(R.layout.process_block_single);
+        init( xmlBlockInfo.fixVolume);
+        setLayout(R.layout.process_block_exe);
     }
 
     /*
@@ -65,7 +64,6 @@ public class SingleBlock extends ProcessBlock {
      */
     private void init(int valueLimit) {
         mProcessVolume = valueLimit;
-        mProcessVolumeLimit = valueLimit;
     }
 
     /*
@@ -78,7 +76,7 @@ public class SingleBlock extends ProcessBlock {
         // ブロック内の内容を書き換え
         rewriteProcessContents();
         // ブロックレイアウト設定
-        setBlockLayout( mXmlBlockInfo.contents );
+        setBlockLayout( mXmlBlockInfo.action );
         // ブロックタッチリスナー
         setBlockTouchListerer();
     }
@@ -87,9 +85,9 @@ public class SingleBlock extends ProcessBlock {
     /*
      * 単体ブロックレイアウト設定
      */
-    private void setBlockLayout(String contents) {
+    private void setBlockLayout(String action) {
 
-        switch (contents) {
+        switch (action) {
             //------------------------
             // 処理量をユーザーが変更可能
             //------------------------
@@ -135,7 +133,7 @@ public class SingleBlock extends ProcessBlock {
             public void onClick(View view) {
 
                 // 処理量制限の有無に応じて、設定可否を変える
-                if( mProcessVolumeLimit != VOLUME_LIMIT_NONE ){
+                if( mXmlBlockInfo.fixVolume != VOLUME_LIMIT_NONE ){
                     // 処理量変更不可のメッセージを表示
                     Snackbar.make(getRootView(), R.string.diable_set_volume, Snackbar.LENGTH_SHORT).show();
                 } else {
@@ -155,8 +153,8 @@ public class SingleBlock extends ProcessBlock {
         // 処理量種別種別
         //--------------------
         int volumeKind;
-        String contents = mXmlBlockInfo.contents;
-        if ((contents.equals( GimmickManager.BLOCK_EXE_ROTATE_RIGHT )) || (contents.equals( GimmickManager.BLOCK_EXE_ROTATE_LEFT ))) {
+        String action = mXmlBlockInfo.action;
+        if ((action.equals( GimmickManager.BLOCK_EXE_ROTATE_RIGHT )) || (action.equals( GimmickManager.BLOCK_EXE_ROTATE_LEFT ))) {
             volumeKind = VolumeDialog.VOLUME_KIND_ANGLE;
         } else {
             volumeKind = VolumeDialog.VOLUME_KIND_CM;
@@ -194,14 +192,14 @@ public class SingleBlock extends ProcessBlock {
     /*
      * 処理ブロックアニメーターの生成
      */
-    public ValueAnimator createProcessBlockAnimator(CharacterNode characterNode, String contents, float volume, long duration) {
+    public ValueAnimator createProcessBlockAnimator(CharacterNode characterNode, String action, float volume, long duration) {
 
         //------------------------------------------------------
         // 処理種別と処理量からアニメーション量とアニメーション時間を取得
         //------------------------------------------------------
         // 処理に対応するアニメーションプロパティ名を取得
         // ※ setXXX()の「XXX」を取得
-        String methodPropertyName = characterNode.getMethodPropertyName(contents);
+        String methodPropertyName = characterNode.getMethodPropertyName(action);
 
         //----------------------------------
         // アニメーションの生成／開始：処理ブロック用
@@ -219,19 +217,22 @@ public class SingleBlock extends ProcessBlock {
     @Override
     public void startProcess(CharacterNode characterNode) {
 
+        Log.i("ブロック処理の流れ", "exe startProcess()開始 action=" + mXmlBlockInfo.action);
+        Log.i("ブロック処理の流れ", "exe startProcess()開始 targetNode_1=" + mXmlBlockInfo.targetNode_1);
+
         //----------------------------------------
         // ブロックアニメーションデータからアニメータを生成
         //----------------------------------------
         // 処理種別と処理量
-        String contents = getProcessContents();
+        String action = mXmlBlockInfo.action;
         int setVolume = getProcessVolume();
         // アニメーション量とアニメーション時間
-        float volume = characterNode.getAnimationVolume(contents, setVolume);
-        long duration = characterNode.getAnimationDuration(contents, setVolume);
+        float volume = characterNode.getAnimationVolume(action, setVolume);
+        long duration = characterNode.getAnimationDuration(action, setVolume);
 
         // 今回の処理用アニメーターをキャラクターに保持させる
-        ValueAnimator processAnimator = createProcessBlockAnimator(characterNode, contents, volume, duration);
-        characterNode.setAnimator(this, processAnimator, contents, volume);
+        ValueAnimator processAnimator = createProcessBlockAnimator(characterNode, action, volume, duration);
+        characterNode.setAnimator(this, processAnimator, action, volume);
 
         // 処理ブロックアニメーション開始
         processAnimator.start();
@@ -240,13 +241,13 @@ public class SingleBlock extends ProcessBlock {
         // アニメーションの開始：モデルアニメーション用
         //----------------------------------------
         // 3Dモデルに用意されたアニメーションを開始
-        String animationName = characterNode.getModelAnimationName(contents);
+        String animationName = characterNode.getModelAnimationName(action);
         characterNode.startModelAnimation(animationName, duration);
 
         //----------------------------------------
         // キャラクターアクションの内容設定
         //----------------------------------------
-        characterNode.setActionWord( mXmlBlockInfo.contents );
+        characterNode.setActionWord( mXmlBlockInfo.action );
         characterNode.setTargetNode( mXmlBlockInfo.targetNode_1 );
     }
 

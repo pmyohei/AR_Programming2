@@ -2,12 +2,10 @@ package com.ar.ar_programming.process;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
-import com.ar.ar_programming.GimmickManager;
-import com.ar.ar_programming.character.AnimalNode;
 import com.ar.ar_programming.character.CharacterNode;
 import com.ar.ar_programming.Gimmick;
 import com.ar.ar_programming.R;
@@ -233,6 +231,9 @@ public class IfElseBlock extends IfBlock {
      */
     @Override
     public void startProcess(CharacterNode characterNode) {
+
+        Log.i("ブロック処理の流れ", "if-else startProcess()開始 action=" + mXmlBlockInfo.action);
+        Log.i("ブロック処理の流れ", "if-else startProcess()開始 targetNode_1=" + mXmlBlockInfo.targetNode_1);
 
         // 条件判定
         boolean isFirstNest = isCondition(characterNode);

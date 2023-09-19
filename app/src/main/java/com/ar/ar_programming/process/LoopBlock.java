@@ -1,7 +1,5 @@
 package com.ar.ar_programming.process;
 
-import static com.ar.ar_programming.GimmickManager.NODE_NAME_GOAL;
-
 import android.content.Context;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -12,7 +10,6 @@ import com.ar.ar_programming.GimmickManager;
 import com.ar.ar_programming.R;
 import com.google.ar.sceneform.AnchorNode;
 import com.google.ar.sceneform.Node;
-import com.google.ar.sceneform.NodeParent;
 
 import java.util.List;
 
@@ -67,31 +64,38 @@ public class LoopBlock extends NestBlock {
 
         boolean result;
 
-        Log.i("ギミック変更", "Loop 条件判定開始　isCondition()");
+        Log.i("ブロック処理の流れ", "Loop 条件判定開始　isCondition()");
 
         //-----------------------------
         // ループ条件：動作　に応じた判定
         //-----------------------------
-        switch (mXmlBlockInfo.conditionMotion) {
+        switch (mXmlBlockInfo.action) {
 
             // xxxに到着するまでループ
             case GimmickManager.BLOCK_CONDITION_ARRIVAL:
-                result = isConditionArrival(characterNode);
+                // 到達している場合、trueを受け取る。
+                // 到達していない場合、Loop内の処理をするため、結果を反転させる
+                result = !isConditionArrival(characterNode);
                 break;
 
             // xxxの方を向くまでループ
             case GimmickManager.BLOCK_CONDITION_FACING:
-                // キャラクター方向判定
-                // ※向いている＝ループ終了であるため、true（向いている）⇒false（ループ終了／条件不成立）に変換して返す
+                // 向いている場合、trueを受け取る。
+                // 向いていない場合、ループを継続させるため、結果を反転させる
                 result = !isConditionFacing(characterNode);
                 break;
 
-            // xxxの方を集めるまでループ
+            // xxxをすべて集めるまでループ
+            // xxxをすべて食べるまでループ
             case GimmickManager.BLOCK_CONDITION_COLLECT:
-                result = isConditionCollect( characterNode );
+            case GimmickManager.BLOCK_CONDITION_EAT:
+                // すべて対応している場合、falseを受け取る。
+                // 対応していない場合、Loop内の処理をするため、結果を反転させる
+                result = isConditionEverything( characterNode );
                 break;
 
             default:
+                // ループ内の処理なし
                 result = false;
                 break;
         }
@@ -104,19 +108,17 @@ public class LoopBlock extends NestBlock {
      */
     public boolean isConditionArrival(CharacterNode characterNode) {
 
-        boolean result;
+        // キャラクターと衝突中のNode
+        String collisionNode = characterNode.getCollisionNode();
 
-        switch ( mXmlBlockInfo.conditionObject ){
-            case NODE_NAME_GOAL:
-                result = true;
-                break;
+        Log.i("ブロック処理の流れ", "isConditionArrival collisionNode=" + collisionNode);
+        Log.i("ブロック処理の流れ", "isConditionArrival targetNode_1=" + mXmlBlockInfo.targetNode_1);
 
-            default:
-                result = false;
-                break;
+        // 到達目標のNodeと衝突していれば、到達したとみなす
+        if( collisionNode.equals( mXmlBlockInfo.targetNode_1 ) ){
+            return true;
         }
-
-        return result;
+        return false;
     }
 
     /*
@@ -129,7 +131,7 @@ public class LoopBlock extends NestBlock {
         //------------------
         // AR上のNodeは、全てanchorNodeを親としているため、characterNodeの親Node（=anchorNode）を検索用に渡す
         AnchorNode anchorNode = (AnchorNode)characterNode.getParentNode();
-        Node targetNode = getFacingTargetNode( anchorNode, mXmlBlockInfo.conditionObject );
+        Node targetNode = getFacingTargetNode( anchorNode, mXmlBlockInfo.targetNode_1 );
         if( targetNode == null ){
             // 対象Nodeがなければ、条件不成立とみなす
             return false;
@@ -142,16 +144,18 @@ public class LoopBlock extends NestBlock {
     }
 
     /*
-     * ループ条件：指定物体を全て収集しているか判定
+     * ループ条件：指定Nodeを全てxxx（集める、食べる、、、）しているか判定
      *           未収集の物がある場合、ループする必要があるため、trueを返す
      */
-    public boolean isConditionCollect(CharacterNode characterNode) {
+    public boolean isConditionEverything(CharacterNode characterNode) {
 
         //---------------------------
         // Sceneに存在しているかどうか
         //---------------------------
         // 全て収集していなければ、falseを返す
-        boolean exists = characterNode.existsNodeOnScene( mXmlBlockInfo.conditionObject );
+        boolean exists = characterNode.existsNodeOnScene( mXmlBlockInfo.targetNode_1 );
+        Log.i("ブロック処理の流れ", "Loop isConditionEverything() targetNode_1=" + mXmlBlockInfo.targetNode_1);
+        Log.i("ブロック処理の流れ", "Loop isConditionEverything() exists=" + exists);
         return exists;
     }
 

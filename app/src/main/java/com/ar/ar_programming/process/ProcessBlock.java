@@ -1,7 +1,5 @@
 package com.ar.ar_programming.process;
 
-import static com.ar.ar_programming.ArMainFragment.PROGRAMMING_FAILURE;
-
 import android.content.Context;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -27,8 +25,7 @@ public abstract class ProcessBlock extends Block {
     //---------------------------
     // フィールド変数
     //---------------------------
-//    public int mProcessContents;
-    public Gimmick.XmlBlockInfo mXmlBlockInfo;
+
     private boolean mDragFlg;
     private ProgrammingListener mProgrammingListener;
 
@@ -41,7 +38,7 @@ public abstract class ProcessBlock extends Block {
     }
     public ProcessBlock(Context context, AttributeSet attrs, int defStyle, Gimmick.XmlBlockInfo xmlBlockInfo) {
         super(context, attrs, defStyle, xmlBlockInfo);
-        mXmlBlockInfo = xmlBlockInfo;
+
         setId(View.generateViewId());
     }
 
@@ -55,15 +52,15 @@ public abstract class ProcessBlock extends Block {
         //------------------
         // 文言IDをレイアウトに設定
         TextView tv_contents = findViewById(R.id.tv_contents);
-        String statement = GimmickManager.buildBlockStatementId( getContext(), mXmlBlockInfo.type, mXmlBlockInfo.action, mXmlBlockInfo.targetNode_1);
+        String statement = GimmickManager.getBlockStatement( getContext(), mXmlBlockInfo.type, mXmlBlockInfo.action, mXmlBlockInfo.targetNode_1);
         tv_contents.setText( statement);
     }
 
     /*
      * 処理ブロック内容取得
      */
-    public String getProcessContents() {
-        return mXmlBlockInfo.contents;
+    public String getProcessAction() {
+        return mXmlBlockInfo.action;
     }
 
     /*
@@ -171,10 +168,15 @@ public abstract class ProcessBlock extends Block {
      */
     public void tranceNextBlock(CharacterNode characterNode) {
 
+        Log.i("ブロック処理の流れ", "ProcessBlock　tranceNextBlock()開始");
+
         //------------------
         // 下ブロックチェック
         //------------------
         if (hasBelowBlock()) {
+
+            Log.i("ブロック処理の流れ", "ProcessBlock　tranceNextBlock() 下ブロックあり");
+
             // 下ブロックがあれば、そのブロックの処理を開始
             ProcessBlock nextBlock = (ProcessBlock) getBelowBlock();
             nextBlock.startProcess(characterNode);
@@ -186,9 +188,12 @@ public abstract class ProcessBlock extends Block {
         //--------------------------
         // 本ブロックがネスト内にあり、最後の処理であった場合
         if (inNest()) {
+
+            Log.i("ブロック処理の流れ", "ProcessBlock　tranceNextBlock() 本ブロックがネスト内にある");
+
             NestBlock parentNest = getOwnNestBlock();
 
-            if (parentNest.getProcessType() == PROCESS_TYPE_LOOP) {
+            if (parentNest.getType().equals( GimmickManager.BLOCK_TYPE_LOOP )) {
                 // ループの場合は、開始処理から
                 parentNest.startProcess(characterNode);
             } else {
@@ -202,6 +207,8 @@ public abstract class ProcessBlock extends Block {
         //--------------------------
         // 下ブロックなし／親ネストなし
         //--------------------------
+        Log.i("プログラミング終了シーケンス", "ProcessBlock tranceNextBlock() 一番下のブロック終了");
+
         // 終了リスナーをコール
         int resultProgramming = characterNode.isCompleteSuccessCondition();
         mProgrammingListener.onProgrammingEnd( resultProgramming );

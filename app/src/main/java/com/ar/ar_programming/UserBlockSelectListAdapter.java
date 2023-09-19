@@ -1,5 +1,6 @@
 package com.ar.ar_programming;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
@@ -57,7 +58,7 @@ public class UserBlockSelectListAdapter extends RecyclerView.Adapter<UserBlockSe
          */
         public void setView(int position) {
 
-            Resources resources = cl_parent.getContext().getResources();
+            Context context = cl_parent.getContext();
 
             // ブロック情報
             final Gimmick.XmlBlockInfo xmlBlockInfo = mXmlBlockInfo.get(position);
@@ -65,17 +66,11 @@ public class UserBlockSelectListAdapter extends RecyclerView.Adapter<UserBlockSe
             //-----------------------------
             // リストitem view レイアウト設定
             // ----------------------------
-            Drawable image = resources.getDrawable(xmlBlockInfo.drawableId, null);
-            String description = resources.getString(xmlBlockInfo.statementId);
-            iv_blockImage.setImageDrawable(image);
-            tv_title.setText(description);
+            Drawable image = GimmickManager.getBlockIcon( context, xmlBlockInfo.type, xmlBlockInfo.action );
+            String statement = GimmickManager.getBlockStatement( context, xmlBlockInfo.type, xmlBlockInfo.action, xmlBlockInfo.targetNode_1 );
 
-            // ブロック文内のNode名置き換え
-            String contentsStr = tv_title.getText().toString();
-            String contentsWithNodeName = ProcessBlock.replaceNodeName( cl_parent.getContext(), contentsStr, xmlBlockInfo.nodeNameId);
-            if( contentsWithNodeName != null ){
-                tv_title.setText( contentsWithNodeName );
-            }
+            iv_blockImage.setImageDrawable(image);
+            tv_title.setText(statement);
 
             // ブロッククリックリスナー
             cl_parent.setOnClickListener(new View.OnClickListener() {

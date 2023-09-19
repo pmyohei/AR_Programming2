@@ -39,7 +39,7 @@ public class AnimalNode extends CharacterNode {
                 put( GimmickManager.BLOCK_EXE_ROTATE_RIGHT, R.string.action_rotate);
                 put( GimmickManager.BLOCK_EXE_ROTATE_LEFT, R.string.action_rotate);
                 put( GimmickManager.BLOCK_EXE_EAT, R.string.action_eat);
-                put( GimmickManager.BLOCK_EXE_THROW_AWAY, R.string.action_throw_away);
+                put( GimmickManager.BLOCK_EXE_THROW, R.string.action_throw);
                 put( GimmickManager.BLOCK_EXE_ATTACK, R.string.action_attack);
                 put( GimmickManager.BLOCK_EXE_PICKUP, R.string.action_pickup);
             }
@@ -123,7 +123,7 @@ public class AnimalNode extends CharacterNode {
      * 食べる
      */
     private void eat() {
-        String targetCollisionNode = GimmickManager.NODE_NAME_EATABLE;
-        deleteNodeAction( targetCollisionNode );
+//        String targetCollisionNode = GimmickManager.NODE_NAME_EATABLE;
+        deleteNodeAction( mTargetNode );
     }
 }

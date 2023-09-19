@@ -15,11 +15,12 @@
 		enemyKind="bat, ghost"
 		enemyPosition="12 : 4.0 : 3.7"
 		enemyEndPosition="12 : 4.0 : 3.7"
-		block="exe_forward, exe_eat, exe_throwAway, loop_facing-goal"
+		block="exe_forward, exe_eat, exe_throw, loop_facing-goal"
 		/>
+
 	<!-- プレゼントを拾ってうさぎのところへ -->
 	<gimmick
-		sequence="present"
+		sequence="1"
 		character="vehicle"
 		successCondition="pickup_and_goal"
 		goalExplanation="guide_major_pickup_vehicle, guide_sub_pickup_vehicle, guide_contents_pickup_vehicle, guide_explanation_pickup_vehicle"
@@ -30,18 +31,19 @@
 		goalGlb="models/animal/rabit.glb"
 		goalPosition="6.4 : 4.98 : -14"
 		goalAngle="-65"
+		goalName="rabit"
 		objectGlb="models/obstacle/present.glb"
 		objectNum="2"
-		objectKind="pickup"
+		objectKind="present"
 		objectPositionRandom="false"
 		objectPosition="-6.76 : 5.2 : 0.6, -1.5 : 5.2 : -9.8"
-		block="exe_forward_100, exe_rotateRight_2, exe_pickup, loop_facing-pickup, loop_facing-goal"
+		block="exe_forward_100, exe_rotateright_2, exe_pickup-present, loop_facing-present, loop_facing-rabit"
 		/>
 
 	<!-- お菓子を拾ってお菓子の家へ -->
 	<!-- 4つ目のチュートリアルとやってることは同じ -->
 	<gimmick
-		sequence="1"
+		sequence="pickup_sweets"
 		character="animal"
 		successCondition="goal"
 		goalExplanation="guide_major_pickup_vehicle, guide_sub_pickup_vehicle, guide_contents_pickup_vehicle, guide_explanation_pickup_vehicle"
@@ -51,38 +53,40 @@
 		characterAngle="115"
 		goalGlb="models/goal/sweet_house.glb"
 		goalPosition="14.6 : 2.2 : -20.1"
-		goalAngle="-80"
+		goalAngle="-85"
+		goalName="sweetHouse"
 		objectGlb="models/obstacle/donuts.glb, models/obstacle/chocolate.glb, models/obstacle/carrot.glb"
 		objectNum="1, 1, 1"
-		objectKind="pickup, pickup, poison"
+		objectKind="sweets, sweets, vegetable"
 		objectPositionRandom="false"
 		objectPosition="-8.47 : 2.29 : -10.69, -1.97 : 2.29 : -13.4, 5.74 : 2.29 : -16.2"
-		blockNodeWord="goal_sweetHouse, throwAway_vegetable, pickup_sweets, poison_vegetable"
-		block="exe_forward_50, exe_pickup, exe_throwAway, loop_arrival-goal, if_front-pickup, if_front-poison"
+		block="exe_forward_20, exe_pickup-sweets, exe_throw-vegetable, loop_arrival-sweetHouse, if_front-sweets, if_front-vegetable"
 		/>
 
+	<!-- チュートリアル1 -->
 	<gimmick
-		sequence="1animal"
+		sequence="1ani"
 		character="animal"
 		successCondition="goal"
 		goalExplanation="guide_major_tutorial_1_animal, guide_sub_tutorial_1_animal, guide_contents_tutorial_1_animal, guide_explanation_tutorial_1_animal"
-		stageGlb="models/stage/tutorial_forest.glb"
+		stageGlb="models/stage/forest_1.glb"
 		characterGlb="models/animal/rabit.glb"
 		characterPosition="-3.8 : 1.5 : 9.1"
 		characterAngle="180"
 		goalGlb="models/goal/fox_and_tree.glb"
 		goalPosition="3.2 : 2.3 : -2.7"
 		goalAngle="-45"
+		goalName="rabit"
 		objectGlb="models/obstacle/stamp.glb"
 		objectNum="1"
-		objectKind="obstacle"
+		objectKind="stamp"
 		objectPositionRandom="false"
 		objectPosition="0 : 1.4 : 0.6"
-		block="exe_forward, exe_rotateRight, exe_rotateLeft"
+		block="exe_forward_50, exe_rotateright, exe_rotateleft"
 		/>
 
 	<gimmick
-		sequence="1ve"
+		sequence="2"
 		character="vehicle"
 		successCondition="goal"
 		goalExplanation="guide_major_tutorial_1_vehicle, guide_sub_tutorial_1_vehicle, guide_contents_tutorial_1_vehicle, guide_explanation_tutorial_1_vehicle"
@@ -93,16 +97,17 @@
 		goalGlb="models/vehicle/sports_car.glb"
 		goalPosition="-3.0 : 0.67 : -53.7"
 		goalAngle="180"
+		goalName="sportsCar"
 		objectGlb="models/vehicle/yellow_car.glb"
 		objectNum="2"
 		objectKind="obstacle"
 		objectPositionRandom="false"
 		objectPosition="-3.8 : 0.67 : -15.0, 4.1 : 0.67 : -34"
-		block="exe_forward, exe_rotateRight, exe_rotateLeft"
+		block="exe_forward, exe_rotateright, exe_rotateleft"
 		/>
 
 	<gimmick
-		sequence="2ve"
+		sequence="3"
 		character="vehicle"
 		successCondition="goal"
 		goalExplanation="guide_major_tutorial_2_animal, guide_sub_tutorial_2_animal, guide_contents_tutorial_2_animal, guide_explanation_tutorial_2_animal"
@@ -113,11 +118,12 @@
 		goalGlb="models/goal/signboard_stop.glb"
 		goalPosition="0 : -0.6 : -8.8"
 		goalAngle="0"
-		block="exe_forward, exe_rotateRight_1, loop_facing-goal"
+		goalName="signboardStop"
+		block="exe_forward_100, exe_rotateright_1, loop_facing-signboardStop"
 		/>
 
 	<gimmick
-		sequence="2"
+		sequence="2ani"
 		character="animal"
 		successCondition="attack_and_goal"
 		goalExplanation="guide_major_tutorial_2_animal, guide_sub_tutorial_2_animal, guide_contents_tutorial_2_animal, guide_explanation_tutorial_2_animal"
@@ -128,15 +134,17 @@
 		goalGlb="models/goal/honey.glb"
 		goalPosition="5.7 : 0.7 : -2.4"
 		goalAngle="0"
+		goalName="honey"
 		objectGlb="models/enemy/bee.glb"
 		objectNum="1"
-		objectKind="enemy"
+		objectKind="bee"
 		objectAngle="45"
 		objectPositionRandom="false"
 		objectPosition="-4.8 : 2.2 : 0.5"
-		block="exe_forward, exe_rotateRight_1, exe_rotateLeft_1, exe_attack, loop_facing-goal, loop_facing-enemy"
+		block="exe_forward_50, exe_rotateright_1, exe_rotateleft_1, exe_attack-bee, loop_facing-honey, loop_facing-bee"
 		/>
 
+	<!-- チュートリアル３ -->
 	<gimmick
 		sequence="3ani"
 		character="animal"
@@ -149,18 +157,19 @@
 		goalGlb="models/goal/house.glb"
 		goalPosition="0 : 3.9 : -18.8"
 		goalAngle="0"
+		goalName="house"
 		objectGlb="models/obstacle/carrot.glb"
 		objectNum="1"
-		objectKind="eatable"
+		objectKind="carrot"
 		objectPositionRandom="false"
 		objectPosition="0 : 1.3 : -5.0"
 		objectAngle="90"
-		block="exe_forward_5, exe_eat, loop_arrival-goal, if_front-eatable"
+		block="exe_forward_5, exe_eat-carrot, loop_arrival-house, if_front-carrot"
 		/>
 
 	<!-- 全て食べる -->
 	<gimmick
-		sequence="4_alleat"
+		sequence="2eat"
 		character="animal"
 		successCondition="all_eat"
 		goalExplanation="guide_major_tutorial_1, guide_sub_tutorial_1, guide_contents_tutorial_1, guide_explanation_tutorial_1"
@@ -170,55 +179,13 @@
 		characterAngle="0"
 		objectGlb="models/obstacle/carrot.glb, models/obstacle/pumpkin.glb, models/obstacle/green_apple.glb"
 		objectNum="2, 2, 2"
-		objectKind="eatable, eatable, eatable"
+		objectKind="vegetable, vegetable, vegetable"
 		objectPositionRandom="false"
 		objectPosition="-1.3 : 1.4 : 8.5, -6.3 : 1.4 : -2.69, 1.48 : 1.4 : -0.27, 9.04 : 1.4 : 1.5, 6.3 : 1.4 : 8.4, -4.75 : 1.4 : 2.41"
-		block="exe_forward, exe_rotateRight_1, exe_rotateLeft_1, exe_eat, loop_facing-eatable, loop_collect-eatable"
+		block="exe_forward_50, exe_rotateright_1, exe_rotateleft_1, exe_eat-vegetable, loop_facing-vegetable, loop_eat-vegetable"
 		/>
 
 	<!-- 「if」ブロックを利用するパターン -->
-	<gimmick
-		sequence="4-1"
-		character="animal"
-		successCondition="goal"
-		goalExplanation="guide_major_tutorial_4, guide_sub_tutorial_4, guide_contents_tutorial_4, guide_explanation_tutorial_4"
-		stageGlb="models/stage/forest_load_2.glb"
-		characterGlb="models/animal/rabit.glb"
-		characterPosition="0 : 1.4 : 8.7"
-		characterAngle="180"
-		goalGlb="models/goal/house.glb"
-		goalPosition="0 : 3.9 : -18.8"
-		goalAngle="0"
-		objectGlb="models/obstacle/mushroom_poison.glb, models/obstacle/carrot.glb"
-		objectNum="2, 1"
-		objectKind="poison, eatable"
-		objectPositionRandom="false"
-		objectPosition="0 : 1.2 : 3, 0 : 1.2 : -10, 0 : 1.1 : -4.1"
-		block="exe_forward_5, exe_eat, exe_throwAway, loop_arrival-goal, if_front-eatable, if_front-poison"
-		/>
-
-	<!-- 「if-else」ブロックを利用するパターン -->
-	<gimmick
-		sequence="3"
-		character="animal"
-		successCondition="goal"
-		goalExplanation="guide_major_tutorial_4, guide_sub_tutorial_4, guide_contents_tutorial_4, guide_explanation_tutorial_4"
-		stageGlb="models/stage/forest_load_2.glb"
-		characterGlb="models/animal/rabit.glb"
-		characterPosition="0 : 1.4 : 8.7"
-		characterAngle="180"
-		goalGlb="models/goal/house.glb"
-		goalPosition="0 : 3.9 : -18.8"
-		goalAngle="0"
-		objectGlb="models/obstacle/mushroom_poison.glb, models/obstacle/carrot.glb"
-		objectNum="2, 1"
-		objectKind="poison, eatable"
-		objectPositionRandom="false"
-		objectPosition="0 : 1.2 : 3, 0 : 1.2 : -10, 0 : 1.1 : -4.1"
-		block="exe_forward_5, exe_eat, exe_throwAway, loop_arrival-goal, if-else_front-eatable, if-else_front-poison"
-		/>
-
-	<!-- 「if-elseif-else」ブロックを利用するパターン -->
 	<gimmick
 		sequence="4"
 		character="animal"
@@ -231,12 +198,57 @@
 		goalGlb="models/goal/house.glb"
 		goalPosition="0 : 3.9 : -18.8"
 		goalAngle="0"
+		goalName="house"
 		objectGlb="models/obstacle/mushroom_poison.glb, models/obstacle/carrot.glb"
 		objectNum="2, 1"
-		objectKind="poison, eatable"
+		objectKind="mushroomPoison, carrot"
 		objectPositionRandom="false"
 		objectPosition="0 : 1.2 : 3, 0 : 1.2 : -10, 0 : 1.1 : -4.1"
-		block="exe_forward_5, exe_eat, exe_throwAway, loop_arrival-goal, if-elseif-else_front-eatable-poison"
+		block="exe_forward_5, exe_eat-carrot, exe_throw-mushroomPoison, loop_arrival-house, if_front-carrot, if_front-mushroomPoison"
+		/>
+
+	<!-- 「if-else」ブロックを利用するパターン -->
+	<gimmick
+		sequence="3-if-else"
+		character="animal"
+		successCondition="goal"
+		goalExplanation="guide_major_tutorial_4, guide_sub_tutorial_4, guide_contents_tutorial_4, guide_explanation_tutorial_4"
+		stageGlb="models/stage/forest_load_2.glb"
+		characterGlb="models/animal/rabit.glb"
+		characterPosition="0 : 1.4 : 8.7"
+		characterAngle="180"
+		goalGlb="models/goal/house.glb"
+		goalPosition="0 : 3.9 : -18.8"
+		goalAngle="0"
+		goalName="house"
+		objectGlb="models/obstacle/mushroom_poison.glb, models/obstacle/carrot.glb"
+		objectNum="2, 1"
+		objectKind="mushroomPoison, carrot"
+		objectPositionRandom="false"
+		objectPosition="0 : 1.2 : 3, 0 : 1.2 : -10, 0 : 1.1 : -4.1"
+		block="exe_forward_5, exe_eat-carrot, exe_throw-mushroomPoison, loop_arrival-house, if-else_front-carrot, if-else_front-mushroomPoison"
+		/>
+
+	<!-- 「if-elseif-else」ブロックを利用するパターン -->
+	<gimmick
+		sequence="4-elseif"
+		character="animal"
+		successCondition="goal"
+		goalExplanation="guide_major_tutorial_4, guide_sub_tutorial_4, guide_contents_tutorial_4, guide_explanation_tutorial_4"
+		stageGlb="models/stage/forest_load_2.glb"
+		characterGlb="models/animal/rabit.glb"
+		characterPosition="0 : 1.4 : 8.7"
+		characterAngle="180"
+		goalGlb="models/goal/house.glb"
+		goalPosition="0 : 3.9 : -18.8"
+		goalAngle="0"
+		goalName="house"
+		objectGlb="models/obstacle/mushroom_poison.glb, models/obstacle/carrot.glb"
+		objectNum="2, 1"
+		objectKind="mushroomPoison, carrot"
+		objectPositionRandom="false"
+		objectPosition="0 : 1.2 : 3, 0 : 1.2 : -10, 0 : 1.1 : -4.1"
+		block="exe_forward_5, exe_eat-carrot, exe_throw-mushroomPoison, loop_arrival-house, if-elseif-else_front-carrot-mushroomPoison"
 		/>
 
 

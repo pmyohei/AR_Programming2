@@ -2,7 +2,6 @@ package com.ar.ar_programming.process;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -63,22 +62,8 @@ public class IfElseIfElseBlock extends IfElseBlock {
         //------------------------
         // 文言IDをレイアウトに設定
         TextView tv_elseIfContents = findViewById(R.id.tv_elseIfContents);
-
-        // 接頭語
-        String elseIfPrefix = tv_elseIfContents.getText().toString();
-        String elseIfText = getContext().getString( mXmlBlockInfo.statementElseIfId);
-        // elseif文 生成
-        String elseIfContents = elseIfPrefix.concat( elseIfText );
-
-        // 設定
-        tv_elseIfContents.setText( elseIfContents );
-
-        // ブロック内ワードの置き換え
-        String contentsStr = tv_elseIfContents.getText().toString();
-        String contentsWithNodeName = replaceNodeName( getContext(), contentsStr, mXmlBlockInfo.nodeNameElseIfId);
-        if( contentsWithNodeName != null ){
-            tv_elseIfContents.setText( contentsWithNodeName );
-        }
+        String statement = GimmickManager.getBlockStatement( getContext(), mXmlBlockInfo.type, mXmlBlockInfo.action, mXmlBlockInfo.targetNode_2);
+        tv_elseIfContents.setText( statement);
     }
 
     /*
@@ -307,7 +292,7 @@ public class IfElseIfElseBlock extends IfElseBlock {
      */
     public int judgeTrueNestRoot(CharacterNode characterNode) {
 
-        switch (mXmlBlockInfo.conditionMotion) {
+        switch (mXmlBlockInfo.action) {
 
             // 目の前にxxxがあるか
             case GimmickManager.BLOCK_CONDITION_FRONT:
@@ -328,7 +313,7 @@ public class IfElseIfElseBlock extends IfElseBlock {
         //--------------
         // 条件１判定
         //--------------
-        boolean isFirstCondition = ((AnimalNode)characterNode).isFrontNode( mXmlBlockInfo.conditionObject );
+        boolean isFirstCondition = ((AnimalNode)characterNode).isFrontNode( mXmlBlockInfo.targetNode_1 );
         if( isFirstCondition ){
             // ifブロックを通る状態
             return NEST_FIRST;
@@ -337,7 +322,7 @@ public class IfElseIfElseBlock extends IfElseBlock {
         //--------------
         // 条件２判定
         //--------------
-        boolean isSecondCondition = ((AnimalNode)characterNode).isFrontNode( mXmlBlockInfo.conditionObjectElseIf );
+        boolean isSecondCondition = ((AnimalNode)characterNode).isFrontNode( mXmlBlockInfo.targetNode_2 );
         if( isSecondCondition ){
             // else ifブロックを通る状態
             return NEST_SECOND;

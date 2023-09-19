@@ -5,6 +5,7 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.ar.ar_programming.Gimmick;
 import com.ar.ar_programming.R;
 
 
@@ -31,7 +32,7 @@ public class StartBlock extends Block {
         this(context, attrs, 0);
     }
     public StartBlock(Context context, AttributeSet attrs, int defStyle) {
-        super(context, attrs, defStyle, PROCESS_TYPE_START);
+        super(context, attrs, defStyle, new Gimmick.XmlBlockInfo());
     }
 
     /*
