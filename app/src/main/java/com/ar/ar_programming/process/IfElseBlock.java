@@ -30,7 +30,7 @@ public class IfElseBlock extends IfBlock {
      * コンストラクタ
      */
     public IfElseBlock(Context context, Gimmick.XmlBlockInfo xmlBlockInfo) {
-        this(context, null, xmlBlockInfo, R.layout.process_block_if_else);
+        this(context, null, xmlBlockInfo, R.layout.block_if_else);
     }
     public IfElseBlock(Context context, AttributeSet attrs, Gimmick.XmlBlockInfo xmlBlockInfo, int layout) {
         this(context, attrs, 0, xmlBlockInfo, layout);
@@ -85,7 +85,7 @@ public class IfElseBlock extends IfBlock {
         //------------------------------------------
         mNestStartBlockSecond = new StartBlock(getContext());
         mNestStartBlockSecond.setId(View.generateViewId());
-        mNestStartBlockSecond.setLayout(R.layout.process_block_start_in_nest);
+        mNestStartBlockSecond.setLayout(R.layout.block_start_in_nest);
         mNestStartBlockSecond.setOwnNestBlock(this);
 
         // 位置配置のタイミングで可視化

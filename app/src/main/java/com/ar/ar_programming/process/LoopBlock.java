@@ -40,7 +40,7 @@ public class LoopBlock extends NestBlock {
 
     public LoopBlock(Context context, AttributeSet attrs, int defStyle, Gimmick.XmlBlockInfo xmlBlockInfo) {
         super(context, attrs, defStyle, xmlBlockInfo);
-        setLayout(R.layout.process_block_loop);
+        setLayout(R.layout.block_loop);
     }
 
     /*

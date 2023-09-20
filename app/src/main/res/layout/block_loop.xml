@@ -6,17 +6,16 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:minHeight="72dp"
-    android:background="@drawable/frame_if_process"
+    android:background="@drawable/frame_block_loop"
     tools:context=".ARActivity">
 
     <TextView
         android:id="@+id/tv_contents"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
         android:layout_marginTop="12dp"
-        android:text="もし、～～なら"
-        app:layout_constraintEnd_toStartOf="@+id/cl_markArea"
+        android:layout_marginStart="12dp"
+        android:text="～の間ループ"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -62,12 +61,11 @@
         android:id="@+id/ll_firstNestRoot"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:minWidth="260dp"
+        android:minWidth="240dp"
         android:minHeight="40dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginBottom="12dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="32dp"
         android:layout_marginStart="12dp"
-        android:paddingTop="8dp"
         android:background="@drawable/frame_process_inside"
         android:orientation="vertical"
         android:gravity="center"
@@ -77,10 +75,11 @@
         app:layout_constraintEnd_toEndOf="parent">
 
         <!-- IDは動的に設定 -->
-        <com.ar.ar_programming.process.StartBlock
+<!--        <com.ar.ar_programming.process.StartBlock
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            />
+            />-->
+
     </LinearLayout>
 
     <View

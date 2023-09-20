@@ -120,7 +120,7 @@ public abstract class NestBlock extends ProcessBlock {
     public void createStartBlock() {
         mNestStartBlockFirst = new StartBlock(getContext());
         mNestStartBlockFirst.setId(View.generateViewId());
-        mNestStartBlockFirst.setLayout(R.layout.process_block_start_in_nest);
+        mNestStartBlockFirst.setLayout(R.layout.block_start_in_nest);
         mNestStartBlockFirst.setOwnNestBlock(this);
 
         // 位置配置のタイミングで可視化

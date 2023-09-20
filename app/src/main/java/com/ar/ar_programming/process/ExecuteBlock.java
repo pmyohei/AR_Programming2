@@ -56,7 +56,7 @@ public class ExecuteBlock extends ProcessBlock {
         super(context, attrs, defStyle, xmlBlockInfo);
 //        Log.i("ブロックxml", "SingleBlock 4 valueLimit=" + valueLimit);
         init( xmlBlockInfo.fixVolume);
-        setLayout(R.layout.process_block_exe);
+        setLayout(R.layout.block_exe);
     }
 
     /*

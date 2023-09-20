@@ -37,7 +37,7 @@
 		objectKind="present"
 		objectPositionRandom="false"
 		objectPosition="-6.76 : 5.2 : 0.6, -1.5 : 5.2 : -9.8"
-		block="exe_forward_100, exe_rotateright_2, exe_pickup-present, loop_facing-present, loop_facing-rabit"
+		block="exe_forward-100_1, exe_rotateright-2_3, exe_pickup-present, loop_facing-present, loop_facing-rabit"
 		/>
 
 	<!-- お菓子を拾ってお菓子の家へ -->

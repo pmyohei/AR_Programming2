@@ -140,17 +140,27 @@ public class GimmickManager {
     //------------------------------
     // ブロック情報共通
     public static final int BLOCK_TYPE_POS = 0;
-    public static final int BLOCK_CONTENTS_POS = 1;                 // 例）「forward」や「facing-eatable」の位置
-    public static final int BLOCK_ACTION_POS = 1;                 // 例）「forward」や「facing-eatable」の位置
-    public static final int BLOCK_CONDITION_POS = 1;                 // 例）「forward」や「facing-eatable」の位置
-    // 実行ブロック  例）single_forward_1
-    public static final int BLOCK_VALUE_LIMIT_POS = 2;              // 例）「1」の位置
+    public static final int BLOCK_USABLE_NUM_POS = 2;               // 使用可能上限数の位置
+    // 実行ブロック  例）exe_forward-1
+    public static final int BLOCK_ACTION_DATA_POS = 1;              // アクション/アクション付随情報の位置  例）「forward-1」の位置
+    public static final int BLOCK_ACTION_POS = 0;                   // アクション情報の位置    例）「forward」の位置
+    public static final int BLOCK_ACTION_ATTACHED_POS = 1;          // アクション付随情報の位置 例）「1」や「eatable」の位置
     // 制御ブロック  例）loop_facing-eatable
+    public static final int BLOCK_CONDITION_POS = 1;                // 例）「forward」や「facing-eatable」の位置
     public static final int BLOCK_CONDITION_ACTION_POS = 0;         // 例）「facing」の位置
     public static final int BLOCK_CONDITION_OBJECT_POS = 1;         // 例）「eatable」の位置
     // 制御ブロック  例）if-elseif-else_front-eatable-poison
     public static final int BLOCK_CONDITION_ELSEIF_OBJECT_POS = 2;  // 例）「poison」の位置
 
+    //------------------------------
+    // リソース
+    //------------------------------
+    // 文字列リソース構築のプレフィックス
+    // 例）「block_exe_forward」の「block」
+    private static final String PREFIX_STRING_RESOURCE = "block";
+    // Node名置換前ワード
+    // 例）「xxxを食べる」の「xxx」
+    private static final String PRE_REPLACE_WORD = "xxx";
 
     /*
      * コンストラクタ
@@ -443,9 +453,8 @@ public class GimmickManager {
         //--------------------------------------
         // 文字列リソースIDの文字列を構築
         // 例）block_exe_forward
-        final String PREFIX = "block";
         type = unificationConditionType(type);
-        String resourceStr = PREFIX + GIMMICK_DELIMITER_WORD + type + GIMMICK_DELIMITER_WORD + action;
+        String resourceStr = PREFIX_STRING_RESOURCE + GIMMICK_DELIMITER_WORD + type + GIMMICK_DELIMITER_WORD + action;
 
         // 文字列リソースID生成
         Resources resources = context.getResources();
@@ -458,11 +467,8 @@ public class GimmickManager {
         //-------------------------------------
         // ブロック文内のNode名設定
         //-------------------------------------
-        // 置換前のワード
-        final String preReplaceWord = "xxx";
-
         // 置換前のワードがなければ、置換なし
-        if (!statement.contains(preReplaceWord)) {
+        if (!statement.contains(PRE_REPLACE_WORD)) {
             return statement;
         }
 
@@ -475,7 +481,7 @@ public class GimmickManager {
 
         // ブロック文に対象Node名を埋め込み
         // （「xxx」を「Node名」に置換）
-        return statement.replace(preReplaceWord, targetNodeName);
+        return statement.replace(PRE_REPLACE_WORD, targetNodeName);
     }
 
     /*
@@ -488,9 +494,8 @@ public class GimmickManager {
         //--------------------------------------
         // drawableリソースIDの文字列を構築
         // 例）block_eat, block_loop
-        final String PREFIX = "block";
 
-        // 「block_」に連結するワード
+        // 「プレフィックス」に連結するワード
         String word;
         switch ( type ){
             case BLOCK_TYPE_EXE:
@@ -513,7 +518,7 @@ public class GimmickManager {
         }
 
         // drawableリソースID文字列の生成
-        String resourceStr = PREFIX + GIMMICK_DELIMITER_WORD + word;
+        String resourceStr = PREFIX_STRING_RESOURCE + GIMMICK_DELIMITER_WORD + word;
 
         // drawableリソースID生成
         Resources resources = context.getResources();

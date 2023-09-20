@@ -1,9 +1,10 @@
 package com.ar.ar_programming;
 
+import static com.ar.ar_programming.GimmickManager.BLOCK_ACTION_ATTACHED_POS;
+import static com.ar.ar_programming.GimmickManager.BLOCK_ACTION_DATA_POS;
 import static com.ar.ar_programming.GimmickManager.BLOCK_ACTION_POS;
 import static com.ar.ar_programming.GimmickManager.BLOCK_CONDITION_POS;
 import static com.ar.ar_programming.GimmickManager.BLOCK_TYPE_POS;
-import static com.ar.ar_programming.GimmickManager.BLOCK_VALUE_LIMIT_POS;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -12,17 +13,16 @@ import com.google.ar.sceneform.math.Vector3;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.regex.Pattern;
 
 public class Gimmick {
 
     //---------------------------
     // 定数
     //---------------------------
-    // 異常値
     public static final int VOLUME_LIMIT_NONE = 0;
     public static final int NO_DATA_GOAL_ANGLE = 0;
+    public static final int NO_USABLE_LIMIT_NUM = -1;
 
     //---------------------------
     // フィールド変数
@@ -67,18 +67,27 @@ public class Gimmick {
     // 対応表
     //-----------------
     // glbファイル　：　(具体的な)Node名
-    public Map<String, Integer> Map_glb__nodeName;
+//    public Map<String, Integer> Map_glb__nodeName;
 
     /*
      * ブロックプロパティ情報
      */
     public static class XmlBlockInfo {
 
+        //-----------
+        // ブロック情報
+        //-----------
         public String type;             // ブロック種別（Single, Loop, If,,,）
         public String action;           // アクション／条件：動作
         public String targetNode_1;     // 対象Node1
         public String targetNode_2;     // 対象Node2 elseif
         public int fixVolume;           // 固定処理量
+
+        //-----------
+        // 使用可能数
+        //-----------
+        public int usableLimitNum;      // 使用可能上限
+        public int usableNum;           // 使用可能残数
 
         /*
          * コンストラクタ
@@ -86,8 +95,15 @@ public class Gimmick {
         public XmlBlockInfo() {
             // 初期状態は「スタートブロック」扱いとする
             type = GimmickManager.BLOCK_TYPE_START;
+            // 空
+            action = "";
+            targetNode_1 = "";
+            targetNode_2 = "";
             // 固定処理量なし
             fixVolume = VOLUME_LIMIT_NONE;
+            // 使用可能数なし
+            usableLimitNum = NO_USABLE_LIMIT_NUM;
+            usableNum = NO_USABLE_LIMIT_NUM;
         }
     }
 
@@ -118,7 +134,7 @@ public class Gimmick {
         //----------------------
         // 対応表
         //----------------------
-        Map_glb__nodeName = new HashMap<String, Integer>() {
+/*        Map_glb__nodeName = new HashMap<String, Integer>() {
             {
                 put("house.glb", R.string.house);
                 put("sweet_house.glb", R.string.sweetHouse);
@@ -134,7 +150,7 @@ public class Gimmick {
                 put("signboard_stop.glb", R.string.signboardStop);
                 put("present.glb", R.string.present);
             }
-        };
+        };*/
     }
 
 
@@ -194,7 +210,7 @@ public class Gimmick {
             // 実行ブロック
             //----------------------
             case GimmickManager.BLOCK_TYPE_EXE:
-                setXmlExeBlockInfo( blockSplit, xmlBlockInfo );
+                setXmlExeBlockInfo(blockSplit, xmlBlockInfo);
                 break;
 
             //----------------------
@@ -203,18 +219,29 @@ public class Gimmick {
             case GimmickManager.BLOCK_TYPE_LOOP:
             case GimmickManager.BLOCK_TYPE_IF:
             case GimmickManager.BLOCK_TYPE_IF_ELSE:
-                setXmlOneConditionBlockInfo( blockSplit, xmlBlockInfo );
+                setXmlOneConditionBlockInfo(blockSplit, xmlBlockInfo);
                 break;
 
             //----------------------
             // ネストブロック（条件２つ）
             //----------------------
             case GimmickManager.BLOCK_TYPE_IE_ELSEIF:
-                setXmlTwoConditionBlockInfo( blockSplit, xmlBlockInfo );
+                setXmlTwoConditionBlockInfo(blockSplit, xmlBlockInfo);
                 break;
 
             default:
                 break;
+        }
+
+        //----------------
+        // 全ブロック共通
+        //----------------
+        // 使用可能上限数
+        if (blockSplit.length > GimmickManager.BLOCK_USABLE_NUM_POS) {
+            int usableLimitNum = Integer.parseInt(blockSplit[GimmickManager.BLOCK_USABLE_NUM_POS]);
+
+            xmlBlockInfo.usableLimitNum = usableLimitNum;
+            xmlBlockInfo.usableNum = usableLimitNum;
         }
     }
 
@@ -223,27 +250,37 @@ public class Gimmick {
      */
     private void setXmlExeBlockInfo(String[] blockSplit, XmlBlockInfo xmlBlockInfo) {
 
-        //---------------
+        //---------------------------
         // アクション
-        //---------------
-        String actionValue = blockSplit[BLOCK_ACTION_POS];
-        if( actionValue.contains( GimmickManager.GIMMICK_DELIMITER_CONDITION ) ){
-            // アクションが「動詞」-「名詞」で構成されているなら、情報を分割
-            // 例）「pickup-sweets」 → [0]pickup  [1]sweets
-            String[] actionAndTarget = actionValue.split( GimmickManager.GIMMICK_DELIMITER_CONDITION );
+        //---------------------------
+        // アクション情報を分割
+        // 例）「forward-100」   → [0]forward  [1]100
+        // 例）「pickup-sweets」 → [0]pickup  [1]sweets
+        String[] actionAndData = blockSplit[BLOCK_ACTION_DATA_POS].split(GimmickManager.GIMMICK_DELIMITER_CONDITION);
 
-            actionValue = actionAndTarget[GimmickManager.BLOCK_CONDITION_ACTION_POS];
-            xmlBlockInfo.targetNode_1 = actionAndTarget[GimmickManager.BLOCK_CONDITION_OBJECT_POS];
+        xmlBlockInfo.action = actionAndData[BLOCK_ACTION_POS];
+
+        //---------------------------
+        // アクション付随情報
+        //---------------------------
+        if (actionAndData.length <= BLOCK_ACTION_ATTACHED_POS) {
+            // 付随情報なしなら、終了
+            return;
         }
 
-        xmlBlockInfo.action = actionValue;
+        // アクション付随情報が数字で構成されているかどうかで、
+        // 「固定処理量」か「対象Node」か判定
+        String actionAttachedData = actionAndData[BLOCK_ACTION_ATTACHED_POS];
 
-        //---------------
-        // 固定処理量
-        //---------------
-        // 固定処理量の記載があれば、設定する
-        if( blockSplit.length > BLOCK_VALUE_LIMIT_POS ){
-            xmlBlockInfo.fixVolume = Integer.parseInt( blockSplit[BLOCK_VALUE_LIMIT_POS] );
+        // 正規表現で数字判定
+        Pattern pattern = Pattern.compile("^[0-9]+$|-[0-9]+$");
+        boolean isVolume = pattern.matcher(actionAttachedData).matches();
+        if (isVolume) {
+            // 「固定処理量」
+            xmlBlockInfo.fixVolume = Integer.parseInt(actionAttachedData);
+        } else {
+            // 「対象Node」
+            xmlBlockInfo.targetNode_1 = actionAttachedData;
         }
     }
 
@@ -258,10 +295,10 @@ public class Gimmick {
         // 条件文情報を「条件：動作」と「条件：対象①」に分割
         // 例)「facing-eatable」 ⇒ [0]facing  [1]eatable
         String condition = blockSplit[BLOCK_CONDITION_POS];
-        String[] conditionData = condition.split( GimmickManager.GIMMICK_DELIMITER_CONDITION );
+        String[] conditionData = condition.split(GimmickManager.GIMMICK_DELIMITER_CONDITION);
 
         // 設定
-        xmlBlockInfo.action       = conditionData[GimmickManager.BLOCK_CONDITION_ACTION_POS];
+        xmlBlockInfo.action = conditionData[GimmickManager.BLOCK_CONDITION_ACTION_POS];
         xmlBlockInfo.targetNode_1 = conditionData[GimmickManager.BLOCK_CONDITION_OBJECT_POS];
     }
 
@@ -276,10 +313,10 @@ public class Gimmick {
         // 条件文情報を「条件：動作」と「条件：対象①」「条件：対象②」に分割
         // 例)「front-eatable-poison」 ⇒ [0]facing  [1]eatable  [2]poison
         String condition = blockSplit[BLOCK_CONDITION_POS];
-        String[] conditionData = condition.split( GimmickManager.GIMMICK_DELIMITER_CONDITION );
+        String[] conditionData = condition.split(GimmickManager.GIMMICK_DELIMITER_CONDITION);
 
         // 設定
-        xmlBlockInfo.action       = conditionData[GimmickManager.BLOCK_CONDITION_ACTION_POS];
+        xmlBlockInfo.action = conditionData[GimmickManager.BLOCK_CONDITION_ACTION_POS];
         xmlBlockInfo.targetNode_1 = conditionData[GimmickManager.BLOCK_CONDITION_OBJECT_POS];
         xmlBlockInfo.targetNode_2 = conditionData[GimmickManager.BLOCK_CONDITION_ELSEIF_OBJECT_POS];
     }
@@ -362,7 +399,7 @@ public class Gimmick {
     public void setGoalName(String name) {
 
         // 設定なしなら、未設定用値を設定して終了
-        if ( name == null ) {
+        if (name == null) {
             goalName = GimmickManager.NODE_NAME_NONE;
             return;
         }
@@ -454,7 +491,7 @@ public class Gimmick {
             return;
         }
 
-        objectPositionRandom = random.equals( GimmickManager.GIMMICK_TRUE );
+        objectPositionRandom = random.equals(GimmickManager.GIMMICK_TRUE);
     }
 
     /*
@@ -567,7 +604,7 @@ public class Gimmick {
         }
 
         // ランダム有無を反映
-        enemyNumRandom = random.equals( GimmickManager.GIMMICK_TRUE );
+        enemyNumRandom = random.equals(GimmickManager.GIMMICK_TRUE);
     }
 
     /*
@@ -693,5 +730,27 @@ public class Gimmick {
             // リストに追加
             xmlBlockInfoList.add(xmlBlockInfo);
         }
+    }
+
+    /*
+     * ギミックで使用可能なブロックリストを設定
+     */
+    public int getBlockXmlIndex(XmlBlockInfo xmlBlockInfo) {
+
+        int index = 0;
+        for( XmlBlockInfo item: xmlBlockInfoList ){
+
+            // 指定された情報と同じブロック情報
+            if( (xmlBlockInfo.type.equals( item.type )) &&
+                (xmlBlockInfo.action.equals( item.action )) &&
+                (xmlBlockInfo.targetNode_1.equals( item.targetNode_1 )) ){
+
+                return index;
+            }
+
+            index++;
+        }
+
+        return -1;
     }
 }

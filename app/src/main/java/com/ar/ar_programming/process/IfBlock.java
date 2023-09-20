@@ -30,7 +30,7 @@ public class IfBlock extends NestBlock {
         this(context, null, xmlBlockInfo);
     }
     public IfBlock(Context context, AttributeSet attrs, Gimmick.XmlBlockInfo xmlBlockInfo) {
-        this(context, attrs, 0, xmlBlockInfo, R.layout.process_block_if);
+        this(context, attrs, 0, xmlBlockInfo, R.layout.block_if);
     }
     public IfBlock(Context context, AttributeSet attrs, int defStyle, Gimmick.XmlBlockInfo xmlBlockInfo, int layout) {
         super(context, attrs, defStyle, xmlBlockInfo);

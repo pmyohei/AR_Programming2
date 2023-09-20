@@ -76,7 +76,15 @@ public abstract class Block extends ConstraintLayout {
     public abstract int getDropLineViewID();
 
     /*
-     * 処理ブロックタイプ設定
+     * 処理ブロックxml取得
+     */
+    public Gimmick.XmlBlockInfo getXmlBlock() {
+        return mXmlBlockInfo;
+    }
+
+
+    /*
+     * 処理ブロックタイプ取得
      */
     public String getType() {
         return mXmlBlockInfo.type;

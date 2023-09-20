@@ -23,16 +23,17 @@
     <!---->
     <!-- 処理ブロック -->
     <!---->
-    <color name="bg_single_process">#A1F0FA</color>
-    <color name="bg_single_process_dark">#24B9CC</color>
-    <color name="bg_if_process">#F3BE70</color>
-    <color name="bg_if_process_dark">#BA7714</color>
-    <color name="bg_loop_process">#FFBB86FC</color>
-    <color name="bg_loop_process_dark">#FF6200EE</color>
+    <color name="tx_border_in_block">#656565</color>
+    <color name="bg_block_exe">#E0FBFF</color>
+    <color name="bg_block_exe_dark">#24B9CC</color>
+    <color name="bg_block_if">#FFF3E0</color>
+    <color name="bg_block_if_dark">#BA7714</color>
+    <color name="bg_block_loop">#F2E7FF</color>
+    <color name="bg_block_loop_dark">#FF6200EE</color>
+    <color name="bg_block_not_use">#ECECEC</color>
+    <color name="bg_block_not_use_dark">#878787</color>
 
 
-
-    <color name="black_50">#88000000</color>
     <color name="white_80">#CCFFFFFF</color>
 
     <color name="error_text">#CCC80000</color>

@@ -57,6 +57,10 @@
     <!---->
     <!-- 処理ブロック -->
     <!---->
+    <!--  処理ブロック 共通  -->
+    <string name="block_usable_title">使用可能数</string>
+    <string name="block_usable_no_limit">-</string>
+
     <!--  処理ブロック 処理内容  -->
     <string name="block_exe_forward">前へ進む</string>
     <string name="block_exe_back">後ろに戻る</string>

@@ -2,6 +2,7 @@ package com.ar.ar_programming;
 
 import static android.content.Context.MODE_PRIVATE;
 
+import static com.ar.ar_programming.Gimmick.NO_USABLE_LIMIT_NUM;
 import static com.ar.ar_programming.character.CharacterNode.ACTION_FAILURE;
 import static com.ar.ar_programming.character.CharacterNode.ACTION_SUCCESS;
 import static com.ar.ar_programming.character.CharacterNode.ACTION_WAITING;
@@ -225,7 +226,7 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
      */
     private void initStartBlock() {
         Block startBlock = binding.getRoot().findViewById(R.id.pb_chartTop);
-        startBlock.setLayout(R.layout.process_block_start);
+        startBlock.setLayout(R.layout.block_start);
         startBlock.setMarkAreaListerner(this);
         startBlock.setDropBlockListerner(this);
 
@@ -744,6 +745,37 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
         // 削除ブロックの上ブロックから更新
         Block aboveBlock = removeBlock.getAboveBlock();
         aboveBlock.updatePosition();
+
+
+        //-------------------
+        // ブロック使用可能数
+        //-------------------
+        // 使用可能数上限があれば
+        Gimmick.XmlBlockInfo xmlBlockInfo = removeBlock.getXmlBlock();
+        if( xmlBlockInfo.usableLimitNum != NO_USABLE_LIMIT_NUM ){
+
+            // xmlリスト中、削除ブロックのxmlのindexを取得
+            int index = mGimmick.getBlockXmlIndex( xmlBlockInfo );
+            if( index < 0 ){
+                // フェールセーフ
+                return;
+            }
+
+            // 使用可能数を増やす
+            xmlBlockInfo.usableNum++;
+
+            //----------------------------
+            // 選択肢ブロックリストの表記を更新
+            //----------------------------
+            // アダプタ
+            ViewGroup root = binding.getRoot();
+            RecyclerView rv_selectBlock = root.findViewById(R.id.rv_selectBlock);
+            UserBlockSelectListAdapter adapter = (UserBlockSelectListAdapter)rv_selectBlock.getAdapter();
+
+            // 更新通知
+            adapter.notifyItemChanged( index );
+        }
+
     }
 
     /*
@@ -1770,7 +1802,7 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
     public void initGameState() {
 
         // フィールドをクリア
-        clearField();
+        removeField();
         // プログラミングを初期化（ブロック全削除）
         initProgramming();
     }
@@ -1778,7 +1810,7 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
     /*
      * フィールドをクリアする（配置した３Dモデルを全て削除する）
      */
-    public void clearField() {
+    public void removeField() {
 
         // ステージ配置前なら何もしない
         if (mPlayState < PLAY_STATE_PRE_PLAY) {
@@ -1822,7 +1854,7 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
     }
 
     /*
-     * プログラミングを初期化する（処理ブロックを全て削除する）
+     * プログラミングを初期化する（積み上げたブロックを全て削除する）
      */
     public void initProgramming() {
 
@@ -1841,6 +1873,41 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
         mMarkedBlock.setMarker(true);
         // 下ブロックをなしに
         mMarkedBlock.setBelowBlock(null);
+
+        //---------------------------
+        // 使用可能数リセット
+        //---------------------------
+        // 選択肢ブロックアダプタ
+        ViewGroup root = binding.getRoot();
+        RecyclerView rv_selectBlock = root.findViewById(R.id.rv_selectBlock);
+        UserBlockSelectListAdapter adapter = (UserBlockSelectListAdapter) rv_selectBlock.getAdapter();
+
+        // 使用可能数の更新が必要な選択肢ブロックを更新
+        int xmlNum = mGimmick.xmlBlockInfoList.size();
+        for( int index = 0 ; index < xmlNum ; index++ ){
+
+            Gimmick.XmlBlockInfo item = mGimmick.xmlBlockInfoList.get( index );
+
+            //-----------
+            // 対応不要判定
+            //-----------
+            // 制限なしなら何もしない
+            if( item.usableLimitNum == NO_USABLE_LIMIT_NUM ){
+                continue;
+            }
+            // 使用可能数が上限のままなら、何もしない
+            if( item.usableNum == item.usableLimitNum ){
+                continue;
+            }
+
+            //-----------
+            // リセット
+            //-----------
+            // 使用可能数を使用可能上限数に戻す
+            item.usableNum = item.usableLimitNum;
+            // 更新通知
+            adapter.notifyItemChanged( index );
+        }
     }
 
     /*
@@ -1977,7 +2044,7 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
      */
     public void onNextTutorialClicked() {
         // Nodeを全クリア
-        clearField();
+        removeField();
         // 積み上げたブロックを全クリア
         initProgramming();
         // ステージギミックを選出
@@ -2134,6 +2201,7 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
         Intent intent = new Intent(getActivity(), SettingActivity.class);
         mSettingRegistrationLauncher.launch( intent );
     }
+
     /*
      * menuアクションリスナー：ゴール説明
      */
@@ -2148,13 +2216,18 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
         // ゴール説明ダイアログの表示
         showGoalGuideDialog();
     }
+
     /*
-     * menuアクションリスナー：フィールドクリアクリック
+     * menuアクションリスナー：フィールド削除クリック
      */
     @Override
     public void onMenuClearFieldClick() {
-        clearField();
+        // ステージを削除
+        removeField();
+        // 積み上げていたブロックを削除
+        initProgramming();
     }
+
     /*
      * menuアクションリスナー：「初めからプログラミング」クリック
      */
