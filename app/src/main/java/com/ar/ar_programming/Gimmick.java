@@ -33,6 +33,7 @@ public class Gimmick {
     // ギミックプロパティ
     //-----------------
     public String successCondition;
+    public String successRemoveTarget;
     public String character;        // 動物 or 乗り物
     public String stageGlb;
     // キャラクター

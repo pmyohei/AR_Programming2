@@ -153,10 +153,10 @@ public class LoopBlock extends NestBlock {
         // Sceneに存在しているかどうか
         //---------------------------
         // 全て収集していなければ、falseを返す
-        boolean exists = characterNode.existsNodeOnScene( mXmlBlockInfo.targetNode_1 );
+        boolean allRemove = characterNode.isAllRemoveNode( mXmlBlockInfo.targetNode_1 );
         Log.i("ブロック処理の流れ", "Loop isConditionEverything() targetNode_1=" + mXmlBlockInfo.targetNode_1);
-        Log.i("ブロック処理の流れ", "Loop isConditionEverything() exists=" + exists);
-        return exists;
+        Log.i("ブロック処理の流れ", "Loop isConditionEverything() allRemove=" + allRemove);
+        return !allRemove;
     }
 
     /*

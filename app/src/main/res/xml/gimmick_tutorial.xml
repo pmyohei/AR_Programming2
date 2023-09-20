@@ -22,7 +22,8 @@
 	<gimmick
 		sequence="1"
 		character="vehicle"
-		successCondition="pickup_and_goal"
+		successCondition="remove_and_goal"
+		successRemoveTarget="present"
 		goalExplanation="guide_major_pickup_vehicle, guide_sub_pickup_vehicle, guide_contents_pickup_vehicle, guide_explanation_pickup_vehicle"
 		stageGlb="models/stage/crooked_road.glb"
 		characterGlb="models/vehicle/car.glb"
@@ -125,7 +126,8 @@
 	<gimmick
 		sequence="2ani"
 		character="animal"
-		successCondition="attack_and_goal"
+		successCondition="remove_and_goal"
+		successRemoveTarget="bee"
 		goalExplanation="guide_major_tutorial_2_animal, guide_sub_tutorial_2_animal, guide_contents_tutorial_2_animal, guide_explanation_tutorial_2_animal"
 		stageGlb="models/stage/forest_2.glb"
 		characterGlb="models/animal/bear.glb"
@@ -171,7 +173,7 @@
 	<gimmick
 		sequence="2eat"
 		character="animal"
-		successCondition="all_eat"
+		successCondition="all_remove"
 		goalExplanation="guide_major_tutorial_1, guide_sub_tutorial_1, guide_contents_tutorial_1, guide_explanation_tutorial_1"
 		stageGlb="models/stage/forest_2.glb"
 		characterGlb="models/animal/rabit.glb"

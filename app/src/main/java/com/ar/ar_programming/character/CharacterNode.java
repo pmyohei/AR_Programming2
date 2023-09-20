@@ -1023,10 +1023,10 @@ public abstract class CharacterNode extends TransformableNode {
 
         switch (mGimmick.successCondition) {
 
-            case GimmickManager.SUCCESS_CONDITION_ALL_EAT:
-                // 全て食べているなら、成功
-                boolean leftovers = existsNodeOnScene( mTargetNode );
-                if (!leftovers) {
+            case GimmickManager.SUCCESS_CONDITION_ALL_REMOVE:
+                // 全て削除しているなら、成功
+                boolean allRemove = isAllRemoveNode( mGimmick.successRemoveTarget );
+                if ( allRemove ) {
                     result = PROGRAMMING_SUCCESS;
                 }
 
@@ -1072,11 +1072,11 @@ public abstract class CharacterNode extends TransformableNode {
 
         switch (mGimmick.successCondition) {
 
-            // ゴール前に「敵を撃破」する必要あり
-            // ゴール前に「物を拾う」する必要あり
-            case GimmickManager.SUCCESS_CONDITION_ATTACK_AND_GOAL:
-            case GimmickManager.SUCCESS_CONDITION_PICKUP_AND_GOAL:
-                isAchieved = isAllEraseNode( mTargetNode );
+            // ゴール前に「指定ノードを全て削除」する必要あり
+            case GimmickManager.SUCCESS_CONDITION_REMOVE_AND_GOAL:
+                isAchieved = isAllRemoveNode( mGimmick.successRemoveTarget );
+                Log.i("ゴール達成判定", "isAchieved=" + isAchieved);
+                Log.i("ゴール達成判定", "successRemoveTarget=" + mGimmick.successRemoveTarget);
                 break;
 
             default:
@@ -1091,7 +1091,7 @@ public abstract class CharacterNode extends TransformableNode {
     /*
      * 指定NodeをSceneから全て削除したかどうか
      */
-    public boolean isAllEraseNode( String nodeName ) {
+    public boolean isAllRemoveNode(String nodeName ) {
 
         // 全Node検索
         List<Node> nodes = getParent().getChildren();
@@ -1104,24 +1104,6 @@ public abstract class CharacterNode extends TransformableNode {
 
         // 全削除
         return true;
-    }
-
-    /*
-     * 指定NodeがScene上に存在しているかどうか
-     */
-    public boolean existsNodeOnScene( String searchNodeName ) {
-
-        // 全Node検索
-        List<Node> nodes = getParent().getChildren();
-        for (Node node : nodes) {
-            if ( node.getName().equals( searchNodeName ) ) {
-                // Scene上にあり
-                return true;
-            }
-        }
-
-        // Scene上になし
-        return false;
     }
 
     /*

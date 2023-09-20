@@ -74,9 +74,8 @@ public class GimmickManager {
     //-----------------------------------
     public static final String SUCCESS_CONDITION_GOAL = "goal";
     public static final String SUCCESS_CONDITION_COLLECT = "collect";
-    public static final String SUCCESS_CONDITION_ALL_EAT = "all_eat";
-    public static final String SUCCESS_CONDITION_ATTACK_AND_GOAL = "attack_and_goal";
-    public static final String SUCCESS_CONDITION_PICKUP_AND_GOAL = "pickup_and_goal";
+    public static final String SUCCESS_CONDITION_ALL_REMOVE = "all_remove";
+    public static final String SUCCESS_CONDITION_REMOVE_AND_GOAL = "remove_and_goal";
 
     //------------------------------
     // ギミック 真偽値
@@ -223,6 +222,7 @@ public class GimmickManager {
         // ギミックにreadデータを設定
         //--------------------------
         gimmick.successCondition = parser.getAttributeValue(null, "successCondition");
+        gimmick.successRemoveTarget = parser.getAttributeValue(null, "successRemoveTarget");
         gimmick.character = parser.getAttributeValue(null, "character");
         gimmick.setGoalExplanation(goalExplanation);
         gimmick.stageGlb = parser.getAttributeValue(null, "stageGlb");
