@@ -46,20 +46,58 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
+        android:layout_marginEnd="12dp"
         android:text="@string/block_usable_title"
         android:textSize="12sp"
         app:layout_constraintTop_toBottomOf="@id/v_border"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintEnd_toStartOf="@id/v_borderVertical"/>
 
     <TextView
         android:id="@+id/tv_usableNum"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
+        android:layout_marginEnd="12dp"
         android:text="@string/block_usable_no_limit"
+        android:textSize="12sp"
         app:layout_constraintTop_toBottomOf="@id/tv_usableTitle"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/v_borderVertical"/>
+
+    <View
+        android:id="@+id/v_borderVertical"
+        android:layout_width="1dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="4dp"
+        android:background="@color/tx_border_in_block"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/tv_setVolumeTitle"
+        app:layout_constraintStart_toEndOf="@id/tv_usableTitle"
+        app:layout_constraintTop_toBottomOf="@id/v_border" />
+
+    <TextView
+        android:id="@+id/tv_setVolumeTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:layout_marginStart="12dp"
+        android:text="@string/block_set_volume_title"
+        android:textSize="12sp"
+        app:layout_constraintTop_toBottomOf="@id/v_border"
+        app:layout_constraintStart_toEndOf="@id/v_borderVertical"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <TextView
+        android:id="@+id/tv_setVolumeNum"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_marginStart="12dp"
+        android:text="@string/block_set_volume_none"
+        android:textSize="12sp"
+        app:layout_constraintTop_toBottomOf="@id/tv_setVolumeTitle"
+        app:layout_constraintStart_toEndOf="@id/v_borderVertical"
         app:layout_constraintEnd_toEndOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,6 +1,12 @@
 package com.ar.ar_programming;
 
 import static com.ar.ar_programming.Gimmick.NO_USABLE_LIMIT_NUM;
+import static com.ar.ar_programming.Gimmick.VOLUME_LIMIT_NONE;
+import static com.ar.ar_programming.GimmickManager.BLOCK_EXE_BACK;
+import static com.ar.ar_programming.GimmickManager.BLOCK_EXE_FORWARD;
+import static com.ar.ar_programming.GimmickManager.BLOCK_EXE_ROTATE_LEFT;
+import static com.ar.ar_programming.GimmickManager.BLOCK_EXE_ROTATE_RIGHT;
+import static com.ar.ar_programming.GimmickManager.BLOCK_TYPE_EXE;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -48,6 +54,7 @@ public class UserBlockSelectListAdapter extends RecyclerView.Adapter<UserBlockSe
         private final ImageView iv_blockImage;
         private final TextView tv_title;
         private final TextView tv_usableNum;
+        private final TextView tv_setVolumeNum;
 
         public ProcessBlockViewHolder(View itemView, int position) {
             super(itemView);
@@ -56,6 +63,7 @@ public class UserBlockSelectListAdapter extends RecyclerView.Adapter<UserBlockSe
             iv_blockImage = itemView.findViewById(R.id.iv_blockImage);
             tv_title = itemView.findViewById(R.id.tv_title);
             tv_usableNum = itemView.findViewById(R.id.tv_usableNum);
+            tv_setVolumeNum = itemView.findViewById(R.id.tv_setVolumeNum);
         }
 
         /*
@@ -72,7 +80,7 @@ public class UserBlockSelectListAdapter extends RecyclerView.Adapter<UserBlockSe
             // リストitem view レイアウト設定
             // ----------------------------
             // 背景色
-            setBlockBackground( cl_parent, xmlBlockInfo.type, xmlBlockInfo.usableNum );
+            setBlockBackground(cl_parent, xmlBlockInfo.type, xmlBlockInfo.usableNum);
 
             // アイコン／アクション文
             Drawable image = GimmickManager.getBlockIcon(context, xmlBlockInfo.type, xmlBlockInfo.action);
@@ -87,6 +95,9 @@ public class UserBlockSelectListAdapter extends RecyclerView.Adapter<UserBlockSe
                 tv_usableNum.setText(usableNum);
             }
 
+            // 設定量の設定
+            setSettingVolume(cl_parent, xmlBlockInfo);
+
             // ブロッククリックリスナー
             cl_parent.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -98,21 +109,21 @@ public class UserBlockSelectListAdapter extends RecyclerView.Adapter<UserBlockSe
                     ViewGroup cl_parent = (ViewGroup) view;
                     TextView tv_usableNum = cl_parent.findViewById(R.id.tv_usableNum);
                     String usableNumStr = tv_usableNum.getText().toString();
-                    if ( !usableNumStr.equals("-") ) { //!リソースと一致させたい
+                    if (!usableNumStr.equals("-")) { //!リソースと一致させたい
 
                         //------------------------------
                         // 選択時点の使用可能数に応じた処理
                         //------------------------------
                         int usableNum = Integer.parseInt(usableNumStr);
-                        if( usableNum == 0 ){
+                        if (usableNum == 0) {
                             // 使用可能数が0になっているなら、ブロック追加なし
                             return;
 
-                        } else if ( usableNum == 1 ){
+                        } else if (usableNum == 1) {
 
                             // 今回の選択で使用可能数が0になるなら、レイアウトを変更
                             @SuppressLint("UseCompatLoadingForDrawables")
-                            Drawable notUseDesign = context.getDrawable( FRAME_NOT_USE );
+                            Drawable notUseDesign = context.getDrawable(FRAME_NOT_USE);
                             cl_parent.setBackground(notUseDesign);
                         }
 
@@ -138,17 +149,17 @@ public class UserBlockSelectListAdapter extends RecyclerView.Adapter<UserBlockSe
         /*
          * ブロック背景色の設定
          */
-        private void setBlockBackground( ViewGroup parent, String type, int usableNum) {
+        private void setBlockBackground(ViewGroup parent, String type, int usableNum) {
 
             Context context = parent.getContext();
 
             //---------------------
             // 使用可能数０向けデザイン
             //---------------------
-            if( usableNum == 0 ){
+            if (usableNum == 0) {
                 @SuppressLint("UseCompatLoadingForDrawables")
-                Drawable design = context.getDrawable( FRAME_NOT_USE );
-                parent.setBackground( design );
+                Drawable design = context.getDrawable(FRAME_NOT_USE);
+                parent.setBackground(design);
 
                 return;
             }
@@ -157,8 +168,8 @@ public class UserBlockSelectListAdapter extends RecyclerView.Adapter<UserBlockSe
             // ブロック種別デザイン
             //---------------------
             int drawableId;
-            switch ( type ){
-                case GimmickManager.BLOCK_TYPE_EXE:
+            switch (type) {
+                case BLOCK_TYPE_EXE:
                     drawableId = R.drawable.frame_block_exe;
                     break;
 
@@ -179,8 +190,63 @@ public class UserBlockSelectListAdapter extends RecyclerView.Adapter<UserBlockSe
 
             // 背景色の設定
             @SuppressLint("UseCompatLoadingForDrawables")
-            Drawable design = context.getDrawable( drawableId );
-            parent.setBackground( design );
+            Drawable design = context.getDrawable(drawableId);
+            parent.setBackground(design);
+        }
+
+
+        /*
+         * ブロック設定量の設定
+         */
+        private void setSettingVolume(ViewGroup parent, Gimmick.XmlBlockInfo XmlBlockInfo) {
+
+            String type = XmlBlockInfo.type;
+            String action = XmlBlockInfo.action;
+            int fixVolume = XmlBlockInfo.fixVolume;
+
+            //-----------------
+            // 対応不要判定
+            //-----------------
+            // 実行ブロック以外は無関係
+            if( !type.equals( BLOCK_TYPE_EXE ) ){
+                return;
+            }
+
+            // 処理量のあるアクション出なければ、何もしない
+            if( !action.equals( BLOCK_EXE_FORWARD ) &&
+                !action.equals( BLOCK_EXE_BACK ) &&
+                !action.equals( BLOCK_EXE_ROTATE_RIGHT ) &&
+                !action.equals( BLOCK_EXE_ROTATE_LEFT )
+            ) {
+                return;
+            }
+
+
+            //-----------------
+            // 設定量を設定
+            //-----------------
+            Context context = parent.getContext();
+
+            // 固定処理量なし（設定値は自由）なら、自由の文字列を設定
+            if( fixVolume == VOLUME_LIMIT_NONE ){
+                String volume = context.getString( R.string.block_set_volume_free );
+                tv_setVolumeNum.setText( volume );
+                return;
+            }
+
+            // 固定処理量なし（設定値は自由）なら、固定処理量と単位を設定
+            String fixStr = Integer.toString( fixVolume );
+
+            String unit;
+            if( action.equals( BLOCK_EXE_FORWARD ) || action.equals( BLOCK_EXE_BACK ) ){
+                unit = context.getString( R.string.block_unit_walk );
+            } else {
+                unit = context.getString( R.string.block_unit_rotate );
+            }
+
+            String volume = fixStr + unit;
+
+            tv_setVolumeNum.setText( volume );
         }
     }
 
@@ -214,9 +280,23 @@ public class UserBlockSelectListAdapter extends RecyclerView.Adapter<UserBlockSe
     @Override
     public ProcessBlockViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int position) {
 
-        // 1データあたりのレイアウトを生成
+        //-------------------
+        // レイアウトID
+        //-------------------
+        int layoutID;
+        // ブロック種別に応じて選択
+        String type = mXmlBlockInfo.get( position ).type;
+        if( type.equals( BLOCK_TYPE_EXE ) ){
+            layoutID = R.layout.block_choices_exe_item;
+        } else {
+            layoutID = R.layout.block_choices_nest_item;
+        }
+
+        //-------------------
+        // レイアウト生成
+        //-------------------
         LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
-        View view = inflater.inflate(R.layout.block_choices_item, viewGroup, false);
+        View view = inflater.inflate(layoutID, viewGroup, false);
 
         return new ProcessBlockViewHolder(view, position);
     }

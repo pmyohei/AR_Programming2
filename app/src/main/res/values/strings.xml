@@ -58,8 +58,11 @@
     <!-- 処理ブロック -->
     <!---->
     <!--  処理ブロック 共通  -->
-    <string name="block_usable_title">使用可能数</string>
+    <string name="block_usable_title">使用できる数</string>
+    <string name="block_set_volume_title">設定できる値</string>
     <string name="block_usable_no_limit">-</string>
+    <string name="block_set_volume_free">自由!</string>
+    <string name="block_set_volume_none">なし!</string>
 
     <!--  処理ブロック 処理内容  -->
     <string name="block_exe_forward">前へ進む</string>
@@ -86,7 +89,7 @@
 
     <!--  処理ブロック 処理量の単位  -->
     <string name="block_unit_walk">cm</string>
-    <string name="block_unit_rotate">度</string>
+    <string name="block_unit_rotate">°</string>
     <!--  処理ブロック 接頭語  -->
     <string name="block_contents_else_id_prefix">そうではなく </string>
 
