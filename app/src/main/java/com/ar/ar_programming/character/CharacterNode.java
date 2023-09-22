@@ -3,6 +3,10 @@ package com.ar.ar_programming.character;
 import static com.ar.ar_programming.ArMainFragment.PROGRAMMING_FAILURE;
 import static com.ar.ar_programming.ArMainFragment.PROGRAMMING_NOT_END;
 import static com.ar.ar_programming.ArMainFragment.PROGRAMMING_SUCCESS;
+import static com.ar.ar_programming.GimmickManager.BLOCK_ACTION_TARGET_NODE_POS;
+import static com.ar.ar_programming.GimmickManager.BLOCK_ACTION_TARGET_NODE_STATE_POS;
+import static com.ar.ar_programming.GimmickManager.BLOCK_CONDITION_FACING;
+import static com.ar.ar_programming.GimmickManager.GIMMICK_DELIMITER_TARGET_NODE_INFO;
 
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
@@ -18,6 +22,7 @@ import com.ar.ar_programming.Gimmick;
 import com.ar.ar_programming.GimmickManager;
 import com.ar.ar_programming.R;
 import com.ar.ar_programming.process.ProcessBlock;
+import com.google.ar.sceneform.AnchorNode;
 import com.google.ar.sceneform.Node;
 import com.google.ar.sceneform.NodeParent;
 import com.google.ar.sceneform.Scene;
@@ -43,7 +48,9 @@ public abstract class CharacterNode extends TransformableNode {
     public static final String PROPERTY_ROTATE = "rotate";
     public static final String PROPERTY_THROW = "throw";
     public static final String PROPERTY_ATTACK = "attack";
+    public static final String PROPERTY_LONG_ATTACK = "farAttack";
     public static final String PROPERTY_PICKUP = "pickup";
+    public static final String PROPERTY_CHANGE_TARGET = "changeTarget";
 
     // モデルアニメーション名（Blendarで命名）：キャラクター共通
     public static final String MODEL_ANIMATION_STR_NONE = "";
@@ -80,36 +87,55 @@ public abstract class CharacterNode extends TransformableNode {
     public Map<String, Integer> Map_contents__actionWord;
 
     //---------------------------
-    // フィールド変数
+    // 共通
     //---------------------------
     private Scene mScene;
     private Gimmick mGimmick;
-    // 衝突中のNode
-    public String mCollisionNodeName;
-    // 衝突検知リスナー
-    private CollisionDetectListener mCollisionDetectListener;
-    // 初期位置の情報
+
+    //---------------------------
+    // 衝突
+    //---------------------------
+    public String mCollisionNodeName;                           // 衝突中のNode
+    private CollisionDetectListener mCollisionDetectListener;   // 衝突検知リスナー
+
+    //---------------------------
+    // 位置関連情報
+    //---------------------------
+    // 初期位置
     private Vector3 mStartPosition;
     private float mStartDegree;
     // 処理ブロックアニメーション終了時点の情報
     private Vector3 mCurrentPosition;
     private float mCurrentDegree;           // ※キャラクターが下を向いている角度（一般的には２７０度方向）を０度とする
-    // 処理ブロック用アニメーション
-    private ValueAnimator mProcessAnimator;
-    // モデルアニメーションの開始と終了を制御する用
-    private ObjectAnimator mModelAnimator;
-    // 処理量なしのアクションメソッド完了フラグ
-    public boolean mfinishNoneVolume;
-    // アクション対象Node
-    public String mTargetNode;
-    // アクション成否
-    public boolean mSuccessAction;
-    // アクション表記Renderable
-    private ViewRenderable mActionRenderable;
+
+    //---------------------------
+    // アニメーション関連
+    //---------------------------
+    private ValueAnimator mProcessAnimator;     // 処理ブロック用アニメーション
+    private ObjectAnimator mModelAnimator;      // モデルアニメーションの開始と終了を制御する用
+
+    //---------------------------
+    // アクション
+    //---------------------------
+    public boolean mFinishNoneVolume;           // 処理量なしのアクションメソッド完了フラグ
+    public String mTargetNode;                  // アクション対象Node
+    public boolean mSuccessAction;              // アクション成否
+    private ViewRenderable mActionRenderable;   // アクション表記Renderable
+    private List<Node> mNotSearchNodeList;      // 検索対象外Nodeリスト
+    private List<String> mRemovedNodeList;      // ステージから除外したNodeリスト
 
 
+    /*
+     * コンストラクタ
+     */
     public CharacterNode(TransformationSystem transformationSystem, Gimmick gimmick) {
         super(transformationSystem);
+
+        //----------
+        // 初期化
+        //----------
+        mNotSearchNodeList = new ArrayList<>();
+        mRemovedNodeList = new ArrayList<>();
 
         //----------------------------------------
         // アニメーション終了時の処理用保持用変数を初期化
@@ -117,7 +143,7 @@ public abstract class CharacterNode extends TransformableNode {
         mCurrentPosition = new Vector3(0f, 0f, 0f);
         mCurrentDegree = 0f;
         mCollisionNodeName = GimmickManager.NODE_NAME_NONE;
-        mfinishNoneVolume = false;          // 処理量なしアクション：未完了
+        mFinishNoneVolume = false;          // 処理量なしアクション：未完了
         mSuccessAction = true;              // アクション成否：成功
         mGimmick = gimmick;
 
@@ -271,7 +297,7 @@ public abstract class CharacterNode extends TransformableNode {
 
             // 衝突中のノード名を取得
             collisionNode = overlapNode.getName();
-            if( !collisionNode.equals(GimmickManager.NODE_NAME_STAGE) ){
+            if (!collisionNode.equals(GimmickManager.NODE_NAME_STAGE)) {
                 // ステージ以外と検出した場合、検証終了
                 break;
             }
@@ -303,7 +329,7 @@ public abstract class CharacterNode extends TransformableNode {
     public void setWalk(float volume) {
 
         // 衝突中は、処理なし
-        if ( !mCollisionNodeName.equals(GimmickManager.NODE_NAME_NONE) ) {
+        if (!mCollisionNodeName.equals(GimmickManager.NODE_NAME_NONE)) {
 //            Log.i("ブロック処理の流れ", "キャラクター setWalk() 衝突中のため停止 mCollisionNodeName=" + mCollisionNodeName);
             return;
         }
@@ -382,9 +408,9 @@ public abstract class CharacterNode extends TransformableNode {
     public void setThrow(float volume) {
 
         // 一定時間を超過したとき、ブロック処理を実行する
-        if ((volume >= NO_VOLUME_START_VALUE) && !mfinishNoneVolume) {
+        if ((volume >= NO_VOLUME_START_VALUE) && !mFinishNoneVolume) {
             // 処理完了に
-            mfinishNoneVolume = true;
+            mFinishNoneVolume = true;
             // 捨てる
             throwAway();
         }
@@ -392,57 +418,81 @@ public abstract class CharacterNode extends TransformableNode {
 
 
     /*
-     * Node削除アクション共通処理
+     * 目の前にある（衝突中の）Node削除アクション共通処理
      */
-    public void deleteNodeAction( String nodeName ) {
+    public boolean deleteFrontNodeAction(String nodeName) {
 
         //----------------
         // 失敗判定
         //----------------
-        boolean isCollision = mCollisionNodeName.equals( nodeName );
+        boolean isCollision = mCollisionNodeName.contains(nodeName);
         if (!isCollision) {
             // 対象Nodeと衝突中ではないなら、アクション失敗
-            mSuccessAction = false;
-            return;
+            return false;
         }
 
+        //----------------
+        // Node削除
+        //----------------
         // 衝突中のNode Indexを取得
-        int index = getCollisionNodeIndex( nodeName );
-        if( index == COLLISION_RET_NONE ){
+        int index = getCollisionNodeIndex(nodeName);
+        if (index == COLLISION_RET_NONE) {
             // Sceneから取得できない場合、アクション失敗とする（フェールセーフ）
-            mSuccessAction = false;
-            return;
+            return false;
         }
+
+        // SceneからNodeを削除
+        removeNodeFromScene(index);
+        // 衝突中Node情報クリア
+        mCollisionNodeName = GimmickManager.NODE_NAME_NONE;
 
         //---------------
         // 成功処理
         //---------------
         // アクション成否：成功
-        mSuccessAction = true;
-        // SceneからNodeを削除
-        removeNodeFromScene(index);
-        // 衝突中Node情報クリア
-        mCollisionNodeName = GimmickManager.NODE_NAME_NONE;
+        return true;
+    }
+
+    /*
+     * 遠くにある（キャラクターの向いている方向にある）Node削除アクション共通処理
+     */
+    public boolean deleteFarNodeAction(String nodeName) {
+
+        //---------------------------------------
+        // キャラクターの向いている方向にあるNode検索
+        //---------------------------------------
+        // 検索
+        AnchorNode anchorNode = (AnchorNode) getParentNode();
+        Node targetNode = ArMainFragment.searchNodeCharacterFacingOnStage(anchorNode, nodeName, this);
+        if (targetNode == null) {
+            // 該当Nodeがなければ、条件不成立とみなす
+            return false;
+        }
+
+        //----------------
+        // Node削除
+        //----------------
+        removeNodeOnStage( targetNode );
+
+        //---------------
+        // 成功処理
+        //---------------
+        // アクション成否：成功
+        return true;
     }
 
     /*
      * 捨てる
      */
     private void throwAway() {
-//        String targetCollisionNode = GimmickManager.NODE_NAME_POISON;
-        deleteNodeAction( mTargetNode );
+        mSuccessAction = deleteFrontNodeAction(mTargetNode);
     }
-
 
     /*
      * 攻撃
      */
     private void attack() {
-
-        Log.i("衝突中判定", "attack()");
-
-//        String targetCollisionNode = GimmickManager.NODE_NAME_ENEMY;
-        deleteNodeAction( mTargetNode );
+        mSuccessAction = deleteFrontNodeAction(mTargetNode);
     }
 
     /*
@@ -454,25 +504,44 @@ public abstract class CharacterNode extends TransformableNode {
     public void setAttack(float volume) {
 
         // 一定時間を超過したとき、ブロック処理を実行する
-        if ((volume >= NO_VOLUME_START_VALUE) && !mfinishNoneVolume) {
+        if ((volume >= NO_VOLUME_START_VALUE) && !mFinishNoneVolume) {
             // 処理完了に
-            mfinishNoneVolume = true;
+            mFinishNoneVolume = true;
             // 攻撃
             attack();
         }
     }
 
+    /*
+     * 遠距離攻撃
+     */
+    private void farAttack() {
+        mSuccessAction = deleteFarNodeAction(mTargetNode);
+    }
+
+    /*
+     * 遠距離攻撃アニメーションメソッド
+     *   ※ プロパティ名：farAttack
+     *   ※ 本メソッド内でアニメーションのための漸次的な処理はなし
+     *      一定時間経過でブロック処理を実行させるために利用する。
+     */
+    public void setFarAttack(float volume) {
+
+        // 一定時間を超過したとき、ブロック処理を実行する
+        if ((volume >= NO_VOLUME_START_VALUE) && !mFinishNoneVolume) {
+            // 処理完了に
+            mFinishNoneVolume = true;
+            // 遠距離攻撃
+            farAttack();
+        }
+    }
 
     /*
      * 拾う
      */
     private void pickup() {
-        Log.i("衝突中判定", "pickup()");
-
-//        String targetCollisionNode = GimmickManager.NODE_NAME_PICKUP;
-        deleteNodeAction( mTargetNode );
+        mSuccessAction = deleteFrontNodeAction(mTargetNode);
     }
-
 
     /*
      * 拾うアニメーションメソッド
@@ -483,26 +552,96 @@ public abstract class CharacterNode extends TransformableNode {
     public void setPickup(float volume) {
 
         // 一定時間を超過したとき、ブロック処理を実行する
-        if ((volume >= NO_VOLUME_START_VALUE) && !mfinishNoneVolume) {
+        if ((volume >= NO_VOLUME_START_VALUE) && !mFinishNoneVolume) {
             // 処理完了に
-            mfinishNoneVolume = true;
+            mFinishNoneVolume = true;
             // 拾う
             pickup();
         }
     }
 
     /*
+     * ターゲット変更
+     */
+    private void changeTarget() {
+
+        // 対象Node情報を分解
+        String[] targetNodeInfo = mTargetNode.split(GIMMICK_DELIMITER_TARGET_NODE_INFO);
+        String state = targetNodeInfo[BLOCK_ACTION_TARGET_NODE_STATE_POS];
+        String nodeName = targetNodeInfo[BLOCK_ACTION_TARGET_NODE_POS];
+
+        Node node = null;
+
+        //-----------------------------
+        // 対象Node状態に応じて振り分け
+        //-----------------------------
+        switch (state) {
+
+            //-------------------------------------
+            // 対象Node状態：キャラクターの向いている方向
+            //-------------------------------------
+            case BLOCK_CONDITION_FACING:
+                // 該当Nodeを検索
+                node = ArMainFragment.searchNodeCharacterFacingOnStage((AnchorNode) getParentNode(), nodeName, this);
+                break;
+
+            default:
+                break;
+        }
+
+        //----------------------------------
+        // 該当NodeをNode検索対象外リストへ追加
+        //----------------------------------
+        if (node != null) {
+            mNotSearchNodeList.add(node);
+        }
+    }
+
+
+    /*
+     * ターゲット変更アニメーションメソッド
+     *   ※ プロパティ名：changeTarget
+     *   ※ 本メソッド内でアニメーションのための漸次的な処理はなし
+     *      一定時間経過でブロック処理を実行させるために利用する。
+     */
+    public void setChangeTarget(float volume) {
+
+        // 一定時間を超過したとき、ブロック処理を実行する
+        if ((volume >= NO_VOLUME_START_VALUE) && !mFinishNoneVolume) {
+            // 処理完了に
+            mFinishNoneVolume = true;
+            // 遠距離攻撃
+            changeTarget();
+        }
+    }
+
+
+    /*
      * SceneからNodeを削除
      */
     public void removeNodeFromScene(int index) {
+
         ArrayList<Node> nodes = mScene.overlapTestAll(this);
         Node deleteNode = nodes.get(index);
-        NodeParent parent = deleteNode.getParent();
-        parent.removeChild(deleteNode);
+
+        removeNodeOnStage( deleteNode );
     }
 
     /*
-     * 衝突中Node Indexを取得
+     * SceneからNodeを削除
+     */
+    public void removeNodeOnStage(Node node) {
+
+        // 除外リストへ追加
+        mRemovedNodeList.add( node.getName() );
+
+        // ステージから削除
+        NodeParent parent = getParentNode();
+        parent.removeChild( node );
+    }
+
+    /*
+     * 衝突中NodeのIndexを取得
      */
     public int getCollisionNodeIndex(String nodeName) {
 
@@ -510,7 +649,7 @@ public abstract class CharacterNode extends TransformableNode {
         for (int i = 0; i < nodes.size(); i++) {
 
             String overlapNode = nodes.get(i).getName();
-            if ( overlapNode.equals( nodeName ) ) {
+            if (overlapNode.contains(nodeName)) {
                 return i;
             }
         }
@@ -661,8 +800,7 @@ public abstract class CharacterNode extends TransformableNode {
     public void setEndProcessAnimation(String contents, float volume) {
 
         // 状態クリア
-//        mCollisionNodeName = GimmickManager.NODE_NAME_NONE;
-        mfinishNoneVolume = false;          // 処理量なしアクション：未完了
+        mFinishNoneVolume = false;          // 処理量なしアクション：未完了
         mSuccessAction = true;              // アクション成否：成功
 
         Log.i("成功判定", "処理ブロックアニメーション終了処理");
@@ -725,9 +863,9 @@ public abstract class CharacterNode extends TransformableNode {
     }
 
     /*
-     * 本キャラクターを初期位置にリセット
+     * 状態を初期化
      */
-    public void positionReset() {
+    public void initStatus() {
 
         //----------------------------------
         // 初期位置に戻す
@@ -764,6 +902,12 @@ public abstract class CharacterNode extends TransformableNode {
         // 衝突情報をリセット
         //----------------------------------
         mCollisionNodeName = GimmickManager.NODE_NAME_NONE;
+
+        //----------------------------------
+        // リストをリセット
+        //----------------------------------
+        mNotSearchNodeList.clear();
+        mRemovedNodeList.clear();
     }
 
     /*
@@ -787,11 +931,18 @@ public abstract class CharacterNode extends TransformableNode {
             case GimmickManager.BLOCK_EXE_ATTACK:
                 return PROPERTY_ATTACK;
 
+            case GimmickManager.BLOCK_EXE_LONG_ATTACK:
+                return PROPERTY_LONG_ATTACK;
+
             case GimmickManager.BLOCK_EXE_PICKUP:
                 return PROPERTY_PICKUP;
-        }
 
-        return PROPERTY_NONE;
+            case GimmickManager.BLOCK_EXE_CHANGE_TARGET:
+                return PROPERTY_CHANGE_TARGET;
+
+            default:
+                return PROPERTY_NONE;
+        }
     }
 
     /*
@@ -996,17 +1147,17 @@ public abstract class CharacterNode extends TransformableNode {
     private int shouldFinishProgram() {
 
         // ゴール判定
-        if ( isGoaled() ) {
+        if (isGoaled()) {
             Log.i("プログラミング終了シーケンス", "CharacterNode shouldFinishProgram() ゴール到達");
             return PROGRAMMING_SUCCESS;
         }
         // アクション成否判定
-        if ( !mSuccessAction ) {
+        if (!mSuccessAction) {
             Log.i("プログラミング終了シーケンス", "CharacterNode shouldFinishProgram() アクション失敗");
             return PROGRAMMING_FAILURE;
         }
         // 障害物衝突判定
-        if ( isFrontNode(GimmickManager.NODE_NAME_OBSTACLE) ) {
+        if (isNodeCollision(mGimmick.objectObstacle)) {
             Log.i("プログラミング終了シーケンス", "CharacterNode shouldFinishProgram() 障害物と衝突中");
             return PROGRAMMING_FAILURE;
         }
@@ -1024,9 +1175,10 @@ public abstract class CharacterNode extends TransformableNode {
         switch (mGimmick.successCondition) {
 
             case GimmickManager.SUCCESS_CONDITION_ALL_REMOVE:
-                // 全て削除しているなら、成功
-                boolean allRemove = isAllRemoveNode( mGimmick.successRemoveTarget );
-                if ( allRemove ) {
+                // ステージ上に指定Nodeがあるか検索
+                Node node = ArMainFragment.searchNodeOnStage((AnchorNode) getParentNode(), mGimmick.successRemoveTarget);
+                if (node == null) {
+                    // 全てステージからなくなっているなら、成功
                     result = PROGRAMMING_SUCCESS;
                 }
 
@@ -1043,7 +1195,7 @@ public abstract class CharacterNode extends TransformableNode {
     public boolean isGoaled() {
 
         // ゴール自体ないギミックであれば、未クリア扱い
-        if( mGimmick.goalName.isEmpty() ){
+        if (mGimmick.goalName.isEmpty()) {
             return false;
         }
 
@@ -1051,7 +1203,7 @@ public abstract class CharacterNode extends TransformableNode {
         // ゴール前のクリア条件達成判定
         //---------------------------
         boolean isPreGoal = isPreGoal();
-        if( !isPreGoal ){
+        if (!isPreGoal) {
             // 未達成なら、未ゴール
             return false;
         }
@@ -1059,7 +1211,7 @@ public abstract class CharacterNode extends TransformableNode {
         //-------------------
         // ゴール判定
         //-------------------
-        return (mCollisionNodeName.equals( mGimmick.goalName) );
+        return (mCollisionNodeName.equals(mGimmick.goalName));
     }
 
 
@@ -1068,15 +1220,25 @@ public abstract class CharacterNode extends TransformableNode {
      */
     public boolean isPreGoal() {
 
-        boolean isAchieved;
+        boolean isAchieved = false;
 
         switch (mGimmick.successCondition) {
 
+            //--------------------------------------
             // ゴール前に「指定ノードを全て削除」する必要あり
+            //--------------------------------------
             case GimmickManager.SUCCESS_CONDITION_REMOVE_AND_GOAL:
-                isAchieved = isAllRemoveNode( mGimmick.successRemoveTarget );
+
+                // ステージ上に指定Nodeがあるか検索
+                Node node = ArMainFragment.searchNodeOnStage((AnchorNode) getParentNode(), mGimmick.successRemoveTarget);
+                if (node == null) {
+                    // 全てステージからなくなっているなら、条件達成
+                    isAchieved = true;
+                }
+
                 Log.i("ゴール達成判定", "isAchieved=" + isAchieved);
                 Log.i("ゴール達成判定", "successRemoveTarget=" + mGimmick.successRemoveTarget);
+
                 break;
 
             default:
@@ -1086,32 +1248,6 @@ public abstract class CharacterNode extends TransformableNode {
         }
 
         return isAchieved;
-    }
-
-    /*
-     * 指定NodeをSceneから全て削除したかどうか
-     */
-    public boolean isAllRemoveNode(String nodeName ) {
-
-        // 全Node検索
-        List<Node> nodes = getParent().getChildren();
-        for (Node node : nodes) {
-            if (node.getName().equals( nodeName )) {
-                // 敵NodeがScene上にあれば、未撃破
-                return false;
-            }
-        }
-
-        // 全削除
-        return true;
-    }
-
-    /*
-     * 目の前に指定Nodeがあるかどうか
-     */
-    public boolean isFrontNode( String nodeName ) {
-        // 指定Nodeと衝突中かどうか
-        return ( mCollisionNodeName.equals( nodeName ));
     }
 
     /*
@@ -1136,15 +1272,45 @@ public abstract class CharacterNode extends TransformableNode {
         double maxRange = characterFacingDegree + 0.5;
 
         // 判定範囲内なら、向いているとみなす
-        if( ( minRange <= toNodeDegree ) && ( toNodeDegree <= maxRange ) ){
+        if ((minRange <= toNodeDegree) && (toNodeDegree <= maxRange)) {
 //            Log.i("向いている方向ロジック", "〇 傾きからの角度=" + toNodeDegree);
 //            Log.i("向いている方向ロジック", "〇 キャラの向き=" + characterFacingDegree);
+            Log.i("Node検索", "isFacingToNode() 向いている toNodeDegree=" + toNodeDegree);
             return true;
         } else {
 //            Log.i("向いている方向ロジック", "× 傾きからの角度=" + toNodeDegree);
 //            Log.i("向いている方向ロジック", "× キャラの向き=" + characterFacingDegree);
+            Log.i("Node検索", "isFacingToNode() 向いていない toNodeDegree=" + toNodeDegree);
             return false;
         }
+    }
+
+    /*
+     * 指定Nodeと衝突中かどうか
+     */
+    public boolean isNodeCollision(String nodeName) {
+
+        if (nodeName == null) {
+            return false;
+        }
+
+        return mCollisionNodeName.contains(nodeName);
+    }
+
+    /*
+     * 本キャラクターが指定Nodeをステージから除外したことがあるかどうか
+     */
+    public boolean isEverRemovedNode(String nodeName) {
+        // 除外リストにあれば、除外したことあり
+        return mRemovedNodeList.contains( nodeName );
+    }
+
+    /*
+     * 検索対象外リストクリア
+     */
+    public void clearNotSearchNodeList() {
+        // 検索対象外リストクリア
+        mNotSearchNodeList.clear();
     }
 
     /*
@@ -1209,11 +1375,18 @@ public abstract class CharacterNode extends TransformableNode {
     }
 
     /*
+     * 検索対象外Nodeリスト
+     */
+    public List<Node> getNotSearchNodeList() {
+        return mNotSearchNodeList;
+    }
+
+    /*
      * 衝突中Nodeの取得
      */
-    public String getCollisionNode() {
-        return mCollisionNodeName;
-    }
+//    public String getCollisionNode() {
+//        return mCollisionNodeName;
+//    }
 
     /*
      * 衝突検知リスナーの設定

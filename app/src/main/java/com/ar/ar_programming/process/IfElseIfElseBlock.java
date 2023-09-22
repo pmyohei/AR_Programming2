@@ -7,7 +7,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.ar.ar_programming.GimmickManager;
-import com.ar.ar_programming.character.AnimalNode;
 import com.ar.ar_programming.character.CharacterNode;
 import com.ar.ar_programming.Gimmick;
 import com.ar.ar_programming.R;
@@ -35,9 +34,11 @@ public class IfElseIfElseBlock extends IfElseBlock {
     public IfElseIfElseBlock(Context context, Gimmick.XmlBlockInfo xmlBlockInfo) {
         this(context, null, xmlBlockInfo);
     }
+
     public IfElseIfElseBlock(Context context, AttributeSet attrs, Gimmick.XmlBlockInfo xmlBlockInfo) {
         this(context, attrs, 0, xmlBlockInfo);
     }
+
     public IfElseIfElseBlock(Context context, AttributeSet attrs, int defStyle, Gimmick.XmlBlockInfo xmlBlockInfo) {
         super(context, attrs, defStyle, xmlBlockInfo, R.layout.block_if_elseif_else);
         // !レイアウトの設定は「IfElseBlock」クラスで行う
@@ -62,8 +63,8 @@ public class IfElseIfElseBlock extends IfElseBlock {
         //------------------------
         // 文言IDをレイアウトに設定
         TextView tv_elseIfContents = findViewById(R.id.tv_elseIfContents);
-        String statement = GimmickManager.getBlockStatement( getContext(), mXmlBlockInfo.type, mXmlBlockInfo.action, mXmlBlockInfo.targetNode_2);
-        tv_elseIfContents.setText( statement);
+        String statement = GimmickManager.getBlockStatement(getContext(), mXmlBlockInfo.type, mXmlBlockInfo.action, mXmlBlockInfo.targetNode_2);
+        tv_elseIfContents.setText(statement);
     }
 
     /*
@@ -298,6 +299,10 @@ public class IfElseIfElseBlock extends IfElseBlock {
             case GimmickManager.BLOCK_CONDITION_FRONT:
                 return judgeTrueNestRootOnFront(characterNode);
 
+            // 「xxxの方をキャラクターが向いてるか」
+            case GimmickManager.BLOCK_CONDITION_FACING:
+                return judgeTrueNestRootOnFacing(characterNode);
+
             default:
                 break;
         }
@@ -313,8 +318,8 @@ public class IfElseIfElseBlock extends IfElseBlock {
         //--------------
         // 条件１判定
         //--------------
-        boolean isFirstCondition = ((AnimalNode)characterNode).isFrontNode( mXmlBlockInfo.targetNode_1 );
-        if( isFirstCondition ){
+        boolean isFirstCondition = characterNode.isNodeCollision(mXmlBlockInfo.targetNode_1);
+        if (isFirstCondition) {
             // ifブロックを通る状態
             return NEST_FIRST;
         }
@@ -322,8 +327,35 @@ public class IfElseIfElseBlock extends IfElseBlock {
         //--------------
         // 条件２判定
         //--------------
-        boolean isSecondCondition = ((AnimalNode)characterNode).isFrontNode( mXmlBlockInfo.targetNode_2 );
-        if( isSecondCondition ){
+        boolean isSecondCondition = characterNode.isNodeCollision(mXmlBlockInfo.targetNode_2);
+        if (isSecondCondition) {
+            // else ifブロックを通る状態
+            return NEST_SECOND;
+        }
+
+        // elseブロックを通る状態
+        return NEST_THIRD;
+    }
+
+    /*
+     * ネストルート判定：条件動作：xxxの方をキャラクターが向いてるか
+     */
+    public int judgeTrueNestRootOnFacing(CharacterNode characterNode) {
+
+        //--------------
+        // 条件１判定
+        //--------------
+        boolean isFirstCondition = isConditionFacing(characterNode, mXmlBlockInfo.targetNode_1);
+        if (isFirstCondition) {
+            // ifブロックを通る状態
+            return NEST_FIRST;
+        }
+
+        //--------------
+        // 条件２判定
+        //--------------
+        boolean isSecondCondition = isConditionFacing(characterNode, mXmlBlockInfo.targetNode_2);
+        if (isSecondCondition) {
             // else ifブロックを通る状態
             return NEST_SECOND;
         }

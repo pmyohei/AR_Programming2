@@ -41,7 +41,9 @@ public class GimmickManager {
     public static final String BLOCK_EXE_EAT = "eat";
     public static final String BLOCK_EXE_THROW = "throw";
     public static final String BLOCK_EXE_ATTACK = "attack";
+    public static final String BLOCK_EXE_LONG_ATTACK = "farattack";
     public static final String BLOCK_EXE_PICKUP = "pickup";
+    public static final String BLOCK_EXE_CHANGE_TARGET = "changetarget";
 
     //------------------------------
     // ブロック 制御ブロック  条件：動詞
@@ -49,6 +51,7 @@ public class GimmickManager {
     public static final String BLOCK_CONDITION_FACING = "facing";
     public static final String BLOCK_CONDITION_COLLECT = "collect";
     public static final String BLOCK_CONDITION_EAT = "eat";
+    public static final String BLOCK_CONDITION_DEFEAT = "defeat";
     public static final String BLOCK_CONDITION_ARRIVAL = "arrival";
     public static final String BLOCK_CONDITION_FRONT = "front";
 
@@ -60,7 +63,7 @@ public class GimmickManager {
     public static final String NODE_NAME_GOAL_GUIDE_UI = "goalGuideUI";
     public static final String NODE_NAME_ANCHOR = "anchor";
     public static final String NODE_NAME_STAGE = "stage";
-    public static final String NODE_NAME_OBSTACLE = "obstacle";
+    public static final String NODE_NAME_REPLACE = "replace";
 
     //------------------------------
     // ギミック 主体種別
@@ -73,7 +76,6 @@ public class GimmickManager {
     // ステージ成功条件：successCondition
     //-----------------------------------
     public static final String SUCCESS_CONDITION_GOAL = "goal";
-    public static final String SUCCESS_CONDITION_COLLECT = "collect";
     public static final String SUCCESS_CONDITION_ALL_REMOVE = "all_remove";
     public static final String SUCCESS_CONDITION_REMOVE_AND_GOAL = "remove_and_goal";
 
@@ -124,6 +126,8 @@ public class GimmickManager {
     public static final String GIMMICK_DELIMITER_CONDITION = "-";
     // パス
     public static final String GIMMICK_DELIMITER_PATH = "/";
+    // 対象Node情報：「Nodeの状態」と「Node名」
+    public static final String GIMMICK_DELIMITER_TARGET_NODE_INFO = ":";
 
     //------------------------------
     // フォーマット位置関連：ゴール説明
@@ -144,6 +148,9 @@ public class GimmickManager {
     public static final int BLOCK_ACTION_DATA_POS = 1;              // アクション/アクション付随情報の位置  例）「forward-1」の位置
     public static final int BLOCK_ACTION_POS = 0;                   // アクション情報の位置    例）「forward」の位置
     public static final int BLOCK_ACTION_ATTACHED_POS = 1;          // アクション付随情報の位置 例）「1」や「eatable」の位置
+    // 実行ブロック（対象Node情報付属）  例）changeTarget-facing:enemy
+    public static final int BLOCK_ACTION_TARGET_NODE_STATE_POS = 0; // アクション対象Node 状態位置 例）「facing」の位置
+    public static final int BLOCK_ACTION_TARGET_NODE_POS = 1;       // アクション対象Node 名称位置 例）「enemy」の位置
     // 制御ブロック  例）loop_facing-eatable
     public static final int BLOCK_CONDITION_POS = 1;                // 例）「forward」や「facing-eatable」の位置
     public static final int BLOCK_CONDITION_ACTION_POS = 0;         // 例）「facing」の位置
@@ -203,10 +210,13 @@ public class GimmickManager {
         // オブジェクト
         String objectGlb = parser.getAttributeValue(null, "objectGlb");
         String objectNum = parser.getAttributeValue(null, "objectNum");
-        String objectKind = parser.getAttributeValue(null, "objectKind");
+        String objectName = parser.getAttributeValue(null, "objectName");
+        String objectReplaceName = parser.getAttributeValue(null, "objectReplaceName");
+        String objectReplaceGlb = parser.getAttributeValue(null, "objectReplaceGlb");
         String objectPositionRandom = parser.getAttributeValue(null, "objectPositionRandom");
         String objectPosition = parser.getAttributeValue(null, "objectPosition");
         String objectAngle = parser.getAttributeValue(null, "objectAngle");
+        String objectObstacle = parser.getAttributeValue(null, "objectObstacle");
         // 敵
         String enemyGlb = parser.getAttributeValue(null, "enemyGlb");
         String enemyNum = parser.getAttributeValue(null, "enemyNum");
@@ -238,10 +248,13 @@ public class GimmickManager {
         // オブジェクト
         gimmick.setObjectGlb(objectGlb);
         gimmick.setObjectNum(objectNum);
-        gimmick.setObjectKind(objectKind);
+        gimmick.setObjectName(objectName);
+        gimmick.setObjectReplaceInfo(objectReplaceName, objectReplaceGlb);
+//        gimmick.setObjectReplaceGlb(objectReplaceGlb);
         gimmick.setObjectPositionRandom(objectPositionRandom);
         gimmick.setObjectPositionVecList(objectPosition);
         gimmick.setObjectAngle(objectAngle);
+        gimmick.setObjectObstacle(objectObstacle);
         // 敵
         gimmick.setEnemyGlb(enemyGlb);
         gimmick.setEnemyNum(enemyNum);
@@ -435,7 +448,7 @@ public class GimmickManager {
     public static String unificationConditionType(String type) {
 
         // 「if-else」「if-elseif-else」の場合は「if」と統一させる
-        if( type.equals( BLOCK_TYPE_IF_ELSE ) || type.equals( BLOCK_TYPE_IE_ELSEIF )){
+        if (type.equals(BLOCK_TYPE_IF_ELSE) || type.equals(BLOCK_TYPE_IE_ELSEIF)) {
             return BLOCK_TYPE_IF;
         }
 
@@ -476,12 +489,28 @@ public class GimmickManager {
         Log.i("ギミック改修", "type=" + type);
         Log.i("ギミック改修", "action=" + action);
         Log.i("ギミック改修", "targetNode=" + targetNode);
-        int targetNodeId = resources.getIdentifier(targetNode, "string", packageName);
+        String SpecificNodeName = getSpecificNodeName(targetNode);
+        int targetNodeId = resources.getIdentifier(SpecificNodeName, "string", packageName);
         String targetNodeName = context.getString(targetNodeId);
 
         // ブロック文に対象Node名を埋め込み
         // （「xxx」を「Node名」に置換）
         return statement.replace(PRE_REPLACE_WORD, targetNodeName);
+    }
+
+    /*
+     * 具体的なNode名の抽出
+     */
+    public static String getSpecificNodeName(String targetNode) {
+
+        // 対象Node情報の区切り文字がなければ、引数のNode名がそのまま具体的なNode名
+        if( !targetNode.contains( GIMMICK_DELIMITER_TARGET_NODE_INFO ) ){
+            return targetNode;
+        }
+
+        // 対象Node情報の区切り文字があれば、具体的なNode名を抽出
+        String[] nodeInfo = targetNode.split(GIMMICK_DELIMITER_TARGET_NODE_INFO);
+        return nodeInfo[BLOCK_ACTION_TARGET_NODE_POS];
     }
 
     /*
@@ -524,6 +553,7 @@ public class GimmickManager {
         Resources resources = context.getResources();
         String packageName = context.getPackageName();
 
+        Log.i("リソース構築", "drawable resourceStr=" + resourceStr);
         int drawableId = resources.getIdentifier(resourceStr, "drawable", packageName);
         return context.getDrawable(drawableId);
     }

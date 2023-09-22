@@ -68,15 +68,20 @@
     <string name="block_exe_rotateleft">左に回転</string>
     <string name="block_exe_eat">xxxを食べる</string>
     <string name="block_exe_throw">xxxを捨てる</string>
-    <string name="block_exe_attack">xxxをやっつける</string>
+    <string name="block_exe_attack">目の前のxxxをやっつける</string>
+    <string name="block_exe_farattack">そのxxxをやっつける</string>
     <string name="block_exe_pickup">xxxを拾う</string>
+    <string name="block_exe_changetarget">ターゲットを変更</string>
 
     <string name="block_loop_arrival">xxxに着くまでループ</string>
     <string name="block_loop_facing">xxxの方を向くまでループ</string>
     <string name="block_loop_collect">xxxを全て集めるまでループ</string>
+    <string name="block_loop_defeat">xxxを全て倒すまでループ</string>
     <string name="block_loop_eat">xxxを全て食べるまでループ</string>
 
     <string name="block_if_front">もし 目の前にxxxがあれば</string>
+    <string name="block_if_facing">もし xxxの方を向いていれば</string>
+    <string name="block_if_defeat">もし xxxを倒していれば</string>
     <string name="block_if_nothing">もし 目の前に何もなければ</string>
 
     <!--  処理ブロック 処理量の単位  -->
@@ -123,6 +128,7 @@
     <string name="action_throw">ポイッ！</string>
     <string name="action_attack">えいッ！</string>
     <string name="action_pickup">ゲット～</string>
+    <string name="action_change_target">別のにしよ～</string>
 
     <!-- 処理ブロックに埋め込む物体名 -->
     <string name="house">家</string>
@@ -138,9 +144,15 @@
     <string name="donuts">ドーナッツ</string>
     <string name="chocolate">チョコレート</string>
     <string name="sportsCar">スポーツカー</string>
+    <string name="yellowCar">黄色の車</string>
     <string name="signboardStop">看板</string>
     <string name="present">プレゼント</string>
     <string name="stamp">切り株</string>
+    <string name="banana">バナナ</string>
+    <string name="bananaPeel">バナナの皮</string>
+    <string name="enemy">敵</string>
+    <string name="ghost">お化け</string>
+    <string name="ghostClown">ピエロお化け</string>
 
     <!-- ダイアログ -->
     <string name="ar_dialog_title">リトライ</string>
@@ -225,7 +237,7 @@
 
     <string name="guide_major_tutorial_4">チュートリアル4</string>
     <string name="guide_sub_tutorial_4">～条件ブロックを組み合わせてみよう～</string>
-    <string name="guide_contents_tutorial_4">ニンジンは食べて、毒キノコは捨てる。家につけばクリア</string>
+    <string name="guide_contents_tutorial_4">ニンジンは食べて、毒キノコは捨てよう。家につけばクリア</string>
     <string name="guide_explanation_tutorial_4">
         ニンジンを食べて家に帰るプログラムを作ってみよう！\n
         ただし、途中で毒キノコがあるから、毒キノコは食べずに捨てちゃおう！\n
@@ -251,6 +263,17 @@
         全部あつめずにうさぎのところへ行くと失敗だよ\n
         ループブロックを使ってうまく車の方向を決めてね！\n
     </string>
+
+    <string name="guide_major_question_animal">なにがあるかな</string>
+    <string name="guide_sub_question_animal">～条件ブロックをうまく使おう～</string>
+    <string name="guide_contents_question_animal">ニンジンは食べて、毒キノコは捨てよう。家につけばクリア</string>
+    <string name="guide_explanation_question_animal">
+        ニンジンを食べて毒キノコは捨てるプログラムを作ってみよう！\n
+        でも、どの順番でニンジンと毒キノコがあるかはゲームを始めるまでわからないよ。\n
+        どんな順番で並んでいても正しいアクションをとれるようにプログラミングしてね！\n
+        色んな状況に対応するには条件ブロックを使うといいよ！\n
+    </string>
+
 
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>

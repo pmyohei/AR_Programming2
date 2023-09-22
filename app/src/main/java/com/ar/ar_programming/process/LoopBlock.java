@@ -4,14 +4,13 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.util.Log;
 
+import com.ar.ar_programming.ArMainFragment;
 import com.ar.ar_programming.character.CharacterNode;
 import com.ar.ar_programming.Gimmick;
 import com.ar.ar_programming.GimmickManager;
 import com.ar.ar_programming.R;
 import com.google.ar.sceneform.AnchorNode;
 import com.google.ar.sceneform.Node;
-
-import java.util.List;
 
 
 /*
@@ -81,17 +80,22 @@ public class LoopBlock extends NestBlock {
             // xxxの方を向くまでループ
             case GimmickManager.BLOCK_CONDITION_FACING:
                 // 向いている場合、trueを受け取る。
+                // 向いていない場合、falseを受け取る。
                 // 向いていない場合、ループを継続させるため、結果を反転させる
-                result = !isConditionFacing(characterNode);
+                result = !isConditionFacing(characterNode, mXmlBlockInfo.targetNode_1);
+                Log.i("Node検索", "isConditionFacing() targetNode_1=" + mXmlBlockInfo.targetNode_1);
+                Log.i("Node検索", "isConditionFacing() 継続 result=" + result);
                 break;
 
             // xxxをすべて集めるまでループ
             // xxxをすべて食べるまでループ
+            // xxxをすべて倒すまでループ
             case GimmickManager.BLOCK_CONDITION_COLLECT:
             case GimmickManager.BLOCK_CONDITION_EAT:
-                // すべて対応している場合、falseを受け取る。
+            case GimmickManager.BLOCK_CONDITION_DEFEAT:
+                // すべてに対応している場合、trueを受け取る。
                 // 対応していない場合、Loop内の処理をするため、結果を反転させる
-                result = isConditionEverything( characterNode );
+                result = !isConditionEverything( characterNode );
                 break;
 
             default:
@@ -107,33 +111,26 @@ public class LoopBlock extends NestBlock {
      * ループ条件：指定Nodeに到達しているかどうか
      */
     public boolean isConditionArrival(CharacterNode characterNode) {
-
-        // キャラクターと衝突中のNode
-        String collisionNode = characterNode.getCollisionNode();
-
-        Log.i("ブロック処理の流れ", "isConditionArrival collisionNode=" + collisionNode);
-        Log.i("ブロック処理の流れ", "isConditionArrival targetNode_1=" + mXmlBlockInfo.targetNode_1);
-
-        // 到達目標のNodeと衝突していれば、到達したとみなす
-        if( collisionNode.equals( mXmlBlockInfo.targetNode_1 ) ){
-            return true;
-        }
-        return false;
+        // 対象Nodeと衝突中であれば、到達したとみなす
+        return characterNode.isNodeCollision( mXmlBlockInfo.targetNode_1 );
     }
 
     /*
-     * ループ条件：指定オブジェクト方向をキャラクターが向いているか判定
+     * ループ条件：対象Nodeの方をキャラクターが向いているか判定
      */
-    public boolean isConditionFacing(CharacterNode characterNode) {
+/*    public boolean isConditionFacing(CharacterNode characterNode) {
 
         //------------------
         // 判定対象Nodeを取得
         //------------------
+        // 検索対象外Nodeリスト
+        List<Node> notSearchNodeList = characterNode.getNotSearchNodeList();
+
         // AR上のNodeは、全てanchorNodeを親としているため、characterNodeの親Node（=anchorNode）を検索用に渡す
         AnchorNode anchorNode = (AnchorNode)characterNode.getParentNode();
-        Node targetNode = getFacingTargetNode( anchorNode, mXmlBlockInfo.targetNode_1 );
+        Node targetNode = ArMainFragment.searchNodeOnStage( anchorNode, mXmlBlockInfo.targetNode_1, notSearchNodeList );
         if( targetNode == null ){
-            // 対象Nodeがなければ、条件不成立とみなす
+            // そもそも対象Nodeがなければ、条件不成立とみなす
             return false;
         }
 
@@ -141,46 +138,23 @@ public class LoopBlock extends NestBlock {
         // キャラクターがNodeを向いているか判定
         //---------------------------------
         return characterNode.isFacingToNode( targetNode );
-    }
+    }*/
 
     /*
      * ループ条件：指定Nodeを全てxxx（集める、食べる、、、）しているか判定
-     *           未収集の物がある場合、ループする必要があるため、trueを返す
      */
     public boolean isConditionEverything(CharacterNode characterNode) {
 
         //---------------------------
         // Sceneに存在しているかどうか
         //---------------------------
-        // 全て収集していなければ、falseを返す
-        boolean allRemove = characterNode.isAllRemoveNode( mXmlBlockInfo.targetNode_1 );
+        // 全てに対応していれば（ステージに指定Nodeが１つもなければ）、trueを返す
+        AnchorNode anchorNode = (AnchorNode)characterNode.getParentNode();
+        Node node = ArMainFragment.searchNodeOnStage( anchorNode, mXmlBlockInfo.targetNode_1 );
+
         Log.i("ブロック処理の流れ", "Loop isConditionEverything() targetNode_1=" + mXmlBlockInfo.targetNode_1);
-        Log.i("ブロック処理の流れ", "Loop isConditionEverything() allRemove=" + allRemove);
-        return !allRemove;
+
+        return ( node == null );
     }
-
-    /*
-     * 条件コンテンツに該当するNodeを取得
-     * 　@para1：！anchorNodeを渡すこと（anchorNode配下のNodeが検索対象となるため）
-     * 　@para2：向く方向の対象Node名
-     */
-    public Node getFacingTargetNode(AnchorNode anchorNode, String nodeName) {
-
-        //----------------------
-        // 対象Nodeを検索
-        //----------------------
-        List<Node> nodes = anchorNode.getChildren();
-        for (Node node : nodes) {
-            if (node.getName().equals( nodeName )) {
-                return node;
-            }
-        }
-
-        // なければnull（想定していないルート）
-        return null;
-    }
-
-
-
 }
 

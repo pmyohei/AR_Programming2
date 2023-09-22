@@ -5,14 +5,17 @@ import static com.ar.ar_programming.GimmickManager.BLOCK_ACTION_DATA_POS;
 import static com.ar.ar_programming.GimmickManager.BLOCK_ACTION_POS;
 import static com.ar.ar_programming.GimmickManager.BLOCK_CONDITION_POS;
 import static com.ar.ar_programming.GimmickManager.BLOCK_TYPE_POS;
+import static com.ar.ar_programming.GimmickManager.NODE_NAME_REPLACE;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.util.Log;
 
 import com.google.ar.sceneform.math.Vector3;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Random;
 import java.util.regex.Pattern;
 
 public class Gimmick {
@@ -50,9 +53,12 @@ public class Gimmick {
     public boolean objectPositionRandom;
     public ArrayList<String> objectGlbList;
     public ArrayList<Integer> objectNumList;
-    public ArrayList<String> objectKindList;
+    public ArrayList<String> objectNameList;
+    public ArrayList<String> objectReplaceNameList;
+    public ArrayList<String> objectReplaceGlbList;
     public ArrayList<Vector3> objectPositionVecList;
     public ArrayList<Float> objectAngleList;
+    public String objectObstacle;
     // 敵
     public boolean enemyNumRandom;
     public ArrayList<String> enemyGlbList;
@@ -119,7 +125,9 @@ public class Gimmick {
 
         objectGlbList = new ArrayList<>();
         objectNumList = new ArrayList<>();
-        objectKindList = new ArrayList<>();
+        objectNameList = new ArrayList<>();
+        objectReplaceNameList = new ArrayList<>();
+        objectReplaceGlbList = new ArrayList<>();
         objectPositionVecList = new ArrayList<>();
         objectAngleList = new ArrayList<>();
 
@@ -465,21 +473,105 @@ public class Gimmick {
     }
 
     /*
-     * オブジェクト種別を設定
+     * オブジェクト名を設定
      */
-    public void setObjectKind(String objectKind) {
+    public void setObjectName(String objectName) {
 
         // プロパティなし
-        if (objectKind == null) {
+        if (objectName == null) {
             return;
         }
 
         // オブジェクト名を分割
-        String[] strs = splitGimmickValueDelimiter(objectKind);
+        String[] strs = splitGimmickValueDelimiter(objectName);
 
         // リスト生成
-        objectKindList.clear();
-        Collections.addAll(objectKindList, strs);
+        objectNameList.clear();
+        Collections.addAll(objectNameList, strs);
+    }
+
+    /*
+     * オブジェクト名／glb（置き換え後）を設定
+     */
+    public void setObjectReplaceInfo(String objectReplaceName, String objectReplaceGlb) {
+
+        // プロパティなし
+        if ((objectReplaceName == null) || (objectReplaceGlb == null)) {
+            return;
+        }
+
+        // リストクリア
+        objectReplaceNameList.clear();
+        objectReplaceGlbList.clear();
+
+        // オブジェクト名／glb（置き換え後）を情報数で分割
+        // 例）「mushroomPoison-carrot, choco-donuts」 → [0]mushroomPoison-carrot  [1]choco-donuts
+        String[] nameList = splitGimmickValueDelimiter(objectReplaceName);
+        String[] glbList = splitGimmickValueDelimiter(objectReplaceGlb);
+
+        Random random = new Random();
+
+        //------------------
+        // 置き換え情報の決定
+        //------------------
+        // 置き換え前のNode数
+        int replaceInfoNum = getReplaceNum();
+        // 置き換え後の候補情報リスト 参照用Index
+        int afterReplaceIndex = 0;
+        // 置き換え後の候補情報リスト 最後尾Index
+        int afterReplaceLastIndex = nameList.length - 1;
+
+        for (int replaceCount = 0; replaceCount < replaceInfoNum; replaceCount++) {
+
+            Log.i("置き換え", "replaceCount=" + replaceCount);
+
+            //--------------------
+            // 置き換え後情報
+            //--------------------
+            // 置き換え候補の取得
+            // name例)「mushroomPoison-carrot」
+            //  glb例)「xxx/xxx/mushroom_poison.glb-xxx/xxx/carrot.glb」
+            String name = nameList[afterReplaceIndex];
+            String glb = glbList[afterReplaceIndex];
+
+            // 置き換え候補に分割
+            // 例）「mushroomPoison-carrot」 →  [0]mushroomPoison  [1]carrot
+            String[] nameCandidate = name.split(GimmickManager.GIMMICK_DELIMITER_CONDITION);
+            String[] glbCandidate = glb.split(GimmickManager.GIMMICK_DELIMITER_CONDITION);
+
+            // 置き換え候補の中から、ランダムにいずれかを選択
+            int candidateNum = nameCandidate.length;
+            int select = random.nextInt(candidateNum);
+
+            // 置き換え後情報リストに追加
+            objectReplaceNameList.add(nameCandidate[select]);
+            objectReplaceGlbList.add(glbCandidate[select]);
+
+            //----------------------------------------
+            // 置き換え後の候補情報リスト 参照Indexを更新
+            //----------------------------------------
+            if( afterReplaceLastIndex > afterReplaceIndex ){
+                afterReplaceIndex++;
+            }
+        }
+    }
+
+    /*
+     * replace数（置き換え前Node数）取得
+     */
+    public int getReplaceNum() {
+
+        // リスト上の"replace"の位置を取得
+        int replacePos = 0;
+        for( String name: objectNameList ){
+            if( name.equals( NODE_NAME_REPLACE ) ){
+                break;
+            }
+            replacePos++;
+        }
+
+        // "replace"の生成数を返す
+        return objectNumList.get(replacePos);
     }
 
     /*
@@ -489,6 +581,7 @@ public class Gimmick {
 
         // プロパティなし
         if (random == null) {
+            objectPositionRandom = false;
             return;
         }
 
@@ -554,6 +647,19 @@ public class Gimmick {
             Float angle = Float.parseFloat(angleOrg);
             objectAngleList.add(angle);
         }
+    }
+
+    /*
+     * オブジェクト（障害物名）を設定
+     */
+    public void setObjectObstacle(String name) {
+
+        // 設定なし
+        if (name == null) {
+            return;
+        }
+
+        objectObstacle = name;
     }
 
     /*

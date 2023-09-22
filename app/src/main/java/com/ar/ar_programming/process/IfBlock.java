@@ -70,6 +70,18 @@ public class IfBlock extends NestBlock {
                 result = isConditionFront(characterNode);
                 break;
 
+            // 「xxxの方をキャラクターが向いてるか」
+            case GimmickManager.BLOCK_CONDITION_FACING:
+                result = isConditionFacing(characterNode, mXmlBlockInfo.targetNode_1);
+                Log.i("強い敵", "ifブロック isCondition() 対象Node名=" + mXmlBlockInfo.targetNode_1);
+                Log.i("強い敵", "ifブロック isCondition() 判定結果=" + result);
+                break;
+
+            // 「xxxを倒したことがあるか」
+            case GimmickManager.BLOCK_CONDITION_DEFEAT:
+                result = isConditionRemoved(characterNode);
+                break;
+
             default:
                 result = false;
                 break;
@@ -90,6 +102,6 @@ public class IfBlock extends NestBlock {
         // 物体で条件判定
         //----------------
         Log.i("ブロック処理の流れ", "ifブロック isConditionFacing()");
-        return characterNode.isFrontNode( mXmlBlockInfo.targetNode_1 );
+        return characterNode.isNodeCollision( mXmlBlockInfo.targetNode_1 );
     }
 }

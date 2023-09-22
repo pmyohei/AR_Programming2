@@ -6,9 +6,12 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.ar.ar_programming.ArMainFragment;
 import com.ar.ar_programming.character.CharacterNode;
 import com.ar.ar_programming.Gimmick;
 import com.ar.ar_programming.R;
+import com.google.ar.sceneform.AnchorNode;
+import com.google.ar.sceneform.Node;
 
 
 /*
@@ -34,9 +37,11 @@ public abstract class NestBlock extends ProcessBlock {
     public NestBlock(Context context) {
         this(context, null);
     }
+
     public NestBlock(Context context, AttributeSet attrs) {
         this(context, attrs, 0, null);
     }
+
     public NestBlock(Context context, AttributeSet attrs, int defStyle, Gimmick.XmlBlockInfo xmlBlockInfo) {
         super(context, attrs, defStyle, xmlBlockInfo);
         createStartBlock();
@@ -268,7 +273,7 @@ public abstract class NestBlock extends ProcessBlock {
     @Override
     public boolean hasBlock(Block checkBlock) {
         // ネスト１内の検索
-        return searchBlockInNest( NEST_FIRST, checkBlock );
+        return searchBlockInNest(NEST_FIRST, checkBlock);
     }
 
     /*
@@ -321,7 +326,7 @@ public abstract class NestBlock extends ProcessBlock {
         // ネスト内処理ブロック数チェック
         //-----------------------------
         // ネスト内に処理ブロックがなければ
-        if ( !hasNestBlock() ) {
+        if (!hasNestBlock()) {
             // 次の処理ブロックへ
             tranceNextBlock(characterNode);
             return;
@@ -331,7 +336,7 @@ public abstract class NestBlock extends ProcessBlock {
         // 条件判定
         //-----------------------------
         // 条件成立の場合
-        if ( isCondition(characterNode) ) {
+        if (isCondition(characterNode)) {
 
             // ネスト内の処理ブロックを実行
             ProcessBlock nextBlock = (ProcessBlock) mNestStartBlockFirst.getBelowBlock();
@@ -358,11 +363,47 @@ public abstract class NestBlock extends ProcessBlock {
      * マークエリアリスナー設定
      */
     @Override
-    public void setMarkAreaListerner(MarkerAreaListener listener){
+    public void setMarkAreaListerner(MarkerAreaListener listener) {
         super.setMarkAreaListerner(listener);
 
         // ネストスタートブロックにも設定
         mNestStartBlockFirst.setMarkAreaListerner(listener);
+    }
+
+    /*
+     * 条件判定：対象Nodeの方をキャラクターが向いているか判定
+     */
+    public boolean isConditionFacing(CharacterNode characterNode, String targetNodeName) {
+
+        //------------------
+        // 判定対象Nodeを取得
+        //------------------
+        // AR上のNodeは、全てanchorNodeを親としているため、characterNodeの親Node（=anchorNode）を検索用に渡す
+        AnchorNode anchorNode = (AnchorNode) characterNode.getParentNode();
+        Node targetNode = ArMainFragment.searchNodeCharacterFacingOnStage(anchorNode, targetNodeName, characterNode);
+        if (targetNode == null) {
+            // そもそも対象Nodeがなければ、条件不成立（向いていない）とみなす
+            return false;
+        }
+
+        // 見つかれば、true
+        Log.i("isConditionFacing", "向いているNode発見=" + targetNode.getName());
+        return true;
+    }
+
+    /*
+     * 条件判定：対象Nodeを除外したことがあるかどうか
+     */
+    public boolean isConditionRemoved(CharacterNode characterNode) {
+
+        // ステージから除外したことがあるか
+        boolean isEverRemovedNode = characterNode.isEverRemovedNode( mXmlBlockInfo.targetNode_1 );
+        if( isEverRemovedNode ){
+            // あるなら、検索対象外リストはクリアする
+            characterNode.clearNotSearchNodeList();
+        }
+
+        return  isEverRemovedNode;
     }
 }
 

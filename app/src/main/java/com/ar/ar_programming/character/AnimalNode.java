@@ -41,7 +41,9 @@ public class AnimalNode extends CharacterNode {
                 put( GimmickManager.BLOCK_EXE_EAT, R.string.action_eat);
                 put( GimmickManager.BLOCK_EXE_THROW, R.string.action_throw);
                 put( GimmickManager.BLOCK_EXE_ATTACK, R.string.action_attack);
+                put( GimmickManager.BLOCK_EXE_LONG_ATTACK, R.string.action_attack);
                 put( GimmickManager.BLOCK_EXE_PICKUP, R.string.action_pickup);
+                put( GimmickManager.BLOCK_EXE_CHANGE_TARGET, R.string.action_change_target);
             }
         };
     }
@@ -111,9 +113,9 @@ public class AnimalNode extends CharacterNode {
     public void setEat(float volume) {
 
         // 一定時間を超過したとき、ブロック処理を実行する
-        if ((volume >= NO_VOLUME_START_VALUE) && !mfinishNoneVolume) {
+        if ((volume >= NO_VOLUME_START_VALUE) && !mFinishNoneVolume) {
             // 処理完了に
-            mfinishNoneVolume = true;
+            mFinishNoneVolume = true;
             // 食べる
             eat();
         }
@@ -124,6 +126,6 @@ public class AnimalNode extends CharacterNode {
      */
     private void eat() {
 //        String targetCollisionNode = GimmickManager.NODE_NAME_EATABLE;
-        deleteNodeAction( mTargetNode );
+        mSuccessAction = deleteFrontNodeAction( mTargetNode );
     }
 }
