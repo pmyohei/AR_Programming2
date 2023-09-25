@@ -3,12 +3,17 @@
     <!---->
     <!-- HOME画面 -->
     <!---->
-    <color name="tx_home">#323232</color>
+    <color name="tx_home">#7E7E7E</color>
+    <color name="bg_home_mark">#7E7E7E</color>
     <color name="bg_home_play">#E9FFF6</color>
     <color name="bg_home_how">#F8F5B5</color>
-    <color name="bg_home_setting">#F7C3BF</color>
-    <color name="bg_home_mark">#5E5E5E</color>
+    <color name="bg_home_setting">#FFE5F1</color>
 
+    <!---->
+    <!-- AR画面：共通 -->
+    <!---->
+    <color name="bg_toolar">#f8a978</color>
+    <color name="bg_programing_area_top">#fcf9ea</color>
 
     <!---->
     <!-- ゴール確認UI／ダイアログ -->
@@ -24,22 +29,26 @@
     <!-- 処理ブロック -->
     <!---->
     <color name="tx_border_in_block">#656565</color>
-    <color name="bg_block_exe">#E0FBFF</color>
-    <color name="bg_block_exe_dark">#24B9CC</color>
-    <color name="bg_block_if">#FFF3E0</color>
-    <color name="bg_block_if_dark">#BA7714</color>
-    <color name="bg_block_loop">#F2E7FF</color>
-    <color name="bg_block_loop_dark">#FF6200EE</color>
+    <color name="bg_block_start">#E4E4E4</color>
+    <color name="bg_block_start_dark">#808080</color>
+    <color name="bg_block_exe">#D4E6F1</color>
+    <color name="bg_block_exe_dark">#808080</color>
+    <color name="bg_block_if">#F8F5B5</color>
+    <color name="bg_block_if_dark">#808080</color>
+    <color name="bg_block_loop">#FFE5F1</color>
+    <color name="bg_block_loop_dark">#808080</color>
     <color name="bg_block_not_use">#ECECEC</color>
-    <color name="bg_block_not_use_dark">#878787</color>
+    <color name="bg_block_not_use_dark">#808080</color>
+
+    <color name="error_text">#CCC80000</color>
+    <color name="drop_line">#CCC80000</color>
+    <color name="drop_trash">#CCC80000</color>
+
+
+
 
 
     <color name="white_80">#CCFFFFFF</color>
-
-    <color name="error_text">#CCC80000</color>
-
-    <color name="drop_line">#CCC80000</color>
-
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>

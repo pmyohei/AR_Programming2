@@ -19,7 +19,7 @@
             android:id="@+id/iv_markInStart"
             android:layout_width="@dimen/block_icon_size"
             android:layout_height="@dimen/block_icon_size"
-            android:src="@drawable/baseline_bottom_mark_24"
+            android:src="@drawable/baseline_add_block_to_24"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

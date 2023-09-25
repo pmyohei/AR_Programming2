@@ -5,9 +5,9 @@
     android:id="@+id/ll_startRoot"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:minWidth="240dp"
+    android:minWidth="200dp"
     android:minHeight="52dp"
-    android:background="@drawable/frame_block_exe"
+    android:background="@drawable/frame_block_start"
     tools:context=".ARActivity">
 
     <TextView
@@ -19,6 +19,7 @@
         android:layout_marginStart="24dp"
         android:text="Start"
         android:textSize="28sp"
+        android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -37,7 +38,7 @@
             android:id="@+id/iv_markInStart"
             android:layout_width="@dimen/block_icon_size"
             android:layout_height="@dimen/block_icon_size"
-            android:src="@drawable/baseline_bottom_mark_24"
+            android:src="@drawable/baseline_add_block_to_24"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

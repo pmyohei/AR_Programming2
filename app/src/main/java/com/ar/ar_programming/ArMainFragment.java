@@ -17,7 +17,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -28,6 +30,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResult;
@@ -375,25 +378,55 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
      */
     private void setRemoveBlockArea() {
 
-        // 削除エリア
-        ViewGroup root = binding.getRoot();
-        View iv_removeBlock = root.findViewById(R.id.iv_removeBlock);
+        Context context = getContext();
 
+        // 削除エリアアイコン
+        ViewGroup root = binding.getRoot();
+        ImageView iv_removeBlock = root.findViewById(R.id.iv_removeBlock);
+
+        //----------------------
+        // ゴミ箱アイコンリソース
+        //----------------------
+        // 通常アイコン
+        final Drawable normalImageDrawable = iv_removeBlock.getDrawable();
+
+        // ブロックドラッグ中アイコン
+        String draggedImage = "baseline_block_remove_drag";
+        Resources resources = getResources();
+        String packageName = context.getPackageName();
+
+        int drawableId = resources.getIdentifier(draggedImage, "drawable", packageName);
+        final Drawable draggedImageDrawable = context.getDrawable(drawableId);
+
+        //----------------------
+        // ブロックドロップ処理
+        //----------------------
         iv_removeBlock.setOnDragListener(new View.OnDragListener() {
             @Override
             public boolean onDrag(View view, DragEvent dragEvent) {
 
                 switch (dragEvent.getAction()) {
                     case DragEvent.ACTION_DRAG_STARTED:
-                    case DragEvent.ACTION_DRAG_ENTERED:
                     case DragEvent.ACTION_DRAG_LOCATION:
-                    case DragEvent.ACTION_DRAG_EXITED:
                     case DragEvent.ACTION_DRAG_ENDED:
+                        // 処理なし
+                        return true;
+
+                    case DragEvent.ACTION_DRAG_ENTERED:
+                        // ドラッグ中アイコンに変更
+                        iv_removeBlock.setImageDrawable(draggedImageDrawable);
+                        return true;
+
+                    case DragEvent.ACTION_DRAG_EXITED:
+                        // アイコンを通常状態に変更
+                        iv_removeBlock.setImageDrawable(normalImageDrawable);
                         return true;
 
                     case DragEvent.ACTION_DROP:
                         // ドラッグ中ブロックを処理ラインから削除
                         removeBlockFromLine((ProcessBlock) dragEvent.getLocalState());
+                        // アイコンを通常状態に変更
+                        iv_removeBlock.setImageDrawable(normalImageDrawable);
                         return true;
 
                     default:

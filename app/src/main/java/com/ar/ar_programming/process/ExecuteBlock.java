@@ -1,6 +1,8 @@
 package com.ar.ar_programming.process;
 
 import static com.ar.ar_programming.Gimmick.VOLUME_LIMIT_NONE;
+import static com.ar.ar_programming.GimmickManager.BLOCK_EXE_BACK;
+import static com.ar.ar_programming.GimmickManager.BLOCK_EXE_FORWARD;
 
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
@@ -91,7 +93,7 @@ public class ExecuteBlock extends ProcessBlock {
             //------------------------
             // 処理量をユーザーが変更可能
             //------------------------
-            case GimmickManager.BLOCK_EXE_FORWARD:
+            case BLOCK_EXE_FORWARD:
             case GimmickManager.BLOCK_EXE_BACK:
             case GimmickManager.BLOCK_EXE_ROTATE_RIGHT:
             case GimmickManager.BLOCK_EXE_ROTATE_LEFT:
@@ -115,7 +117,10 @@ public class ExecuteBlock extends ProcessBlock {
     private void setNoVolumeLayout() {
         // 処理量viewを非表示
         TextView tv_volume = findViewById(R.id.tv_volume);
+        TextView tv_unit = findViewById(R.id.tv_unit);
+
         tv_volume.setVisibility( GONE );
+        tv_unit.setVisibility( GONE );
     }
 
     /*
@@ -124,10 +129,12 @@ public class ExecuteBlock extends ProcessBlock {
     private void setVolumeListener() {
 
         //--------------------
-        // ダイアログ表示設定
+        // 処理量
         //--------------------
         TextView tv_volume = findViewById(R.id.tv_volume);
+        // 処理量文字列初期設定
         tv_volume.setText(String.format(VOLUME_FORMAT, mProcessVolume));
+        // 処理量ダイアログ表示設定
         tv_volume.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -142,6 +149,23 @@ public class ExecuteBlock extends ProcessBlock {
                 }
             }
         });
+
+        //--------------------
+        // 単位表記
+        //--------------------
+        // アクションに応じた単位文字列
+        String unit;
+        if( mXmlBlockInfo.action.equals( BLOCK_EXE_FORWARD ) || mXmlBlockInfo.action.equals( BLOCK_EXE_BACK ) ){
+            // 歩く
+            unit = getContext().getString( R.string.block_unit_walk );
+        } else {
+            // 回転
+            unit = getContext().getString( R.string.block_unit_rotate );
+        }
+
+        // 単位文字列を設定
+        TextView tv_unit = findViewById(R.id.tv_unit);
+        tv_unit.setText( unit );
     }
 
     /*

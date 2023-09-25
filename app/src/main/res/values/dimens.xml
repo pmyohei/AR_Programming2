@@ -9,7 +9,6 @@
     <dimen name="home_tx_margin_start">20dp</dimen>
     <dimen name="home_tx_size">24sp</dimen>
 
-
     <dimen name="setting_title_margin_top">32dp</dimen>
     <dimen name="setting_title_margin_start">20dp</dimen>
     <dimen name="setting_item_margin_top">18dp</dimen>
@@ -17,11 +16,8 @@
     <dimen name="setting_tx_item_size">14sp</dimen>
     <dimen name="setting_icon_size">40dp</dimen>
 
-
-
     <dimen name="chart_area_width">2000dp</dimen>
     <dimen name="chart_area_height">2000dp</dimen>
-
 
     <dimen name="catch_drap_height">6dp</dimen>
     <dimen name="drap_line_height">6dp</dimen>
@@ -29,6 +25,8 @@
 
     <dimen name="block_icon_size">24dp</dimen>
     <dimen name="block_icon_margin_start">8dp</dimen>
+    <dimen name="block_stroke">2dp</dimen>
+    <dimen name="block_radius">4dp</dimen>
 
     <!--  ダイアログ：目標の提示  -->
     <dimen name="dialog_goal_start_margin">20dp</dimen>

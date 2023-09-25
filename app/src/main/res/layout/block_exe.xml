@@ -27,14 +27,24 @@
         app:layout_constraintStart_toStartOf="parent"/>
 
     <TextView
+        android:id="@+id/tv_unit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:text="cm"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/tv_volume" />
+
+    <TextView
         android:id="@+id/tv_contents"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
-        android:text="cm 前へ進む（仮）"
+        android:text="前へ進む（仮）"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@id/tv_volume" />
+        app:layout_constraintStart_toEndOf="@id/tv_unit" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cl_markArea"
@@ -52,7 +62,7 @@
             android:layout_width="@dimen/block_icon_size"
             android:layout_height="@dimen/block_icon_size"
             android:visibility="gone"
-            android:src="@drawable/baseline_bottom_mark_24"
+            android:src="@drawable/baseline_add_block_to_24"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
