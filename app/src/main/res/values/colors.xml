@@ -14,6 +14,7 @@
     <!---->
     <color name="bg_toolar">#f8a978</color>
     <color name="bg_programing_area_top">#fcf9ea</color>
+    <color name="little_transparent">#F2FFFFFF</color>
 
     <!---->
     <!-- ゴール確認UI／ダイアログ -->

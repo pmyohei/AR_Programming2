@@ -20,7 +20,7 @@
         app:layout_constraintEnd_toEndOf="parent" />
 
     <TextView
-        android:id="@+id/tv_retTitle"
+        android:id="@+id/tv_pageTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/ar_dialog_success"
@@ -42,7 +42,7 @@
         android:background="@color/bg_block_if_dark"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_retTitle" />
+        app:layout_constraintTop_toBottomOf="@id/tv_pageTitle" />
 
     <TextView
         android:id="@+id/tv_otherStage"

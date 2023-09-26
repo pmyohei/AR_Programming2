@@ -37,4 +37,11 @@
     <!---->
     <dimen name="goal_guide_bg_icon">40dp</dimen>
 
+    <!---->
+    <!--  使い方ページ  -->
+    <!---->
+    <dimen name="how_to_page_title">20sp</dimen>
+    <dimen name="how_to_page_exp">14sp</dimen>
+
+
 </resources>

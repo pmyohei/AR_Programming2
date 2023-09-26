@@ -175,6 +175,45 @@
     <string name="ar_dialog_break">休憩（ホームへ）</string>
 
     <!---->
+    <!-- 遊び方 -->
+    <!---->
+    <!-- ブロック基本操作 -->
+    <string name="how_to_add_block_title">ブロック追加のやり方</string>
+    <string name="how_to_add_block_explanation">プログラミング画面下にある\n横に並んだブロックをタッチすると\n「下矢印のあるブロック」の下に追加されるよ</string>
+
+    <string name="how_to_move_block_title">ブロック移動のやり方</string>
+    <string name="how_to_move_block_explanation">ブロックを「今とは別のブロックの下」に移動したい場合は、\nドラッグ\＆ドロップを使おう</string>
+
+    <string name="how_to_remove_block_title">ブロック削除のやり方</string>
+    <string name="how_to_remove_block_explanation">いらないブロックは、ドラッグ＆ドロップで右上のごみ箱に持っていこう。\n作成したプログラムから削除することができるよ。</string>
+
+    <string name="how_to_set_volume_title">ブロック処理量の設定</string>
+    <string name="how_to_set_volume_explanation">ブロックによっては自分で処理の量を決める必要があるよ。\nブロック上の数値をタッチすると設定できるよ。</string>
+
+    <!-- Loopブロック -->
+    <string name="how_to_about_loop_block_title">ループブロックとは？</string>
+    <string name="how_to_about_loop_block_explanation">繰り返しブロックともいうよ。\nキャラクターが\n「Loopブロックにかかれた状態」\nになるまで、\n「Loopブロックの中にあるブロック」を\n実行し続けるブロックだよ。\n同じことを繰り返したいときに使ってね。</string>
+
+    <!-- ifブロック -->
+    <string name="how_to_about_if_block_title">ifブロックとは？</string>
+    <string name="how_to_about_if_block_explanation">条件分岐ブロックともいうよ。\n「ifブロックに書かれたこと」が成立しているなら、\n「ifブロックの中にあるブロック」を\n実行するブロックだよ。\n成立していないなら、\n中にあるブロックは実行されないよ。\n状況によっては実行したいブロックが\nあるときに使ってね。</string>
+    <string name="how_to_about_if_block_example_1">ケース：ifブロックの条件成立</string>
+    <string name="how_to_about_if_block_example_2">ケース：ifブロックの条件不成立</string>
+
+    <!-- if elseブロック -->
+    <string name="how_to_about_if_else_block_title">if elseブロックとは？</string>
+    <string name="how_to_about_if_else_block_explanation">条件分岐ブロックともいうよ。\nブロックに書かれたことが成立しているなら、\n「if側ブロック（上にあるブロック）」を実行するブロックだよ。\nもし、成立していないなら、\n「else側ブロック（下にあるブロック）」を実行するブロックだよ。\n状況によって実行したいブロックを変えたいときに使ってね。\n※「else」はそれ以外って意味だよ。\nある条件が成立していないときにしたいことを決めれるんだ。</string>
+    <string name="how_to_about_if_else_block_example_1">ケース：ifブロックの条件成立</string>
+    <string name="how_to_about_if_else_block_example_2">ケース：ifブロックの条件不成立</string>
+
+    <!-- if elseif elseブロック -->
+    <string name="how_to_about_if_elseif_block_title">if elseif elseブロックとは？</string>
+    <string name="how_to_about_if_elseif_block_explanation">条件分岐ブロックともいうよ。\nブロックの一番上に書かれたことが成立しているなら、\n「if側ブロック（上にあるブロック）」を実行するブロックだよ。\nもし、成立していなくて\nブロックの真ん中に書かれたことが成立しているなら、\n「else if側ブロック（真ん中にあるブロック）」を実行するブロックだよ。\nそれも成立していなかったら\n「else側ブロック（下にあるブロック）」を実行するブロックだよ。\n色んな状況が考えられるときに使ってみよう。</string>
+    <string name="how_to_about_if_elseif_block_example_1">ケース：1つ目の条件成立</string>
+    <string name="how_to_about_if_elseif_block_example_2">ケース：2つ目の条件成立</string>
+    <string name="how_to_about_if_elseif_block_example_3">ケース：どの条件も不成立</string>
+
+    <!---->
     <!-- キャラクター（.glbファイル名と一致させること） -->
     <!---->
     <string name="animal_bear">bear</string>

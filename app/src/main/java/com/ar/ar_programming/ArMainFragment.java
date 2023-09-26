@@ -199,6 +199,11 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
         setPlaneVisual(view.getContext());
         // 平面タップリスナーの設定
         setTapPlaneListener(arFragment);
+
+
+        HelpDialog failureDialog = new HelpDialog();
+        failureDialog.show(getActivity().getSupportFragmentManager(), "help");
+
     }
 
 
