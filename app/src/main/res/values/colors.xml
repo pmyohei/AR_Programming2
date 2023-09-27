@@ -10,6 +10,13 @@
     <color name="bg_home_setting">#FFE5F1</color>
 
     <!---->
+    <!-- HOME画面 -->
+    <!---->
+    <color name="bg_how_ar">#ffffff</color>
+    <color name="bg_how_block_operation">#D7F4D1</color>
+
+
+    <!---->
     <!-- AR画面：共通 -->
     <!---->
     <color name="bg_toolar">#f8a978</color>

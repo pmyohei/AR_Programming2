@@ -7,12 +7,12 @@
     tools:context=".HomeActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/cl_play"
+        android:id="@+id/cl_startAR"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:background="@color/bg_home_play"
         android:onClick="onPlayClicked"
-        app:layout_constraintBottom_toTopOf="@+id/cl_how"
+        app:layout_constraintBottom_toTopOf="@+id/cl_blockOperation"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -47,13 +47,13 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/cl_how"
+        android:id="@+id/cl_blockOperation"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:background="@color/bg_home_how"
         android:onClick="onHowToPlayClicked"
-        app:layout_constraintTop_toBottomOf="@+id/cl_play"
-        app:layout_constraintBottom_toTopOf="@+id/cl_setting"
+        app:layout_constraintTop_toBottomOf="@+id/cl_startAR"
+        app:layout_constraintBottom_toTopOf="@+id/cl_whatIsLoopBlock"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         tools:context=".HomeActivity">
@@ -70,7 +70,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/tv_how"
+            android:id="@+id/tv_blockOperation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/home_tx_margin_start"
@@ -88,12 +88,12 @@
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/cl_setting"
+        android:id="@+id/cl_whatIsLoopBlock"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:background="@color/bg_home_setting"
         android:onClick="onSettingClicked"
-        app:layout_constraintTop_toBottomOf="@+id/cl_how"
+        app:layout_constraintTop_toBottomOf="@+id/cl_blockOperation"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -111,7 +111,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/tv_setting"
+            android:id="@+id/tv_whatIsLoopBlock"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/home_tx_margin_start"

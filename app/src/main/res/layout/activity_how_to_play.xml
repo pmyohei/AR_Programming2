@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".HowToPlayActivity">
+
+
+    <!--  2段目  -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_startAR"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@drawable/frame_how_to_ar"
+        android:onClick="onHowToStartARClicked"
+        app:layout_constraintBottom_toTopOf="@+id/cl_blockOperation"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:context=".HowToPlayActivity">
+
+        <TextView
+            android:id="@+id/tv_startAR"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/hachimarupop_regular"
+            android:letterSpacing="0.2"
+            android:text="@string/how_to_play_ar"
+            android:textAlignment="center"
+            android:textColor="@color/tx_home"
+            android:textSize="@dimen/how_to_play_tx_size"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_blockOperation"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/frame_how_to_block_operation"
+        android:onClick="onHowToBlockOperation"
+        app:layout_constraintTop_toBottomOf="@+id/cl_startAR"
+        app:layout_constraintBottom_toTopOf="@+id/cl_whatIsLoopBlock"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/cl_whatIsExeBlock"
+        tools:context=".HowToPlayActivity">
+
+        <TextView
+            android:id="@+id/tv_blockOperation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/how_to_block_operations"
+            android:textAlignment="center"
+            android:textColor="@color/tx_home"
+            android:textSize="@dimen/how_to_play_tx_size"
+            android:letterSpacing="0.2"
+            android:fontFamily="@font/hachimarupop_regular"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_whatIsExeBlock"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/frame_how_to_exe"
+        android:onClick="onWhatIsExeBlock"
+        app:layout_constraintTop_toBottomOf="@+id/cl_startAR"
+        app:layout_constraintBottom_toTopOf="@+id/cl_whatIsLoopBlock"
+        app:layout_constraintStart_toEndOf="@+id/cl_blockOperation"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:context=".HowToPlayActivity">
+
+        <TextView
+            android:id="@+id/tv_whatIsExeBlock"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/what_is_exe_block"
+            android:textAlignment="center"
+            android:textColor="@color/tx_home"
+            android:textSize="@dimen/how_to_play_tx_size"
+            android:letterSpacing="0.2"
+            android:fontFamily="@font/hachimarupop_regular"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!--  3段目  -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_whatIsLoopBlock"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/frame_how_to_loop"
+        android:onClick="onWhatIsLoopBlock"
+        app:layout_constraintTop_toBottomOf="@+id/cl_blockOperation"
+        app:layout_constraintBottom_toTopOf="@+id/cl_whatIsIfElseBlock"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/cl_whatIsIfBlock"
+        tools:context=".HowToPlayActivity">
+
+        <TextView
+            android:id="@+id/tv_whatIsLoopBlock"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/what_is_loop_block"
+            android:textAlignment="center"
+            android:textColor="@color/tx_home"
+            android:textSize="@dimen/how_to_play_tx_size"
+            android:letterSpacing="0.2"
+            android:fontFamily="@font/hachimarupop_regular"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_whatIsIfBlock"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/frame_how_to_if"
+        android:onClick="onWhatIsIfBlock"
+        app:layout_constraintTop_toBottomOf="@+id/cl_blockOperation"
+        app:layout_constraintBottom_toTopOf="@+id/cl_whatIsIfElseBlock"
+        app:layout_constraintStart_toEndOf="@+id/cl_whatIsLoopBlock"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:context=".HowToPlayActivity">
+
+        <TextView
+            android:id="@+id/tv_whatIsIfBlock"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/what_is_if_block"
+            android:textAlignment="center"
+            android:textColor="@color/tx_home"
+            android:textSize="@dimen/how_to_play_tx_size"
+            android:letterSpacing="0.2"
+            android:fontFamily="@font/hachimarupop_regular"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+
+    <!--  4段目  -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_whatIsIfElseBlock"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/frame_how_to_if_else"
+        android:onClick="onWhatIsIfElseBlock"
+        app:layout_constraintTop_toBottomOf="@+id/cl_whatIsLoopBlock"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/cl_whatIsIfElseIfBlock"
+        tools:context=".HowToPlayActivity">
+
+        <TextView
+            android:id="@+id/tv_whatIsIfElseBlock"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/what_is_if_else_block"
+            android:textAlignment="center"
+            android:textColor="@color/tx_home"
+            android:textSize="@dimen/how_to_play_tx_size"
+            android:letterSpacing="0.2"
+            android:fontFamily="@font/hachimarupop_regular"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_whatIsIfElseIfBlock"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/frame_how_to_if_elseif"
+        android:onClick="onWhatIsIfElseIfBlock"
+        app:layout_constraintTop_toBottomOf="@+id/cl_whatIsLoopBlock"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/cl_whatIsIfElseBlock"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:context=".HowToPlayActivity">
+
+        <TextView
+            android:id="@+id/tv_whatIsIfElseIfBlock"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/what_is_if_elseif_block"
+            android:textAlignment="center"
+            android:textColor="@color/tx_home"
+            android:textSize="@dimen/how_to_play_tx_size"
+            android:letterSpacing="0.2"
+            android:fontFamily="@font/hachimarupop_regular"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

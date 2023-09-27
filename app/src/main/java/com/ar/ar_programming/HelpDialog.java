@@ -31,6 +31,8 @@ import java.util.List;
 
 public class HelpDialog extends DialogFragment {
 
+    private OnStartEndListener mOnStartEndListener;
+
     // 空のコンストラクタ
     // ※必須（画面回転等の画面再生成時にコールされる）
     public HelpDialog(){
@@ -61,11 +63,11 @@ public class HelpDialog extends DialogFragment {
             return;
         }
 
-        //  ダイアログサイズ設定
+        // ダイアログサイズ設定
         setupDialogSize(dialog);
 
-        // ページ設定
-        setupHelpPage();
+        // onStart()終了リスナーをコール
+        mOnStartEndListener.onStartEnd();
     }
 
     /*
@@ -73,33 +75,48 @@ public class HelpDialog extends DialogFragment {
      */
     private void setupDialogSize(Dialog dialog) {
 
-        // -------------------
-        //  スマホ画面に対する割合
-        // -------------------
-        final float PORTRAIT_RATIO = 0.8f;  // 縦画面時
-        final float LANDSCAPE_RATIO = 0.5f; // 横画面時
+        //-------------------
+        // スマホ画面に対する割合
+        //-------------------
+        // 縦幅
+        final float HEIGHT_RATIO = 0.8f;
+        // 横幅
+        final float PORTRAIT_WIDTH_RATIO = 0.8f;  // 縦画面時
+        final float LANDSCAPE_WIDTH_RATIO = 0.5f; // 横画面時
 
-        // -------------------
-        //  サイズ設定
-        // -------------------
-        //  画面向きを取得
+        //-------------------
+        // サイズ設定
+        //-------------------
+        // 画面向きを取得
         int orientation = getResources().getConfiguration().orientation;
-        float widthRatio = ((orientation == Configuration.ORIENTATION_PORTRAIT) ? PORTRAIT_RATIO : LANDSCAPE_RATIO);
+        float widthRatio = ((orientation == Configuration.ORIENTATION_PORTRAIT) ? PORTRAIT_WIDTH_RATIO : LANDSCAPE_WIDTH_RATIO);
 
-        //  画面サイズの取得
-        int screeenWidth = getScreenWidth(getContext());
+        // 画面サイズの取得
+        int screeenHeight = getScreenHeight( getContext() );
+        int screeenWidth = getScreenWidth( getContext() );
         Window window = dialog.getWindow();
         WindowManager.LayoutParams lp = dialog.getWindow().getAttributes();
+        lp.height = (int) (screeenHeight * HEIGHT_RATIO);
         lp.width = (int) (screeenWidth * widthRatio);
 
         //  サイズ反映
         window.setAttributes(lp);
+    }
 
-        // --------------
-        //  可視情報
-        // --------------
-        //  ダイアログ背景の暗転を無効化
-        window.clearFlags( WindowManager.LayoutParams.FLAG_DIM_BEHIND );
+    /*
+     *　スクリーン縦幅を取得
+     */
+    private int getScreenHeight(Context context) {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            WindowManager windowManager = (WindowManager) context.getSystemService(WINDOW_SERVICE);
+            WindowMetrics windowMetrics = windowManager.getCurrentWindowMetrics();
+            return windowMetrics.getBounds().height();
+        } else {
+            DisplayMetrics displayMetrics = new DisplayMetrics();
+            ((Activity) context).getWindowManager().getDefaultDisplay().getRealMetrics(displayMetrics);
+            return displayMetrics.heightPixels;
+        }
     }
 
     /*
@@ -121,14 +138,7 @@ public class HelpDialog extends DialogFragment {
     /*
      * ヘルプページレイアウトを設定
      */
-    private void setupHelpPage() {
-
-        // ヘルプページリスト
-        List<Integer> layoutIdList = new ArrayList<>();
-        layoutIdList.add(R.layout.help_page_how_to_add_block);
-        layoutIdList.add(R.layout.help_page_how_to_move_block);
-        layoutIdList.add(R.layout.help_page_how_to_remove_block);
-        layoutIdList.add(R.layout.help_page_how_to_set_volume);
+    public void setupHelpPage( List<Integer> layoutIdList ) {
 
         // ViewPager2にアダプタを割り当て
         Dialog dialog = getDialog();
@@ -140,6 +150,20 @@ public class HelpDialog extends DialogFragment {
         new TabLayoutMediator(tabLayout, vp2_help,
                 (tab, position) -> tab.setText("")
         ).attach();
+    }
+
+    /*
+     * onStart()終了リスナー設定
+     */
+    public void setOnStartEndListerner(OnStartEndListener listerner) {
+        mOnStartEndListener = listerner;
+    }
+
+    /*
+     * onStart()終了インターフェース
+     */
+    public interface OnStartEndListener {
+        void onStartEnd();
     }
 
     /*

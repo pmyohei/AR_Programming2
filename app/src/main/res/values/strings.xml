@@ -24,6 +24,19 @@
     <string name="home_setting">Setting</string>
 
     <!---->
+    <!-- 遊び方画面 -->
+    <!---->
+    <string name="how_to_play_ar">ARの始め方</string>
+    <string name="how_to_block_operations">ブロック基本操作</string>
+    <string name="what_is_exe_block">実行ブロック\nとは？</string>
+    <string name="what_is_loop_block">ループブロック\nとは？</string>
+    <string name="what_is_if_block">ifブロック\nとは？</string>
+    <string name="what_is_if_else_block">if elseブロック\nとは？</string>
+    <string name="what_is_if_elseif_block">if elseif\nelseブロック\nとは？</string>
+
+
+
+    <!---->
     <!-- 設定画面 -->
     <!---->
     <string name="setting_title">ゲーム設定</string>

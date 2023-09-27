@@ -30,7 +30,8 @@ public class HomeActivity extends AppCompatActivity {
      * 「遊び方」押下時処理
      */
     public void onHowToPlayClicked(View view) {
-
+        Intent intent = new Intent(this, HowToPlayActivity.class);
+        startActivity(intent);
     }
 
     /*

@@ -9,6 +9,9 @@
     <dimen name="home_tx_margin_start">20dp</dimen>
     <dimen name="home_tx_size">24sp</dimen>
 
+    <!--  遊び方画面  -->
+    <dimen name="how_to_play_tx_size">18sp</dimen>
+
     <dimen name="setting_title_margin_top">32dp</dimen>
     <dimen name="setting_title_margin_start">20dp</dimen>
     <dimen name="setting_item_margin_top">18dp</dimen>

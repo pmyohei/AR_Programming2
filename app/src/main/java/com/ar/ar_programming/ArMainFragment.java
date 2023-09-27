@@ -195,15 +195,8 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
         setProgrammingUI();
         // 3Dモデルレンダリング初期生成
         initRenderable();
-        // お試し：平面ドットのビジュアル変更
-        setPlaneVisual(view.getContext());
         // 平面タップリスナーの設定
         setTapPlaneListener(arFragment);
-
-
-        HelpDialog failureDialog = new HelpDialog();
-        failureDialog.show(getActivity().getSupportFragmentManager(), "help");
-
     }
 
 
@@ -1876,42 +1869,6 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
         }
 
         return true;
-    }
-
-    /*
-     * お試し：平面ドットのビジュアル変更
-     */
-    private void setPlaneVisual(Context context) {
-
-        ArSceneView arSceneView = arFragment.getArSceneView();
-
-        Texture.Sampler sampler =
-                Texture.Sampler.builder()
-                        .setMinFilter(Texture.Sampler.MinFilter.LINEAR)
-                        .setWrapMode(Texture.Sampler.WrapMode.REPEAT)
-                        .build();
-
-        // R.drawable.custom_texture is a .png file in src/main/res/drawable
-        Texture.builder()
-                .setSource(context, R.drawable.green_square)
-                .setSampler(sampler)
-                .build()
-                .thenAccept(texture -> {
-                    arSceneView.getPlaneRenderer()
-                            .getMaterial().thenAccept(material -> {
-                                material.setTexture(PlaneRenderer.MATERIAL_TEXTURE, texture);
-                                Log.i("平面", "ドット変更");
-                            });
-                })
-                .exceptionally(
-                        throwable -> {
-//                            Toast toast =
-//                                    Toast.makeText( context, "Unable to load renderable", Toast.LENGTH_LONG);
-//                            toast.setGravity(Gravity.CENTER, 0, 0);
-//                            toast.show();
-//                            Log.i("平面", "平面　失敗");
-                            return null;
-                        });
     }
 
     /*
