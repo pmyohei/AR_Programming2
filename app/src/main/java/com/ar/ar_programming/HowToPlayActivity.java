@@ -55,10 +55,12 @@ public class HowToPlayActivity extends AppCompatActivity {
 
                 // ヘルプページリスト
                 List<Integer> pageList = new ArrayList<>();
+                pageList.add(R.layout.help_page_how_to_block_operation_top);
                 pageList.add(R.layout.help_page_how_to_add_block);
                 pageList.add(R.layout.help_page_how_to_move_block);
                 pageList.add(R.layout.help_page_how_to_remove_block);
                 pageList.add(R.layout.help_page_how_to_set_volume);
+                pageList.add(R.layout.help_page_about_block_limit);
 
                 // ページを設定
                 helpDialog.setupHelpPage( pageList );

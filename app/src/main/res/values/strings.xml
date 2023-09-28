@@ -10,6 +10,9 @@
     <string name="saved_difficulty_key">DIFFICULTY_KEY</string>
     <string name="saved_character_key">CHARACTER_KEY</string>
 
+    <string name="saved_first_start_key" translatable="false">first_start</string>
+
+
     <!---->
     <!-- 共通 -->
     <!---->
@@ -198,6 +201,9 @@
     <string name="how_to_ar_explanation_4">クリアの条件やステージの説明も\nステージの上に表示されてるから、\n確認したらブロックプログラミングに挑戦しよう！</string>
 
     <!-- ブロック基本操作 -->
+    <string name="how_to_block_operation_title">プログラミングの仕方</string>
+    <string name="how_to_block_operation_explanation">プログラミングのやり方を説明していくよ。\nこのアプリでは、プログラミングは\nブロックを組み合わせて行ってくんだ。\n次のページから基本的なやり方が書いてあるから、\n順番に読んでいってね。</string>
+
     <string name="how_to_add_block_title">ブロック追加のやり方</string>
     <string name="how_to_add_block_explanation">プログラミング画面下にある\n横に並んだブロックをタッチすると\n「下矢印のあるブロック」の下に追加されるよ</string>
 
@@ -208,10 +214,10 @@
     <string name="how_to_remove_block_explanation">いらないブロックは、ドラッグ＆ドロップで右上のごみ箱に持っていこう。\n作成したプログラムから削除することができるよ。</string>
 
     <string name="how_to_set_volume_title">ブロック処理量の設定</string>
-    <string name="how_to_set_volume_explanation">ブロックによっては自分で処理の量を決める必要があるよ。\nブロック上の数値をタッチすると設定できるよ。</string>
+    <string name="how_to_set_volume_explanation">ブロックによっては\n自分で処理の量を決める必要があるよ。\nブロック上の数値をタッチすると設定できるから、\nステージをよく見て値を設定しよう！</string>
 
     <string name="how_to_about_limit_title">ブロックの制限</string>
-    <string name="how_to_about_limit_explanation">ステージによっては\nブロックを使用できる数や\n設定できる値に制限がある場合があるよ。\nそういったステージでは\nうまく制限の範囲でプログラミングしてね。</string>
+    <string name="how_to_about_limit_explanation">ステージによっては\nブロックを使用できる数や\n設定できる値に制限がある場合があるよ。\nそういったステージではちょっと工夫が必要になるよ。\nうまく制限の範囲でプログラミングしてね。</string>
 
     <!-- exeブロック -->
     <string name="how_to_about_exe_block_title">実行ブロックとは？</string>

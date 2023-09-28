@@ -1,5 +1,6 @@
 package com.ar.ar_programming;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,6 +16,9 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ARActivity extends AppCompatActivity {
 
@@ -52,7 +56,88 @@ public class ARActivity extends AppCompatActivity {
                 mPlayControlListener.onPlayControlClick( (FloatingActionButton)view );
             }
         });
+
+        //---------------------
+        // アプリ初回起動のみの処理
+        //---------------------
+        onlyFirstStartApp();
     }
+
+    /*
+     * アプリ初回起動のみの処理
+     */
+    private void onlyFirstStartApp() {
+
+        //------------------
+        // 初回起動情報の取得
+        //------------------
+        boolean isFirstStart = isFirstStart();
+        if( !isFirstStart ){
+            // 初期起動でなければ、何もしない
+            return;
+        }
+
+        //------------------
+        // 初回起動時処理
+        //------------------
+        // 初回起動情報の更新
+        savedFirstStartInfo();
+
+        // ARのやり方ダイアログを表示
+        showHowToPlayDialog();
+    }
+
+    /*
+     * アプリ初回起動かどうか
+     */
+    private boolean isFirstStart() {
+
+        // 取得出来ない（初回起動）場合の値
+        final boolean defaultValue = true;
+
+        // アプリ初回起動の情報を取得
+        SharedPreferences sharedPref = getSharedPreferences( getString(R.string.preference_file_key), MODE_PRIVATE) ;
+        return sharedPref.getBoolean( getString(R.string.saved_first_start_key), defaultValue);
+    }
+
+    /*
+     * アプリ初回起動情報の保存（初回起動済みとして保存）
+     */
+    private void savedFirstStartInfo() {
+
+        // アプリ初回起動を「初回起動済み」として保存
+        SharedPreferences sharedPref = getSharedPreferences( getString(R.string.preference_file_key), MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putBoolean( getString(R.string.saved_first_start_key), false);
+        editor.apply();
+    }
+
+    /*
+     * アプリ初回起動情報の保存（初回起動済みとして保存）
+     */
+    private void showHowToPlayDialog() {
+
+        HelpDialog helpDialog = new HelpDialog();
+        helpDialog.show(this.getSupportFragmentManager(), "help");
+
+        // onStart()終了リスナーの設定
+        helpDialog.setOnStartEndListerner( new HelpDialog.OnStartEndListener() {
+            @Override
+            public void onStartEnd() {
+
+                // ヘルプページリスト
+                List<Integer> pageList = new ArrayList<>();
+                pageList.add(R.layout.help_page_about_ar_1);
+                pageList.add(R.layout.help_page_about_ar_2);
+                pageList.add(R.layout.help_page_about_ar_3);
+                pageList.add(R.layout.help_page_about_ar_4);
+
+                // ページを設定
+                helpDialog.setupHelpPage( pageList );
+            }
+        });
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
