@@ -30,10 +30,10 @@ public class HowToPlayActivity extends AppCompatActivity {
 
                 // ヘルプページリスト
                 List<Integer> pageList = new ArrayList<>();
-                pageList.add(R.layout.help_page_how_to_add_block);
-                pageList.add(R.layout.help_page_how_to_move_block);
-                pageList.add(R.layout.help_page_how_to_remove_block);
-                pageList.add(R.layout.help_page_how_to_set_volume);
+                pageList.add(R.layout.help_page_about_ar_1);
+                pageList.add(R.layout.help_page_about_ar_2);
+                pageList.add(R.layout.help_page_about_ar_3);
+                pageList.add(R.layout.help_page_about_ar_4);
 
                 // ページを設定
                 helpDialog.setupHelpPage( pageList );
@@ -80,7 +80,7 @@ public class HowToPlayActivity extends AppCompatActivity {
 
                 // ヘルプページリスト
                 List<Integer> pageList = new ArrayList<>();
-                pageList.add(R.layout.help_page_how_to_add_block);
+                pageList.add(R.layout.help_page_about_exe_block);
 
                 // ページを設定
                 helpDialog.setupHelpPage( pageList );

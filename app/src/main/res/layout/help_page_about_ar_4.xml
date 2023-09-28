@@ -8,10 +8,12 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:overScrollMode="never"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent">
+        app:layout_constraintVertical_bias="1.0">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -23,7 +25,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
                 android:layout_marginBottom="12dp"
-                android:text="@string/how_to_about_if_block_title"
+                android:text="@string/how_to_ar_title"
                 android:textAlignment="center"
                 android:textColor="@color/black"
                 android:textSize="@dimen/how_to_page_title"
@@ -45,18 +47,18 @@
                 app:layout_constraintTop_toBottomOf="@id/tv_pageTitle" />
 
             <TextView
-                android:id="@+id/tv_exp1"
+                android:id="@+id/tv_exp4"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:text="@string/how_to_about_if_block_explanation"
+                android:layout_marginTop="32dp"
+                android:text="@string/how_to_ar_explanation_4"
                 android:textAlignment="center"
                 android:textColor="@color/black"
                 android:textSize="@dimen/how_to_page_exp"
                 android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/v_border" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>

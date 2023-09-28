@@ -23,7 +23,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
                 android:layout_marginBottom="12dp"
-                android:text="@string/how_to_about_if_block_title"
+                android:text="@string/how_to_about_limit_title"
                 android:textAlignment="center"
                 android:textColor="@color/black"
                 android:textSize="@dimen/how_to_page_title"
@@ -49,15 +49,35 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
-                android:text="@string/how_to_about_if_block_explanation"
+                android:text="@string/how_to_about_limit_explanation"
                 android:textAlignment="center"
                 android:textColor="@color/black"
                 android:textSize="@dimen/how_to_page_exp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/v_border" />
+
+            <ImageView
+                android:id="@+id/iv_sample"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:src="@drawable/how_to_block_limit_1"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_exp1" />
+
+            <ImageView
+                android:id="@+id/iv_sample2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:src="@drawable/how_to_block_limit_2"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/iv_sample" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

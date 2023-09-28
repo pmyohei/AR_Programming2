@@ -190,6 +190,13 @@
     <!---->
     <!-- 遊び方 -->
     <!---->
+    <!-- AR基本操作 -->
+    <string name="how_to_ar_title">ARの遊び方</string>
+    <string name="how_to_ar_explanation_1">ホーム画面で「Play」を選択すると、\nARカメラが起動するよ。\nまずはカメラで身の回りにある\n平面なところを映してみよう！</string>
+    <string name="how_to_ar_explanation_2">カメラが平面を認識すると\n「白いドット」が表示されるから\nそのドットをタッチしてね！\n真っ白な机や床は平面だと認識しずらいから、\nもしドットが表示されないなら、\n少し柄のある場所を映してみてね。</string>
+    <string name="how_to_ar_explanation_3">タッチしたところに\nARでゲームのステージが出現するよ。\nそれが君が挑戦するステージだ！</string>
+    <string name="how_to_ar_explanation_4">クリアの条件やステージの説明も\nステージの上に表示されてるから、\n確認したらブロックプログラミングに挑戦しよう！</string>
+
     <!-- ブロック基本操作 -->
     <string name="how_to_add_block_title">ブロック追加のやり方</string>
     <string name="how_to_add_block_explanation">プログラミング画面下にある\n横に並んだブロックをタッチすると\n「下矢印のあるブロック」の下に追加されるよ</string>
@@ -202,6 +209,14 @@
 
     <string name="how_to_set_volume_title">ブロック処理量の設定</string>
     <string name="how_to_set_volume_explanation">ブロックによっては自分で処理の量を決める必要があるよ。\nブロック上の数値をタッチすると設定できるよ。</string>
+
+    <string name="how_to_about_limit_title">ブロックの制限</string>
+    <string name="how_to_about_limit_explanation">ステージによっては\nブロックを使用できる数や\n設定できる値に制限がある場合があるよ。\nそういったステージでは\nうまく制限の範囲でプログラミングしてね。</string>
+
+    <!-- exeブロック -->
+    <string name="how_to_about_exe_block_title">実行ブロックとは？</string>
+    <string name="how_to_about_exe_block_explanation">キャラクターに特定の行動をさせるブロックだよ。\nうまく組み合わせてARのステージをクリアしよう！</string>
+    <string name="how_to_about_exe_block_note">「xxxを食べる」や「xxxを拾う」ってブロックは\nキャラクターの目の前に「xxx」がないと\n失敗してしまうよ。。\nなので、例えば\n「にんじんを食べる」\nをしたかったら、\nとりあえず「にんじん」にぶつかるまで前進しちゃおう！\nぶつかっていれば目の前にあることになるからね。</string>
 
     <!-- Loopブロック -->
     <string name="how_to_about_loop_block_title">ループブロックとは？</string>

@@ -6,7 +6,7 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:overScrollMode="never"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -45,7 +45,7 @@
                 app:layout_constraintTop_toBottomOf="@id/tv_pageTitle" />
 
             <TextView
-                android:id="@+id/tv_exp"
+                android:id="@+id/tv_exp1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
@@ -59,15 +59,15 @@
                 app:layout_constraintTop_toBottomOf="@id/v_border" />
 
             <ImageView
-                android:id="@+id/iv_addBlock2"
+                android:id="@+id/iv_sample"
                 android:layout_width="wrap_content"
-                android:layout_height="200dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:src="@drawable/how_to_loop_1"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tv_exp" />
+                app:layout_constraintTop_toBottomOf="@id/tv_exp1" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
