@@ -210,21 +210,21 @@
     <!-- ifブロック -->
     <string name="how_to_about_if_block_title">ifブロックとは？</string>
     <string name="how_to_about_if_block_explanation">条件分岐ブロックともいうよ。\n「ifブロックに書かれたこと」が成立しているなら、\n「ifブロックの中にあるブロック」を\n実行するブロックだよ。\n成立していないなら、\n中にあるブロックは実行されないよ。\n状況によっては実行したいブロックが\nあるときに使ってね。</string>
-    <string name="how_to_about_if_block_example_1">ケース：ifブロックの条件成立</string>
-    <string name="how_to_about_if_block_example_2">ケース：ifブロックの条件不成立</string>
+    <string name="how_to_about_if_block_example_1">ケース①：ifブロックの条件成立</string>
+    <string name="how_to_about_if_block_example_2">ケース②：ifブロックの条件不成立</string>
 
     <!-- if elseブロック -->
     <string name="how_to_about_if_else_block_title">if elseブロックとは？</string>
     <string name="how_to_about_if_else_block_explanation">条件分岐ブロックともいうよ。\nブロックに書かれたことが成立しているなら、\n「if側ブロック（上にあるブロック）」を実行するブロックだよ。\nもし、成立していないなら、\n「else側ブロック（下にあるブロック）」を実行するブロックだよ。\n状況によって実行したいブロックを変えたいときに使ってね。\n※「else」はそれ以外って意味だよ。\nある条件が成立していないときにしたいことを決めれるんだ。</string>
-    <string name="how_to_about_if_else_block_example_1">ケース：ifブロックの条件成立</string>
-    <string name="how_to_about_if_else_block_example_2">ケース：ifブロックの条件不成立</string>
+    <string name="how_to_about_if_else_block_example_1">ケース①：ifブロックの条件成立</string>
+    <string name="how_to_about_if_else_block_example_2">ケース②：ifブロックの条件不成立</string>
 
     <!-- if elseif elseブロック -->
     <string name="how_to_about_if_elseif_block_title">if elseif elseブロックとは？</string>
     <string name="how_to_about_if_elseif_block_explanation">条件分岐ブロックともいうよ。\nブロックの一番上に書かれたことが成立しているなら、\n「if側ブロック（上にあるブロック）」を実行するブロックだよ。\nもし、成立していなくて\nブロックの真ん中に書かれたことが成立しているなら、\n「else if側ブロック（真ん中にあるブロック）」を実行するブロックだよ。\nそれも成立していなかったら\n「else側ブロック（下にあるブロック）」を実行するブロックだよ。\n色んな状況が考えられるときに使ってみよう。</string>
-    <string name="how_to_about_if_elseif_block_example_1">ケース：1つ目の条件成立</string>
-    <string name="how_to_about_if_elseif_block_example_2">ケース：2つ目の条件成立</string>
-    <string name="how_to_about_if_elseif_block_example_3">ケース：どの条件も不成立</string>
+    <string name="how_to_about_if_elseif_block_example_1">ケース①：1つ目の条件成立</string>
+    <string name="how_to_about_if_elseif_block_example_2">ケース②：2つ目の条件成立</string>
+    <string name="how_to_about_if_elseif_block_example_3">ケース③：どの条件も不成立</string>
 
     <!---->
     <!-- キャラクター（.glbファイル名と一致させること） -->

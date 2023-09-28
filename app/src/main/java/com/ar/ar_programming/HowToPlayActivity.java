@@ -81,9 +81,6 @@ public class HowToPlayActivity extends AppCompatActivity {
                 // ヘルプページリスト
                 List<Integer> pageList = new ArrayList<>();
                 pageList.add(R.layout.help_page_how_to_add_block);
-                pageList.add(R.layout.help_page_how_to_move_block);
-                pageList.add(R.layout.help_page_how_to_remove_block);
-                pageList.add(R.layout.help_page_how_to_set_volume);
 
                 // ページを設定
                 helpDialog.setupHelpPage( pageList );
@@ -127,7 +124,9 @@ public class HowToPlayActivity extends AppCompatActivity {
 
                 // ヘルプページリスト
                 List<Integer> pageList = new ArrayList<>();
-                pageList.add(R.layout.help_page_about_if_block);
+                pageList.add(R.layout.help_page_about_if_block_1);
+                pageList.add(R.layout.help_page_about_if_block_2);
+                pageList.add(R.layout.help_page_about_if_block_3);
 
                 // ページを設定
                 helpDialog.setupHelpPage( pageList );
@@ -149,7 +148,9 @@ public class HowToPlayActivity extends AppCompatActivity {
 
                 // ヘルプページリスト
                 List<Integer> pageList = new ArrayList<>();
-                pageList.add(R.layout.help_page_about_if_else_block);
+                pageList.add(R.layout.help_page_about_if_else_block_1);
+                pageList.add(R.layout.help_page_about_if_else_block_2);
+                pageList.add(R.layout.help_page_about_if_else_block_3);
 
                 // ページを設定
                 helpDialog.setupHelpPage( pageList );
@@ -171,7 +172,10 @@ public class HowToPlayActivity extends AppCompatActivity {
 
                 // ヘルプページリスト
                 List<Integer> pageList = new ArrayList<>();
-                pageList.add(R.layout.help_page_about_if_elseif_block);
+                pageList.add(R.layout.help_page_about_if_elseif_block_1);
+                pageList.add(R.layout.help_page_about_if_elseif_block_2);
+                pageList.add(R.layout.help_page_about_if_elseif_block_3);
+                pageList.add(R.layout.help_page_about_if_elseif_block_4);
 
                 // ページを設定
                 helpDialog.setupHelpPage( pageList );

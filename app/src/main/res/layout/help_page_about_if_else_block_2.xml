@@ -6,7 +6,7 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:overScrollMode="never"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -45,20 +45,6 @@
                 app:layout_constraintTop_toBottomOf="@id/tv_pageTitle" />
 
             <TextView
-                android:id="@+id/tv_exp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:text="@string/how_to_about_if_else_block_explanation"
-                android:textAlignment="center"
-                android:textColor="@color/black"
-                android:textSize="@dimen/how_to_page_exp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/v_border" />
-
-            <TextView
                 android:id="@+id/tv_example_1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -70,62 +56,18 @@
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tv_exp" />
+                app:layout_constraintTop_toBottomOf="@id/v_border" />
 
             <ImageView
                 android:id="@+id/iv_case1Image1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:src="@drawable/how_to_add_block_1"
+                android:src="@drawable/how_to_if_else_1_1"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tv_example_1" />
-
-            <ImageView
-                android:id="@+id/iv_case1Image2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:src="@drawable/how_to_add_block_2"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/iv_case1Image1" />
-
-            <TextView
-                android:id="@+id/tv_example_2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:text="@string/how_to_about_if_else_block_example_2"
-                android:textAlignment="center"
-                android:textColor="@color/black"
-                android:textSize="@dimen/how_to_page_exp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/iv_case1Image2" />
-
-            <ImageView
-                android:id="@+id/iv_case2Image1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:src="@drawable/how_to_add_block_1"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tv_example_2" />
-
-            <ImageView
-                android:id="@+id/iv_case2Image2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:src="@drawable/how_to_add_block_2"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/iv_case2Image1" />
+                app:layout_constraintTop_toBottomOf="@id/tv_example_1" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
