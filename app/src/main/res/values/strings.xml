@@ -65,7 +65,7 @@
     <!-- ダイアログ チュートリアル完了まで設定不可 -->
     <string name="setting_dialog_cannot_title">チュートリアルを終えると\n設定できるよ</string>
     <string name="setting_dialog_cannot_supplement">完了したチュートリアル</string>
-    <string name="setting_dialog_cannot_tutorial_status">" / 4"</string>
+    <string name="setting_dialog_cannot_tutorial_status"> / 6</string>
 
     <!-- snackbar -->
     <string name="setting_snackbar_message">保存しました</string>

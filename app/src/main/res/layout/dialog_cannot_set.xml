@@ -122,8 +122,18 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
         android:src="@drawable/baseline_not_star_24"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/iv_star6"
         app:layout_constraintStart_toEndOf="@+id/iv_star4"
+        app:layout_constraintTop_toBottomOf="@id/tv_statusNow" />
+
+    <ImageView
+        android:id="@+id/iv_star6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:src="@drawable/baseline_not_star_24"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/iv_star5"
         app:layout_constraintTop_toBottomOf="@id/tv_statusNow" />
 
 
