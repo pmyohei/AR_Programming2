@@ -31,6 +31,7 @@ import java.util.ArrayList;
 public class GoalExplanationDialogFragment extends DialogFragment {
 
     private ArrayList<Integer> mGoalExplanationIdList;
+    private OnDestroyListener mOnDestroyListener;
 
     //空のコンストラクタ
     //※必須（画面回転等の画面再生成時にコールされる）
@@ -57,7 +58,7 @@ public class GoalExplanationDialogFragment extends DialogFragment {
         //背景を透明にする(デフォルトテーマに付いている影などを消す) ※これをしないと、画面横サイズまで拡張されない
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         // ダイアログ表示時、背景を暗くさせない
-        dialog.getWindow().clearFlags( WindowManager.LayoutParams.FLAG_DIM_BEHIND );
+        dialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
 
         return dialog;
     }
@@ -75,16 +76,22 @@ public class GoalExplanationDialogFragment extends DialogFragment {
         setupDialogSize(dialog);
 
         // 設定文言ID
-        int major = mGoalExplanationIdList.get( GOAl_EXP_MAJOR_POS );
-        int sub = mGoalExplanationIdList.get( GOAl_EXP_SUB_POS );
-        int contents = mGoalExplanationIdList.get( GOAl_EXP_CONTENTS_POS );
-        int explanation = mGoalExplanationIdList.get( GOAl_EXP_EXPLANATION_POS );
+        int major = mGoalExplanationIdList.get(GOAl_EXP_MAJOR_POS);
+        int sub = mGoalExplanationIdList.get(GOAl_EXP_SUB_POS);
+        int contents = mGoalExplanationIdList.get(GOAl_EXP_CONTENTS_POS);
+        int explanation = mGoalExplanationIdList.get(GOAl_EXP_EXPLANATION_POS);
 
         // 説明内容にギミック用xmlの内容を反映
         ((TextView) dialog.findViewById(R.id.tv_majorTitle)).setText(major);
         ((TextView) dialog.findViewById(R.id.tv_subTitle)).setText(sub);
         ((TextView) dialog.findViewById(R.id.tv_goalContents)).setText(contents);
         ((TextView) dialog.findViewById(R.id.tv_explanationContents)).setText(explanation);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mOnDestroyListener.onDestroy();
     }
 
     /*
@@ -103,10 +110,10 @@ public class GoalExplanationDialogFragment extends DialogFragment {
         //-------------------
         // 画面向きを取得
         int orientation = getResources().getConfiguration().orientation;
-        float widthRatio = ( (orientation == Configuration.ORIENTATION_PORTRAIT) ? PORTRAIT_RATIO : LANDSCAPE_RATIO );
+        float widthRatio = ((orientation == Configuration.ORIENTATION_PORTRAIT) ? PORTRAIT_RATIO : LANDSCAPE_RATIO);
 
         // 画面サイズの取得
-        int screeenWidth = getScreenWidth( getContext() );
+        int screeenWidth = getScreenWidth(getContext());
         Window window = dialog.getWindow();
         WindowManager.LayoutParams lp = dialog.getWindow().getAttributes();
         lp.width = (int) (screeenWidth * widthRatio);
@@ -118,7 +125,7 @@ public class GoalExplanationDialogFragment extends DialogFragment {
     /*
      *　スクリーン横幅を取得
      */
-    private int getScreenWidth( Context context ) {
+    private int getScreenWidth(Context context) {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             WindowManager windowManager = (WindowManager) context.getSystemService(WINDOW_SERVICE);
@@ -126,8 +133,23 @@ public class GoalExplanationDialogFragment extends DialogFragment {
             return windowMetrics.getBounds().width();
         } else {
             DisplayMetrics displayMetrics = new DisplayMetrics();
-            ((Activity)context).getWindowManager().getDefaultDisplay().getRealMetrics(displayMetrics);
+            ((Activity) context).getWindowManager().getDefaultDisplay().getRealMetrics(displayMetrics);
             return displayMetrics.widthPixels;
         }
     }
+
+    /*
+     *　onDestroy()検出インターフェースの設定
+     */
+    public void setOnDestroyListener( OnDestroyListener listener ) {
+        mOnDestroyListener = listener;
+    }
+
+    /*
+     * onDestroy()検出インターフェース
+     */
+    public interface OnDestroyListener {
+        void onDestroy();
+    }
+
 }

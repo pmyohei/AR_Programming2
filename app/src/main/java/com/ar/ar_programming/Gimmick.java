@@ -1,5 +1,6 @@
 package com.ar.ar_programming;
 
+import static com.ar.ar_programming.Common.TUTORIAL_FINISH;
 import static com.ar.ar_programming.GimmickManager.BLOCK_ACTION_ATTACHED_POS;
 import static com.ar.ar_programming.GimmickManager.BLOCK_ACTION_DATA_POS;
 import static com.ar.ar_programming.GimmickManager.BLOCK_ACTION_POS;
@@ -31,6 +32,7 @@ public class Gimmick {
     // フィールド変数
     //---------------------------
     public Context mContext;
+    public int mTutorial;       // xmlからは取得しない。内部保存データがソース。
 
     //-----------------
     // ギミックプロパティ
@@ -69,12 +71,6 @@ public class Gimmick {
     // ブロック
     public ArrayList<XmlBlockInfo> xmlBlockInfoList;
     public ArrayList<String> blockList;
-
-    //-----------------
-    // 対応表
-    //-----------------
-    // glbファイル　：　(具体的な)Node名
-//    public Map<String, Integer> Map_glb__nodeName;
 
     /*
      * ブロックプロパティ情報
@@ -121,6 +117,14 @@ public class Gimmick {
 
         mContext = context;
 
+        //-------------------
+        // チュートリアル
+        //-------------------
+        mTutorial = TUTORIAL_FINISH;
+
+        //-------------------
+        // リスト関連
+        //-------------------
         goalExplanationIdList = new ArrayList<>();
 
         objectGlbList = new ArrayList<>();
@@ -138,30 +142,14 @@ public class Gimmick {
 
         xmlBlockInfoList = new ArrayList<>();
         blockList = new ArrayList<>();
-
-
-        //----------------------
-        // 対応表
-        //----------------------
-/*        Map_glb__nodeName = new HashMap<String, Integer>() {
-            {
-                put("house.glb", R.string.house);
-                put("sweet_house.glb", R.string.sweetHouse);
-                put("rabit.glb", R.string.rabit);
-                put("fox_and_tree.glb", R.string.squirrel);
-                put("carrot.glb", R.string.carrot);
-                put("mushroom_poison.glb", R.string.mushroomPoison);
-                put("bee.glb", R.string.bee);
-                put("honey.glb", R.string.honey);
-                put("donuts.glb", R.string.donuts);
-                put("chocolate.glb", R.string.chocolate);
-                put("sports_car.glb", R.string.sportsCar);
-                put("signboard_stop.glb", R.string.signboardStop);
-                put("present.glb", R.string.present);
-            }
-        };*/
     }
 
+    /*
+     * ギミックのチュートリアル値を設定
+     */
+    public void setTutorial(int tutorial) {
+        mTutorial = tutorial;
+    }
 
     /*
      * ギミックxmlの値デリミタで文字列を分割

@@ -4,24 +4,23 @@ import static android.content.Context.MODE_PRIVATE;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
 
 /*
  * 共通処理
  */
 public class Common {
 
+    public static int TUTORIAL_DEFAULT = 1;     // ユーザーデータ取得エラー時のチュートリアル値（データがないなら、初めのチュートリアルから行う）
+    public static int TUTORIAL_FINISH = 7;      // チュートリアル終了値（チュートリアルは『１～「この値 - 1」』）
+
     /*
      * チュートリアルシーケンスの取得
      */
     public static int getTutorialSequence(Context context){
 
-        Resources resources = context.getResources();
-
         // 現在のチュートリアル進行状況を取得
         SharedPreferences sharedPref = context.getSharedPreferences( context.getString(R.string.preference_file_key), MODE_PRIVATE);
-        int defaultValue = resources.getInteger(R.integer.saved_tutorial_block);
-        int tutorial = sharedPref.getInt( context.getString(R.string.saved_tutorial_key), defaultValue);
+        int tutorial = sharedPref.getInt( context.getString(R.string.saved_tutorial_key), TUTORIAL_DEFAULT);
 
         return tutorial;
     }
@@ -31,18 +30,12 @@ public class Common {
      */
     public static boolean isFisishTutorial(Context context){
 
-        Resources resources = context.getResources();
-
-        // チュートリアル終了値
-        final int TUTORIAL_END = resources.getInteger(R.integer.saved_tutorial_end);
-
         // 現在のチュートリアル進行状況を取得
         SharedPreferences sharedPref = context.getSharedPreferences(context.getString(R.string.preference_file_key), MODE_PRIVATE);
-        int defaultValue = resources.getInteger(R.integer.saved_tutorial_block);
-        int tutorial = sharedPref.getInt(context.getString(R.string.saved_tutorial_key), defaultValue);
+        int tutorial = sharedPref.getInt(context.getString(R.string.saved_tutorial_key), TUTORIAL_DEFAULT);
 
         // チュートリアル終了しているかどうか
-        return  (tutorial >= TUTORIAL_END);
+        return  (tutorial >= TUTORIAL_FINISH);
     }
 
 

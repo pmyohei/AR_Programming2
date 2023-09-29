@@ -195,29 +195,29 @@
     <!---->
     <!-- AR基本操作 -->
     <string name="how_to_ar_title">ARの遊び方</string>
-    <string name="how_to_ar_explanation_1">ホーム画面で「Play」を選択すると、\nARカメラが起動するよ。\nまずはカメラで身の回りにある\n平面なところを映してみよう！</string>
+    <string name="how_to_ar_explanation_1">ARカメラが起動したら\nまずはカメラで身の回りにある\n平面なところを映してみよう！</string>
     <string name="how_to_ar_explanation_2">カメラが平面を認識すると\n「白いドット」が表示されるから\nそのドットをタッチしてね！\n真っ白な机や床は平面だと認識しずらいから、\nもしドットが表示されないなら、\n少し柄のある場所を映してみてね。</string>
     <string name="how_to_ar_explanation_3">タッチしたところに\nARでゲームのステージが出現するよ。\nそれが君が挑戦するステージだ！</string>
     <string name="how_to_ar_explanation_4">クリアの条件やステージの説明も\nステージの上に表示されてるから、\n確認したらブロックプログラミングに挑戦しよう！</string>
 
     <!-- ブロック基本操作 -->
     <string name="how_to_block_operation_title">プログラミングの仕方</string>
-    <string name="how_to_block_operation_explanation">プログラミングのやり方を説明していくよ。\nこのアプリでは、プログラミングは\nブロックを組み合わせて行ってくんだ。\n次のページから基本的なやり方が書いてあるから、\n順番に読んでいってね。</string>
+    <string name="how_to_block_operation_explanation">プログラミングのやり方を説明していくよ。\nこのアプリでは、プログラミングは\nブロックを組み合わせて行っていくんだ。\n次のページから基本的なやり方が書いてあるから、\n順番に読んでいってね。</string>
 
     <string name="how_to_add_block_title">ブロック追加のやり方</string>
     <string name="how_to_add_block_explanation">プログラミング画面下にある\n横に並んだブロックをタッチすると\n「下矢印のあるブロック」の下に追加されるよ</string>
 
     <string name="how_to_move_block_title">ブロック移動のやり方</string>
-    <string name="how_to_move_block_explanation">ブロックを「今とは別のブロックの下」に移動したい場合は、\nドラッグ\＆ドロップを使おう</string>
+    <string name="how_to_move_block_explanation">ブロックを「今とは別のブロックの下」\nに移動したい場合は、\nドラッグ\＆ドロップを使おう</string>
 
     <string name="how_to_remove_block_title">ブロック削除のやり方</string>
-    <string name="how_to_remove_block_explanation">いらないブロックは、ドラッグ＆ドロップで右上のごみ箱に持っていこう。\n作成したプログラムから削除することができるよ。</string>
+    <string name="how_to_remove_block_explanation">いらないブロックは、\nドラッグ＆ドロップで右上のごみ箱に持っていこう。\n作成したプログラムから削除することができるよ。</string>
 
     <string name="how_to_set_volume_title">ブロック処理量の設定</string>
     <string name="how_to_set_volume_explanation">ブロックによっては\n自分で処理の量を決める必要があるよ。\nブロック上の数値をタッチすると設定できるから、\nステージをよく見て値を設定しよう！</string>
 
     <string name="how_to_about_limit_title">ブロックの制限</string>
-    <string name="how_to_about_limit_explanation">ステージによっては\nブロックを使用できる数や\n設定できる値に制限がある場合があるよ。\nそういったステージではちょっと工夫が必要になるよ。\nうまく制限の範囲でプログラミングしてね。</string>
+    <string name="how_to_about_limit_explanation">ステージによっては\nブロックを使用できる数や\n設定できる値に制限がある場合があるよ。\nそういったステージではちょっと工夫が必要になるから、\nうまく制限の範囲でプログラミングしてね。</string>
 
     <!-- exeブロック -->
     <string name="how_to_about_exe_block_title">実行ブロックとは？</string>
@@ -246,6 +246,40 @@
     <string name="how_to_about_if_elseif_block_example_1">ケース①：1つ目の条件成立</string>
     <string name="how_to_about_if_elseif_block_example_2">ケース②：2つ目の条件成立</string>
     <string name="how_to_about_if_elseif_block_example_3">ケース③：どの条件も不成立</string>
+
+    <!-- チュートリアル１開始時 -->
+    <string name="first_start_tutorial_title">基本的な遊び方</string>
+    <string name="first_start_tutorial_explanation_1_1">このチュートリアルでは、\n基本的な遊び方を説明していくよ。</string>
+    <string name="first_start_tutorial_explanation_1_2">まずは、出現したステージの上にある\n「ステージの説明をみる！」\nって書かれたボードをタッチして\nクリア条件を確認してみよう！</string>
+
+    <string name="first_start_tutorial_explanation_2_1">どうすればクリアできるかわかったかな？\nステージの説明は、画面右上にあるメニューから\nいつでも確認できるからね。</string>
+    <string name="first_start_tutorial_explanation_2_2">それじゃあ\nステージをクリアするための\nプログラミングを作っていこう！</string>
+    <string name="first_start_tutorial_explanation_2_3">画面下にある\n「Let\'s Programming」\nって書かれたところを上にスライドしよう！\nそこが実際にプログラミングを作る場所になるよ。</string>
+
+    <string name="first_start_tutorial_explanation_3_1">なんとなくやり方はわかったかな？\n基本的な操作方法は\nHome画面の「遊び方」ページから\nいつでも見れるからね！</string>
+    <string name="first_start_tutorial_explanation_3_2">ステージクリアできそうなプログラムが完成したら、\n画面右下にある開始ボタンを押してみよう。\nAR上のキャラクターが\n作ったプログラム通りに動いてくれるよ！</string>
+    <string name="first_start_tutorial_explanation_3_3">それじゃあ\nプログラミングに挑戦だ！</string>
+
+    <!-- チュートリアル２開始時 -->
+    <string name="second_start_tutorial_title">制限のあるブロック</string>
+    <string name="second_start_tutorial_explanation_1_1">今回もステージはチュートリアル１と同じだよ。\nでも使えるブロックに制限があるんだ。\n次のページを確認して挑戦してみよう！</string>
+
+    <!-- チュートリアル３開始時 -->
+    <string name="third_start_tutorial_title">Loopブロックについて学ぼう！</string>
+    <string name="third_start_tutorial_explanation_1_1">今回のステージでは\nLoopブロックというのを学んでいくよ！\n同じことを何度も繰り返したいときに\n便利なブロックなんだ。\n次のページを見て使い方を確認してね！</string>
+
+    <!-- チュートリアル４開始時 -->
+    <string name="fourth_start_tutorial_title">ifブロックについて学ぼう！</string>
+    <string name="fourth_start_tutorial_explanation_1_1">今回のステージでは\nifブロックというのを学んでいくよ！\n状況に応じてやりたいことがあるときに使うんだ。\n次のページを見て使い方を確認してね！</string>
+
+    <!-- チュートリアル５開始時 -->
+    <string name="fifth_start_tutorial_title">if elseブロックについて学ぼう！</string>
+    <string name="fifth_start_tutorial_explanation_1_1">今回のステージでは\nif elseブロックというのを学んでいくよ！\n状況に応じてやりたいことを\n変えたいときに使うんだ。\n次のページを見て使い方を確認してね！</string>
+
+    <!-- チュートリアル６開始時 -->
+    <string name="sixth_start_tutorial_title">if elseifブロックについて学ぼう！</string>
+    <string name="sixth_start_tutorial_explanation_1_1">今回のステージでは\nif elseブロックというのを学んでいくよ！\n状況に応じてやりたいことが\nたくさんあるときに使うんだ。\n次のページを見て使い方を確認してね！</string>
+
 
     <!---->
     <!-- キャラクター（.glbファイル名と一致させること） -->

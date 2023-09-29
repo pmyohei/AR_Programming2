@@ -22,7 +22,7 @@
     </com.google.android.material.appbar.AppBarLayout>
 
     <!--  AR本体／プログラミングUI  -->
-    <include layout="@layout/content_ar" />
+    <include layout="@layout/contents_ar" />
 
     <!--  Fab：ゲーム制御用  -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton

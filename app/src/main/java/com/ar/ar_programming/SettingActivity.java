@@ -1,5 +1,8 @@
 package com.ar.ar_programming;
 
+import static com.ar.ar_programming.Common.TUTORIAL_DEFAULT;
+import static com.ar.ar_programming.Common.TUTORIAL_FINISH;
+
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -112,15 +115,11 @@ public class SettingActivity extends AppCompatActivity {
         //--------------------
         // チュートリアル終了確認
         //--------------------
-        // チュートリアル終了値
-        final int TUTORIAL_END = resources.getInteger(R.integer.saved_tutorial_end);
-
         // 現在のチュートリアル進行状況を取得
-        int defaultValue = resources.getInteger(R.integer.saved_tutorial_block);
-        int tutorial = sharedPref.getInt(getString(R.string.saved_tutorial_key), defaultValue);
+        int tutorial = sharedPref.getInt(getString(R.string.saved_tutorial_key), TUTORIAL_DEFAULT);
 
         // チュートリアルが未完了の場合
-        if (tutorial < TUTORIAL_END) {
+        if (tutorial < TUTORIAL_FINISH) {
             // 設定不可のダイアログを表示
             showCannotSetDialog( tutorial );
             // 設定情報取得なし
@@ -128,8 +127,9 @@ public class SettingActivity extends AppCompatActivity {
         }
 
         //--------------------
-        // 設定情報の取得
+        // ユーザー設定情報の取得
         //--------------------
+        int defaultValue;
         // フィールドサイズ
         defaultValue = getResources().getInteger(R.integer.saved_field_size_default_key);
         mFileldSize = sharedPref.getInt(getString(R.string.saved_field_size_key), defaultValue);

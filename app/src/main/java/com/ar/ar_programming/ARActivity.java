@@ -124,20 +124,11 @@ public class ARActivity extends AppCompatActivity {
         helpDialog.setOnStartEndListerner( new HelpDialog.OnStartEndListener() {
             @Override
             public void onStartEnd() {
-
-                // ヘルプページリスト
-                List<Integer> pageList = new ArrayList<>();
-                pageList.add(R.layout.help_page_about_ar_1);
-                pageList.add(R.layout.help_page_about_ar_2);
-                pageList.add(R.layout.help_page_about_ar_3);
-                pageList.add(R.layout.help_page_about_ar_4);
-
                 // ページを設定
-                helpDialog.setupHelpPage( pageList );
+                helpDialog.setupHelpPage( R.array.how_to_ar );
             }
         });
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

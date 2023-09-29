@@ -2,12 +2,15 @@ package com.ar.ar_programming;
 
 import static android.content.Context.MODE_PRIVATE;
 
+import static com.ar.ar_programming.Common.TUTORIAL_DEFAULT;
+import static com.ar.ar_programming.Common.TUTORIAL_FINISH;
 import static com.ar.ar_programming.Gimmick.NO_USABLE_LIMIT_NUM;
 import static com.ar.ar_programming.character.CharacterNode.ACTION_FAILURE;
 import static com.ar.ar_programming.character.CharacterNode.ACTION_SUCCESS;
 import static com.ar.ar_programming.character.CharacterNode.ACTION_WAITING;
 import static com.ar.ar_programming.GimmickManager.GIMMICK_MAIN_ANIMAL;
 import static com.ar.ar_programming.SettingActivity.CHARACTER_ANIMAL;
+import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED;
 
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
@@ -38,7 +41,7 @@ import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.fragment.app.DialogFragment;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -56,13 +59,13 @@ import com.ar.ar_programming.process.NestBlock;
 import com.ar.ar_programming.process.ProcessBlock;
 import com.ar.ar_programming.process.ExecuteBlock;
 import com.ar.ar_programming.process.StartBlock;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.ar.core.Anchor;
 import com.google.ar.core.HitResult;
 import com.google.ar.core.Plane;
 import com.google.ar.sceneform.AnchorNode;
-import com.google.ar.sceneform.ArSceneView;
 import com.google.ar.sceneform.HitTestResult;
 import com.google.ar.sceneform.Node;
 import com.google.ar.sceneform.NodeParent;
@@ -70,10 +73,8 @@ import com.google.ar.sceneform.Scene;
 import com.google.ar.sceneform.math.Quaternion;
 import com.google.ar.sceneform.math.Vector3;
 import com.google.ar.sceneform.rendering.ModelRenderable;
-import com.google.ar.sceneform.rendering.PlaneRenderer;
 import com.google.ar.sceneform.rendering.Renderable;
 import com.google.ar.sceneform.rendering.RenderableInstance;
-import com.google.ar.sceneform.rendering.Texture;
 import com.google.ar.sceneform.rendering.ViewRenderable;
 import com.google.ar.sceneform.ux.ArFragment;
 import com.google.ar.sceneform.ux.BaseArFragment;
@@ -83,7 +84,6 @@ import com.google.ar.sceneform.ux.TransformationSystem;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.IntStream;
 
 public class ArMainFragment extends Fragment implements ARActivity.MenuClickListener, ARActivity.PlayControlListener,
@@ -127,6 +127,11 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
     private final int PLAY_STATE_PRE_PLAY = 1;          // プログラミング中（ゲーム開始前）
     private final int PLAY_STATE_PLAYING = 2;           // ゲーム中
 
+    // チュートリアルガイド表示タイミング
+    private final int TUTORIAL_GUIDE_SHOW_TAP = 0;                  // ARドットタップ時
+    private final int TUTORIAL_GUIDE_SHOW_STAGE_DESCRIPTION = 1;    // ステージ説明参照終了時
+    private final int TUTORIAL_GUIDE_SHOW_PROGRAMMING_AREA = 2;     // プログラミングエリア展開
+
     //---------------------------
     // フィールド変数
     //---------------------------
@@ -140,7 +145,6 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
     private ViewRenderable mActionRenderable;
     private ArrayList<ModelRenderable> mObjectRenderable;
     private ArrayList<ModelRenderable> mObjectReplaceRenderable;
-    private ArrayList<ModelRenderable> mEnemyRenderable;
 
     private CharacterNode mCharacterNode;
     private Block mMarkedBlock;             // ブロック下部追加マーカーの付与されている処理ブロック
@@ -149,8 +153,9 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
     private Gimmick mGimmick;               // ステージギミックID
 
     private FloatingActionButton mPlayControlFab;
-
     private ActivityResultLauncher<Intent> mSettingRegistrationLauncher;
+
+    private boolean mIsTutorialGuideShow = false;
 
     @Override
     public View onCreateView(
@@ -223,6 +228,8 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
      */
     private void setProgrammingUI() {
 
+        // プログラミングエリアボトムシート設定
+        initProgrammingArea();
         // マーカ―はスタートブロックに付与
         initStartBlock();
         // 処理ブロック削除エリア設定
@@ -234,10 +241,63 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
      */
     private void showGoalGuideDialog() {
 
-        DialogFragment newFragment = new GoalExplanationDialogFragment(mGimmick.goalExplanationIdList);
+        GoalExplanationDialogFragment newFragment = new GoalExplanationDialogFragment(mGimmick.goalExplanationIdList);
+
+        // ダイアログ終了リスナー
+        newFragment.setOnDestroyListener(new GoalExplanationDialogFragment.OnDestroyListener() {
+            @Override
+            public void onDestroy() {
+                showTutorialGuide(TUTORIAL_GUIDE_SHOW_STAGE_DESCRIPTION);
+            }
+        });
+
         newFragment.show(getActivity().getSupportFragmentManager(), "goalGuide");
     }
 
+    /*
+     * プログラミングエリアボトムシート設定
+     */
+    private void initProgrammingArea() {
+
+        // ガイド表示設定
+        ConstraintLayout bottomSheet = binding.getRoot().findViewById(R.id.cl_programmingAreaBottomSheet);
+        BottomSheetBehavior<ConstraintLayout> behavior = BottomSheetBehavior.from(bottomSheet);
+
+        // 表示済みとする
+        mIsTutorialGuideShow = true;
+
+        behavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+
+                //---------------
+                // 処理不要判定
+                //---------------
+                // チュートリアル以外は不要
+                if( mGimmick.mTutorial == TUTORIAL_FINISH ){
+                    return;
+                }
+                // 表示可能状態でなければしない
+                if( mIsTutorialGuideShow ){
+                    return;
+                }
+
+
+                // ボトムシートが開いたら、ガイドを表示する
+                if( newState == STATE_EXPANDED ){
+                    showTutorialGuide( TUTORIAL_GUIDE_SHOW_PROGRAMMING_AREA );
+
+                    // 一度表示させたら、以降は表示なし
+                    mIsTutorialGuideShow = true;
+                }
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+                // do nothing
+            }
+        });
+    }
 
     /*
      * スタートブロック初期化処理
@@ -918,7 +978,7 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
         mObjectRenderable.clear();
         // 必要なモデル数だけ、空のリストを用意
         int objectNum = gimmick.objectGlbList.size();
-        for( int i = 0; i < objectNum; i++ ){
+        for (int i = 0; i < objectNum; i++) {
             mObjectRenderable.add(null);
         }
 
@@ -935,23 +995,23 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
 
             // Renderable生成
             ModelRenderable
-                .builder()
-                .setSource(context, Uri.parse(glbFilename))
-                .setIsFilamentGltf(true)    // glbファイルを読み込む必須
-                .build()
-                .thenAccept(
-                        renderable -> {
-                            mObjectRenderable.set(setIndex, renderable );
-                        }
-                )
-                .exceptionally(
-                        throwable -> {
-                            //!
-                            Toast toast = Toast.makeText(context, "Unable to load renderable(Object)", Toast.LENGTH_LONG);
-                            toast.setGravity(Gravity.CENTER, 0, 0);
-                            toast.show();
-                            return null;
-                        });
+                    .builder()
+                    .setSource(context, Uri.parse(glbFilename))
+                    .setIsFilamentGltf(true)    // glbファイルを読み込む必須
+                    .build()
+                    .thenAccept(
+                            renderable -> {
+                                mObjectRenderable.set(setIndex, renderable);
+                            }
+                    )
+                    .exceptionally(
+                            throwable -> {
+                                //!
+                                Toast toast = Toast.makeText(context, "Unable to load renderable(Object)", Toast.LENGTH_LONG);
+                                toast.setGravity(Gravity.CENTER, 0, 0);
+                                toast.show();
+                                return null;
+                            });
 
         }
     }
@@ -969,7 +1029,7 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
         mObjectReplaceRenderable.clear();
         // 必要なモデル数だけ、空のリストを用意
         int objectNum = gimmick.objectReplaceNameList.size();
-        for( int i = 0; i < objectNum; i++ ){
+        for (int i = 0; i < objectNum; i++) {
             mObjectReplaceRenderable.add(null);
         }
 
@@ -990,7 +1050,7 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
                     .setSource(context, Uri.parse(glbFilename))
                     .setIsFilamentGltf(true)    // glbファイル読み込みに必須
                     .build()
-                    .thenAccept( renderable -> {
+                    .thenAccept(renderable -> {
                         mObjectReplaceRenderable.set(setIndex, renderable);
                     })
                     .exceptionally(
@@ -1839,6 +1899,14 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
                 //----------------------------------
                 // ステージ配置前⇒プログラミング中へ
                 mPlayState = PLAY_STATE_PRE_PLAY;
+
+                //----------------------------------
+                // ステージ出現時のガイド表示
+                //----------------------------------
+                showTutorialGuide( TUTORIAL_GUIDE_SHOW_TAP );
+
+                // プログラミングエリア表示時のガイドを表示可能にする
+                mIsTutorialGuideShow = false;
             }
         });
     }
@@ -1869,6 +1937,97 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
         }
 
         return true;
+    }
+
+
+    /*
+     * チュートリアルガイドの表示
+     */
+    private void showTutorialGuide( int showTimming ) {
+
+        // チュートリアル1が終了しているなら、処理なし
+        int tutorial = mGimmick.mTutorial;
+        if (tutorial >= TUTORIAL_FINISH) {
+            return;
+        }
+
+        Log.i("ヘルプ", "tutorial=" + tutorial);
+
+        //-------------------
+        // ヘルプページリスト
+        //-------------------
+        int pageListID = -1;
+        switch (tutorial) {
+            case 1:
+                //---------------------------------------
+                // チュートリアル１の場合は
+                // ユーザー操作に応じて、ガイド内容を切り分け
+                //---------------------------------------
+                if( showTimming == TUTORIAL_GUIDE_SHOW_TAP ){
+                    pageListID = R.array.tutorial_1_tap;
+
+                } else if (showTimming == TUTORIAL_GUIDE_SHOW_STAGE_DESCRIPTION) {
+                    pageListID = R.array.tutorial_1_stageDescription;
+
+                } else {
+                    pageListID = R.array.tutorial_1_openProgrammingArea;
+                }
+                break;
+
+            case 2:
+                if( showTimming == TUTORIAL_GUIDE_SHOW_PROGRAMMING_AREA ){
+                    pageListID = R.array.tutorial_2_stageDescription;
+                }
+                break;
+
+            case 3:
+                if( showTimming == TUTORIAL_GUIDE_SHOW_PROGRAMMING_AREA ){
+                    pageListID = R.array.tutorial_3_stageDescription;
+                }
+                break;
+
+            case 4:
+                if( showTimming == TUTORIAL_GUIDE_SHOW_PROGRAMMING_AREA ){
+                    pageListID = R.array.tutorial_4_stageDescription;
+                }
+                break;
+
+            case 5:
+                if( showTimming == TUTORIAL_GUIDE_SHOW_PROGRAMMING_AREA ){
+                    pageListID = R.array.tutorial_5_stageDescription;
+                }
+                break;
+
+            case 6:
+                if( showTimming == TUTORIAL_GUIDE_SHOW_PROGRAMMING_AREA ){
+                    pageListID = R.array.tutorial_6_stageDescription;
+                }
+                break;
+
+            default:
+                pageListID = -1;
+        }
+
+        // 対象外なら終了
+        if( pageListID == -1 ){
+            return;
+        }
+
+        //--------------------------
+        // チュートリアルガイドの表示
+        //--------------------------
+        HelpDialog helpDialog = new HelpDialog();
+        helpDialog.show(getActivity().getSupportFragmentManager(), "help");
+
+        // onStart()終了リスナーの設定
+        int finalPageListID = pageListID;
+        helpDialog.setOnStartEndListerner(new HelpDialog.OnStartEndListener() {
+            @Override
+            public void onStartEnd() {
+                // ページを設定
+                helpDialog.setupHelpPage(finalPageListID);
+            }
+        });
     }
 
     /*

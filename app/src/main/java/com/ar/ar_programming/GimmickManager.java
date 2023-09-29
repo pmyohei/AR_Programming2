@@ -2,6 +2,8 @@ package com.ar.ar_programming;
 
 import static android.content.Context.MODE_PRIVATE;
 
+import static com.ar.ar_programming.Common.TUTORIAL_FINISH;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
@@ -225,7 +227,6 @@ public class GimmickManager {
         String enemyPosition = parser.getAttributeValue(null, "enemyPosition");
         String enemyEndPosition = parser.getAttributeValue(null, "enemyEndPosition");
         // ブロック
-        String blockNodeWord = parser.getAttributeValue(null, "blockNodeWord");
         String block = parser.getAttributeValue(null, "block");
 
         //--------------------------
@@ -271,9 +272,6 @@ public class GimmickManager {
      */
     private static Gimmick makeTutorialGimmick(Context context, int tutorial) {
 
-        // チュートリアル終了値
-        final int TUTORIAL_END = context.getResources().getInteger(R.integer.saved_tutorial_end);
-
         Resources resources = context.getResources();
         XmlResourceParser parser = resources.getXml(R.xml.gimmick_tutorial);
 
@@ -286,7 +284,7 @@ public class GimmickManager {
 
                 // 開始タグでタグ名が「gimmick」の場合、読み込み
                 if ((eventType == XmlPullParser.START_TAG) && (Objects.equals(parser.getName(), "gimmick"))) {
-                    int sequence = parser.getAttributeIntValue(null, "sequence", TUTORIAL_END);
+                    int sequence = parser.getAttributeIntValue(null, "sequence", TUTORIAL_FINISH);
                     if (sequence == tutorial) {
                         break;
                     }
@@ -306,8 +304,10 @@ public class GimmickManager {
         Gimmick gimmick = new Gimmick(context);
         readGimmickData(gimmick, parser);
 
-        // parser閉じる
         parser.close();
+
+        // チュートリアル値を設定
+        gimmick.setTutorial( tutorial );
 
         return gimmick;
     }

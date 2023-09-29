@@ -15,7 +15,8 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:paddingBottom="@dimen/dialog_padding_bottom">
 
             <TextView
                 android:id="@+id/tv_pageTitle"
@@ -62,6 +63,7 @@
                 android:id="@+id/iv_removeBlock"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:paddingHorizontal="20dp"
                 android:src="@drawable/how_to_remove_block"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

@@ -2,6 +2,8 @@ package com.ar.ar_programming;
 
 import static android.content.Context.WINDOW_SERVICE;
 
+import static com.ar.ar_programming.Common.TUTORIAL_DEFAULT;
+
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
@@ -74,6 +76,7 @@ public class CannotSetDialogFragment extends DialogFragment {
         ImageView iv_star2 = dialog.findViewById(R.id.iv_star2);
         ImageView iv_star3 = dialog.findViewById(R.id.iv_star3);
         ImageView iv_star4 = dialog.findViewById(R.id.iv_star4);
+        ImageView iv_star5 = dialog.findViewById(R.id.iv_star5);
 
         // 星イメージをリスト化
         ArrayList<ImageView> starList = new ArrayList<>();
@@ -81,6 +84,7 @@ public class CannotSetDialogFragment extends DialogFragment {
         starList.add( iv_star2 );
         starList.add( iv_star3 );
         starList.add( iv_star4 );
+        starList.add( iv_star5 );
 
         // 完了イメージ
         Resources resources = getResources();
@@ -94,7 +98,7 @@ public class CannotSetDialogFragment extends DialogFragment {
         tv_statusNow.setText( Integer.toString(finishNum) );
 
         // イメージ
-        int seqTutorial = getResources().getInteger(R.integer.saved_tutorial_block);;
+        int seqTutorial = TUTORIAL_DEFAULT;
         for( ImageView star: starList ){
             // 完了しているチュートリアルのイメージを変更
             if( seqTutorial < mTutorial  ){

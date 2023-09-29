@@ -6,6 +6,8 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.content.res.Resources;
+import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
@@ -26,16 +28,13 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class HelpDialog extends DialogFragment {
 
     private OnStartEndListener mOnStartEndListener;
 
     // 空のコンストラクタ
     // ※必須（画面回転等の画面再生成時にコールされる）
-    public HelpDialog(){
+    public HelpDialog() {
         // do nothing
     }
 
@@ -92,8 +91,8 @@ public class HelpDialog extends DialogFragment {
         float widthRatio = ((orientation == Configuration.ORIENTATION_PORTRAIT) ? PORTRAIT_WIDTH_RATIO : LANDSCAPE_WIDTH_RATIO);
 
         // 画面サイズの取得
-        int screeenHeight = getScreenHeight( getContext() );
-        int screeenWidth = getScreenWidth( getContext() );
+        int screeenHeight = getScreenHeight(getContext());
+        int screeenWidth = getScreenWidth(getContext());
         Window window = dialog.getWindow();
         WindowManager.LayoutParams lp = dialog.getWindow().getAttributes();
         lp.height = (int) (screeenHeight * HEIGHT_RATIO);
@@ -138,12 +137,15 @@ public class HelpDialog extends DialogFragment {
     /*
      * ヘルプページレイアウトを設定
      */
-    public void setupHelpPage( List<Integer> layoutIdList ) {
+    public void setupHelpPage( int pageListID ) {
+
+        Resources res = getResources();
+        TypedArray pages = res.obtainTypedArray( pageListID );
 
         // ViewPager2にアダプタを割り当て
         Dialog dialog = getDialog();
         ViewPager2 vp2_help = dialog.findViewById(R.id.vp2_help);
-        vp2_help.setAdapter( new HelpPageAdapter(layoutIdList) );
+        vp2_help.setAdapter( new HelpPageAdapter( pages ) );
 
         // インジケータの設定
         TabLayout tabLayout = dialog.findViewById(R.id.tab_help);
@@ -172,7 +174,7 @@ public class HelpDialog extends DialogFragment {
     public class HelpPageAdapter extends RecyclerView.Adapter<HelpPageAdapter.ViewHolder> {
 
         // ページレイアウト
-        private final List<Integer> mPageList;
+        private  TypedArray mPageList;
 
         /*
          * ViewHolder：リスト内の各アイテムのレイアウトを含む View のラッパー
@@ -187,8 +189,8 @@ public class HelpDialog extends DialogFragment {
         /*
          * コンストラクタ
          */
-        public HelpPageAdapter(List<Integer> layoutIdList) {
-            mPageList = layoutIdList;
+        public HelpPageAdapter(TypedArray pages) {
+            mPageList = pages;
         }
 
         /*
@@ -209,7 +211,8 @@ public class HelpDialog extends DialogFragment {
 
             // レイアウトを生成
             LayoutInflater inflater = LayoutInflater.from( viewGroup.getContext() );
-            View view = inflater.inflate(mPageList.get(position), viewGroup, false);
+            int layoutID = mPageList.getResourceId( position, 0 );
+            View view = inflater.inflate(layoutID, viewGroup, false);
 
             return new ViewHolder(view);
         }
@@ -227,7 +230,7 @@ public class HelpDialog extends DialogFragment {
         @Override
         public int getItemCount() {
             // ページ数
-            return mPageList.size();
+            return mPageList.length();
         }
     }
 }

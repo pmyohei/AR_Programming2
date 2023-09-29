@@ -9,7 +9,7 @@
 
     <!--  BottomSheet本体  -->
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/cl_stampingMemoBottomSheet"
+        android:id="@+id/cl_programmingAreaBottomSheet"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/white_80"

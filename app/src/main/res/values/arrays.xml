@@ -1,4 +1,117 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- ===== -->
+    <!-- 遊び方 -->
+    <!-- ===== -->
+    <!--  ARの始め方  -->
+    <array name="how_to_ar">
+        <item>@layout/help_page_about_ar_1</item>
+        <item>@layout/help_page_about_ar_2</item>
+        <item>@layout/help_page_about_ar_3</item>
+        <item>@layout/help_page_about_ar_4</item>
+    </array>
+
+    <!--  ブロック基本操作  -->
+    <array name="how_to_block_operation">
+        <item>@layout/help_page_how_to_block_operation_top</item>
+        <item>@layout/help_page_how_to_add_block</item>
+        <item>@layout/help_page_how_to_move_block</item>
+        <item>@layout/help_page_how_to_remove_block</item>
+        <item>@layout/help_page_how_to_set_volume</item>
+        <item>@layout/help_page_about_block_limit</item>
+    </array>
+
+    <!--  実行ブロックとは？  -->
+    <array name="about_exe_block">
+        <item>@layout/help_page_about_exe_block</item>
+    </array>
+
+    <!--  Loopブロックとは？  -->
+    <array name="about_loop_block">
+        <item>@layout/help_page_about_loop_block</item>
+    </array>
+
+    <!--  ifブロックとは？  -->
+    <array name="about_if_block">
+        <item>@layout/help_page_about_if_block_1</item>
+        <item>@layout/help_page_about_if_block_2</item>
+        <item>@layout/help_page_about_if_block_3</item>
+    </array>
+
+    <!--  if elseブロックとは？  -->
+    <array name="about_if_else_block">
+        <item>@layout/help_page_about_if_else_block_1</item>
+        <item>@layout/help_page_about_if_else_block_2</item>
+        <item>@layout/help_page_about_if_else_block_3</item>
+    </array>
+
+    <!--  if elseifブロックとは？  -->
+    <array name="about_if_elseif_block">
+        <item>@layout/help_page_about_if_elseif_block_1</item>
+        <item>@layout/help_page_about_if_elseif_block_2</item>
+        <item>@layout/help_page_about_if_elseif_block_3</item>
+        <item>@layout/help_page_about_if_elseif_block_4</item>
+    </array>
+
+
+    <!--  ===============  -->
+    <!--  チュートリアル関連  -->
+    <!--  ===============  -->
+    <!--  チュートリアル１  -->
+    <array name="tutorial_1_tap">
+        <item>@layout/first_start_tutorial_1</item>
+    </array>
+
+    <array name="tutorial_1_stageDescription">
+        <item>@layout/first_start_tutorial_2</item>
+    </array>
+
+    <array name="tutorial_1_openProgrammingArea">
+        <item>@layout/help_page_how_to_block_operation_top</item>
+        <item>@layout/help_page_how_to_add_block</item>
+        <item>@layout/help_page_how_to_set_volume</item>
+        <item>@layout/help_page_how_to_move_block</item>
+        <item>@layout/help_page_how_to_remove_block</item>
+        <item>@layout/help_page_about_block_limit</item>
+        <item>@layout/first_start_tutorial_end</item>
+    </array>
+
+    <!--  チュートリアル２  -->
+    <array name="tutorial_2_stageDescription">
+        <item>@layout/second_start_tutorial_1</item>
+        <item>@layout/help_page_about_block_limit</item>
+    </array>
+
+    <!--  チュートリアル３  -->
+    <array name="tutorial_3_stageDescription">
+        <item>@layout/third_start_tutorial_1</item>
+        <item>@layout/help_page_about_loop_block</item>
+    </array>
+
+    <!--  チュートリアル４  -->
+    <array name="tutorial_4_stageDescription">
+        <item>@layout/fourth_start_tutorial_1</item>
+        <item>@layout/help_page_about_if_block_1</item>
+        <item>@layout/help_page_about_if_block_2</item>
+        <item>@layout/help_page_about_if_block_3</item>
+    </array>
+
+    <!--  チュートリアル５  -->
+    <array name="tutorial_5_stageDescription">
+        <item>@layout/fifth_start_tutorial_1</item>
+        <item>@layout/help_page_about_if_else_block_1</item>
+        <item>@layout/help_page_about_if_else_block_2</item>
+        <item>@layout/help_page_about_if_else_block_3</item>
+    </array>
+
+    <!--  チュートリアル６  -->
+    <array name="tutorial_6_stageDescription">
+        <item>@layout/sixth_start_tutorial_1</item>
+        <item>@layout/help_page_about_if_elseif_block_1</item>
+        <item>@layout/help_page_about_if_elseif_block_2</item>
+        <item>@layout/help_page_about_if_elseif_block_3</item>
+        <item>@layout/help_page_about_if_elseif_block_4</item>
+    </array>
+
 </resources>
