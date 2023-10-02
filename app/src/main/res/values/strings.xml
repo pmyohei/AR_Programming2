@@ -126,6 +126,7 @@
     <string name="ar_menu_clear_field">フィールドをクリア</string>
     <string name="ar_menu_init_programming">初めからプログラミング</string>
     <string name="ar_menu_goal_guide">ステージの説明をみる</string>
+    <string name="ar_menu_select_stage">別のステージで遊ぶ</string>
 
     <!-- プログラミング画面 -->
     <string name="programming_top">Let\'s Programming!</string>

@@ -63,9 +63,9 @@ public class Common {
     /*
      * ユーザーのステージクリア情報設定
      */
-    public static void setUserStageClearInfo(Context context, ArrayList<StageSelectDialog.StageList> stageList){
+    public static void setUserStageClearInfo(Context context, ArrayList<StageList> stageList){
 
-        for( StageSelectDialog.StageList stage: stageList ){
+        for( StageList stage: stageList ){
 
             // ステージのクリア状況を取得
             SharedPreferences sharedPref = context.getSharedPreferences(context.getString(R.string.preference_file_key), MODE_PRIVATE);
@@ -74,6 +74,26 @@ public class Common {
             // リストに反映
             stage.mIsClear = isClear;
         }
+    }
+
+    /*
+     * ステージ未クリアのステージ名を取得
+     *   ※未クリアのステージの内、gimmick-xml上一番先頭にあるステージ名を返す
+     */
+    public static String getHeadNotClearStageName(Context context, ArrayList<String> stageList){
+
+        for( String stageName: stageList ){
+
+            // ステージのクリア状況を取得
+            SharedPreferences sharedPref = context.getSharedPreferences(context.getString(R.string.preference_file_key), MODE_PRIVATE);
+            boolean isClear = sharedPref.getBoolean( stageName, false);
+            if( !isClear ){
+                return stageName;
+            }
+        }
+
+        // 全てクリア済みなら、先頭のステージ名を返す
+        return stageList.get(0);
     }
 
     /*

@@ -6,7 +6,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.ar.ar_programming.ArMainFragment;
+import com.ar.ar_programming.ARFragment;
 import com.ar.ar_programming.character.CharacterNode;
 import com.ar.ar_programming.Gimmick;
 import com.ar.ar_programming.R;
@@ -380,7 +380,7 @@ public abstract class NestBlock extends ProcessBlock {
         //------------------
         // AR上のNodeは、全てanchorNodeを親としているため、characterNodeの親Node（=anchorNode）を検索用に渡す
         AnchorNode anchorNode = (AnchorNode) characterNode.getParentNode();
-        Node targetNode = ArMainFragment.searchNodeCharacterFacingOnStage(anchorNode, targetNodeName, characterNode);
+        Node targetNode = ARFragment.searchNodeCharacterFacingOnStage(anchorNode, targetNodeName, characterNode);
         if (targetNode == null) {
             // そもそも対象Nodeがなければ、条件不成立（向いていない）とみなす
             return false;

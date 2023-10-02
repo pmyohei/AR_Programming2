@@ -4,7 +4,7 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.util.Log;
 
-import com.ar.ar_programming.ArMainFragment;
+import com.ar.ar_programming.ARFragment;
 import com.ar.ar_programming.character.CharacterNode;
 import com.ar.ar_programming.Gimmick;
 import com.ar.ar_programming.GimmickManager;
@@ -150,7 +150,7 @@ public class LoopBlock extends NestBlock {
         //---------------------------
         // 全てに対応していれば（ステージに指定Nodeが１つもなければ）、trueを返す
         AnchorNode anchorNode = (AnchorNode)characterNode.getParentNode();
-        Node node = ArMainFragment.searchNodeOnStage( anchorNode, mXmlBlockInfo.targetNode_1 );
+        Node node = ARFragment.searchNodeOnStage( anchorNode, mXmlBlockInfo.targetNode_1 );
 
         Log.i("ブロック処理の流れ", "Loop isConditionEverything() targetNode_1=" + mXmlBlockInfo.targetNode_1);
 

@@ -1,14 +1,20 @@
 package com.ar.ar_programming;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.ar.ar_programming.databinding.ActivityArBinding;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -16,9 +22,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class ARActivity extends AppCompatActivity {
 
@@ -33,6 +36,7 @@ public class ARActivity extends AppCompatActivity {
     private ActivityArBinding binding;
     private MenuClickListener mMenuClickListener;
     private PlayControlListener mPlayControlListener;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +65,7 @@ public class ARActivity extends AppCompatActivity {
         // アプリ初回起動のみの処理
         //---------------------
         onlyFirstStartApp();
+
     }
 
     /*
@@ -130,6 +135,7 @@ public class ARActivity extends AppCompatActivity {
         });
     }
 
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // menuを割り当て
@@ -151,6 +157,10 @@ public class ARActivity extends AppCompatActivity {
 
             case R.id.action_setting:
                 mMenuClickListener.onMenuSettingClick();
+                return true;
+
+            case R.id.action_select_stage:
+                mMenuClickListener.onMenuSelectStage();
                 return true;
 
             case R.id.action_goal_guide:
@@ -199,6 +209,7 @@ public class ARActivity extends AppCompatActivity {
     public interface MenuClickListener {
         void onMenuHowToClick();
         void onMenuSettingClick();
+        void onMenuSelectStage();
         void onMenuGoalGuide();
         void onMenuClearFieldClick();
         void onMenuInitProgrammingClick();

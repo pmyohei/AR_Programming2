@@ -1,8 +1,8 @@
 package com.ar.ar_programming.character;
 
-import static com.ar.ar_programming.ArMainFragment.PROGRAMMING_FAILURE;
-import static com.ar.ar_programming.ArMainFragment.PROGRAMMING_NOT_END;
-import static com.ar.ar_programming.ArMainFragment.PROGRAMMING_SUCCESS;
+import static com.ar.ar_programming.ARFragment.PROGRAMMING_FAILURE;
+import static com.ar.ar_programming.ARFragment.PROGRAMMING_NOT_END;
+import static com.ar.ar_programming.ARFragment.PROGRAMMING_SUCCESS;
 import static com.ar.ar_programming.GimmickManager.BLOCK_ACTION_TARGET_NODE_POS;
 import static com.ar.ar_programming.GimmickManager.BLOCK_ACTION_TARGET_NODE_STATE_POS;
 import static com.ar.ar_programming.GimmickManager.BLOCK_CONDITION_FACING;
@@ -17,7 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.ar.ar_programming.ArMainFragment;
+import com.ar.ar_programming.ARFragment;
 import com.ar.ar_programming.Gimmick;
 import com.ar.ar_programming.GimmickManager;
 import com.ar.ar_programming.R;
@@ -463,7 +463,7 @@ public abstract class CharacterNode extends TransformableNode {
         //---------------------------------------
         // 検索
         AnchorNode anchorNode = (AnchorNode) getParentNode();
-        Node targetNode = ArMainFragment.searchNodeCharacterFacingOnStage(anchorNode, nodeName, this);
+        Node targetNode = ARFragment.searchNodeCharacterFacingOnStage(anchorNode, nodeName, this);
         if (targetNode == null) {
             // 該当Nodeがなければ、条件不成立とみなす
             return false;
@@ -582,7 +582,7 @@ public abstract class CharacterNode extends TransformableNode {
             //-------------------------------------
             case BLOCK_CONDITION_FACING:
                 // 該当Nodeを検索
-                node = ArMainFragment.searchNodeCharacterFacingOnStage((AnchorNode) getParentNode(), nodeName, this);
+                node = ARFragment.searchNodeCharacterFacingOnStage((AnchorNode) getParentNode(), nodeName, this);
                 break;
 
             default:
@@ -988,7 +988,7 @@ public abstract class CharacterNode extends TransformableNode {
         if ((action.equals(GimmickManager.BLOCK_EXE_FORWARD)) || (action.equals(GimmickManager.BLOCK_EXE_BACK))) {
             // スケールに応じた処理時間に変換
             Vector3 scale = getLocalScale();
-            float ratio = (ArMainFragment.NODE_SIZE_S * ArMainFragment.NODE_SIZE_TMP_RATIO) / scale.x;
+            float ratio = (ARFragment.NODE_SIZE_S * ARFragment.NODE_SIZE_TMP_RATIO) / scale.x;
 
             return (long) (volume * WALK_TIME_PER_CM * ratio);
         }
@@ -1176,7 +1176,7 @@ public abstract class CharacterNode extends TransformableNode {
 
             case GimmickManager.SUCCESS_CONDITION_ALL_REMOVE:
                 // ステージ上に指定Nodeがあるか検索
-                Node node = ArMainFragment.searchNodeOnStage((AnchorNode) getParentNode(), mGimmick.successRemoveTarget);
+                Node node = ARFragment.searchNodeOnStage((AnchorNode) getParentNode(), mGimmick.successRemoveTarget);
                 if (node == null) {
                     // 全てステージからなくなっているなら、成功
                     result = PROGRAMMING_SUCCESS;
@@ -1230,7 +1230,7 @@ public abstract class CharacterNode extends TransformableNode {
             case GimmickManager.SUCCESS_CONDITION_REMOVE_AND_GOAL:
 
                 // ステージ上に指定Nodeがあるか検索
-                Node node = ArMainFragment.searchNodeOnStage((AnchorNode) getParentNode(), mGimmick.successRemoveTarget);
+                Node node = ARFragment.searchNodeOnStage((AnchorNode) getParentNode(), mGimmick.successRemoveTarget);
                 if (node == null) {
                     // 全てステージからなくなっているなら、条件達成
                     isAchieved = true;

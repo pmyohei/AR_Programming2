@@ -75,7 +75,6 @@ import com.google.ar.sceneform.rendering.ModelRenderable;
 import com.google.ar.sceneform.rendering.Renderable;
 import com.google.ar.sceneform.rendering.RenderableInstance;
 import com.google.ar.sceneform.rendering.ViewRenderable;
-import com.google.ar.sceneform.ux.ArFragment;
 import com.google.ar.sceneform.ux.BaseArFragment;
 import com.google.ar.sceneform.ux.TransformableNode;
 import com.google.ar.sceneform.ux.TransformationSystem;
@@ -85,13 +84,16 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.IntStream;
 
-public class ArMainFragment extends Fragment implements ARActivity.MenuClickListener, ARActivity.PlayControlListener,
+public class ARFragment extends Fragment implements ARActivity.MenuClickListener, ARActivity.PlayControlListener,
         Block.MarkerAreaListener, Block.DropBlockListener, ProcessBlock.ProgrammingListener,
         CharacterNode.CollisionDetectListener {
 
     //---------------------------
     // 定数
     //---------------------------
+    // 画面遷移Key
+    public static final String KEY_CURRENT_STAGE = "current_stage";
+
     // プログラミング終了ステータス
     public static final int PROGRAMMING_NOT_END = 0;
     public static final int PROGRAMMING_SUCCESS = 1;
@@ -135,7 +137,7 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
     // フィールド変数
     //---------------------------
     private FragmentArBinding binding;
-    private ArFragment arFragment;
+    private com.google.ar.sceneform.ux.ArFragment arFragment;
     private ModelRenderable mStageRenderable;
     private ModelRenderable mCharacterRenderable;
     private ModelRenderable mGoalRenderable;
@@ -153,6 +155,7 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
 
     private FloatingActionButton mPlayControlFab;
     private ActivityResultLauncher<Intent> mSettingRegistrationLauncher;
+    private ActivityResultLauncher<Intent> mStageSelectLancher;
 
     private boolean mIsTutorialGuideShow = false;
 
@@ -186,13 +189,17 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
         // ギミック
         //-------------------
         // ステージギミックを選出
-        mGimmick = GimmickManager.getGimmick(getContext());
+        mGimmick = getGimmick();
+
+        //-------------------------------
+        // 画面遷移ランチャーを生成
+        //-------------------------------
+        setSettingRegistrationLauncher();
+        setStageSelectLancher();
 
         //-------------------
         // UI関連
         //-------------------
-        // 画面遷移ランチャー生成
-        setSettingRegistrationLauncher();
         // 生成元Activityのmenuアクションリスナーを設定
         setMenuAction();
         // プログラミングUIの設定
@@ -273,18 +280,18 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
                 // 処理不要判定
                 //---------------
                 // チュートリアル以外は不要
-                if( mGimmick.mTutorial == TUTORIAL_FINISH ){
+                if (mGimmick.mTutorial == TUTORIAL_FINISH) {
                     return;
                 }
                 // 表示可能状態でなければしない
-                if( mIsTutorialGuideShow ){
+                if (mIsTutorialGuideShow) {
                     return;
                 }
 
 
                 // ボトムシートが開いたら、ガイドを表示する
-                if( newState == STATE_EXPANDED ){
-                    showTutorialGuide( TUTORIAL_GUIDE_SHOW_PROGRAMMING_AREA );
+                if (newState == STATE_EXPANDED) {
+                    showTutorialGuide(TUTORIAL_GUIDE_SHOW_PROGRAMMING_AREA);
 
                     // 一度表示させたら、以降は表示なし
                     mIsTutorialGuideShow = true;
@@ -340,6 +347,89 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
                 });
     }
 
+    /*
+     * ステージ選択画面遷移ランチャーを生成
+     */
+    private void setStageSelectLancher() {
+
+        mStageSelectLancher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                new ActivityResultCallback<ActivityResult>() {
+                    @Override
+                    public void onActivityResult(ActivityResult result) {
+
+                        // ResultCodeの取得
+                        int resultCode = result.getResultCode();
+                        if (resultCode != StageSelectActivity.RESULT_SELECT_STAGE) {
+                            // 未選択なら何もしない
+                            return;
+                        }
+
+                        // 選択ステージを取得
+                        Intent intent = result.getData();
+                        String selectedStage = intent.getStringExtra(StageSelectActivity.KEY_SELECT_STAGE);
+                        // ギミック読み込み
+                        boolean isReadGimmick = readGimmick(selectedStage);
+                        if( isReadGimmick ){
+                            // Nodeを全クリア
+                            removeField();
+                            // 積み上げたブロックを全クリア
+                            initProgramming();
+                            // 3Dモデルレンダリング初期生成
+                            initRenderable();
+                        }
+                    }
+                });
+    }
+
+    /*
+     * ギミック取得
+     */
+    private Gimmick getGimmick() {
+
+        Context context = getContext();
+
+        //----------------
+        // チュートリアル終了
+        //----------------
+        boolean finishTutorial = Common.isFisishTutorial( context ) ;
+        if ( finishTutorial ) {
+            // ユーザー設定に応じたギミックを生成
+
+            //------------------
+            // 取得するステージ名
+            //------------------
+            // ステージ名リスト
+            ArrayList<String> stageNameList = GimmickManager.getStageNameList( context );
+            String stageName = Common.getHeadNotClearStageName( context, stageNameList );
+
+            // ギミック生成
+            return GimmickManager.makeUserGimmick(context, stageName);
+        }
+
+        //----------------
+        // チュートリアル中
+        //----------------
+        // チュートリアル用ギミックを生成
+        int tutorial = Common.getTutorialSequence(context);
+        return GimmickManager.makeTutorialGimmick(context, tutorial);
+    }
+
+    /*
+     * ギミック読み込み
+     */
+    private boolean readGimmick( String stageName ) {
+
+        // 現在のステージと同じなら何もしない
+        if( mGimmick.name.equals( stageName ) ){
+            return false;
+        }
+
+        // 指定ステージ名のギミックを取得
+        mGimmick = GimmickManager.getGimmick(getContext(), stageName);
+
+        return true;
+    }
 
     /*
      * ゲーム開始可能か判定
@@ -1842,7 +1932,7 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
     /*
      * ARフラグメント：平面タッチリスナーの設定
      */
-    private void setTapPlaneListener(ArFragment arFragment) {
+    private void setTapPlaneListener(com.google.ar.sceneform.ux.ArFragment arFragment) {
 
         arFragment.setOnTapArPlaneListener(new BaseArFragment.OnTapArPlaneListener() {
             @Override
@@ -2334,7 +2424,7 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
         // 積み上げたブロックを全クリア
         initProgramming();
         // ステージギミックを選出
-        mGimmick = GimmickManager.getGimmick(getContext());
+        mGimmick = getGimmick();
         // 3Dモデルレンダリング初期生成
         initRenderable();
     }
@@ -2618,6 +2708,19 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
         Intent intent = new Intent(getActivity(), SettingActivity.class);
         mSettingRegistrationLauncher.launch( intent );
     }
+
+    /*
+     * menuアクションリスナー：ステージ選択
+     */
+    @Override
+    public void onMenuSelectStage() {
+        // 画面遷移
+        Intent intent = new Intent( getActivity(), StageSelectActivity.class );
+        intent.putExtra( KEY_CURRENT_STAGE, mGimmick.name );
+
+        mStageSelectLancher.launch( intent );
+    }
+
 
     /*
      * menuアクションリスナー：ゴール説明

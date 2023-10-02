@@ -1,23 +1,13 @@
 package com.ar.ar_programming;
 
-import static com.ar.ar_programming.Gimmick.NO_USABLE_LIMIT_NUM;
-import static com.ar.ar_programming.Gimmick.VOLUME_LIMIT_NONE;
-import static com.ar.ar_programming.GimmickManager.BLOCK_EXE_BACK;
-import static com.ar.ar_programming.GimmickManager.BLOCK_EXE_FORWARD;
-import static com.ar.ar_programming.GimmickManager.BLOCK_EXE_ROTATE_LEFT;
-import static com.ar.ar_programming.GimmickManager.BLOCK_EXE_ROTATE_RIGHT;
-import static com.ar.ar_programming.GimmickManager.BLOCK_TYPE_EXE;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RadioButton;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -28,7 +18,7 @@ import java.util.ArrayList;
 /*
  * ユーザーブロック選択リストアダプタ
  */
-public class StageSelectListAdapter extends RecyclerView.Adapter<StageSelectListAdapter.StageItemViewHolder> {
+public class StageSelectAdapter extends RecyclerView.Adapter<StageSelectAdapter.StageItemViewHolder> {
 
     //---------------------------
     // 定数
@@ -38,11 +28,11 @@ public class StageSelectListAdapter extends RecyclerView.Adapter<StageSelectList
     // フィールド変数
     //----------------------------
     // ステージリスト
-    private final ArrayList<StageSelectDialog.StageList> mStageList;
-    // クリックリスナー
-    private BlockClickListener mBlockClickListener;
+    private final ArrayList<StageList> mStageList;
+    // 現在の（アダプタ生成時点の）ステージ名
+    private final String CurrrentStageName;
     // 選択中位置
-    private int mCheckPosition = -1;
+    private int mSelectPosition;
 
     /*
      * 選択ステージ
@@ -70,7 +60,7 @@ public class StageSelectListAdapter extends RecyclerView.Adapter<StageSelectList
             Context context = cl_parent.getContext();
 
             // ステージ情報
-            final StageSelectDialog.StageList stageList = mStageList.get(position);
+            final StageList stageList = mStageList.get(position);
 
             //-----------------------------
             // リストitem view レイアウト設定
@@ -78,7 +68,7 @@ public class StageSelectListAdapter extends RecyclerView.Adapter<StageSelectList
             // ステージ名を設定
             setStageName(context, stageList.mStageName);
             // 選択中状態の設定
-            setSelectedState(position);
+            setSelectedState(stageList, position);
             // クリア状態に応じたアイコンの設定
             setClearInfo(stageList.mIsClear);
 
@@ -88,7 +78,7 @@ public class StageSelectListAdapter extends RecyclerView.Adapter<StageSelectList
                 public void onClick(View view) {
 
                     // 同じステージが選択
-                    if( mCheckPosition == position ){
+                    if( mSelectPosition == position ){
                         // 処理なし
                         return;
                     }
@@ -96,8 +86,8 @@ public class StageSelectListAdapter extends RecyclerView.Adapter<StageSelectList
                     //-------------------
                     // 選択中ステージ変更
                     //-------------------
-                    int preChecked = mCheckPosition;
-                    mCheckPosition = position;
+                    int preChecked = mSelectPosition;
+                    mSelectPosition = position;
 
                     // 選択中ステージの選択を解除
                     notifyItemChanged( preChecked );
@@ -105,7 +95,6 @@ public class StageSelectListAdapter extends RecyclerView.Adapter<StageSelectList
                     // クリック対象のステージを選択中に変更
                     rb_stage.setChecked( true );
                     notifyItemChanged( position );
-
                 }
             });
         }
@@ -125,9 +114,13 @@ public class StageSelectListAdapter extends RecyclerView.Adapter<StageSelectList
         /*
          * 選択中状態の設定
          */
-        private void setSelectedState(int position) {
+        private void setSelectedState(StageList stageList, int position) {
             // ステージ名として設定
-            rb_stage.setChecked( (position == mCheckPosition) );
+            boolean isSelect = (position == mSelectPosition);
+
+            // 選択状態を反映
+            rb_stage.setChecked( isSelect );
+            stageList.mIsSelect = isSelect;
         }
 
         /*
@@ -153,8 +146,30 @@ public class StageSelectListAdapter extends RecyclerView.Adapter<StageSelectList
     /*
      * コンストラクタ
      */
-    public StageSelectListAdapter( ArrayList<StageSelectDialog.StageList> stageList ) {
+    public StageSelectAdapter(ArrayList<StageList> stageList, String currrentStageName ) {
         mStageList = stageList;
+        CurrrentStageName = currrentStageName;
+
+        //----------------
+        // 選択中位置を取得
+        //----------------
+        mSelectPosition = getSelectedStagePosition();
+    }
+
+    /*
+     * 選択中ステージの位置を取得
+     */
+    private int getSelectedStagePosition() {
+
+        int position = 0;
+        for( StageList stage: mStageList ){
+            if( stage.mStageName.equals( CurrrentStageName ) ){
+                return position;
+            }
+            position++;
+        }
+
+        return 0;
     }
 
     /*
@@ -205,27 +220,5 @@ public class StageSelectListAdapter extends RecyclerView.Adapter<StageSelectList
     public int getItemCount() {
         // ステージ数を返す
         return mStageList.size();
-    }
-
-    /*
-     * 処理ブロックリストクリア
-     */
-    public void clearBlockList() {
-        mStageList.clear();
-    }
-
-    /*
-     * 処理ブロッククリックリスナーの設定
-     */
-    public void setOnBlockClickListener(BlockClickListener listener ) {
-        mBlockClickListener = listener;
-    }
-
-    /*
-     * 処理結果通知用のインターフェース
-     */
-    public interface BlockClickListener {
-        // 処理ブロッククリックリスナー
-        void onBlockClick( Gimmick.XmlBlockInfo xmlBlockInfo );
     }
 }

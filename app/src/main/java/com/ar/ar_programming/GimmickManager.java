@@ -180,18 +180,61 @@ public class GimmickManager {
     /*
      * ギミックの取得
      */
-    public static Gimmick getGimmick(Context context) {
+//    public static Gimmick getGimmick(Context context) {
+//
+//        // チュートリアルかチュートリアル終了しているかでギミック選定を分ける
+//        boolean finishTutorial = Common.isFisishTutorial(context);
+//        if (finishTutorial) {
+//            // ユーザー設定に応じたギミックを生成
+//            return makeUserGimmick(context);
+//        } else {
+//            // チュートリアルからギミックを生成
+//            int tutorial = Common.getTutorialSequence(context);
+//            return makeTutorialGimmick(context, tutorial);
+//        }
+//    }
 
-        // チュートリアルかチュートリアル終了しているかでギミック選定を分ける
-        boolean finishTutorial = Common.isFisishTutorial(context);
-        if (finishTutorial) {
-            // ユーザー設定に応じたギミックを生成
-            return makeUserGimmick(context);
-        } else {
-            // チュートリアルからギミックを生成
-            int tutorial = Common.getTutorialSequence(context);
-            return makeTutorialGimmick(context, tutorial);
+
+    /*
+     * ギミックの取得：ステージ名指定
+     */
+    public static Gimmick getGimmick(Context context, String stageName) {
+
+        Resources resources = context.getResources();
+        XmlResourceParser parser = resources.getXml(R.xml.gimmick_select);
+
+        //-----------------------------------------
+        // 該当するチュートリアルのギミック情報まで進める
+        //-----------------------------------------
+        try {
+            int eventType = parser.getEventType();
+            while (eventType != XmlPullParser.END_DOCUMENT) {
+
+                // 開始タグでタグ名が「gimmick」の場合、読み込み
+                if ((eventType == XmlPullParser.START_TAG) && (Objects.equals(parser.getName(), "gimmick"))) {
+                    String xmlName = parser.getAttributeValue(null, "name");
+                    if (stageName.equals(xmlName)) {
+                        break;
+                    }
+                }
+
+                // 次の要素を読み込む
+                parser.next();
+                eventType = parser.getEventType();
+            }
+        } catch (XmlPullParserException | IOException ignored) {
+            //★エラー対応検討
         }
+
+        //-----------------------------------------
+        // ギミック生成
+        //-----------------------------------------
+        Gimmick gimmick = new Gimmick(context);
+        readGimmickData(gimmick, parser);
+
+        parser.close();
+
+        return gimmick;
     }
 
     /*
@@ -233,6 +276,7 @@ public class GimmickManager {
         //--------------------------
         // ギミックにreadデータを設定
         //--------------------------
+        gimmick.name = parser.getAttributeValue(null, "name");
         gimmick.successCondition = parser.getAttributeValue(null, "successCondition");
         gimmick.successRemoveTarget = parser.getAttributeValue(null, "successRemoveTarget");
         gimmick.character = parser.getAttributeValue(null, "character");
@@ -269,9 +313,24 @@ public class GimmickManager {
     }
 
     /*
+     * ユーザー設定に応じたギミックXML名を生成
+     */
+    public static Gimmick makeUserGimmick(Context context, String stageName) {
+
+        Resources resources = context.getResources();
+
+        // ユーザー設定に応じたギミックXMLファイルIDを取得
+        int xmlID = getUserGimmickXmlFileNameID(context);
+        XmlResourceParser parser = resources.getXml(xmlID);
+
+        // 指定ステージ名のギミックを取得
+        return getGimmickFromStageName(parser, context, stageName);
+    }
+
+    /*
      * ユーザーのチュートリアル状態に応じたギミックXML名を生成
      */
-    private static Gimmick makeTutorialGimmick(Context context, int tutorial) {
+    public static Gimmick makeTutorialGimmick(Context context, int tutorial) {
 
         Resources resources = context.getResources();
         XmlResourceParser parser = resources.getXml(R.xml.gimmick_tutorial);
@@ -314,18 +373,44 @@ public class GimmickManager {
     }
 
     /*
-     * ユーザー設定に応じたギミックXML名を生成
+     * ギミックリスト内からランダムにギミックを取得する
      */
-    private static Gimmick makeUserGimmick(Context context) {
-
+    private static Gimmick getGimmickFromStageName(XmlResourceParser parsertmp, Context context, String stageName) {
         Resources resources = context.getResources();
+        XmlResourceParser parser = resources.getXml(R.xml.gimmick_select);
 
-        // ユーザー設定に応じたギミックXMLファイルIDを取得
-        int xmlID = getUserGimmickXmlFileNameID(context);
-        XmlResourceParser parser = resources.getXml(xmlID);
+        //-----------------------------------------
+        // 該当するチュートリアルのギミック情報まで進める
+        //-----------------------------------------
+        try {
+            int eventType = parser.getEventType();
+            while (eventType != XmlPullParser.END_DOCUMENT) {
 
-        // ギミックをランダムに取得して返す
-        return getGimmickRandomly(parser, context);
+                // 開始タグでタグ名が「gimmick」の場合、読み込み
+                if ((eventType == XmlPullParser.START_TAG) && (Objects.equals(parser.getName(), "gimmick"))) {
+                    String name = parser.getAttributeValue(null, "name");
+                    if (name.equals( stageName )) {
+                        break;
+                    }
+                }
+
+                // 次の要素を読み込む
+                parser.next();
+                eventType = parser.getEventType();
+            }
+        } catch (XmlPullParserException | IOException ignored) {
+            //★エラー対応検討
+        }
+
+        //-----------------------------------------
+        // ギミック生成
+        //-----------------------------------------
+        Gimmick gimmick = new Gimmick(context);
+        readGimmickData(gimmick, parser);
+
+        parser.close();
+
+        return gimmick;
     }
 
     /*
