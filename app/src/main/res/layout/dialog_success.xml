@@ -50,17 +50,19 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:layout_marginBottom="24dp"
+        android:onClick="onOtherStageClicked"
         android:text="@string/ar_dialog_play_another_stage"
         android:textAlignment="center"
         android:textColor="@color/black"
         android:textSize="18sp"
         android:textStyle="bold"
-        android:onClick="onOtherStageClicked"
-        tools:context=".ArMainFragment"
+        app:layout_constraintBottom_toTopOf="@id/tv_break"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.629"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/v_border"
-        app:layout_constraintBottom_toTopOf="@id/tv_break" />
+        app:layout_constraintVertical_bias="0.0"
+        tools:context=".ArMainFragment" />
 
     <TextView
         android:id="@+id/tv_nextTutorial"

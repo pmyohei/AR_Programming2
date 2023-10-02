@@ -15,6 +15,7 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Random;
 
@@ -307,7 +308,7 @@ public class GimmickManager {
         parser.close();
 
         // チュートリアル値を設定
-        gimmick.setTutorial( tutorial );
+        gimmick.setTutorial(tutorial);
 
         return gimmick;
     }
@@ -424,20 +425,20 @@ public class GimmickManager {
         int difficulty = sharedPref.getInt(context.getString(R.string.saved_difficulty_key), defaultDifficulty);
 
         // xmlファイルidを判定
-        int xmlID;
-        if (character == SettingActivity.CHARACTER_ANIMAL) {
-            if (difficulty == SettingActivity.PLAY_DIFFICULTY_EASY) {
-                xmlID = R.xml.gimmick_animal_easy;
-            } else {
-                xmlID = R.xml.gimmick_animal_difficult;
-            }
-        } else {
-            if (difficulty == SettingActivity.PLAY_DIFFICULTY_EASY) {
-                xmlID = R.xml.gimmick_vehicle_easy;
-            } else {
-                xmlID = R.xml.gimmick_vehicle_difficult;
-            }
-        }
+        int xmlID = 0;
+//        if (character == SettingActivity.CHARACTER_ANIMAL) {
+//            if (difficulty == SettingActivity.PLAY_DIFFICULTY_EASY) {
+//                xmlID = R.xml.gimmick_animal_easy;
+//            } else {
+//                xmlID = R.xml.gimmick_animal_difficult;
+//            }
+//        } else {
+//            if (difficulty == SettingActivity.PLAY_DIFFICULTY_EASY) {
+//                xmlID = R.xml.gimmick_vehicle_easy;
+//            } else {
+//                xmlID = R.xml.gimmick_vehicle_difficult;
+//            }
+//        }
 
         return xmlID;
     }
@@ -504,7 +505,7 @@ public class GimmickManager {
     public static String getSpecificNodeName(String targetNode) {
 
         // 対象Node情報の区切り文字がなければ、引数のNode名がそのまま具体的なNode名
-        if( !targetNode.contains( GIMMICK_DELIMITER_TARGET_NODE_INFO ) ){
+        if (!targetNode.contains(GIMMICK_DELIMITER_TARGET_NODE_INFO)) {
             return targetNode;
         }
 
@@ -516,7 +517,7 @@ public class GimmickManager {
     /*
      * ブロックアイコン向けdrawableリソースIDの構築／drawableの取得
      */
-    public static Drawable getBlockIcon( Context context, String type, String action ) {
+    public static Drawable getBlockIcon(Context context, String type, String action) {
 
         //--------------------------------------
         // drawableリソースの生成
@@ -526,7 +527,7 @@ public class GimmickManager {
 
         // 「プレフィックス」に連結するワード
         String word;
-        switch ( type ){
+        switch (type) {
             case BLOCK_TYPE_EXE:
                 word = action;
                 break;
@@ -556,5 +557,43 @@ public class GimmickManager {
         Log.i("リソース構築", "drawable resourceStr=" + resourceStr);
         int drawableId = resources.getIdentifier(resourceStr, "drawable", packageName);
         return context.getDrawable(drawableId);
+    }
+
+    /*
+     * ステージ名リストの取得
+     */
+    public static ArrayList<String> getStageNameList( Context context ) {
+
+        // リスト
+        ArrayList<String> stageList = new ArrayList<>();
+
+
+        Resources resources = context.getResources();
+        XmlResourceParser parser = resources.getXml(R.xml.gimmick_select);
+
+        //---------
+        // xml解析
+        //---------
+        try {
+            int eventType = parser.getEventType();
+            while (eventType != XmlPullParser.END_DOCUMENT) {
+
+                // 開始タグでタグ名が「gimmick」の場合、読み込み
+                if ((eventType == XmlPullParser.START_TAG) && (Objects.equals(parser.getName(), "gimmick"))) {
+                    String stageName = parser.getAttributeValue(null, "name");
+                    stageList.add( stageName );
+                }
+
+                // 次の要素を読み込む
+                parser.next();
+                eventType = parser.getEventType();
+            }
+        } catch (XmlPullParserException | IOException ignored) {
+            //★エラー対応検討
+        }
+
+        parser.close();
+
+        return stageList;
     }
 }

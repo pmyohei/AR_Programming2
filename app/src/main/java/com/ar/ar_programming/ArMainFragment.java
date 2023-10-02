@@ -2,7 +2,6 @@ package com.ar.ar_programming;
 
 import static android.content.Context.MODE_PRIVATE;
 
-import static com.ar.ar_programming.Common.TUTORIAL_DEFAULT;
 import static com.ar.ar_programming.Common.TUTORIAL_FINISH;
 import static com.ar.ar_programming.Gimmick.NO_USABLE_LIMIT_NUM;
 import static com.ar.ar_programming.character.CharacterNode.ACTION_FAILURE;
@@ -2238,7 +2237,7 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
         // ダイアログ
         //------------------
         // ダイアログ表示
-        StageSuccessDialogFragment successDialog = new StageSuccessDialogFragment();
+        StageSuccessDialog successDialog = new StageSuccessDialog();
         successDialog.setCancelable(false);
         successDialog.show(getActivity().getSupportFragmentManager(), "success");
 
@@ -2281,7 +2280,7 @@ public class ArMainFragment extends Fragment implements ARActivity.MenuClickList
         //--------------------
         // ダイアログ生成
         //--------------------
-        StageFailureDialogFragment failureDialog = new StageFailureDialogFragment();
+        StageFailureDialog failureDialog = new StageFailureDialog();
         failureDialog.setCancelable(false);
         failureDialog.show(getActivity().getSupportFragmentManager(), "failure");
 

@@ -22,25 +22,26 @@ import android.widget.TextView;
 import androidx.fragment.app.DialogFragment;
 
 /*
- * ステージクリア失敗時のダイアログ
+ * ステージクリア時のダイアログ
  */
-public class StageFailureDialogFragment extends DialogFragment {
+public class StageSuccessDialog extends DialogFragment {
 
-    // リスナー
-    private View.OnClickListener mRetryClickListener;
     private View.OnClickListener mBreakClickListener;
+    private View.OnClickListener mNextTutorialClickListener;
     private View.OnClickListener mOtherStageClickListener;
 
+    //Bundle保存キー
+    private static final String KEY_TUTORIAL = "tutorial";
 
     //空のコンストラクタ
     //※必須（画面回転等の画面再生成時にコールされる）
-    public StageFailureDialogFragment() {
+    public StageSuccessDialog() {
         //do nothing
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.dialog_failure, container, false);
+        return inflater.inflate(R.layout.dialog_success, container, false);
     }
 
     /**
@@ -75,8 +76,54 @@ public class StageFailureDialogFragment extends DialogFragment {
         // チュートリアル中の場合
         boolean finishTutorial = Common.isFisishTutorial( getContext() );
         if( !finishTutorial ){
+            String next = getString( R.string.ar_dialog_next_tutorial );
+            ((TextView) dialog.findViewById(R.id.tv_otherStage)).setText(next);
+
             dialog.findViewById(R.id.tv_otherStage).setVisibility( View.GONE );
+            dialog.findViewById(R.id.tv_nextTutorial).setVisibility( View.VISIBLE );
         }
+    }
+
+    /*
+     * リスナー設定
+     */
+    private void setListerner(Dialog dialog) {
+        TextView tv_break = dialog.findViewById(R.id.tv_break);
+        TextView tv_nextTutorial = dialog.findViewById(R.id.tv_nextTutorial);
+        TextView tv_otherStage = dialog.findViewById(R.id.tv_otherStage);
+
+        //-----------------
+        // 休憩
+        //-----------------
+        tv_break.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mBreakClickListener.onClick(view);
+                dismiss();
+            }
+        });
+
+        //-----------------
+        // 次のチュートリアルへ
+        //-----------------
+        tv_nextTutorial.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mNextTutorialClickListener.onClick(view);
+                dismiss();
+            }
+        });
+
+        //-----------------
+        // 別ステージ選択
+        //-----------------
+        tv_otherStage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mOtherStageClickListener.onClick(view);
+                dismiss();
+            }
+        });
     }
 
     /*
@@ -95,10 +142,10 @@ public class StageFailureDialogFragment extends DialogFragment {
         //-------------------
         // 画面向きを取得
         int orientation = getResources().getConfiguration().orientation;
-        float widthRatio = ((orientation == Configuration.ORIENTATION_PORTRAIT) ? PORTRAIT_RATIO : LANDSCAPE_RATIO);
+        float widthRatio = ( (orientation == Configuration.ORIENTATION_PORTRAIT) ? PORTRAIT_RATIO : LANDSCAPE_RATIO );
 
         // 画面サイズの取得
-        int screeenWidth = getScreenWidth(getContext());
+        int screeenWidth = getScreenWidth( getContext() );
         Window window = dialog.getWindow();
         WindowManager.LayoutParams lp = dialog.getWindow().getAttributes();
         lp.width = (int) (screeenWidth * widthRatio);
@@ -114,51 +161,9 @@ public class StageFailureDialogFragment extends DialogFragment {
     }
 
     /*
-     * リスナー設定
-     */
-    private void setListerner(Dialog dialog) {
-        TextView tv_retry = dialog.findViewById(R.id.tv_retry);
-        TextView tv_break = dialog.findViewById(R.id.tv_break);
-        TextView tv_otherStage = dialog.findViewById(R.id.tv_otherStage);
-
-        //-----------------
-        // リトライ
-        //-----------------
-        tv_retry.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mRetryClickListener.onClick(view);
-                dismiss();
-            }
-        });
-
-        //-----------------
-        // 休憩
-        //-----------------
-        tv_break.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mBreakClickListener.onClick(view);
-                dismiss();
-            }
-        });
-
-        //-----------------
-        // 別ステージ選択
-        //-----------------
-        tv_otherStage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mOtherStageClickListener.onClick(view);
-                dismiss();
-            }
-        });
-    }
-
-    /*
      *　スクリーン横幅を取得
      */
-    private int getScreenWidth(Context context) {
+    private int getScreenWidth( Context context ) {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             WindowManager windowManager = (WindowManager) context.getSystemService(WINDOW_SERVICE);
@@ -166,17 +171,11 @@ public class StageFailureDialogFragment extends DialogFragment {
             return windowMetrics.getBounds().width();
         } else {
             DisplayMetrics displayMetrics = new DisplayMetrics();
-            ((Activity) context).getWindowManager().getDefaultDisplay().getRealMetrics(displayMetrics);
+            ((Activity)context).getWindowManager().getDefaultDisplay().getRealMetrics(displayMetrics);
             return displayMetrics.widthPixels;
         }
     }
 
-    /*
-     * リトライリスナー設定
-     */
-    public void setOnRetryListerner(View.OnClickListener listerner) {
-        mRetryClickListener = listerner;
-    }
     /*
      * 休憩リスナー設定
      */
@@ -184,9 +183,16 @@ public class StageFailureDialogFragment extends DialogFragment {
         mBreakClickListener = listerner;
     }
     /*
+     * 次のチュートリアルリスナー設定
+     */
+    public void setOnNextTutorialListerner(View.OnClickListener listerner) {
+        mNextTutorialClickListener = listerner;
+    }
+    /*
      * 別ステージ選択リスナー設定
      */
     public void setOnOtherStageListerner(View.OnClickListener listerner) {
         mOtherStageClickListener = listerner;
     }
+
 }

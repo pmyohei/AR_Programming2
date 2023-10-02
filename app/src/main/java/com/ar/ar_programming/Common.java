@@ -5,6 +5,10 @@ import static android.content.Context.MODE_PRIVATE;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import java.util.ArrayList;
+
+import kotlin.UNINITIALIZED_VALUE;
+
 /*
  * 共通処理
  */
@@ -16,11 +20,11 @@ public class Common {
     /*
      * チュートリアルシーケンスの取得
      */
-    public static int getTutorialSequence(Context context){
+    public static int getTutorialSequence(Context context) {
 
         // 現在のチュートリアル進行状況を取得
-        SharedPreferences sharedPref = context.getSharedPreferences( context.getString(R.string.preference_file_key), MODE_PRIVATE);
-        int tutorial = sharedPref.getInt( context.getString(R.string.saved_tutorial_key), TUTORIAL_DEFAULT);
+        SharedPreferences sharedPref = context.getSharedPreferences(context.getString(R.string.preference_file_key), MODE_PRIVATE);
+        int tutorial = sharedPref.getInt(context.getString(R.string.saved_tutorial_key), TUTORIAL_DEFAULT);
 
         return tutorial;
     }
@@ -28,31 +32,48 @@ public class Common {
     /*
      * チュートリアル終了済み判定
      */
-    public static boolean isFisishTutorial(Context context){
+    public static boolean isFisishTutorial(Context context) {
 
         // 現在のチュートリアル進行状況を取得
         SharedPreferences sharedPref = context.getSharedPreferences(context.getString(R.string.preference_file_key), MODE_PRIVATE);
         int tutorial = sharedPref.getInt(context.getString(R.string.saved_tutorial_key), TUTORIAL_DEFAULT);
 
         // チュートリアル終了しているかどうか
-        return  (tutorial >= TUTORIAL_FINISH);
+        return (tutorial >= TUTORIAL_FINISH);
     }
 
 
     /*
      * チュートリアルを次に進める
      */
-    public static void proceedNextTutorial(Context context){
+    public static void proceedNextTutorial(Context context) {
 
         // チュートリアルを次に進める
-        int tutorial = getTutorialSequence( context );
+        int tutorial = getTutorialSequence(context);
         tutorial++;
 
         // 保存
-        SharedPreferences sharedPref = context.getSharedPreferences( context.getString(R.string.preference_file_key), MODE_PRIVATE);
+        SharedPreferences sharedPref = context.getSharedPreferences(context.getString(R.string.preference_file_key), MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putInt( context.getString(R.string.saved_tutorial_key), tutorial);
+        editor.putInt(context.getString(R.string.saved_tutorial_key), tutorial);
         editor.apply();
+    }
+
+
+    /*
+     * ユーザーのステージクリア情報設定
+     */
+    public static void setUserStageClearInfo(Context context, ArrayList<StageSelectDialog.StageList> stageList){
+
+        for( StageSelectDialog.StageList stage: stageList ){
+
+            // ステージのクリア状況を取得
+            SharedPreferences sharedPref = context.getSharedPreferences(context.getString(R.string.preference_file_key), MODE_PRIVATE);
+            boolean isClear = sharedPref.getBoolean( stage.mStageName, false);
+
+            // リストに反映
+            stage.mIsClear = isClear;
+        }
     }
 
     /*

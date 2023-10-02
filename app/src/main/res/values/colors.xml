@@ -32,6 +32,12 @@
     <color name="bg_goal_guide_dialog">#CCFFFFFF</color>
     <color name="stroke_goal_guide_dialog">#C3AF00</color>
 
+    <!---->
+    <!-- ステージ選択UI／ダイアログ -->
+    <!---->
+    <color name="bg_stage_select_dialog">#CCFFFFFF</color>
+    <color name="stroke_stage_select_dialog">#f8a978</color>
+
 
     <!---->
     <!-- 処理ブロック -->

@@ -51,6 +51,14 @@
         </activity>
 
         <activity
+            android:name=".StageSelectActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+
+        <activity
             android:name=".ARActivity"
             android:exported="false"
             android:theme="@style/Theme.AR_Programming.NoActionBar">

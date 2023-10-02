@@ -1,9 +1,9 @@
 <resources>
     <string name="app_name">AR_Programming</string>
 
-    <!---->
+    <!-- ================================================================= -->
     <!-- 共有環境設定 SharedPreferences -->
-    <!---->
+    <!-- ================================================================= -->
     <string name="preference_file_key">com.ar.ar_programming.PREFERENCE_FILE_KEY</string>
     <string name="saved_tutorial_key">TUTORIAL_KEY</string>
     <string name="saved_field_size_key">FIELD_SIZE_KEY</string>
@@ -13,22 +13,22 @@
     <string name="saved_first_start_key" translatable="false">first_start</string>
 
 
-    <!---->
+    <!-- ================================================================= -->
     <!-- 共通 -->
-    <!---->
+    <!-- ================================================================= -->
     <string name="menu_save">保存</string>
     <string name="none"></string>
 
-    <!---->
+    <!-- ================================================================= -->
     <!-- Home画面 -->
-    <!---->
+    <!-- ================================================================= -->
     <string name="home_play">Play</string>
     <string name="home_how">遊び方</string>
     <string name="home_setting">Setting</string>
 
-    <!---->
+    <!-- ================================================================= -->
     <!-- 遊び方画面 -->
-    <!---->
+    <!-- ================================================================= -->
     <string name="how_to_play_ar">ARの始め方</string>
     <string name="how_to_block_operations">ブロック基本操作</string>
     <string name="what_is_exe_block">実行ブロック\nとは？</string>
@@ -37,11 +37,9 @@
     <string name="what_is_if_else_block">if elseブロック\nとは？</string>
     <string name="what_is_if_elseif_block">if elseif\nelseブロック\nとは？</string>
 
-
-
-    <!---->
+    <!-- ================================================================= -->
     <!-- 設定画面 -->
-    <!---->
+    <!-- ================================================================= -->
     <string name="setting_title">ゲーム設定</string>
 
     <string name="setting_stage_size">ステージサイズ</string>
@@ -67,12 +65,16 @@
     <string name="setting_dialog_cannot_supplement">完了したチュートリアル</string>
     <string name="setting_dialog_cannot_tutorial_status"> / 6</string>
 
+    <!-- ダイアログ ステージ選択 -->
+    <string name="stage_select_title">遊びたいステージを選ぼう！</string>
+    <string name="stage_select_decision">Play！</string>
+
     <!-- snackbar -->
     <string name="setting_snackbar_message">保存しました</string>
 
-    <!---->
+    <!-- ================================================================= -->
     <!-- 処理ブロック -->
-    <!---->
+    <!-- ================================================================= -->
     <!--  処理ブロック 共通  -->
     <string name="block_usable_title">使用できる数</string>
     <string name="block_set_volume_title">設定できる値</string>
@@ -115,9 +117,9 @@
     <!-- snackbar -->
     <string name="diable_set_volume">このブロックは変更できないよ</string>
 
-    <!---->
+    <!-- ================================================================= -->
     <!-- AR画面 -->
-    <!---->
+    <!-- ================================================================= -->
     <!-- menu -->
     <string name="ar_menu_how_to_play">遊び方</string>
     <string name="ar_menu_setting">設定</string>
@@ -128,13 +130,30 @@
     <!-- プログラミング画面 -->
     <string name="programming_top">Let\'s Programming!</string>
 
-    <!-- その他 -->
+    <!-- ステージ説明viewテキスト -->
     <string name="goal_guide_view">ステージの説明をみる！\n（タッチしてね）</string>
 
     <!-- snackbar -->
     <string name="snackbar_please_programming">プログラミングを作ったらもう一度押してね</string>
     <string name="snackbar_please_finish_game">ゲーム終了後に押してね</string>
     <string name="snackbar_please_wait">もう少し待ってね</string>
+
+    <!-- ================================================================= -->
+    <!-- ギミック紐づけ -->
+    <!-- ================================================================= -->
+    <!-- ステージ名 -->
+    <string name="chase_with_police_car">パトカーで追跡！</string>
+    <string name="avoid_poisonous_mushrooms">毒キノコは捨てよう</string>
+    <string name="avoid_poisonous_mushrooms_2">毒キノコは捨てよう２</string>
+    <string name="present_for_rabbit">プレゼントをウサギへ届けよう</string>
+    <string name="pickup_sweets_and_sweets_house">お菓子を拾ってお菓子屋さんへ</string>
+    <string name="pickup_sweets_and_sweets_house_2">お菓子を拾ってお菓子屋さんへ２</string>
+    <string name="banana_and_peel_on_bridge">バナナの皮に気を付けよう！</string>
+    <string name="banana_and_peel_on_bridge_2">バナナの皮に気を付けよう！２</string>
+    <string name="bee_and_honey">はちみつゲット！</string>
+    <string name="eat_all_vegetable">野菜を全部たべよう！</string>
+    <string name="defeat_crownghost">お化け退治！</string>
+    <string name="defeat_crownghost_2">お化け退治！２</string>
 
     <!-- キャラクターアクションワード -->
     <string name="action_success">わーい！</string>
@@ -149,7 +168,7 @@
     <string name="action_pickup">ゲット～</string>
     <string name="action_change_target">別のにしよ～</string>
 
-    <!-- 処理ブロックに埋め込む物体名 -->
+    <!-- 処理ブロックに埋め込むNode名 -->
     <string name="house">家</string>
     <string name="sweetHouse">お菓子の家</string>
     <string name="rabit">うさぎ</string>
@@ -173,6 +192,9 @@
     <string name="ghost">お化け</string>
     <string name="ghostClown">ピエロお化け</string>
 
+    <!-- ================================================================= -->
+    <!-- ダイアログ -->
+    <!-- ================================================================= -->
     <!-- ダイアログ -->
     <string name="ar_dialog_title">リトライ</string>
     <string name="ar_dialog_contents">ゲームを初めの状態に戻しますか？</string>
@@ -190,9 +212,9 @@
     <string name="ar_dialog_try">もう一度！</string>
     <string name="ar_dialog_break">休憩（ホームへ）</string>
 
-    <!---->
+    <!-- ================================================================= -->
     <!-- 遊び方 -->
-    <!---->
+    <!-- ================================================================= -->
     <!-- 共通 -->
     <string name="how_to_sample_head_message">下にサンプルを載せてるよ\nどんな風にブロックが実行されるか\n参考にしてね！</string>
 
@@ -284,17 +306,17 @@
     <string name="sixth_start_tutorial_explanation_1_1">今回のステージでは\nif elseブロックというのを学んでいくよ！\n状況に応じてやりたいことが\nたくさんあるときに使うんだ。\n次のページを見て使い方を確認してね！</string>
 
 
-    <!---->
+    <!-- ================================================================= -->
     <!-- キャラクター（.glbファイル名と一致させること） -->
-    <!---->
+    <!-- ================================================================= -->
     <string name="animal_bear">bear</string>
 
     <string name="vehicle_car">car</string>
 
 
-    <!---->
+    <!-- ================================================================= -->
     <!-- ステージ説明 -->
-    <!---->
+    <!-- ================================================================= -->
     <!-- チュートリアル１：動物 -->
     <string name="guide_major_tutorial_1_animal">チュートリアル1</string>
     <string name="guide_sub_tutorial_1_animal">～プログラミングをしてみよう～</string>
