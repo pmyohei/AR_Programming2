@@ -24,7 +24,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
                 android:layout_marginBottom="12dp"
-                android:text="@string/how_to_about_if_elseif_block_title"
+                android:text="@string/how_to_about_loop_block_title"
                 android:textAlignment="center"
                 android:textColor="@color/black"
                 android:textSize="@dimen/how_to_page_title"
@@ -46,7 +46,7 @@
                 app:layout_constraintTop_toBottomOf="@id/tv_pageTitle" />
 
             <TextView
-                android:id="@+id/tv_sample_head"
+                android:id="@+id/tv_exp1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
@@ -59,30 +59,16 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/v_border" />
 
-            <TextView
-                android:id="@+id/tv_example_1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
-                android:text="@string/how_to_about_if_elseif_block_example_1"
-                android:textAlignment="center"
-                android:textColor="@color/black"
-                android:textSize="@dimen/how_to_page_exp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tv_sample_head" />
-
             <ImageView
-                android:id="@+id/iv_case2Image2"
-                android:layout_width="match_parent"
+                android:id="@+id/iv_sample"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:src="@drawable/how_to_if_elseif_1_1"
+                android:layout_marginTop="20dp"
+                android:src="@drawable/how_to_loop_1"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tv_example_1" />
+                app:layout_constraintTop_toBottomOf="@id/tv_exp1" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

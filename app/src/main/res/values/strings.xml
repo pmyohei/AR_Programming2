@@ -193,6 +193,9 @@
     <!---->
     <!-- 遊び方 -->
     <!---->
+    <!-- 共通 -->
+    <string name="how_to_sample_head_message">下にサンプルを載せてるよ\nどんな風にブロックが実行されるか\n参考にしてね！</string>
+
     <!-- AR基本操作 -->
     <string name="how_to_ar_title">ARの遊び方</string>
     <string name="how_to_ar_explanation_1">ARカメラが起動したら\nまずはカメラで身の回りにある\n平面なところを映してみよう！</string>

@@ -73,7 +73,6 @@
                 android:id="@+id/iv_sample2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
                 android:src="@drawable/how_to_block_limit_2"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
