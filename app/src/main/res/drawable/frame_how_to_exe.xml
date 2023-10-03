@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <solid
+        android:color="@color/bg_block_exe" />
+
+    <stroke
+        android:width="@dimen/block_stroke"
+        android:color="@color/bg_block_exe_dark" />
+
+</shape>
