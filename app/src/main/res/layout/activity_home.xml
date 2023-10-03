@@ -12,7 +12,7 @@
         android:layout_height="0dp"
         android:background="@color/bg_home_play"
         android:onClick="onPlayClicked"
-        app:layout_constraintBottom_toTopOf="@+id/cl_blockOperation"
+        app:layout_constraintBottom_toTopOf="@+id/cl_howToPlay"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -47,13 +47,13 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/cl_blockOperation"
+        android:id="@+id/cl_howToPlay"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:background="@color/bg_home_how"
         android:onClick="onHowToPlayClicked"
         app:layout_constraintTop_toBottomOf="@+id/cl_startAR"
-        app:layout_constraintBottom_toTopOf="@+id/cl_whatIsLoopBlock"
+        app:layout_constraintBottom_toTopOf="@+id/cl_setting"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         tools:context=".HomeActivity">
@@ -88,13 +88,13 @@
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/cl_whatIsLoopBlock"
+        android:id="@+id/cl_setting"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:background="@color/bg_home_setting"
         android:onClick="onSettingClicked"
-        app:layout_constraintTop_toBottomOf="@+id/cl_blockOperation"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cl_howToPlay"
+        app:layout_constraintBottom_toTopOf="@+id/adView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         tools:context=".HomeActivity">
@@ -126,5 +126,20 @@
             app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- バナー広告 -->
+    <com.google.android.gms.ads.AdView
+        xmlns:ads="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/adView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        ads:adSize="BANNER"
+        ads:adUnitId="@string/admob_unit_id_test"
+        app:layout_constraintTop_toBottomOf="@+id/cl_setting"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,6 +1,16 @@
 <resources>
     <string name="app_name">AR_Programming</string>
 
+    <!-- Admod（アプリID） -->
+    <string name="admob_app_id" translatable="false">ca-app-pub-8046295810838892~9506977518</string>
+
+    <!-- リリース時とテスト時で切り替える -->
+    <!--  テストID（バナー広告）  -->
+    <string name="admob_unit_id_test" translatable="false">ca-app-pub-3940256099942544/6300978111</string>
+    <!-- リリース用 -->
+    <string name="admob_unit_id" translatable="false">ca-app-pub-8046295810838892/1531488413</string>
+
+
     <!-- ================================================================= -->
     <!-- 共有環境設定 SharedPreferences -->
     <!-- ================================================================= -->
