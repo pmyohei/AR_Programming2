@@ -73,9 +73,12 @@ public class StageSuccessDialog extends DialogFragment {
         // リスナー設定
         setListerner(dialog);
 
-        // チュートリアル中の場合
+        //--------------------
+        // チュートリアル中
+        //--------------------
         boolean finishTutorial = Common.isFisishTutorial( getContext() );
         if( !finishTutorial ){
+            // 文言をチュートリアル向けに書き換え
             String next = getString( R.string.ar_dialog_next_tutorial );
             ((TextView) dialog.findViewById(R.id.tv_otherStage)).setText(next);
 

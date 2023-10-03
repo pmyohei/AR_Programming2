@@ -59,9 +59,20 @@ public class Common {
         editor.apply();
     }
 
+    /*
+     * ステージクリア保存
+     */
+    public static void saveStageClear(Context context, String stageName) {
+
+        // 指定されたステージをクリア状態として保存
+        SharedPreferences sharedPref = context.getSharedPreferences(context.getString(R.string.preference_file_key), MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putBoolean(stageName, true);
+        editor.apply();
+    }
 
     /*
-     * ユーザーのステージクリア情報設定
+     * ユーザーのステージクリアリスト情報設定
      */
     public static void setUserStageClearInfo(Context context, ArrayList<StageList> stageList){
 

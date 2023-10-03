@@ -2287,13 +2287,19 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
     }
 
     /*
-     * チュートリアル状況更新
+     * クリア状態の保存
      */
-    private void updateSavedTutorial() {
+    private void saveClearState() {
 
-        // チュートリアル終了済みの場合、何もしない
-        boolean isFinish = Common.isFisishTutorial(getContext());
+        Context context = getContext();
+
+        //--------------------
+        // チュートリアル終了判定
+        //--------------------
+        boolean isFinish = Common.isFisishTutorial(context);
         if (isFinish) {
+            // チュートリアル終了済みの場合、クリアしたステージをクリア状態に保存
+            Common.saveStageClear( context, mGimmick.name );
             return;
         }
 
@@ -2301,14 +2307,14 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
         // チュートリアル状況更新
         //--------------------
         // チュートリアルを次に進める
-        Common.proceedNextTutorial(getContext());
+        Common.proceedNextTutorial(context);
     }
 
 
     /*
-     * ステージクリア
+     * ステージクリア成功
      */
-    private void stageClear() {
+    private void stageSuccess() {
 
         //------------------
         // Node演出
@@ -2321,7 +2327,7 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
         //---------------------
         // チュートリアル状況更新
         //---------------------
-        updateSavedTutorial();
+        saveClearState();
 
         //------------------
         // ダイアログ
@@ -2351,7 +2357,7 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
         successDialog.setOnOtherStageListerner(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onOtherStageClicked(view);
+                stageSelect();
             }
         });
     }
@@ -2359,7 +2365,7 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
     /*
      * ステージクリア失敗
      */
-    private void stageClearFailure() {
+    private void stageFailure() {
 
         //------------------
         // Node演出
@@ -2378,7 +2384,7 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
         failureDialog.setOnRetryListerner(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onRetryClicked(view);
+                onRetryClicked();
             }
         });
         // 休憩リスナー設定
@@ -2393,7 +2399,7 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
         failureDialog.setOnOtherStageListerner(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onOtherStageClicked(view);
+                stageSelect();
             }
         });
     }
@@ -2401,7 +2407,7 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
     /*
      * ゴール結果ダイアログ：「再挑戦」
      */
-    public void onRetryClicked(View view) {
+    public void onRetryClicked() {
         // ゲームをリセット
         returnGameToStart();
         // Fabアイコンを切り替え
@@ -2409,10 +2415,14 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
     }
 
     /*
-     * ゴール結果ダイアログ：「別のステージで遊ぶ」
+     * ステージ選択画面遷移
      */
-    public void onOtherStageClicked(View view) {
+    public void stageSelect() {
+        // 画面遷移
+        Intent intent = new Intent( getActivity(), StageSelectActivity.class );
+        intent.putExtra( KEY_CURRENT_STAGE, mGimmick.name );
 
+        mStageSelectLancher.launch( intent );
     }
 
     /*
@@ -2672,11 +2682,11 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
 
         if( programmingEndState == PROGRAMMING_SUCCESS ){
             // ステージクリア
-            stageClear();
+            stageSuccess();
 
         } else {
             // ステージクリア失敗
-            stageClearFailure();
+            stageFailure();
         }
     }
 
@@ -2714,13 +2724,8 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
      */
     @Override
     public void onMenuSelectStage() {
-        // 画面遷移
-        Intent intent = new Intent( getActivity(), StageSelectActivity.class );
-        intent.putExtra( KEY_CURRENT_STAGE, mGimmick.name );
-
-        mStageSelectLancher.launch( intent );
+        stageSelect();
     }
-
 
     /*
      * menuアクションリスナー：ゴール説明
