@@ -137,7 +137,7 @@ public class StageSelectAdapter extends RecyclerView.Adapter<StageSelectAdapter.
 
             // アイコンをクリア状態に変更
             @SuppressLint("UseCompatLoadingForDrawables")
-            Drawable design = context.getDrawable( R.drawable.baseline_trophy_24 );
+            Drawable design = context.getDrawable( R.drawable.baseline_trophy);
             iv_clear.setBackground(design);
         }
 

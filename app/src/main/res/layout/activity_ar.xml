@@ -33,6 +33,6 @@
         android:layout_marginEnd="@dimen/fab_margin"
         android:layout_marginBottom="16dp"
         app:backgroundTint="@color/white"
-        app:srcCompat="@drawable/baseline_play_24" />
+        app:srcCompat="@drawable/baseline_play" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

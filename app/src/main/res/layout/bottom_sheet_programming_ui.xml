@@ -77,7 +77,7 @@
             android:layout_height="60dp"
             android:layout_marginTop="20dp"
             android:layout_marginEnd="20dp"
-            android:src="@drawable/baseline_block_remove_24"
+            android:src="@drawable/baseline_block_remove"
             app:layout_constraintTop_toBottomOf="@+id/tv_contents"
             app:layout_constraintEnd_toEndOf="parent"/>
 

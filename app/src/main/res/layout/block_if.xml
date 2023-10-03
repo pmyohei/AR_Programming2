@@ -35,7 +35,7 @@
             android:layout_width="@dimen/block_icon_size"
             android:layout_height="@dimen/block_icon_size"
             android:visibility="gone"
-            android:src="@drawable/baseline_add_block_to_24"
+            android:src="@drawable/baseline_add_block"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

@@ -14,7 +14,7 @@
         android:layout_width="@dimen/goal_guide_bg_icon"
         android:layout_height="@dimen/goal_guide_bg_icon"
         android:alpha="0.6"
-        android:src="@drawable/baseline_goal_guide_24"
+        android:src="@drawable/baseline_goal_guide"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"

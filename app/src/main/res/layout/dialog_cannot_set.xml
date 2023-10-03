@@ -80,7 +80,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:src="@drawable/baseline_not_star_24"
+        android:src="@drawable/baseline_not_star"
         app:layout_constraintEnd_toStartOf="@+id/iv_star2"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv_statusNow"
@@ -91,7 +91,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:src="@drawable/baseline_not_star_24"
+        android:src="@drawable/baseline_not_star"
         app:layout_constraintEnd_toStartOf="@+id/iv_star3"
         app:layout_constraintStart_toEndOf="@+id/iv_star1"
         app:layout_constraintTop_toBottomOf="@id/tv_statusNow" />
@@ -101,7 +101,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:src="@drawable/baseline_not_star_24"
+        android:src="@drawable/baseline_not_star"
         app:layout_constraintEnd_toStartOf="@+id/iv_star4"
         app:layout_constraintStart_toEndOf="@+id/iv_star2"
         app:layout_constraintTop_toBottomOf="@id/tv_statusNow" />
@@ -111,7 +111,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:src="@drawable/baseline_not_star_24"
+        android:src="@drawable/baseline_not_star"
         app:layout_constraintEnd_toStartOf="@+id/iv_star5"
         app:layout_constraintStart_toEndOf="@+id/iv_star3"
         app:layout_constraintTop_toBottomOf="@id/tv_statusNow" />
@@ -121,7 +121,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:src="@drawable/baseline_not_star_24"
+        android:src="@drawable/baseline_not_star"
         app:layout_constraintEnd_toStartOf="@+id/iv_star6"
         app:layout_constraintStart_toEndOf="@+id/iv_star4"
         app:layout_constraintTop_toBottomOf="@id/tv_statusNow" />
@@ -131,7 +131,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:src="@drawable/baseline_not_star_24"
+        android:src="@drawable/baseline_not_star"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/iv_star5"
         app:layout_constraintTop_toBottomOf="@id/tv_statusNow" />

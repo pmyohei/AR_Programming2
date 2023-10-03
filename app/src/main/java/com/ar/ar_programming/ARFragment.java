@@ -495,7 +495,7 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
         // ゲーム状態更新
         mPlayState = PLAY_STATE_PLAYING;
         // Fabアイコンを切り替え
-        fab.setImageResource(R.drawable.baseline_replay_24);
+        fab.setImageResource(R.drawable.baseline_replay);
     }
 
     /*
@@ -513,7 +513,7 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
                         // ゲームをリセット
                         returnGameToStart();
                         // Fabアイコンを切り替え
-                        fab.setImageResource(R.drawable.baseline_play_24);
+                        fab.setImageResource(R.drawable.baseline_play);
                     }
                 })
                 .setNegativeButton(getString(R.string.ar_dialog_negative), null)
@@ -2225,7 +2225,7 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
 
         // FabをPlay可能状態に変更
         if (mPlayControlFab != null) {
-            mPlayControlFab.setImageResource(R.drawable.baseline_play_24);
+            mPlayControlFab.setImageResource(R.drawable.baseline_play);
         }
     }
 
@@ -2411,7 +2411,7 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
         // ゲームをリセット
         returnGameToStart();
         // Fabアイコンを切り替え
-        mPlayControlFab.setImageResource(R.drawable.baseline_play_24);
+        mPlayControlFab.setImageResource(R.drawable.baseline_play);
     }
 
     /*

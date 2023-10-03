@@ -5,7 +5,7 @@
 
     <item
         android:id="@+id/action_save"
-        android:icon="@drawable/baseline_check_24"
+        android:icon="@drawable/baseline_check"
         android:title="@string/menu_save"
         app:showAsAction="always"/>
 

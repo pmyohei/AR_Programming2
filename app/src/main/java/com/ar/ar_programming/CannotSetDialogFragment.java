@@ -1,26 +1,16 @@
 package com.ar.ar_programming;
 
-import static android.content.Context.WINDOW_SERVICE;
-
 import static com.ar.ar_programming.Common.TUTORIAL_DEFAULT;
 
-import android.app.Activity;
 import android.app.Dialog;
-import android.content.Context;
-import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
-import android.view.WindowMetrics;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -88,7 +78,7 @@ public class CannotSetDialogFragment extends DialogFragment {
 
         // 完了イメージ
         Resources resources = getResources();
-        Drawable starImage = resources.getDrawable( R.drawable.baseline_star_24, null);
+        Drawable starImage = resources.getDrawable( R.drawable.baseline_star, null);
 
         //-------------------------------
         // 現在のチュートリアル進行状況を反映
