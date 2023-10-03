@@ -91,6 +91,7 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
     //---------------------------
     // 画面遷移Key
     public static final String KEY_CURRENT_STAGE = "current_stage";
+    public static final String KEY_TUTORIAL = "tutorial";
 
     // プログラミング終了ステータス
     public static final int PROGRAMMING_NOT_END = 0;
@@ -398,7 +399,7 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
             // 取得するステージ名
             //------------------
             // ステージ名リスト
-            ArrayList<String> stageNameList = GimmickManager.getStageNameList(context);
+            ArrayList<String> stageNameList = GimmickManager.getStageNameList(context, R.xml.gimmick_select);
             String stageName = Common.getHeadNotClearStageName(context, stageNameList);
 
             // ギミック生成
@@ -2289,23 +2290,9 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
 
         Context context = getContext();
 
-        //--------------------
-        // チュートリアル終了判定
-        //--------------------
-        boolean isFinish = Common.isFisishTutorial(context);
-        if (isFinish) {
-            // チュートリアル終了済みの場合、クリアしたステージをクリア状態に保存
-            Common.saveStageClear( context, mGimmick.name );
-            return;
-        }
-
-        //--------------------
-        // チュートリアル状況更新
-        //--------------------
-        // チュートリアルを次に進める
-        Common.proceedNextTutorial(context);
+        // チュートリアル終了済みの場合、クリアしたステージをクリア状態に保存
+        Common.saveStageClear( context, mGimmick.name );
     }
-
 
     /*
      * ステージクリア成功
@@ -2691,6 +2678,8 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
      */
     @Override
     public void onMenuHowToClick() {
+        Intent intent = new Intent(getActivity(), HowToPlayActivity.class);
+        startActivity(intent);
     }
 
     /*

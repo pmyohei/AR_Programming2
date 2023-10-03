@@ -7,15 +7,14 @@ import android.content.SharedPreferences;
 
 import java.util.ArrayList;
 
-import kotlin.UNINITIALIZED_VALUE;
-
 /*
  * 共通処理
  */
 public class Common {
 
-    public static int TUTORIAL_DEFAULT = 1;     // ユーザーデータ取得エラー時のチュートリアル値（データがないなら、初めのチュートリアルから行う）
-    public static int TUTORIAL_FINISH = 7;      // チュートリアル終了値（チュートリアルは『１～「この値 - 1」』）
+    public static int TUTORIAL_DEFAULT = 1;                     // ユーザーデータ取得エラー時のチュートリアル値（データがないなら、初めのチュートリアルから行う）
+    public static int TUTORIAL_LAST = 6;                        // チュートリアル最終番号
+    public static int TUTORIAL_FINISH = TUTORIAL_LAST + 1;      // チュートリアル終了値（チュートリアルは『１～「この値 - 1」』）
 
     /*
      * チュートリアルシーケンスの取得
@@ -24,9 +23,18 @@ public class Common {
 
         // 現在のチュートリアル進行状況を取得
         SharedPreferences sharedPref = context.getSharedPreferences(context.getString(R.string.preference_file_key), MODE_PRIVATE);
-        int tutorial = sharedPref.getInt(context.getString(R.string.saved_tutorial_key), TUTORIAL_DEFAULT);
 
-        return tutorial;
+        // チュートリアルの先頭から参照し、クリアしていない番号を取得
+        int i;
+        for( i = TUTORIAL_DEFAULT; i <= TUTORIAL_LAST; i++ ){
+            String tutorialNum = Integer.toString( i );
+            boolean isClear = sharedPref.getBoolean(tutorialNum, false);
+            if( !isClear ){
+                return i;
+            }
+        }
+
+        return i;
     }
 
     /*
@@ -34,30 +42,33 @@ public class Common {
      */
     public static boolean isFisishTutorial(Context context) {
 
-        // 現在のチュートリアル進行状況を取得
+        // 最終チュートリアルをクリアしていれば、チュートリアルは終了状態にある
         SharedPreferences sharedPref = context.getSharedPreferences(context.getString(R.string.preference_file_key), MODE_PRIVATE);
-        int tutorial = sharedPref.getInt(context.getString(R.string.saved_tutorial_key), TUTORIAL_DEFAULT);
 
-        // チュートリアル終了しているかどうか
-        return (tutorial >= TUTORIAL_FINISH);
+        String lastTutorialNum = Integer.toString( TUTORIAL_LAST );
+        return sharedPref.getBoolean(lastTutorialNum, false);
     }
-
 
     /*
      * チュートリアルを次に進める
      */
-    public static void proceedNextTutorial(Context context) {
-
-        // チュートリアルを次に進める
-        int tutorial = getTutorialSequence(context);
-        tutorial++;
-
-        // 保存
-        SharedPreferences sharedPref = context.getSharedPreferences(context.getString(R.string.preference_file_key), MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putInt(context.getString(R.string.saved_tutorial_key), tutorial);
-        editor.apply();
-    }
+//    public static void proceedNextTutorial(Context context) {
+//
+//        //------------
+//        // 更新対象
+//        //------------
+//        // 未クリア → クリア となるチュートリアル
+//        int sequence = getTutorialSequence(context);
+//        String clearTutorial = Integer.toString( sequence );
+//
+//        //------------
+//        // 保存
+//        //------------
+//        SharedPreferences sharedPref = context.getSharedPreferences(context.getString(R.string.preference_file_key), MODE_PRIVATE);
+//        SharedPreferences.Editor editor = sharedPref.edit();
+//        editor.putBoolean(clearTutorial, true);
+//        editor.apply();
+//    }
 
     /*
      * ステージクリア保存
@@ -72,18 +83,15 @@ public class Common {
     }
 
     /*
-     * ユーザーのステージクリアリスト情報設定
+     * ユーザーのクリアリスト情報設定
      */
-    public static void setUserStageClearInfo(Context context, ArrayList<StageList> stageList){
+    public static void setUserClearInfo(Context context, ArrayList<StageList> stageList) {
 
-        for( StageList stage: stageList ){
-
+        for (StageList stage : stageList) {
             // ステージのクリア状況を取得
             SharedPreferences sharedPref = context.getSharedPreferences(context.getString(R.string.preference_file_key), MODE_PRIVATE);
-            boolean isClear = sharedPref.getBoolean( stage.mStageName, false);
-
             // リストに反映
-            stage.mIsClear = isClear;
+            stage.mIsClear = sharedPref.getBoolean(stage.mStageName, false);
         }
     }
 

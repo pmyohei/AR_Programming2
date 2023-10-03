@@ -647,14 +647,13 @@ public class GimmickManager {
     /*
      * ステージ名リストの取得
      */
-    public static ArrayList<String> getStageNameList( Context context ) {
+    public static ArrayList<String> getStageNameList( Context context, int gimmickXmlID ) {
 
         // リスト
         ArrayList<String> stageList = new ArrayList<>();
 
-
         Resources resources = context.getResources();
-        XmlResourceParser parser = resources.getXml(R.xml.gimmick_select);
+        XmlResourceParser parser = resources.getXml(gimmickXmlID);
 
         //---------
         // xml解析

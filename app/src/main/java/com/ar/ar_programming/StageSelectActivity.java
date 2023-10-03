@@ -3,7 +3,6 @@ package com.ar.ar_programming;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Spinner;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -57,7 +56,7 @@ public class StageSelectActivity extends AppCompatActivity {
         // アダプタ設定
         //---------------------
         // ステージ選択リストアダプタの生成
-        StageSelectAdapter adapter = new StageSelectAdapter(mStageList, currentStageName);
+        StageSelectAdapter adapter = new StageSelectAdapter(this, mStageList, currentStageName);
 
         // スクロール方向を用意
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
@@ -74,21 +73,27 @@ public class StageSelectActivity extends AppCompatActivity {
      */
     private ArrayList<StageList> getStageList() {
 
-        ArrayList<StageList> stageList = new ArrayList<>();
-
         //---------------------
         // ステージリスト情報
         //---------------------
-        // ステージ名リストの取得
-        ArrayList<String> stageNameList = GimmickManager.getStageNameList(this);
+        // チュートリアル名／ステージ名取得
+        ArrayList<String> tutorialList = GimmickManager.getStageNameList(this, R.xml.gimmick_tutorial);
+        ArrayList<String> stageNameList = GimmickManager.getStageNameList(this, R.xml.gimmick_select);
 
+        // ステージリスト
+        ArrayList<StageList> stageList = new ArrayList<>();
+
+        // ステージリストにチュートリアル名を設定
+        for (String name : tutorialList) {
+            stageList.add(new StageList(name));
+        }
         // ステージリストにステージ名を設定
         for (String name : stageNameList) {
             stageList.add(new StageList(name));
         }
 
         // ユーザーのクリア情報を設定
-        Common.setUserStageClearInfo(this, stageList);
+        Common.setUserClearInfo(this, stageList);
 
         return stageList;
     }
