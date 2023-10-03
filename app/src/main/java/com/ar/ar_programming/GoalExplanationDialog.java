@@ -2,10 +2,12 @@ package com.ar.ar_programming;
 
 import static android.content.Context.WINDOW_SERVICE;
 
+import static com.ar.ar_programming.Common.TUTORIAL_FINISH;
 import static com.ar.ar_programming.GimmickManager.GOAl_EXP_CONTENTS_POS;
 import static com.ar.ar_programming.GimmickManager.GOAl_EXP_EXPLANATION_POS;
 import static com.ar.ar_programming.GimmickManager.GOAl_EXP_MAJOR_POS;
 import static com.ar.ar_programming.GimmickManager.GOAl_EXP_SUB_POS;
+import static com.ar.ar_programming.GimmickManager.PRE_REPLACE_WORD;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -28,19 +30,21 @@ import androidx.fragment.app.DialogFragment;
 
 import java.util.ArrayList;
 
-public class GoalExplanationDialogFragment extends DialogFragment {
+public class GoalExplanationDialog extends DialogFragment {
 
     private ArrayList<Integer> mGoalExplanationIdList;
+    private int mTutorial;
     private OnDestroyListener mOnDestroyListener;
 
     //空のコンストラクタ
     //※必須（画面回転等の画面再生成時にコールされる）
-    public GoalExplanationDialogFragment() {
+    public GoalExplanationDialog() {
         //do nothing
     }
 
-    public GoalExplanationDialogFragment(ArrayList<Integer> idList) {
+    public GoalExplanationDialog(ArrayList<Integer> idList, int tutorial) {
         mGoalExplanationIdList = idList;
+        mTutorial = tutorial;
     }
 
     @Override
@@ -81,8 +85,11 @@ public class GoalExplanationDialogFragment extends DialogFragment {
         int contents = mGoalExplanationIdList.get(GOAl_EXP_CONTENTS_POS);
         int explanation = mGoalExplanationIdList.get(GOAl_EXP_EXPLANATION_POS);
 
+        // チュートリアル番号の設定
+        String majorStr = getMajorString( dialog.getContext(), major );
+
         // 説明内容にギミック用xmlの内容を反映
-        ((TextView) dialog.findViewById(R.id.tv_majorTitle)).setText(major);
+        ((TextView) dialog.findViewById(R.id.tv_majorTitle)).setText(majorStr);
         ((TextView) dialog.findViewById(R.id.tv_subTitle)).setText(sub);
         ((TextView) dialog.findViewById(R.id.tv_goalContents)).setText(contents);
         ((TextView) dialog.findViewById(R.id.tv_explanationContents)).setText(explanation);
@@ -92,6 +99,29 @@ public class GoalExplanationDialogFragment extends DialogFragment {
     public void onDestroy() {
         super.onDestroy();
         mOnDestroyListener.onDestroy();
+    }
+
+
+    /*
+     * チュートリアル番号の設定
+     */
+    private String getMajorString(Context context, int titleID) {
+
+        String major = context.getString( titleID );
+
+        //----------------
+        // チュートリアル終了
+        //----------------
+        if (mTutorial >= TUTORIAL_FINISH) {
+            // 文字列加工なし
+            return major;
+        }
+
+        //----------------
+        // チュートリアル中
+        //----------------
+        // タイトル文字列を現在のチュートリアル番号に置き換え
+        return major.replace( PRE_REPLACE_WORD, Integer.toString( mTutorial ) );
     }
 
     /*

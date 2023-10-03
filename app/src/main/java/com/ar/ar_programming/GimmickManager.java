@@ -167,9 +167,9 @@ public class GimmickManager {
     // 文字列リソース構築のプレフィックス
     // 例）「block_exe_forward」の「block」
     private static final String PREFIX_STRING_RESOURCE = "block";
-    // Node名置換前ワード
+    // Node名等置換前ワード
     // 例）「xxxを食べる」の「xxx」
-    private static final String PRE_REPLACE_WORD = "xxx";
+    public static final String PRE_REPLACE_WORD = "xxx";
 
     /*
      * コンストラクタ
@@ -344,8 +344,8 @@ public class GimmickManager {
 
                 // 開始タグでタグ名が「gimmick」の場合、読み込み
                 if ((eventType == XmlPullParser.START_TAG) && (Objects.equals(parser.getName(), "gimmick"))) {
-                    int sequence = parser.getAttributeIntValue(null, "sequence", TUTORIAL_FINISH);
-                    if (sequence == tutorial) {
+                    int name = parser.getAttributeIntValue(null, "name", TUTORIAL_FINISH);
+                    if (name == tutorial) {
                         break;
                     }
                 }
@@ -389,7 +389,7 @@ public class GimmickManager {
                 // 開始タグでタグ名が「gimmick」の場合、読み込み
                 if ((eventType == XmlPullParser.START_TAG) && (Objects.equals(parser.getName(), "gimmick"))) {
                     String name = parser.getAttributeValue(null, "name");
-                    if (name.equals( stageName )) {
+                    if (name.equals(stageName)) {
                         break;
                     }
                 }

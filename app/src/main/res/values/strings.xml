@@ -26,6 +26,7 @@
     <!-- ================================================================= -->
     <!-- 共通 -->
     <!-- ================================================================= -->
+    <string name="ar_fragment_label">AR プログラミング</string>
     <string name="menu_save">保存</string>
     <string name="none"></string>
 
@@ -41,11 +42,37 @@
     <!-- ================================================================= -->
     <string name="how_to_play_ar">ARの始め方</string>
     <string name="how_to_block_operations">ブロック基本操作</string>
-    <string name="what_is_exe_block">実行ブロック\nとは？</string>
-    <string name="what_is_loop_block">ループブロック\nとは？</string>
-    <string name="what_is_if_block">ifブロック\nとは？</string>
-    <string name="what_is_if_else_block">if elseブロック\nとは？</string>
-    <string name="what_is_if_elseif_block">if elseif\nelseブロック\nとは？</string>
+    <string name="what_is_exe_block">
+        <![CDATA[
+            実行ブロック
+            とは？
+        ]]>
+    </string>
+    <string name="what_is_loop_block">
+        <![CDATA[
+            ループブロック
+            とは？
+        ]]>
+    </string>
+    <string name="what_is_if_block">
+        <![CDATA[
+            ifブロック
+            とは？
+        ]]>
+    </string>
+    <string name="what_is_if_else_block">
+        <![CDATA[
+            if elseブロック
+            とは？
+        ]]>
+    </string>
+    <string name="what_is_if_elseif_block">
+        <![CDATA[
+            if elseif
+            elseブロック
+            とは？
+        ]]>
+    </string>
 
     <!-- ================================================================= -->
     <!-- 設定画面 -->
@@ -71,7 +98,12 @@
     <string name="setting_dialog_negative">いいえ</string>
 
     <!-- ダイアログ チュートリアル完了まで設定不可 -->
-    <string name="setting_dialog_cannot_title">チュートリアルを終えると\n設定できるよ</string>
+    <string name="setting_dialog_cannot_title">
+        <![CDATA[
+            チュートリアルを終えると
+            設定できるよ
+        ]]>
+    </string>
     <string name="setting_dialog_cannot_supplement">完了したチュートリアル</string>
     <string name="setting_dialog_cannot_tutorial_status"> / 6</string>
 
@@ -100,7 +132,7 @@
     <string name="block_exe_eat">xxxを食べる</string>
     <string name="block_exe_throw">xxxを捨てる</string>
     <string name="block_exe_attack">目の前のxxxをやっつける</string>
-    <string name="block_exe_farattack">そのxxxをやっつける</string>
+    <string name="block_exe_farattack">離れた所にいるxxxをやっつける</string>
     <string name="block_exe_pickup">xxxを拾う</string>
     <string name="block_exe_changetarget">ターゲットを変更</string>
 
@@ -142,23 +174,29 @@
     <string name="programming_top">Let\'s Programming!</string>
 
     <!-- ステージ説明viewテキスト -->
-    <string name="goal_guide_view">ステージの説明をみる！\n（タッチしてね）</string>
+    <string name="goal_guide_view">
+        <![CDATA[
+            ステージの説明をみる！
+            （タッチしてね）
+        ]]>
+    </string>
 
     <!-- snackbar -->
     <string name="snackbar_please_programming">プログラミングを作ったらもう一度押してね</string>
     <string name="snackbar_please_finish_game">ゲーム終了後に押してね</string>
     <string name="snackbar_please_wait">もう少し待ってね</string>
+    <string name="snackbar_please_return_home">エラー。。一度Homeに戻ってね</string>
 
     <!-- ================================================================= -->
     <!-- ギミック紐づけ -->
     <!-- ================================================================= -->
     <!-- ステージ名 -->
     <string name="chase_with_police_car">パトカーで追跡！</string>
-    <string name="avoid_poisonous_mushrooms">毒キノコは捨てよう</string>
-    <string name="avoid_poisonous_mushrooms_2">毒キノコは捨てよう２</string>
+    <string name="avoid_poison_mushroom">毒キノコは捨てよう</string>
+    <string name="which_poison_mushroom">毒キノコはどれだろう？</string>
     <string name="present_for_rabbit">プレゼントをウサギへ届けよう</string>
-    <string name="pickup_sweets_and_sweets_house">お菓子を拾ってお菓子屋さんへ</string>
-    <string name="pickup_sweets_and_sweets_house_2">お菓子を拾ってお菓子屋さんへ２</string>
+    <string name="pickup_sweets_and_sweets_house">お菓子を拾ってお菓子の家へ</string>
+    <string name="pickup_sweets_and_sweets_house_2">お菓子を拾ってお菓子の家へ２</string>
     <string name="banana_and_peel_on_bridge">バナナの皮に気を付けよう！</string>
     <string name="banana_and_peel_on_bridge_2">バナナの皮に気を付けよう！２</string>
     <string name="bee_and_honey">はちみつゲット！</string>
@@ -227,94 +265,315 @@
     <!-- 遊び方 -->
     <!-- ================================================================= -->
     <!-- 共通 -->
-    <string name="how_to_sample_head_message">下にサンプルを載せてるよ\nどんな風にブロックが実行されるか\n参考にしてね！</string>
-
+    <string name="how_to_sample_head_message">
+        <![CDATA[
+            下にサンプルを載せてるよ
+            どんな風にブロックが実行されるか
+            参考にしてね！
+        ]]>
+    </string>
+    
     <!-- AR基本操作 -->
     <string name="how_to_ar_title">ARの遊び方</string>
-    <string name="how_to_ar_explanation_1">ARカメラが起動したら\nまずはカメラで身の回りにある\n平面なところを映してみよう！</string>
-    <string name="how_to_ar_explanation_2">カメラが平面を認識すると\n「白いドット」が表示されるから\nそのドットをタッチしてね！\n真っ白な机や床は平面だと認識しずらいから、\nもしドットが表示されないなら、\n少し柄のある場所を映してみてね。</string>
-    <string name="how_to_ar_explanation_3">タッチしたところに\nARでゲームのステージが出現するよ。\nそれが君が挑戦するステージだ！</string>
-    <string name="how_to_ar_explanation_4">クリアの条件やステージの説明も\nステージの上に表示されてるから、\n確認したらブロックプログラミングに挑戦しよう！</string>
+    <string name="how_to_ar_explanation_1">
+        <![CDATA[
+            ARカメラが起動したら
+            まずはカメラで身の回りにある
+            平面なところを映してみよう！
+        ]]>
+    </string>
+    <string name="how_to_ar_explanation_2">
+        <![CDATA[
+            カメラが平面を認識すると
+            「白いドット」が表示されるから
+            そのドットをタッチしてね！
+            真っ白な机や床は平面だと認識しずらいから、
+            もしドットが表示されないなら、
+            少し柄のある場所を映してみてね。
+        ]]>
+    </string>
+    <string name="how_to_ar_explanation_3">
+        <![CDATA[
+            タッチしたところに
+            ARでゲームのステージが出現するよ。
+            それが君が挑戦するステージだ！
+        ]]>
+    </string>
+    <string name="how_to_ar_explanation_4">
+        <![CDATA[
+            クリアの条件やステージの説明も
+            ステージの上に表示されてるから、
+            確認したらブロックプログラミングに挑戦しよう！
+        ]]>
+    </string>
 
     <!-- ブロック基本操作 -->
     <string name="how_to_block_operation_title">プログラミングの仕方</string>
-    <string name="how_to_block_operation_explanation">プログラミングのやり方を説明していくよ。\nこのアプリでは、プログラミングは\nブロックを組み合わせて行っていくんだ。\n次のページから基本的なやり方が書いてあるから、\n順番に読んでいってね。</string>
+    <string name="how_to_block_operation_explanation">
+        <![CDATA[
+            プログラミングのやり方を説明していくよ。
+            このアプリでは、プログラミングは
+            ブロックを組み合わせて行っていくんだ。
+            次のページから基本的なやり方が書いてあるから、
+            順番に読んでいってね。
+        ]]>
+    </string>
 
     <string name="how_to_add_block_title">ブロック追加のやり方</string>
-    <string name="how_to_add_block_explanation">プログラミング画面下にある\n横に並んだブロックをタッチすると\n「下矢印のあるブロック」の下に追加されるよ</string>
+    <string name="how_to_add_block_explanation">
+        <![CDATA[
+            プログラミング画面下にある
+            横に並んだブロックをタッチすると
+            「下矢印のあるブロック」の下に追加されるよ
+        ]]>
+    </string>
 
     <string name="how_to_move_block_title">ブロック移動のやり方</string>
-    <string name="how_to_move_block_explanation">ブロックを「今とは別のブロックの下」\nに移動したい場合は、\nドラッグ\＆ドロップを使おう</string>
+    <string name="how_to_move_block_explanation">
+        <![CDATA[
+            ブロックを「今とは別のブロックの下」
+            に移動したい場合は、
+            ドラッグ\＆ドロップを使おう
+        ]]>
+    </string>
 
     <string name="how_to_remove_block_title">ブロック削除のやり方</string>
-    <string name="how_to_remove_block_explanation">いらないブロックは、\nドラッグ＆ドロップで右上のごみ箱に持っていこう。\n作成したプログラムから削除することができるよ。</string>
+    <string name="how_to_remove_block_explanation">
+        <![CDATA[
+            いらないブロックは、
+            ドラッグ＆ドロップで右上のごみ箱に持っていこう。
+            作成したプログラムから削除することができるよ。
+        ]]>
+    </string>
 
     <string name="how_to_set_volume_title">ブロック処理量の設定</string>
-    <string name="how_to_set_volume_explanation">ブロックによっては\n自分で処理の量を決める必要があるよ。\nブロック上の数値をタッチすると設定できるから、\nステージをよく見て値を設定しよう！</string>
+    <string name="how_to_set_volume_explanation">
+        <![CDATA[
+            ブロックによっては
+            自分で処理の量を決める必要があるよ。
+            ブロック上の数値をタッチすると設定できるから、
+            ステージをよく見て値を設定しよう！
+        ]]>
+    </string>
 
     <string name="how_to_about_limit_title">ブロックの制限</string>
-    <string name="how_to_about_limit_explanation">ステージによっては\nブロックを使用できる数や\n設定できる値に制限がある場合があるよ。\nそういったステージではちょっと工夫が必要になるから、\nうまく制限の範囲でプログラミングしてね。</string>
+    <string name="how_to_about_limit_explanation">
+        <![CDATA[
+            ステージによっては
+            ブロックを使用できる数や
+            設定できる値に制限がある場合があるよ。
+            そういったステージではちょっと工夫が必要になるから、
+            うまく制限の範囲でプログラミングしてね。
+        ]]>
+    </string>
 
     <!-- exeブロック -->
     <string name="how_to_about_exe_block_title">実行ブロックとは？</string>
-    <string name="how_to_about_exe_block_explanation">キャラクターに特定の行動をさせるブロックだよ。\nうまく組み合わせてARのステージをクリアしよう！</string>
-    <string name="how_to_about_exe_block_note">「xxxを食べる」や「xxxを拾う」ってブロックは\nキャラクターの目の前に「xxx」がないと\n失敗してしまうよ。。\nなので、例えば\n「にんじんを食べる」\nをしたかったら、\nとりあえず「にんじん」にぶつかるまで前進しちゃおう！\nぶつかっていれば目の前にあることになるからね。</string>
+    <string name="how_to_about_exe_block_explanation">
+        <![CDATA[
+            キャラクターに特定の行動をさせるブロックだよ。
+            うまく組み合わせてARのステージをクリアしよう！
+        ]]>
+    </string>
+    <string name="how_to_about_exe_block_note">
+        <![CDATA[
+            「xxxを食べる」や「xxxを拾う」ってブロックは
+            キャラクターの目の前に「xxx」がないと
+            失敗してしまうよ。。
+            なので、例えば
+            「にんじんを食べる」
+            をしたかったら、
+            とりあえず「にんじん」にぶつかるまで前進しちゃおう！
+            ぶつかっていれば目の前にあることになるからね。
+        ]]>
+    </string>
 
     <!-- Loopブロック -->
     <string name="how_to_about_loop_block_title">ループブロックとは？</string>
-    <string name="how_to_about_loop_block_explanation">繰り返しブロックともいうよ。\nキャラクターが\n「Loopブロックにかかれた状態」\nになるまで、\n「Loopブロックの中にあるブロック」を\n実行し続けるブロックだよ。\n同じことを繰り返したいときに使ってね。</string>
+    <string name="how_to_about_loop_block_explanation">
+        <![CDATA[
+            繰り返しブロックともいうよ。
+            キャラクターが
+            「Loopブロックにかかれた状態」
+            になるまで、
+            「Loopブロックの中にあるブロック」を
+            実行し続けるブロックだよ。
+            同じことを繰り返したいときに使ってね。
+        ]]>
+    </string>
 
     <!-- ifブロック -->
     <string name="how_to_about_if_block_title">ifブロックとは？</string>
-    <string name="how_to_about_if_block_explanation">条件分岐ブロックともいうよ。\n「ifブロックに書かれたこと」が成立しているなら、\n「ifブロックの中にあるブロック」を\n実行するブロックだよ。\n成立していないなら、\n中にあるブロックは実行されないよ。\n状況によっては実行したいブロックが\nあるときに使ってね。</string>
+    <string name="how_to_about_if_block_explanation">
+        <![CDATA[
+            条件分岐ブロックともいうよ。
+            「ifブロックに書かれたこと」が成立しているなら、
+            「ifブロックの中にあるブロック」を
+            実行するブロックだよ。
+            成立していないなら、
+            中にあるブロックは実行されないよ。
+            状況によっては実行したいブロックが
+            あるときに使ってね。
+        ]]>
+    </string>
     <string name="how_to_about_if_block_example_1">ケース①：ifブロックの条件成立</string>
     <string name="how_to_about_if_block_example_2">ケース②：ifブロックの条件不成立</string>
 
     <!-- if elseブロック -->
     <string name="how_to_about_if_else_block_title">if elseブロックとは？</string>
-    <string name="how_to_about_if_else_block_explanation">条件分岐ブロックともいうよ。\nブロックに書かれたことが成立しているなら、\n「if側ブロック（上にあるブロック）」を実行するブロックだよ。\nもし、成立していないなら、\n「else側ブロック（下にあるブロック）」を実行するブロックだよ。\n状況によって実行したいブロックを変えたいときに使ってね。\n※「else」はそれ以外って意味だよ。\nある条件が成立していないときにしたいことを決めれるんだ。</string>
+    <string name="how_to_about_if_else_block_explanation">
+        <![CDATA[
+            条件分岐ブロックともいうよ。
+            ブロックに書かれたことが成立しているなら、
+            「if側ブロック（上にあるブロック）」を実行するブロックだよ。
+            もし、成立していないなら、
+            「else側ブロック（下にあるブロック）」を実行するブロックだよ。
+            状況によって実行したいブロックを変えたいときに使ってね。
+            ※「else」はそれ以外って意味だよ。
+            ある条件が成立していないときにしたいことを決めれるんだ。
+        ]]>
+    </string>
     <string name="how_to_about_if_else_block_example_1">ケース①：ifブロックの条件成立</string>
     <string name="how_to_about_if_else_block_example_2">ケース②：ifブロックの条件不成立</string>
 
     <!-- if elseif elseブロック -->
     <string name="how_to_about_if_elseif_block_title">if elseif elseブロックとは？</string>
-    <string name="how_to_about_if_elseif_block_explanation">条件分岐ブロックともいうよ。\nブロックの一番上に書かれたことが成立しているなら、\n「if側ブロック（上にあるブロック）」を実行するブロックだよ。\nもし、成立していなくて\nブロックの真ん中に書かれたことが成立しているなら、\n「else if側ブロック（真ん中にあるブロック）」を実行するブロックだよ。\nそれも成立していなかったら\n「else側ブロック（下にあるブロック）」を実行するブロックだよ。\n色んな状況が考えられるときに使ってみよう。</string>
+    <string name="how_to_about_if_elseif_block_explanation">
+        <![CDATA[
+            条件分岐ブロックともいうよ。
+            ブロックの一番上に書かれたことが成立しているなら、
+            「if側ブロック（上にあるブロック）」を実行するブロックだよ。
+            もし、成立していなくて
+            ブロックの真ん中に書かれたことが成立しているなら、
+            「else if側ブロック（真ん中にあるブロック）」を実行するブロックだよ。
+            それも成立していなかったら
+            「else側ブロック（下にあるブロック）」を実行するブロックだよ。
+            色んな状況が考えられるときに使ってみよう。
+        ]]>
+    </string>
     <string name="how_to_about_if_elseif_block_example_1">ケース①：1つ目の条件成立</string>
     <string name="how_to_about_if_elseif_block_example_2">ケース②：2つ目の条件成立</string>
     <string name="how_to_about_if_elseif_block_example_3">ケース③：どの条件も不成立</string>
 
     <!-- チュートリアル１開始時 -->
     <string name="first_start_tutorial_title">基本的な遊び方</string>
-    <string name="first_start_tutorial_explanation_1_1">このチュートリアルでは、\n基本的な遊び方を説明していくよ。</string>
-    <string name="first_start_tutorial_explanation_1_2">まずは、出現したステージの上にある\n「ステージの説明をみる！」\nって書かれたボードをタッチして\nクリア条件を確認してみよう！</string>
+    <string name="first_start_tutorial_explanation_1_1">
+        <![CDATA[
+            このチュートリアルでは、
+            基本的な遊び方を説明していくよ。
+        ]]>
+    </string>
+    <string name="first_start_tutorial_explanation_1_2">
+        <![CDATA[
+            まずは、出現したステージの上にある
+            「ステージの説明をみる！」
+            って書かれたボードをタッチして
+            クリア条件を確認してみよう！
+        ]]>
+    </string>
 
-    <string name="first_start_tutorial_explanation_2_1">どうすればクリアできるかわかったかな？\nステージの説明は、画面右上にあるメニューから\nいつでも確認できるからね。</string>
-    <string name="first_start_tutorial_explanation_2_2">それじゃあ\nステージをクリアするための\nプログラミングを作っていこう！</string>
-    <string name="first_start_tutorial_explanation_2_3">画面下にある\n「Let\'s Programming」\nって書かれたところを上にスライドしよう！\nそこが実際にプログラミングを作る場所になるよ。</string>
+    <string name="first_start_tutorial_explanation_2_1">
+        <![CDATA[
+            どうすればクリアできるかわかったかな？
+            ステージの説明は、画面右上にあるメニューから
+            いつでも確認できるからね。
+        ]]>
+    </string>
+    <string name="first_start_tutorial_explanation_2_2">
+        <![CDATA[
+            それじゃあ
+            ステージをクリアするための
+            プログラミングを作っていこう！
+        ]]>
+    </string>
+    <string name="first_start_tutorial_explanation_2_3">
+        <![CDATA[
+            画面下にある
+            「Let\'s Programming」
+            って書かれたところを上にスライドしよう！
+            そこが実際にプログラミングを作る場所になるよ。
+        ]]>
+    </string>
 
-    <string name="first_start_tutorial_explanation_3_1">なんとなくやり方はわかったかな？\n基本的な操作方法は\nHome画面の「遊び方」ページから\nいつでも見れるからね！</string>
-    <string name="first_start_tutorial_explanation_3_2">ステージクリアできそうなプログラムが完成したら、\n画面右下にある開始ボタンを押してみよう。\nAR上のキャラクターが\n作ったプログラム通りに動いてくれるよ！</string>
-    <string name="first_start_tutorial_explanation_3_3">それじゃあ\nプログラミングに挑戦だ！</string>
+    <string name="first_start_tutorial_explanation_3_1">
+        <![CDATA[
+            なんとなくやり方はわかったかな？
+            基本的な操作方法は
+            Home画面の「遊び方」ページから
+            いつでも見れるからね！
+        ]]>
+    </string>
+    <string name="first_start_tutorial_explanation_3_2">
+        <![CDATA[
+            ステージクリアできそうなプログラムが完成したら、
+            画面右下にある開始ボタンを押してみよう。
+            AR上のキャラクターが
+            作ったプログラム通りに動いてくれるよ！
+        ]]>
+    </string>
+    <string name="first_start_tutorial_explanation_3_3">
+        <![CDATA[
+            それじゃあ
+            プログラミングに挑戦だ！
+        ]]>
+    </string>
 
     <!-- チュートリアル２開始時 -->
     <string name="second_start_tutorial_title">制限のあるブロック</string>
-    <string name="second_start_tutorial_explanation_1_1">今回もステージはチュートリアル１と同じだよ。\nでも使えるブロックに制限があるんだ。\n次のページを確認して挑戦してみよう！</string>
+    <string name="second_start_tutorial_explanation_1_1">
+        <![CDATA[
+            今回もステージはチュートリアル１と同じだよ。
+            でも使えるブロックに制限があるんだ。
+            次のページを確認して挑戦してみよう！
+        ]]>
+    </string>
 
     <!-- チュートリアル３開始時 -->
     <string name="third_start_tutorial_title">Loopブロックについて学ぼう！</string>
-    <string name="third_start_tutorial_explanation_1_1">今回のステージでは\nLoopブロックというのを学んでいくよ！\n同じことを何度も繰り返したいときに\n便利なブロックなんだ。\n次のページを見て使い方を確認してね！</string>
+    <string name="third_start_tutorial_explanation_1_1">
+        <![CDATA[
+            今回のステージでは
+            Loopブロックというのを学んでいくよ！
+            同じことを何度も繰り返したいときに
+            便利なブロックなんだ。
+            次のページを見て使い方を確認してね！
+        ]]>
+    </string>
 
     <!-- チュートリアル４開始時 -->
     <string name="fourth_start_tutorial_title">ifブロックについて学ぼう！</string>
-    <string name="fourth_start_tutorial_explanation_1_1">今回のステージでは\nifブロックというのを学んでいくよ！\n状況に応じてやりたいことがあるときに使うんだ。\n次のページを見て使い方を確認してね！</string>
+    <string name="fourth_start_tutorial_explanation_1_1">
+        <![CDATA[
+            今回のステージでは
+            ifブロックというのを学んでいくよ！
+            状況に応じてやりたいことがあるときに使うんだ。
+            次のページを見て使い方を確認してね！
+        ]]>
+    </string>
 
     <!-- チュートリアル５開始時 -->
     <string name="fifth_start_tutorial_title">if elseブロックについて学ぼう！</string>
-    <string name="fifth_start_tutorial_explanation_1_1">今回のステージでは\nif elseブロックというのを学んでいくよ！\n状況に応じてやりたいことを\n変えたいときに使うんだ。\n次のページを見て使い方を確認してね！</string>
+    <string name="fifth_start_tutorial_explanation_1_1">
+        <![CDATA[
+            今回のステージでは
+            if elseブロックというのを学んでいくよ！
+            状況に応じてやりたいことを
+            変えたいときに使うんだ。
+            次のページを見て使い方を確認してね！
+        ]]>
+    </string>
 
     <!-- チュートリアル６開始時 -->
     <string name="sixth_start_tutorial_title">if elseifブロックについて学ぼう！</string>
-    <string name="sixth_start_tutorial_explanation_1_1">今回のステージでは\nif elseブロックというのを学んでいくよ！\n状況に応じてやりたいことが\nたくさんあるときに使うんだ。\n次のページを見て使い方を確認してね！</string>
+    <string name="sixth_start_tutorial_explanation_1_1">
+        <![CDATA[
+            今回のステージでは
+            if elseブロックというのを学んでいくよ！
+            状況に応じてやりたいことが
+            たくさんあるときに使うんだ。
+            次のページを見て使い方を確認してね！
+        ]]>
+    </string>
 
 
     <!-- ================================================================= -->
@@ -328,98 +587,213 @@
     <!-- ================================================================= -->
     <!-- ステージ説明 -->
     <!-- ================================================================= -->
-    <!-- チュートリアル１：動物 -->
-    <string name="guide_major_tutorial_1_animal">チュートリアル1</string>
+    <!-- チュートリアル１、２ -->
+    <string name="guide_major_tutorial_1_animal">チュートリアル xxx/6</string>
     <string name="guide_sub_tutorial_1_animal">～プログラミングをしてみよう～</string>
-    <string name="guide_contents_tutorial_1_animal">切り株をよけて、リスのそばまで行こう</string>
+    <string name="guide_goal_tutorial_1_animal">切り株をよけて、リスのそばまで行こう</string>
     <string name="guide_explanation_tutorial_1_animal">
-        ウサギをリスのそばまで移動させる\n
-        プログラムを作ってみよう！\n\n
-        真ん中にある切り株にあたると失敗だよ！\n
-        うまく避けるようにプログラミングしてね！
+        <![CDATA[
+            ウサギをリスのそばまで移動させる
+            プログラムを作ってみよう！
+            真ん中にある切り株にあたると失敗だよ！
+            うまく避けるようにブロックを積み上げてね！
+
+            初めは距離感がわからないかもしれないけど
+            プログラミングはトライ＆エラーが重要だよ！
+            色々試して頑張ってみてね。
+        ]]>
     </string>
 
-    <!-- チュートリアル１：乗り物 -->
-    <string name="guide_major_tutorial_1_vehicle">簡単ステージ</string>
-    <string name="guide_sub_tutorial_1_vehicle">～シンプルなプログラミング～</string>
-    <string name="guide_contents_tutorial_1_vehicle">車をよけて、逃走車を捕まえよう</string>
-    <string name="guide_explanation_tutorial_1_vehicle">
-        逃走車（赤いスポーツカー）を捕まえる\n
-        プログラムを作ってみよう！\n\n
-        途中の黄色の車にあたると失敗だよ！\n
-        うまく避けるようなプログラミングをしてね！
-    </string>
-
-    <!-- チュートリアル１：乗り物 -->
-    <string name="guide_major_tutorial_2">チュートリアル2</string>
-    <string name="guide_sub_tutorial_2">～ループ処理をしてみよう～</string>
-    <string name="guide_contents_tutorial_2">橋を渡って看板まで運転</string>
-    <string name="guide_explanation_tutorial_2">
-        橋の先の看板まで運転する\n
-        プログラムを作ってみよう！\n\n
-        向きの変更がポイントだよ！\n
-        ループ処理を使ってうまくプログラミングしてね！
-    </string>
-
-    <!-- チュートリアル１：動物 -->
-    <string name="guide_major_tutorial_2_animal">チュートリアル2</string>
-    <string name="guide_sub_tutorial_2_animal">～ループブロックを組み合わせてみよう～</string>
-    <string name="guide_contents_tutorial_2_animal">蜂を退治して、はちみつをゲットしよう</string>
-    <string name="guide_explanation_tutorial_2_animal">
-        蜂を退治してはちみつの所まで移動するプログラムを作ってみよう！\n
-        はちみつの所へ行く前に蜂を退治してね！\n
-        蜂退治は蜂のそばまで移動する必要があるよ\n
-        うまくプログラムしてはちみつをゲットしよう！
-    </string>
-
-    <string name="guide_major_tutorial_3">チュートリアル3</string>
-    <string name="guide_sub_tutorial_3">～条件ブロックを使ってみよう～</string>
-    <string name="guide_contents_tutorial_3">ニンジンを食べて家に帰る</string>
+    <!-- チュートリアル３ -->
+    <string name="guide_major_tutorial_3">チュートリアル xxx/6</string>
+    <string name="guide_sub_tutorial_3">～ループ処理をしてみよう～</string>
+    <string name="guide_goal_tutorial_3">橋を渡って看板まで運転</string>
     <string name="guide_explanation_tutorial_3">
-        途中でニンジンを食べて家に帰るプログラムを作ってみよう！\n\n
-        ニンジンは目の前にないと食べることができないよ！\n
-        ループブロックと条件ブロックをうまく組み合わせるのがポイントだよ！\n
+        <![CDATA[
+            橋の先の看板まで運転するプログラムを作ってみよう！
+            車の向きの変更がこのステージのポイントだよ！
+            新しく習ったループ処理を使って、うまくプログラミングしてね！
+        ]]>
     </string>
 
-    <string name="guide_major_tutorial_4">チュートリアル4</string>
-    <string name="guide_sub_tutorial_4">～条件ブロックを組み合わせてみよう～</string>
-    <string name="guide_contents_tutorial_4">ニンジンは食べて、毒キノコは捨てよう。家につけばクリア</string>
+    <!-- チュートリアル４ -->
+    <string name="guide_major_tutorial_4">チュートリアル xxx/6</string>
+    <string name="guide_sub_tutorial_4">～条件ブロックを使ってみよう～</string>
+    <string name="guide_goal_tutorial_4">ニンジンを食べて家に帰る</string>
     <string name="guide_explanation_tutorial_4">
-        ニンジンを食べて家に帰るプログラムを作ってみよう！\n
-        ただし、途中で毒キノコがあるから、毒キノコは食べずに捨てちゃおう！\n
-        複数の条件ブロックをうまく組み合わせるのがポイントだよ！\n
+        <![CDATA[
+            途中にあるニンジンを食べて家に帰るプログラムを作ってみよう！
+            ニンジンを食べないと前に進むことができないよ。
+            あと、ニンジンは目の前にないと食べることができないよ。
+            ループブロックと条件ブロックをうまく組み合わせるのがポイントだよ！
+        ]]>
     </string>
 
-    <string name="guide_major_collect_animal">食べ物集め</string>
-    <string name="guide_sub_collect_animal">～食べ物を全部食べよう～</string>
-    <string name="guide_contents_collect_animal">全部の食べ物を食べればクリア</string>
-    <string name="guide_explanation_collect_animal">
-        森の中にある食べ物を全部食べるプログラムを作ってみよう！\n
-        食べ物はそばまでいかないと食べられないよ\n
-        食べ物の方をうまく向いて最後の食べ物まで食べるプログラムを作ってね！\n
+    <!-- チュートリアル５、６ -->
+    <string name="guide_major_tutorial_5">チュートリアル xxx/6</string>
+    <string name="guide_sub_tutorial_5">～条件ブロックを組み合わせてみよう～</string>
+    <string name="guide_goal_tutorial_5">ニンジンは食べて、毒キノコは捨てよう。家につけばクリア</string>
+    <string name="guide_explanation_tutorial_5">
+        <![CDATA[
+            ニンジンを食べて家に帰るプログラムを作ってみよう！
+            ただし、途中で毒キノコがあるから、毒キノコは食べずに捨てちゃおう！
+            複数の条件ブロックをうまく組み合わせるのがポイントだよ！
+        ]]>
     </string>
 
-    <string name="guide_major_pickup_vehicle">プレゼント集め</string>
-    <string name="guide_sub_pickup_vehicle">～うさぎにプレゼントをあげよう～</string>
-    <string name="guide_contents_pickup_vehicle">プレゼントを全部拾って、うさぎの所へいけばクリア</string>
-    <string name="guide_explanation_pickup_vehicle">
-        プレゼントを拾ってうさぎに届けるプログラムを作ってみよう！\n
-        プレゼントはそばまでいかないと拾えないよ\n
-        道にあるプレゼントは全部拾ってね\n
-        全部あつめずにうさぎのところへ行くと失敗だよ\n
-        ループブロックを使ってうまく車の方向を決めてね！\n
+    <!-- パトカーで追跡！ -->
+    <string name="guide_major_chase_with_police_car">簡単ステージ</string>
+    <string name="guide_sub_chase_with_police_car">～シンプルなプログラミング～</string>
+    <string name="guide_goal_chase_with_police_car">車をよけて、逃走車を捕まえよう</string>
+    <string name="guide_explanation_chase_with_police_car">
+        <![CDATA[
+            逃走車（赤いスポーツカー）を捕まえる
+            プログラムを作ってみよう！
+            途中の黄色の車にあたると失敗だよ！
+            うまく避けるようなプログラミングを作ってね！
+        ]]>
     </string>
 
-    <string name="guide_major_question_animal">なにがあるかな</string>
-    <string name="guide_sub_question_animal">～条件ブロックをうまく使おう～</string>
-    <string name="guide_contents_question_animal">ニンジンは食べて、毒キノコは捨てよう。家につけばクリア</string>
-    <string name="guide_explanation_question_animal">
-        ニンジンを食べて毒キノコは捨てるプログラムを作ってみよう！\n
-        でも、どの順番でニンジンと毒キノコがあるかはゲームを始めるまでわからないよ。\n
-        どんな順番で並んでいても正しいアクションをとれるようにプログラミングしてね！\n
-        色んな状況に対応するには条件ブロックを使うといいよ！\n
+    <!--  毒キノコはどれだろう？  -->
+    <string name="guide_major_which_poison_mushroom">なにがあるかな</string>
+    <string name="guide_sub_which_poison_mushroom">～条件ブロックをうまく使おう～</string>
+    <string name="guide_goal_which_poison_mushroom">ニンジンは食べて、毒キノコは捨てよう。家につけばクリア</string>
+    <string name="guide_explanation_which_poison_mushroom">
+        <![CDATA[
+            ニンジンを食べて毒キノコは捨てるプログラムを作ってみよう！
+            でも、どの順番でニンジンと毒キノコがあるかはゲームを始めるまでわからないよ。
+            どんな順番で並んでいても正しいアクションをとれるようにプログラミングしてね！
+            色んな状況に対応するにはどんなブロックを使えばいいか考えてね！
+        ]]>
     </string>
 
-    <!-- Strings used for fragments for navigation -->
-    <string name="ar_fragment_label">AR プログラミング</string>
+    <!--  プレゼントをウサギへ届けよう  -->
+    <string name="guide_major_present_for_rabbit">プレゼント集め</string>
+    <string name="guide_sub_present_for_rabbit">～うさぎにプレゼントをあげよう～</string>
+    <string name="guide_goal_present_for_rabbit">プレゼントを全部拾って、うさぎの所へいけばクリア</string>
+    <string name="guide_explanation_present_for_rabbit">
+        <![CDATA[
+            プレゼントを拾ってうさぎに届けるプログラムを作ってみよう！
+            プレゼントはそばまでいかないと拾えないよ
+            道にあるプレゼントは全部拾ってね
+            全部あつめずにうさぎのところへ行くと失敗だよ
+            ループブロックを使ってうまく車の方向を決めてね！
+        ]]>
+    </string>
+
+    <!--  お菓子を拾ってお菓子の家へ  -->
+    <string name="guide_major_pickup_sweets_and_sweets_house">お菓子拾い</string>
+    <string name="guide_sub_pickup_sweets_and_sweets_house">～お菓子を全部拾おう～</string>
+    <string name="guide_goal_pickup_sweets_and_sweets_house">お菓子を全部拾って、お菓子の家までいけばクリア</string>
+    <string name="guide_explanation_pickup_sweets_and_sweets_house">
+        <![CDATA[
+            お菓子を拾ってお菓子の家までいくプログラムを作ってみよう！
+            プレゼントはそばまでいかないと拾えないよ
+            道にあるプレゼントは全部拾ってね
+            全部あつめずにお菓子の家まで行くと失敗だよ！
+        ]]>
+    </string>
+
+    <!--  お菓子を拾ってお菓子の家へ２ ジグザグ  -->
+    <string name="guide_major_pickup_sweets_and_sweets_house2">お菓子拾い</string>
+    <string name="guide_sub_pickup_sweets_and_sweets_house2">～お菓子を全部拾おう～</string>
+    <string name="guide_goal_pickup_sweets_and_sweets_house2">プレゼントを全部拾って、うさぎの所へいけばクリア</string>
+    <string name="guide_explanation_pickup_sweets_and_sweets_house2">
+        <![CDATA[
+            お菓子を拾ってお菓子の家までいくプログラムを作ってみよう！
+            プレゼントはそばまでいかないと拾えないよ。
+            あと、プレゼントは散らばっているから、ちゃんとプレゼントの方向を向いてから移動する必要があるね。
+            どうすれば全部集められるか考えてみよう！
+
+            道にあるプレゼントは全部拾ってね。
+            全部あつめずにお菓子の家まで行くと失敗だよ！
+        ]]>
+    </string>
+
+    <!--  バナナの皮に気を付けよう！  -->
+    <string name="guide_major_banana_and_peel_on_bridge">バナナ拾い</string>
+    <string name="guide_sub_banana_and_peel_on_bridge">～バナナの皮に注意～</string>
+    <string name="guide_goal_banana_and_peel_on_bridge">看板までいけばクリア</string>
+    <string name="guide_explanation_banana_and_peel_on_bridge">
+        <![CDATA[
+            看板までたどり着くためのプログラムを作ってみよう！
+            途中にあるバナナは拾って、バナナの皮はちゃんと捨てる必要があるよ
+            条件ブロックをうまく使って対応しよう！
+        ]]>
+    </string>
+
+    <!--  バナナの皮に気を付けよう！２  ？ブロック  -->
+    <string name="guide_major_banana_and_peel_on_bridge_2">バナナ拾い</string>
+    <string name="guide_sub_banana_and_peel_on_bridge_2">～どれがバナナだろう～</string>
+    <string name="guide_goal_banana_and_peel_on_bridge_2">看板までいけばクリア</string>
+    <string name="guide_explanation_banana_and_peel_on_bridge_2">
+        <![CDATA[
+            看板までたどり着くためのプログラムを作ってみよう！
+            途中にあるバナナは拾って、バナナの皮はちゃんと捨てる必要があるよ。
+            でも、どの順番でバナナとバナナの皮があるかはゲームを始めるまでわからないよ。
+            どんな順番で並んでいても、正しいアクションをとれるようにプログラミングしてね！
+            色んな状況に対応するにはどんなブロックを使えばいいか考えてね！
+        ]]>
+    </string>
+
+    <!--  はちみつゲット！  -->
+    <string name="guide_major_bee_and_honey">チュートリアル2</string>
+    <string name="guide_sub_bee_and_honey">～ループブロックを組み合わせてみよう～</string>
+    <string name="guide_goal_bee_and_honey">蜂を退治して、はちみつをゲットしよう</string>
+    <string name="guide_explanation_bee_and_honey">
+        <![CDATA[
+            蜂を退治してはちみつの所まで移動するプログラムを作ってみよう！
+            はちみつの所へ行く前に蜂を退治してね！
+            蜂退治は蜂のそばまで移動する必要があるよ
+            うまくプログラムしてはちみつをゲットしよう！
+        ]]>
+    </string>
+
+    <!--  野菜を全部たべよう！  -->
+    <string name="guide_major_eat_all_vegetable">食べ物集め</string>
+    <string name="guide_sub_eat_all_vegetable">～食べ物を全部食べよう～</string>
+    <string name="guide_goal_eat_all_vegetable">全部の食べ物を食べればクリア</string>
+    <string name="guide_explanation_eat_all_vegetable">
+        <![CDATA[
+            森の中にある食べ物を全部食べるプログラムを作ってみよう！
+            食べ物はそばまでいかないと食べられないよ
+            食べ物の方をうまく向いて最後の食べ物まで食べるプログラムを作ってね！
+        ]]>
+    </string>
+
+    <!--  お化け退治！ -->
+    <string name="guide_major_defeat_crownghost">お化け退治</string>
+    <string name="guide_sub_defeat_crownghost">～お化けを全部退治しよう～</string>
+    <string name="guide_goal_defeat_crownghost">お化けを全部退治すればクリア</string>
+    <string name="guide_explanation_defeat_crownghost">
+        <![CDATA[
+            周りにいるお化けを退治するプログラムを作ってみよう！
+            「普通のお化け」はそのまま退治できるよ。
+            でも、「ピエロの帽子をかぶったお化け」は強いから、
+            「普通のお化け」を退治して慣れていないと倒すことができないんだ。
+            「普通のお化け」を退治してから「ピエロお化け」を退治するようにプログラミングしてね！
+
+            今回のステージでは、敵が目の前に居なくても
+            敵の方を向いているだけで倒すことができるよ。
+        ]]>
+    </string>
+
+    <!--  お化け退治！2 ？ブロック -->
+    <string name="guide_major_defeat_crownghost2">お化け退治</string>
+    <string name="guide_sub_defeat_crownghost2">～お化けを全部退治しよう～</string>
+    <string name="guide_goal_defeat_crownghost2">お化けを全部退治すればクリア</string>
+    <string name="guide_explanation_defeat_crownghost2">
+        <![CDATA[
+             周りにいるお化けを退治するプログラムを作ってみよう！
+            「普通のお化け」はそのまま退治できるよ。
+            でも、「ピエロの帽子をかぶったお化け」は強いから、
+            「普通のお化け」を退治して慣れていないと倒すことができないんだ。
+            「普通のお化け」を退治してから「ピエロお化け」を退治するようにプログラミングしてね！
+            （どこに「ピエロお化け」がいるかはゲームを始めるまでわからないよ）
+
+            今回のステージでは、敵が目の前に居なくても
+            敵の方を向いているだけで倒すことができるよ。
+        ]]>
+    </string>
+
 </resources>

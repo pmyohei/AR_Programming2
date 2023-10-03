@@ -26,14 +26,12 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.DragEvent;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
@@ -247,10 +245,10 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
      */
     private void showGoalGuideDialog() {
 
-        GoalExplanationDialogFragment newFragment = new GoalExplanationDialogFragment(mGimmick.goalExplanationIdList);
+        GoalExplanationDialog newFragment = new GoalExplanationDialog(mGimmick.goalExplanationIdList, mGimmick.mTutorial);
 
         // ダイアログ終了リスナー
-        newFragment.setOnDestroyListener(new GoalExplanationDialogFragment.OnDestroyListener() {
+        newFragment.setOnDestroyListener(new GoalExplanationDialog.OnDestroyListener() {
             @Override
             public void onDestroy() {
                 showTutorialGuide(TUTORIAL_GUIDE_SHOW_STAGE_DESCRIPTION);
@@ -370,7 +368,7 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
                         String selectedStage = intent.getStringExtra(StageSelectActivity.KEY_SELECT_STAGE);
                         // ギミック読み込み
                         boolean isReadGimmick = readGimmick(selectedStage);
-                        if( isReadGimmick ){
+                        if (isReadGimmick) {
                             // Nodeを全クリア
                             removeField();
                             // 積み上げたブロックを全クリア
@@ -392,16 +390,16 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
         //----------------
         // チュートリアル終了
         //----------------
-        boolean finishTutorial = Common.isFisishTutorial( context ) ;
-        if ( finishTutorial ) {
+        boolean finishTutorial = Common.isFisishTutorial(context);
+        if (finishTutorial) {
             // ユーザー設定に応じたギミックを生成
 
             //------------------
             // 取得するステージ名
             //------------------
             // ステージ名リスト
-            ArrayList<String> stageNameList = GimmickManager.getStageNameList( context );
-            String stageName = Common.getHeadNotClearStageName( context, stageNameList );
+            ArrayList<String> stageNameList = GimmickManager.getStageNameList(context);
+            String stageName = Common.getHeadNotClearStageName(context, stageNameList);
 
             // ギミック生成
             return GimmickManager.makeUserGimmick(context, stageName);
@@ -418,10 +416,10 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
     /*
      * ギミック読み込み
      */
-    private boolean readGimmick( String stageName ) {
+    private boolean readGimmick(String stageName) {
 
         // 現在のステージと同じなら何もしない
-        if( mGimmick.name.equals( stageName ) ){
+        if (mGimmick.name.equals(stageName)) {
             return false;
         }
 
@@ -995,6 +993,13 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
     }
 
     /*
+     * Renderableロードエラーメッセージ表示
+     */
+    private void showRenderableLoadErrorMessage() {
+        Snackbar.make(binding.getRoot(), getString(R.string.snackbar_please_return_home), Snackbar.LENGTH_SHORT).show();
+    }
+
+    /*
      * 3Dモデルレンダリング「ModelRenderable」の生成：ステージ
      */
     private void buildRenderableStage(Gimmick gimmick) {
@@ -1011,10 +1016,7 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
                 .thenAccept(renderable -> mStageRenderable = renderable)
                 .exceptionally(
                         throwable -> {
-                            //!string
-                            Toast toast = Toast.makeText(context, "Unable to load renderable(Stage)", Toast.LENGTH_LONG);
-                            toast.setGravity(Gravity.CENTER, 0, 0);
-                            toast.show();
+                            showRenderableLoadErrorMessage();
                             return null;
                         });
 
@@ -1045,10 +1047,7 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
                 .thenAccept(renderable -> mCharacterRenderable = renderable)
                 .exceptionally(
                         throwable -> {
-                            //!string
-                            Toast toast = Toast.makeText(context, "失敗 Unable to load renderable(Character)", Toast.LENGTH_LONG);
-                            toast.setGravity(Gravity.CENTER, 0, 0);
-                            toast.show();
+                            showRenderableLoadErrorMessage();
                             return null;
                         });
 
@@ -1095,10 +1094,7 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
                     )
                     .exceptionally(
                             throwable -> {
-                                //!
-                                Toast toast = Toast.makeText(context, "Unable to load renderable(Object)", Toast.LENGTH_LONG);
-                                toast.setGravity(Gravity.CENTER, 0, 0);
-                                toast.show();
+                                showRenderableLoadErrorMessage();
                                 return null;
                             });
 
@@ -1144,10 +1140,7 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
                     })
                     .exceptionally(
                             throwable -> {
-                                //!
-                                Toast toast = Toast.makeText(context, "Unable to load renderable(ReplaceObject)", Toast.LENGTH_LONG);
-                                toast.setGravity(Gravity.CENTER, 0, 0);
-                                toast.show();
+                                showRenderableLoadErrorMessage();
                                 return null;
                             });
         }
@@ -1189,10 +1182,7 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
                 .thenAccept(renderable -> mGoalRenderable = renderable)
                 .exceptionally(
                         throwable -> {
-                            //!
-                            Toast toast = Toast.makeText(context, "Unable to load renderable(Goal)", Toast.LENGTH_LONG);
-                            toast.setGravity(Gravity.CENTER, 0, 0);
-                            toast.show();
+                            showRenderableLoadErrorMessage();
                             return null;
                         });
     }
@@ -1216,10 +1206,7 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
                 .thenAccept(renderable -> mSuccessRenderable = renderable)
                 .exceptionally(
                         throwable -> {
-                            //!
-                            Toast toast = Toast.makeText(context, "Unable to load renderable(Success Model)", Toast.LENGTH_LONG);
-                            toast.setGravity(Gravity.CENTER, 0, 0);
-                            toast.show();
+                            showRenderableLoadErrorMessage();
                             return null;
                         });
     }
@@ -1242,10 +1229,7 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
                 .thenAccept(renderable -> mGuideViewRenderable = renderable)
                 .exceptionally(
                         throwable -> {
-                            //!
-                            Toast toast = Toast.makeText(context, "Unable to load renderable(Goal Guide)", Toast.LENGTH_LONG);
-                            toast.setGravity(Gravity.CENTER, 0, 0);
-                            toast.show();
+                            showRenderableLoadErrorMessage();
                             return null;
                         });
     }
@@ -1268,10 +1252,7 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
                 .thenAccept(renderable -> mActionRenderable = renderable)
                 .exceptionally(
                         throwable -> {
-                            //!
-                            Toast toast = Toast.makeText(context, "Unable to load renderable(Action Boad)", Toast.LENGTH_LONG);
-                            toast.setGravity(Gravity.CENTER, 0, 0);
-                            toast.show();
+                            showRenderableLoadErrorMessage();
                             return null;
                         });
     }
@@ -1941,7 +1922,7 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
                 //!ガード：レンダラブル未生成チェック
                 //!ガード：タップして配置済みチェック
                 // Node生成可能か判定
-                if (!enableCreateNode()) {
+                if ( !enableCreateNode() ) {
                     Snackbar.make(binding.getRoot(), getString(R.string.snackbar_please_wait), Snackbar.LENGTH_SHORT).show();
 
                     //!失敗した場合のリカバリをどうするか
@@ -2006,22 +1987,37 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
      */
     private boolean enableCreateNode() {
 
-        //!ガード：タップして配置済みチェック
-
-
         //------------------------------
-        // レンダラブル生成済みチェック
+        // 配置必須レンダラブル
         //------------------------------
-        // レンダラブルのどれか一つでもnullなら、Node生成不可
-        if ((mCharacterRenderable == null) || (mStageRenderable == null) || (mGoalRenderable == null)
-                || (mGuideViewRenderable == null) || (mActionRenderable == null)) {
+        // 配置必須レンダラブルのどれか一つでもnullなら、Node生成不可
+        if ( (mCharacterRenderable == null) ||
+             (mStageRenderable == null) ||
+             (mGuideViewRenderable == null) ||
+             (mActionRenderable == null)) {
             return false;
         }
 
-        // 生成済みのobjectRenderableの数が、生成予定数よりも少ない場合、Node生成不可
-        int objectRenderableNum = mObjectRenderable.size();
-        int gimmickobjectNum = mGimmick.objectGlbList.size();
-        if (objectRenderableNum < gimmickobjectNum) {
+        //------------------------------
+        // 配置任意レンダラブル
+        //------------------------------
+        // Goalレンダラブル判定
+        if( mGimmick.goalGlb != null ){
+            if( mGoalRenderable == null ){
+                return false;
+            }
+        }
+
+        //-------------------------------
+        // Object
+        //-------------------------------
+        // 「生成済みRenderable数」
+        // 「ギミックにて指定されているglb数」
+        // の数の整合性をチェック
+        int renderableNum = mObjectRenderable.size();
+        int glbNum = mGimmick.objectGlbList.size();
+        if (renderableNum < glbNum) {
+            // ギミックで指定されている数よりも、生成したRenderableが少ない場合、エラー
             return false;
         }
 

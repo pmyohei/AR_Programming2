@@ -6,7 +6,7 @@
 		name="chase_with_police_car"
 		character="vehicle"
 		successCondition="goal"
-		goalExplanation="guide_major_tutorial_1_vehicle, guide_sub_tutorial_1_vehicle, guide_contents_tutorial_1_vehicle, guide_explanation_tutorial_1_vehicle"
+		goalExplanation="guide_major_chase_with_police_car, guide_sub_chase_with_police_car, guide_goal_chase_with_police_car, guide_explanation_chase_with_police_car"
 		stageGlb="models/stage/highway.glb"
 		characterGlb="models/vehicle/police_car.glb"
 		characterPosition="-3.8 : 0.8 : 0.0"
@@ -23,12 +23,33 @@
 		block="exe_forward, exe_rotateright, exe_rotateleft"
 		/>
 
-	<!-- にんじんと毒キノコ 「？」ブロック -->
+	<!-- にんじんと毒キノコ ifブロック -->
 	<gimmick
-		name="avoid_poisonous_mushrooms"
+		name="avoid_poison_mushroom"
 		character="animal"
 		successCondition="goal"
-		goalExplanation="guide_major_question_animal, guide_sub_question_animal, guide_contents_question_animal, guide_explanation_question_animal"
+		goalExplanation="guide_major_tutorial_5, guide_sub_tutorial_5, guide_goal_tutorial_5, guide_explanation_tutorial_5"
+		stageGlb="models/stage/forest_load_2.glb"
+		characterGlb="models/animal/rabit.glb"
+		characterPosition="0 : 1.4 : 8.7"
+		characterAngle="180"
+		goalGlb="models/goal/house.glb"
+		goalPosition="0 : 3.9 : -18.8"
+		goalAngle="0"
+		goalName="house"
+		objectGlb="models/object/mushroom_poison.glb, models/object/carrot.glb"
+		objectNum="2, 1"
+		objectName="mushroomPoison, carrot"
+		objectPosition="0 : 1.2 : 3, 0 : 1.2 : -10, 0 : 1.1 : -4.1"
+		block="exe_forward-5, exe_eat-carrot, exe_throw-mushroomPoison, loop_arrival-house, if_front-carrot, if_front-mushroomPoison"
+		/>
+
+	<!-- 毒キノコはどれだろう？ -->
+	<gimmick
+		name="which_poison_mushroom"
+		character="animal"
+		successCondition="goal"
+		goalExplanation="guide_major_which_poison_mushroom, guide_sub_which_poison_mushroom, guide_goal_which_poison_mushroom, guide_explanation_which_poison_mushroom"
 		stageGlb="models/stage/forest_load_2.glb"
 		characterGlb="models/animal/rabit.glb"
 		characterPosition="0 : 1.4 : 8.7"
@@ -46,34 +67,13 @@
 		block="exe_forward-5_1, exe_eat-carrot_1, exe_throw-mushroomPoison_1, loop_arrival-house, if-elseif-else_front-carrot-mushroomPoison_1"
 		/>
 
-	<!-- にんじんと毒キノコ ifブロック -->
-	<gimmick
-		name="avoid_poisonous_mushrooms_2"
-		character="animal"
-		successCondition="goal"
-		goalExplanation="guide_major_tutorial_4, guide_sub_tutorial_4, guide_contents_tutorial_4, guide_explanation_tutorial_4"
-		stageGlb="models/stage/forest_load_2.glb"
-		characterGlb="models/animal/rabit.glb"
-		characterPosition="0 : 1.4 : 8.7"
-		characterAngle="180"
-		goalGlb="models/goal/house.glb"
-		goalPosition="0 : 3.9 : -18.8"
-		goalAngle="0"
-		goalName="house"
-		objectGlb="models/object/mushroom_poison.glb, models/object/carrot.glb"
-		objectNum="2, 1"
-		objectName="mushroomPoison, carrot"
-		objectPosition="0 : 1.2 : 3, 0 : 1.2 : -10, 0 : 1.1 : -4.1"
-		block="exe_forward-5, exe_eat-carrot, exe_throw-mushroomPoison, loop_arrival-house, if_front-carrot, if_front-mushroomPoison"
-		/>
-
-	<!-- プレゼントを拾ってうさぎのところへ -->
+	<!-- プレゼントをウサギへ届けよう -->
 	<gimmick
 		name="present_for_rabbit"
 		character="vehicle"
 		successCondition="remove_and_goal"
 		successRemoveTarget="present"
-		goalExplanation="guide_major_pickup_vehicle, guide_sub_pickup_vehicle, guide_contents_pickup_vehicle, guide_explanation_pickup_vehicle"
+		goalExplanation="guide_major_present_for_rabbit, guide_sub_present_for_rabbit, guide_goal_present_for_rabbit, guide_explanation_present_for_rabbit"
 		stageGlb="models/stage/crooked_road.glb"
 		characterGlb="models/vehicle/car.glb"
 		characterPosition="-1.64 : 5.1 : 8.1"
@@ -94,7 +94,7 @@
 		name="pickup_sweets_and_sweets_house"
 		character="animal"
 		successCondition="goal"
-		goalExplanation="guide_major_pickup_vehicle, guide_sub_pickup_vehicle, guide_contents_pickup_vehicle, guide_explanation_pickup_vehicle"
+		goalExplanation="guide_major_pickup_sweets_and_sweets_house, guide_sub_pickup_sweets_and_sweets_house, guide_goal_pickup_sweets_and_sweets_house, guide_explanation_pickup_sweets_and_sweets_house"
 		stageGlb="models/stage/sweet_terrace.glb"
 		characterGlb="models/animal/squirrel.glb"
 		characterPosition="-14.4 : 2.29 : -8.25"
@@ -115,7 +115,7 @@
 		name="pickup_sweets_and_sweets_house_2"
 		character="animal"
 		successCondition="goal"
-		goalExplanation="guide_major_pickup_vehicle, guide_sub_pickup_vehicle, guide_contents_pickup_vehicle, guide_explanation_pickup_vehicle"
+		goalExplanation="guide_major_pickup_sweets_and_sweets_house2, guide_sub_pickup_sweets_and_sweets_house2, guide_goal_pickup_sweets_and_sweets_house2, guide_explanation_pickup_sweets_and_sweets_house2"
 		stageGlb="models/stage/sweet_terrace.glb"
 		characterGlb="models/animal/rabit.glb"
 		characterPosition="-14.4 : 2.29 : -8.25"
@@ -132,12 +132,12 @@
 		/>
 
 
-	<!-- 橋の上にバナナとバナナの皮 -->
+	<!-- バナナの皮に気を付けよう -->
 	<gimmick
 		name="banana_and_peel_on_bridge"
 		character="vehicle"
 		successCondition="goal"
-		goalExplanation="guide_major_tutorial_2_animal, guide_sub_tutorial_2_animal, guide_contents_tutorial_2_animal, guide_explanation_tutorial_2_animal"
+		goalExplanation="guide_major_banana_and_peel_on_bridge, guide_sub_banana_and_peel_on_bridge, guide_goal_banana_and_peel_on_bridge, guide_explanation_banana_and_peel_on_bridge"
 		stageGlb="models/stage/bridge.glb"
 		characterGlb="models/vehicle/car.glb"
 		characterPosition="0 : 0.5 : 7.5"
@@ -153,12 +153,12 @@
 		block="exe_forward-100, exe_rotateright-1_1, exe_pickup-banana_1, exe_throw-bananaPeel_1, loop_facing-signboardStop, loop_arrival-signboardStop, if-elseif-else_front-banana-bananaPeel"
 		/>
 
-	<!-- 橋の上にバナナorバナナの皮 ？ブロック -->
+	<!-- バナナの皮に気を付けよう ？ブロック -->
 	<gimmick
 		name="banana_and_peel_on_bridge_2"
 		character="vehicle"
 		successCondition="goal"
-		goalExplanation="guide_major_tutorial_2_animal, guide_sub_tutorial_2_animal, guide_contents_tutorial_2_animal, guide_explanation_tutorial_2_animal"
+		goalExplanation="guide_major_banana_and_peel_on_bridge_2, guide_sub_banana_and_peel_on_bridge_2, guide_goal_banana_and_peel_on_bridge_2, guide_explanation_banana_and_peel_on_bridge_2"
 		stageGlb="models/stage/bridge.glb"
 		characterGlb="models/vehicle/car.glb"
 		characterPosition="0 : 0.5 : 7.5"
@@ -176,13 +176,13 @@
 		block="exe_forward-100_2, exe_rotateright-1_1, exe_pickup-banana_1, exe_throw-bananaPeel_1, loop_facing-signboardStop, if-elseif-else_front-banana-bananaPeel"
 		/>
 
-	<!-- ハチとハチミツ -->
+	<!-- はちみつゲット！ -->
 	<gimmick
 		name="bee_and_honey"
 		character="animal"
 		successCondition="remove_and_goal"
 		successRemoveTarget="bee"
-		goalExplanation="guide_major_tutorial_2_animal, guide_sub_tutorial_2_animal, guide_contents_tutorial_2_animal, guide_explanation_tutorial_2_animal"
+		goalExplanation="guide_major_bee_and_honey, guide_sub_bee_and_honey, guide_goal_bee_and_honey, guide_explanation_bee_and_honey"
 		stageGlb="models/stage/forest_2.glb"
 		characterGlb="models/animal/bear.glb"
 		characterPosition="0.2 : 1.26 : 9.2"
@@ -205,7 +205,7 @@
 		character="animal"
 		successCondition="all_remove"
 		successRemoveTarget="vegetable"
-		goalExplanation="guide_major_tutorial_1, guide_sub_tutorial_1, guide_contents_tutorial_1, guide_explanation_tutorial_1"
+		goalExplanation="guide_major_eat_all_vegetable, guide_sub_eat_all_vegetable, guide_goal_eat_all_vegetable, guide_explanation_eat_all_vegetable"
 		stageGlb="models/stage/forest_2.glb"
 		characterGlb="models/animal/rabit.glb"
 		characterPosition="0.47 : 1.4 : -7.97"
@@ -217,15 +217,33 @@
 		block="exe_forward-50_1, exe_rotateright-1, exe_rotateleft-1, exe_eat-vegetable_1, loop_facing-vegetable, loop_eat-vegetable"
 		/>
 
-
-
-	<!-- ピエロお化けを倒す：if elseif -->
+	<!-- お化け退治 -->
 	<gimmick
 		name="defeat_crownghost"
 		character="animal"
 		successCondition="all_remove"
 		successRemoveTarget="enemy"
-		goalExplanation="guide_major_tutorial_3, guide_sub_tutorial_3, guide_contents_tutorial_3, guide_explanation_tutorial_3"
+		goalExplanation="guide_major_defeat_crownghost, guide_sub_defeat_crownghost, guide_goal_defeat_crownghost, guide_explanation_defeat_crownghost"
+		stageGlb="models/stage/fantasy_magic_house.glb"
+		characterGlb="models/animal/rabit_witch.glb"
+		characterPosition="0.24 : 1.17 : -6.12"
+		characterAngle="0"
+		objectGlb="models/enemy/ghost_clown.glb, models/enemy/ghost.glb"
+		objectNum="3, 4"
+		objectName="enemy:ghostClown, enemy:ghost"
+		objectAngle="45, 90, 135, 160, 200, 260, 300"
+		objectPosition="-6.91 : 5.68 : -9.89, -15 : 3.36 : -5.95, -11.2 : 1.23 : -0.019, -3.2 : 3.36 : 2.07, 7.01 : 2.09 : 1.63, 10.7 : 3.36 : -3.78, 13.8 : 4.85 : -13"
+		block="exe_rotateright-1_1, exe_farattack-enemy, exe_changetarget-facing:enemy, if-else_facing-ghostClown, if-else_defeat-ghost, loop_facing-enemy, loop_defeat-ghost"
+		/>
+
+
+	<!-- お化け退治！2 ？ブロック -->
+	<gimmick
+		name="defeat_crownghost_2"
+		character="animal"
+		successCondition="all_remove"
+		successRemoveTarget="enemy"
+		goalExplanation="guide_major_defeat_crownghost2, guide_sub_defeat_crownghost2, guide_goal_defeat_crownghost2, guide_explanation_defeat_crownghost2"
 		stageGlb="models/stage/fantasy_magic_house.glb"
 		characterGlb="models/animal/rabit_witch.glb"
 		characterPosition="0.24 : 1.17 : -6.12"
@@ -238,25 +256,6 @@
 		objectReplaceName="enemy:ghost-enemy:ghostClown"
 		objectReplaceGlb="models/enemy/ghost.glb-models/enemy/ghost_clown.glb"
 		block="exe_rotateright-1_1, exe_farattack-enemy, exe_changetarget-facing:enemy, if-elseif-else_facing-ghostClown-ghost, if-else_defeat-enemy:ghost, loop_facing-enemy, loop_defeat-ghost"
-		/>
-
-	<!-- ピエロお化けを倒す：if else -->
-	<gimmick
-		name="defeat_crownghost_2"
-		character="animal"
-		successCondition="all_remove"
-		successRemoveTarget="enemy"
-		goalExplanation="guide_major_tutorial_3, guide_sub_tutorial_3, guide_contents_tutorial_3, guide_explanation_tutorial_3"
-		stageGlb="models/stage/fantasy_magic_house.glb"
-		characterGlb="models/animal/rabit_witch.glb"
-		characterPosition="0.24 : 1.17 : -6.12"
-		characterAngle="0"
-		objectGlb="models/enemy/ghost_clown.glb, models/enemy/ghost.glb"
-		objectNum="3, 4"
-		objectName="enemy:ghostClown, enemy:ghost"
-		objectAngle="45, 90, 135, 160, 200, 260, 300"
-		objectPosition="-6.91 : 5.68 : -9.89, -15 : 3.36 : -5.95, -11.2 : 1.23 : -0.019, -3.2 : 3.36 : 2.07, 7.01 : 2.09 : 1.63, 10.7 : 3.36 : -3.78, 13.8 : 4.85 : -13"
-		block="exe_rotateright-1_1, exe_farattack-enemy, exe_changetarget-facing:enemy, if-else_facing-ghostClown, if-else_defeat-ghost, loop_facing-enemy, loop_defeat-ghost"
 		/>
 
 </gimmick_list>
