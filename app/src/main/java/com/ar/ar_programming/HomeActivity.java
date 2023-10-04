@@ -23,7 +23,7 @@ public class HomeActivity extends AppCompatActivity {
         initAdmob();
 
         //debug---------------
-        Common.setTutorialDebug(this, 6);
+        Common.setTutorialDebug(this, 7);
         //--------------------
     }
 

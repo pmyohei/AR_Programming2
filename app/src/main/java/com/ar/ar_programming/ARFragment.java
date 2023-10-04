@@ -246,17 +246,17 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
      */
     private void showGoalGuideDialog() {
 
-        GoalExplanationDialog newFragment = new GoalExplanationDialog(mGimmick.goalExplanationIdList, mGimmick.mTutorial);
+        GoalGuideDialog dialog = new GoalGuideDialog(mGimmick.goalGuideIdList, mGimmick.mTutorial);
 
         // ダイアログ終了リスナー
-        newFragment.setOnDestroyListener(new GoalExplanationDialog.OnDestroyListener() {
+        dialog.setOnDestroyListener(new GoalGuideDialog.OnDestroyListener() {
             @Override
             public void onDestroy() {
                 showTutorialGuide(TUTORIAL_GUIDE_SHOW_STAGE_DESCRIPTION);
             }
         });
 
-        newFragment.show(getActivity().getSupportFragmentManager(), "goalGuide");
+        dialog.show(getActivity().getSupportFragmentManager(), "goalGuide");
     }
 
     /*

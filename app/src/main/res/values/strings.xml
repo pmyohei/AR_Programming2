@@ -650,7 +650,7 @@
     </string>
 
     <!-- パトカーで追跡！ -->
-    <string name="guide_major_chase_with_police_car">簡単ステージ</string>
+    <string name="guide_major_chase_with_police_car">パトカーで追跡！</string>
     <string name="guide_sub_chase_with_police_car">～シンプルなプログラミング～</string>
     <string name="guide_goal_chase_with_police_car">車をよけて、逃走車を捕まえよう</string>
     <string name="guide_explanation_chase_with_police_car">

@@ -18,6 +18,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,26 +31,26 @@ import androidx.fragment.app.DialogFragment;
 
 import java.util.ArrayList;
 
-public class GoalExplanationDialog extends DialogFragment {
+public class GoalGuideDialog extends DialogFragment {
 
-    private ArrayList<Integer> mGoalExplanationIdList;
+    private ArrayList<Integer> mGoalGuideIdList;
     private int mTutorial;
     private OnDestroyListener mOnDestroyListener;
 
     //空のコンストラクタ
     //※必須（画面回転等の画面再生成時にコールされる）
-    public GoalExplanationDialog() {
+    public GoalGuideDialog() {
         //do nothing
     }
 
-    public GoalExplanationDialog(ArrayList<Integer> idList, int tutorial) {
-        mGoalExplanationIdList = idList;
+    public GoalGuideDialog(ArrayList<Integer> idList, int tutorial) {
+        mGoalGuideIdList = idList;
         mTutorial = tutorial;
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.dialog_goal_explanation, container, false);
+        return inflater.inflate(R.layout.dialog_goal_guide, container, false);
     }
 
     /**
@@ -80,12 +81,13 @@ public class GoalExplanationDialog extends DialogFragment {
         setupDialogSize(dialog);
 
         // 設定文言ID
-        int major = mGoalExplanationIdList.get(GOAl_EXP_MAJOR_POS);
-        int sub = mGoalExplanationIdList.get(GOAl_EXP_SUB_POS);
-        int contents = mGoalExplanationIdList.get(GOAl_EXP_CONTENTS_POS);
-        int explanation = mGoalExplanationIdList.get(GOAl_EXP_EXPLANATION_POS);
+        int major = mGoalGuideIdList.get(GOAl_EXP_MAJOR_POS);
+        int sub = mGoalGuideIdList.get(GOAl_EXP_SUB_POS);
+        int contents = mGoalGuideIdList.get(GOAl_EXP_CONTENTS_POS);
+        int explanation = mGoalGuideIdList.get(GOAl_EXP_EXPLANATION_POS);
 
         // チュートリアル番号の設定
+        Log.i("ステージ選択", "major=" + major);
         String majorStr = getMajorString( dialog.getContext(), major );
 
         // 説明内容にギミック用xmlの内容を反映

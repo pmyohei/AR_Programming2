@@ -94,15 +94,21 @@ public class StageSelectAdapter extends RecyclerView.Adapter<StageSelectAdapter.
                     //-------------------
                     // 選択中ステージ変更
                     //-------------------
-                    int preChecked = mSelectPosition;
+                    int preCheckedPosition = mSelectPosition;
                     mSelectPosition = position;
 
                     // 選択中ステージの選択を解除
-                    notifyItemChanged(preChecked);
+                    notifyItemChanged(preCheckedPosition);
 
                     // クリック対象のステージを選択中に変更
                     rb_stage.setChecked(true);
                     notifyItemChanged(position);
+
+                    //-------------------------
+                    // リスト上の選択中情報を更新
+                    //-------------------------
+                    mStageList.get(preCheckedPosition).mIsSelect = false;
+                    mStageList.get(position).mIsSelect = true;
                 }
             });
         }
@@ -128,9 +134,8 @@ public class StageSelectAdapter extends RecyclerView.Adapter<StageSelectAdapter.
 
             // 選択状態を反映
             rb_stage.setChecked(isSelect);
-            stageList.mIsSelect = isSelect;
-
-            Log.i("ステージ選択", "" + stageList.mStageName + "=" + stageList.mIsSelect);
+//            stageList.mIsSelect = isSelect;
+//            Log.i("ステージ選択", "" + stageList.mStageName + "=" + stageList.mIsSelect);
         }
 
         /*

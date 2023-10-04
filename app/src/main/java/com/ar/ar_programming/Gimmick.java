@@ -47,7 +47,7 @@ public class Gimmick {
     public Vector3 characterPositionVec;
     public float characterAngle;
     // ゴール
-    public ArrayList<Integer> goalExplanationIdList;
+    public ArrayList<Integer> goalGuideIdList;
     public String goalGlb;
     public Vector3 goalPositionVec;
     public float goalAngle;
@@ -126,7 +126,7 @@ public class Gimmick {
         //-------------------
         // リスト関連
         //-------------------
-        goalExplanationIdList = new ArrayList<>();
+        goalGuideIdList = new ArrayList<>();
 
         objectGlbList = new ArrayList<>();
         objectNumList = new ArrayList<>();
@@ -410,17 +410,17 @@ public class Gimmick {
      * ゴール説明文言リストの設定
      *   文言からstringIDを生成
      */
-    public void setGoalExplanation(String goalExplanation) {
+    public void setGoalGuide(String goalGuide) {
         Resources resources = mContext.getResources();
 
-        goalExplanationIdList.clear();
+        goalGuideIdList.clear();
 
         // ゴール説明ID文字列をintに変換して、リストに格納
-        String[] strs = splitGimmickValueDelimiter(goalExplanation);
+        String[] strs = splitGimmickValueDelimiter(goalGuide);
         for (String word : strs) {
             // 文字列からID値に変換
-            int stringId = resources.getIdentifier(word, "strings-stage-guide", mContext.getPackageName());
-            goalExplanationIdList.add(stringId);
+            int stringId = resources.getIdentifier(word, "string", mContext.getPackageName());
+            goalGuideIdList.add(stringId);
         }
     }
 

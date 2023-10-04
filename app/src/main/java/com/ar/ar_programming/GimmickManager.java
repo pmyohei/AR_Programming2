@@ -1,11 +1,6 @@
 package com.ar.ar_programming;
 
-import static android.content.Context.MODE_PRIVATE;
-
-import static com.ar.ar_programming.Common.TUTORIAL_FINISH;
-
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.content.res.XmlResourceParser;
 import android.graphics.drawable.Drawable;
@@ -17,7 +12,6 @@ import org.xmlpull.v1.XmlPullParserException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Objects;
-import java.util.Random;
 
 /*
  * ギミックマネージャ
@@ -194,7 +188,7 @@ public class GimmickManager {
         //----------------------
         // リスト変換するプロパティ
         //----------------------
-        String goalExplanation = parser.getAttributeValue(null, "goalExplanation");
+        String goalGuide = parser.getAttributeValue(null, "goalGuide");
         // キャラクター
         String characterPosition = parser.getAttributeValue(null, "characterPosition");
         String characterAngle = parser.getAttributeValue(null, "characterAngle");
@@ -229,7 +223,7 @@ public class GimmickManager {
         gimmick.successCondition = parser.getAttributeValue(null, "successCondition");
         gimmick.successRemoveTarget = parser.getAttributeValue(null, "successRemoveTarget");
         gimmick.character = parser.getAttributeValue(null, "character");
-        gimmick.setGoalExplanation(goalExplanation);
+        gimmick.setGoalGuide(goalGuide);
         gimmick.stageGlb = parser.getAttributeValue(null, "stageGlb");
         // キャラクター
         gimmick.characterGlb = parser.getAttributeValue(null, "characterGlb");
@@ -245,7 +239,6 @@ public class GimmickManager {
         gimmick.setObjectNum(objectNum);
         gimmick.setObjectName(objectName);
         gimmick.setObjectReplaceInfo(objectReplaceName, objectReplaceGlb);
-//        gimmick.setObjectReplaceGlb(objectReplaceGlb);
         gimmick.setObjectPositionRandom(objectPositionRandom);
         gimmick.setObjectPositionVecList(objectPosition);
         gimmick.setObjectAngle(objectAngle);
