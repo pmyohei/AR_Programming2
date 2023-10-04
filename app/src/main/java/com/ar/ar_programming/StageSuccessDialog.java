@@ -30,9 +30,6 @@ public class StageSuccessDialog extends DialogFragment {
     private View.OnClickListener mNextTutorialClickListener;
     private View.OnClickListener mOtherStageClickListener;
 
-    //Bundle保存キー
-    private static final String KEY_TUTORIAL = "tutorial";
-
     //空のコンストラクタ
     //※必須（画面回転等の画面再生成時にコールされる）
     public StageSuccessDialog() {

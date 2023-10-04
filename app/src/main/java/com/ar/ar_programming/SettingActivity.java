@@ -79,7 +79,7 @@ public class SettingActivity extends AppCompatActivity {
      * 設定不可のダイアログを表示
      */
     private void showCannotSetDialog(int tutorial) {
-        DialogFragment newFragment = new CannotSetDialogFragment( tutorial );
+        DialogFragment newFragment = new CannotSetDialog( tutorial );
         newFragment.show( getSupportFragmentManager(), "cannotSet" );
     }
 

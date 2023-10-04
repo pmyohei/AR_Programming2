@@ -35,6 +35,7 @@
     <!---->
     <!-- ステージ選択UI／ダイアログ -->
     <!---->
+    <color name="bg_not_clear">#AFAFAF</color>
     <color name="bg_stage_select_dialog">#CCFFFFFF</color>
     <color name="stroke_stage_select_dialog">#f8a978</color>
 

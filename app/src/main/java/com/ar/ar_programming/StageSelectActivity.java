@@ -1,10 +1,13 @@
 package com.ar.ar_programming;
 
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -37,7 +40,7 @@ public class StageSelectActivity extends AppCompatActivity {
     /*
      * Play押下時処理
      */
-    public void onSelectStageClicked(View view) {
+    public void onSelectedClicked(View view) {
         // ステージ選択終了
         setFinishIntent();
     }
@@ -53,6 +56,14 @@ public class StageSelectActivity extends AppCompatActivity {
         String currentStageName = getCurrentStageName();
 
         //---------------------
+        // 区切り線
+        //---------------------
+        Drawable borderDesign = getDrawable( R.drawable.border_stage_select_list );
+
+        DividerItemDecoration itemDecoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
+        itemDecoration.setDrawable( borderDesign );
+
+        //---------------------
         // アダプタ設定
         //---------------------
         // ステージ選択リストアダプタの生成
@@ -66,6 +77,9 @@ public class StageSelectActivity extends AppCompatActivity {
         RecyclerView rv_selectStage = findViewById(R.id.rv_selectStage);
         rv_selectStage.setAdapter(adapter);
         rv_selectStage.setLayoutManager(linearLayoutManager);
+
+        rv_selectStage.addItemDecoration(itemDecoration);
+
     }
 
     /*
@@ -115,10 +129,14 @@ public class StageSelectActivity extends AppCompatActivity {
         // 選択されたステージ名を取得
         String stageName = getUserSelectStage();
 
+        Log.i("ステージ選択", "intent設定=" + stageName);
+
         // resultコード設定
         Intent intent = getIntent();
         intent.putExtra(KEY_SELECT_STAGE, stageName);
         setResult(RESULT_SELECT_STAGE, intent);
+
+        finish();
     }
 
 
@@ -128,11 +146,14 @@ public class StageSelectActivity extends AppCompatActivity {
     private String getUserSelectStage() {
 
         for( StageList stage: mStageList ){
+            Log.i("ステージ選択", "選択判定:" + stage.mStageName + "=" + stage.mIsSelect);
             if( stage.mIsSelect ){
                 return stage.mStageName;
             }
         }
 
-        return "";
+        // フェールセーフ
+        // もしなければ、先頭のステージ
+        return mStageList.get(0).mStageName;
     }
 }

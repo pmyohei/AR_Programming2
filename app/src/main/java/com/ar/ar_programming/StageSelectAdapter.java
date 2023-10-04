@@ -6,6 +6,7 @@ import static com.ar.ar_programming.Common.TUTORIAL_FINISH;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -128,6 +129,8 @@ public class StageSelectAdapter extends RecyclerView.Adapter<StageSelectAdapter.
             // 選択状態を反映
             rb_stage.setChecked(isSelect);
             stageList.mIsSelect = isSelect;
+
+            Log.i("ステージ選択", "" + stageList.mStageName + "=" + stageList.mIsSelect);
         }
 
         /*
@@ -136,7 +139,7 @@ public class StageSelectAdapter extends RecyclerView.Adapter<StageSelectAdapter.
         private void setClearInfo(boolean isClear) {
 
             // クリアしていないなら、何もしない（デフォルトのまま）
-            if (!isClear) {
+            if ( !isClear ) {
                 return;
             }
 
@@ -145,7 +148,7 @@ public class StageSelectAdapter extends RecyclerView.Adapter<StageSelectAdapter.
             // アイコンをクリア状態に変更
             @SuppressLint("UseCompatLoadingForDrawables")
             Drawable design = context.getDrawable(R.drawable.baseline_trophy);
-            iv_clear.setBackground(design);
+            iv_clear.setImageDrawable(design);
         }
 
         /*
@@ -160,10 +163,9 @@ public class StageSelectAdapter extends RecyclerView.Adapter<StageSelectAdapter.
             }
 
             // 挑戦中のチュートリアルよりも後にあるステージは、全て選択不可
-            if( position >= (mChallengeTutorial - TUTORIAL_DEFAULT) ){
+            if( position > (mChallengeTutorial - TUTORIAL_DEFAULT) ){
                 rb_stage.setEnabled( false );
             }
-
         }
     }
 
@@ -213,7 +215,7 @@ public class StageSelectAdapter extends RecyclerView.Adapter<StageSelectAdapter.
         }
 
         // 挑戦中のチュートリアル番号
-        return Common.getTutorialSequence( context );
+        return Common.getNextTutorialNumber( context );
     }
 
     /*

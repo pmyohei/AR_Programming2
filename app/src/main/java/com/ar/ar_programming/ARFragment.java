@@ -188,7 +188,7 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
         // ギミック
         //-------------------
         // ステージギミックを選出
-        mGimmick = getGimmick();
+        setGimmick();
 
         //-------------------------------
         // 画面遷移ランチャーを生成
@@ -367,13 +367,16 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
                         // 選択ステージを取得
                         Intent intent = result.getData();
                         String selectedStage = intent.getStringExtra(StageSelectActivity.KEY_SELECT_STAGE);
-                        // ギミック読み込み
-                        boolean isReadGimmick = readGimmick(selectedStage);
-                        if (isReadGimmick) {
-                            // Nodeを全クリア
-                            removeField();
-                            // 積み上げたブロックを全クリア
-                            initProgramming();
+
+                        Log.i("ステージ選択", "intent受け取り=" + selectedStage);
+
+                        // Nodeを全クリア
+                        removeField();
+                        // 積み上げたブロックを全クリア
+                        initProgramming();
+                        // ステージギミックを選出
+                        boolean isUpdate = setGimmick(selectedStage);
+                        if( isUpdate ){
                             // 3Dモデルレンダリング初期生成
                             initRenderable();
                         }
@@ -382,36 +385,60 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
     }
 
     /*
-     * ギミック取得
+     * ギミック設定
+     * 　・チュートリアル中　：次に挑戦するチュートリアル
+     * 　・チュートリアル終了：未クリアのステージで一番先頭にあるステージ
+     *
+     *  　＜戻り値＞
+     *     ・保持中のギミックが更新されるなら、true
      */
-    private Gimmick getGimmick() {
+    private boolean setGimmick() {
 
         Context context = getContext();
 
-        //----------------
-        // チュートリアル終了
-        //----------------
+        //-----------------
+        // ステージ名
+        //-----------------
+        String stageName;
+
         boolean finishTutorial = Common.isFisishTutorial(context);
         if (finishTutorial) {
-            // ユーザー設定に応じたギミックを生成
-
-            //------------------
-            // 取得するステージ名
-            //------------------
-            // ステージ名リスト
+            // チュートリアル完了
+            // クリアしていないステージの内、一番先頭にあるステージ名を取得
             ArrayList<String> stageNameList = GimmickManager.getStageNameList(context, R.xml.gimmick_select);
-            String stageName = Common.getHeadNotClearStageName(context, stageNameList);
+            stageName = Common.getHeadNotClearStageName(context, stageNameList);
 
-            // ギミック生成
-            return GimmickManager.makeUserGimmick(context, stageName);
+        } else {
+            // チュートリアル中
+            stageName = Common.getNextTutorialName(context);
         }
 
-        //----------------
-        // チュートリアル中
-        //----------------
-        // チュートリアル用ギミックを生成
-        int tutorial = Common.getTutorialSequence(context);
-        return GimmickManager.makeTutorialGimmick(context, tutorial);
+        //-----------------
+        // ギミック生成
+        //-----------------
+        mGimmick = GimmickManager.getGimmick(context, stageName);
+        return true;
+    }
+
+    /*
+     * ギミック設定
+     *
+     *  　＜戻り値＞
+     *     ・保持中のギミックが更新されるなら、true
+     */
+    private boolean setGimmick(String stageName ) {
+
+        Context context = getContext();
+
+        if( mGimmick.name.equals( stageName ) ){
+            return false;
+        }
+
+        //-----------------
+        // ギミック生成
+        //-----------------
+        mGimmick = GimmickManager.getGimmick(context, stageName);
+        return true;
     }
 
     /*
@@ -642,7 +669,7 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
     /*
      * 処理ブロック選択肢リストの削除
      */
-    private void clearSelectProcessBlockList() {
+    private void clearSelectBlockList() {
 
         // 現状のギミックのブロック選択肢数
         int blockNum = mGimmick.xmlBlockInfoList.size();
@@ -1920,13 +1947,19 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
             @Override
             public void onTapPlane(HitResult hitResult, Plane plane, MotionEvent motionEvent) {
 
-                //!ガード：レンダラブル未生成チェック
-                //!ガード：タップして配置済みチェック
-                // Node生成可能か判定
-                if ( !enableCreateNode() ) {
+                //----------------------------------
+                // 配置してよいか判定
+                //----------------------------------
+                // レンダラブル生成済みか
+                if ( !isPreparedRenderable() )  {
                     Snackbar.make(binding.getRoot(), getString(R.string.snackbar_please_wait), Snackbar.LENGTH_SHORT).show();
+                    return;
+                }
 
-                    //!失敗した場合のリカバリをどうするか
+                // 既にフィールド配置済みか
+                if ( isPlacedNodes() ) {
+                    Snackbar.make(binding.getRoot(), getString(R.string.snackbar_field_placed), Snackbar.LENGTH_SHORT).show();
+                    return;
                 }
 
                 //----------------------------------
@@ -1974,7 +2007,7 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
                 //----------------------------------
                 // ステージ出現時のガイド表示
                 //----------------------------------
-                showTutorialGuide( TUTORIAL_GUIDE_SHOW_TAP );
+                showTutorialGuide(TUTORIAL_GUIDE_SHOW_TAP);
 
                 // プログラミングエリア表示時のガイドを表示可能にする
                 mIsTutorialGuideShow = false;
@@ -1984,18 +2017,18 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
 
 
     /*
-     * ARフラグメント：平面タッチリスナーの設定
+     * ARフラグメント：レンダラブル生成済みかどうか
      */
-    private boolean enableCreateNode() {
+    private boolean isPreparedRenderable() {
 
         //------------------------------
         // 配置必須レンダラブル
         //------------------------------
         // 配置必須レンダラブルのどれか一つでもnullなら、Node生成不可
-        if ( (mCharacterRenderable == null) ||
-             (mStageRenderable == null) ||
-             (mGuideViewRenderable == null) ||
-             (mActionRenderable == null)) {
+        if ((mCharacterRenderable == null) ||
+                (mStageRenderable == null) ||
+                (mGuideViewRenderable == null) ||
+                (mActionRenderable == null)) {
             return false;
         }
 
@@ -2003,8 +2036,8 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
         // 配置任意レンダラブル
         //------------------------------
         // Goalレンダラブル判定
-        if( mGimmick.goalGlb != null ){
-            if( mGoalRenderable == null ){
+        if (mGimmick.goalGlb != null) {
+            if (mGoalRenderable == null) {
                 return false;
             }
         }
@@ -2027,6 +2060,28 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
 
 
     /*
+     * ARフラグメント：Node配置済みかどうか
+     */
+    private boolean isPlacedNodes() {
+
+        //------------------------
+        // 既にフィールドを生成しているか
+        //------------------------
+        // フィールド配置前のSceneの子Node数
+        // ※AnchorNodeが加わると、Sceneの子Node数=2 となる
+        final int BEFORE_FIERD_GENERATION_NODE_NUM = 1;
+
+        Scene scene = arFragment.getArSceneView().getScene();
+        if (scene.getChildren().size() > BEFORE_FIERD_GENERATION_NODE_NUM) {
+            // 配置済み
+            return true;
+        }
+
+        // 未配置
+        return false;
+    }
+
+    /*
      * チュートリアルガイドの表示
      */
     private void showTutorialGuide( int showTimming ) {
@@ -2037,7 +2092,8 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
             return;
         }
 
-        Log.i("ヘルプ", "tutorial=" + tutorial);
+        Log.i("ステージ選択", "ガイド表示 mGimmick.mTutorial=" + mGimmick.mTutorial);
+        Log.i("ステージ選択", "ガイド表示 mGimmick.name=" + mGimmick.name);
 
         //-------------------
         // ヘルプページリスト
@@ -2192,8 +2248,11 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
 
         // ステージ配置前なら何もしない
         if (mPlayState < PLAY_STATE_PRE_PLAY) {
+            Log.i("ステージ選択", "removeField()処理なし");
             return;
         }
+
+        Log.i("ステージ選択", "removeField()");
 
         //------------------
         // Node全削除
@@ -2211,8 +2270,8 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
         //----------------------------------
         // 処理ブロック
         //----------------------------------
-        // 選択肢リストを削除
-        clearSelectProcessBlockList();
+        // 選択肢ブロックリストを削除
+        clearSelectBlockList();
 
         //----------------------------------
         // 状態管理
@@ -2227,7 +2286,7 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
     }
 
     /*
-     * プログラミングを初期化する（積み上げたブロックを全て削除する）
+     * プログラミングを初期化（積み上げたブロックを全て削除）
      */
     public void initProgramming() {
 
@@ -2417,7 +2476,7 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
         // 積み上げたブロックを全クリア
         initProgramming();
         // ステージギミックを選出
-        mGimmick = getGimmick();
+        setGimmick();
         // 3Dモデルレンダリング初期生成
         initRenderable();
     }

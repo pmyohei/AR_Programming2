@@ -1,9 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- ===== -->
+    <!-- ============================= -->
+    <!-- チュートリアル -->
+    <!-- ============================= -->
+    <!--  チュートリアル名：ギミックに指定する文字列  -->
+    <string-array name="tutorial_name">
+        <item>tutorial_1</item>
+        <item>tutorial_2</item>
+        <item>tutorial_3</item>
+        <item>tutorial_4</item>
+        <item>tutorial_5</item>
+        <item>tutorial_6</item>
+    </string-array>
+
+    <!-- ============================= -->
     <!-- 遊び方 -->
-    <!-- ===== -->
+    <!-- ============================= -->
     <!--  ARの始め方  -->
     <array name="how_to_ar">
         <item>@layout/help_page_about_ar_1</item>
@@ -73,7 +86,6 @@
         <item>@layout/help_page_how_to_set_volume</item>
         <item>@layout/help_page_how_to_move_block</item>
         <item>@layout/help_page_how_to_remove_block</item>
-        <item>@layout/help_page_about_block_limit</item>
         <item>@layout/first_start_tutorial_end</item>
     </array>
 

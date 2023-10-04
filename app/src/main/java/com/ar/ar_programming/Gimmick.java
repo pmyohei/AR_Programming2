@@ -149,6 +149,7 @@ public class Gimmick {
      * ギミックのチュートリアル値を設定
      */
     public void setTutorial(int tutorial) {
+        Log.i("ステージ選択", "setTutorial()=" + tutorial);
         mTutorial = tutorial;
     }
 
@@ -418,7 +419,7 @@ public class Gimmick {
         String[] strs = splitGimmickValueDelimiter(goalExplanation);
         for (String word : strs) {
             // 文字列からID値に変換
-            int stringId = resources.getIdentifier(word, "string", mContext.getPackageName());
+            int stringId = resources.getIdentifier(word, "strings-stage-guide", mContext.getPackageName());
             goalExplanationIdList.add(stringId);
         }
     }

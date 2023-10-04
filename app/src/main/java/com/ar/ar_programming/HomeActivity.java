@@ -22,8 +22,8 @@ public class HomeActivity extends AppCompatActivity {
         // Admob
         initAdmob();
 
-        //debug-------------------
-        Common.setTutorialDebug(this, 1);
+        //debug---------------
+        Common.setTutorialDebug(this, 6);
         //--------------------
     }
 
@@ -31,8 +31,7 @@ public class HomeActivity extends AppCompatActivity {
      * Play押下時処理
      */
     public void onPlayClicked(View view) {
-//        Intent intent = new Intent(this, ARActivity.class);
-        Intent intent = new Intent(this, StageSelectActivity.class);
+        Intent intent = new Intent(this, ARActivity.class);
         startActivity(intent);
     }
 

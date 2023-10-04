@@ -2,8 +2,11 @@ package com.ar.ar_programming;
 
 import static android.content.Context.MODE_PRIVATE;
 
+import static com.ar.ar_programming.GimmickManager.GIMMICK_DELIMITER_TUTORIAL_NAME;
+
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 
 import java.util.ArrayList;
 
@@ -12,29 +15,68 @@ import java.util.ArrayList;
  */
 public class Common {
 
+    //---------------
+    // チュートリアル
+    //---------------
     public static int TUTORIAL_DEFAULT = 1;                     // ユーザーデータ取得エラー時のチュートリアル値（データがないなら、初めのチュートリアルから行う）
     public static int TUTORIAL_LAST = 6;                        // チュートリアル最終番号
     public static int TUTORIAL_FINISH = TUTORIAL_LAST + 1;      // チュートリアル終了値（チュートリアルは『１～「この値 - 1」』）
 
-    /*
-     * チュートリアルシーケンスの取得
-     */
-    public static int getTutorialSequence(Context context) {
+    // チュートリアル名プレフィックス
+    public static String PREFIX_TUTORIAL_NAME = "tutorial";
 
-        // 現在のチュートリアル進行状況を取得
+    /*
+     * 次に挑戦するチュートリアル番号を取得
+     *   例)「tutorial_1」であれば、「1」を返す
+     */
+    public static int getTutorialNumber(String tutorialName) {
+
+        // チュートリアル名を先頭の固定文字列と番号で分割
+        // 例）「tutorial_1」 → [0]"tutorial"   [1]"1"
+        String[] splitTutorialName = tutorialName.split(GIMMICK_DELIMITER_TUTORIAL_NAME);
+
+        // 番号部を変換して返す
+        return Integer.parseInt(splitTutorialName[1]);
+    }
+
+    /*
+     * 次に挑戦するチュートリアル番号を取得
+     *   例)「tutorial_1」であれば、「1」を返す
+     */
+    public static int getNextTutorialNumber(Context context) {
+
+        // 次に挑戦するチュートリアル名を取得
+        String tutorialName = getNextTutorialName(context);
+
+        // チュートリアル名を先頭の固定文字列と番号で分割
+        // 例）「tutorial_1」 → [0]"tutorial"   [1]"1"
+        String[] splitTutorialName = tutorialName.split(GIMMICK_DELIMITER_TUTORIAL_NAME);
+
+        // 番号部を変換して返す
+        return Integer.parseInt(splitTutorialName[1]);
+    }
+
+    /*
+     * 次に挑戦するチュートリアル名を取得
+     */
+    public static String getNextTutorialName(Context context) {
+
         SharedPreferences sharedPref = context.getSharedPreferences(context.getString(R.string.preference_file_key), MODE_PRIVATE);
 
-        // チュートリアルの先頭から参照し、クリアしていない番号を取得
-        int i;
-        for( i = TUTORIAL_DEFAULT; i <= TUTORIAL_LAST; i++ ){
-            String tutorialNum = Integer.toString( i );
-            boolean isClear = sharedPref.getBoolean(tutorialNum, false);
-            if( !isClear ){
-                return i;
+        // チュートリアル名リスト
+        Resources res = context.getResources();
+        String[] tutorialNameList = res.getStringArray(R.array.tutorial_name);
+
+        // チュートリアルの先頭から参照し、クリアしていないチュートリアルを返す
+        for (String tutorialName : tutorialNameList) {
+            boolean isClear = sharedPref.getBoolean(tutorialName, false);
+            if (!isClear) {
+                return tutorialName;
             }
         }
 
-        return i;
+        // 見つからなければ、先頭を返す
+        return tutorialNameList[0];
     }
 
     /*
@@ -45,30 +87,9 @@ public class Common {
         // 最終チュートリアルをクリアしていれば、チュートリアルは終了状態にある
         SharedPreferences sharedPref = context.getSharedPreferences(context.getString(R.string.preference_file_key), MODE_PRIVATE);
 
-        String lastTutorialNum = Integer.toString( TUTORIAL_LAST );
-        return sharedPref.getBoolean(lastTutorialNum, false);
+        String lastTutorial = (PREFIX_TUTORIAL_NAME + GIMMICK_DELIMITER_TUTORIAL_NAME + Integer.toString(TUTORIAL_LAST));
+        return sharedPref.getBoolean(lastTutorial, false);
     }
-
-    /*
-     * チュートリアルを次に進める
-     */
-//    public static void proceedNextTutorial(Context context) {
-//
-//        //------------
-//        // 更新対象
-//        //------------
-//        // 未クリア → クリア となるチュートリアル
-//        int sequence = getTutorialSequence(context);
-//        String clearTutorial = Integer.toString( sequence );
-//
-//        //------------
-//        // 保存
-//        //------------
-//        SharedPreferences sharedPref = context.getSharedPreferences(context.getString(R.string.preference_file_key), MODE_PRIVATE);
-//        SharedPreferences.Editor editor = sharedPref.edit();
-//        editor.putBoolean(clearTutorial, true);
-//        editor.apply();
-//    }
 
     /*
      * ステージクリア保存
@@ -99,32 +120,50 @@ public class Common {
      * ステージ未クリアのステージ名を取得
      *   ※未クリアのステージの内、gimmick-xml上一番先頭にあるステージ名を返す
      */
-    public static String getHeadNotClearStageName(Context context, ArrayList<String> stageList){
+    public static String getHeadNotClearStageName(Context context, ArrayList<String> stageList) {
 
-        for( String stageName: stageList ){
+        for (String stageName : stageList) {
 
             // ステージのクリア状況を取得
             SharedPreferences sharedPref = context.getSharedPreferences(context.getString(R.string.preference_file_key), MODE_PRIVATE);
-            boolean isClear = sharedPref.getBoolean( stageName, false);
-            if( !isClear ){
+            boolean isClear = sharedPref.getBoolean(stageName, false);
+            if (!isClear) {
                 return stageName;
             }
         }
 
-        // 全てクリア済みなら、先頭のステージ名を返す
-        return stageList.get(0);
+        // 全てクリア済みなら、最後のチュートリアル番号の次の番号をチュートリアル名とする文字列を返す
+        return (PREFIX_TUTORIAL_NAME + GIMMICK_DELIMITER_TUTORIAL_NAME + Integer.toString(TUTORIAL_FINISH));
     }
 
     /*
      * !デバッグ用
-     *   チュートリアル状況　任意設定
+     *   チュートリアル設定：指定したチュートリアル以降を未クリアにする
      */
-    public static void setTutorialDebug(Context context, int tutorial){
+    public static void setTutorialDebug(Context context, int tutorial) {
+
+        // チュートリアル名リスト
+        Resources res = context.getResources();
+        String[] tutorialNameList = res.getStringArray(R.array.tutorial_name);
 
         // 保存
-        SharedPreferences sharedPref = context.getSharedPreferences( context.getString(R.string.preference_file_key), MODE_PRIVATE);
+        SharedPreferences sharedPref = context.getSharedPreferences(context.getString(R.string.preference_file_key), MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putInt( context.getString(R.string.saved_tutorial_key), tutorial);
+
+        for (int i = TUTORIAL_DEFAULT; i <= TUTORIAL_LAST; i++) {
+            boolean clear = (i < tutorial);
+            editor.putBoolean(tutorialNameList[i - 1], clear);
+        }
+
         editor.apply();
+    }
+
+
+    /*
+     * ステージ名チュートリアル判定
+     *   指定されたステージ名がチュートリアルかどうかを判定する
+     */
+    public static boolean isStageNameTutorial(String stageName){
+        return stageName.contains( PREFIX_TUTORIAL_NAME );
     }
 }

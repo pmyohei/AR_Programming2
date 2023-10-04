@@ -3,7 +3,7 @@
 
 	<!-- チュートリアル1 -->
 	<gimmick
-		name="1"
+		name="tutorial_1"
 		character="animal"
 		successCondition="goal"
 		goalExplanation="guide_major_tutorial_1_animal, guide_sub_tutorial_1_animal, guide_goal_tutorial_1_animal, guide_explanation_tutorial_1_animal"
@@ -25,7 +25,7 @@
 
 	<!-- チュートリアル2　処理量制限あり版 -->
 	<gimmick
-		name="2"
+		name="tutorial_2"
 		character="animal"
 		successCondition="goal"
 		goalExplanation="guide_major_tutorial_1_animal, guide_sub_tutorial_1_animal, guide_goal_tutorial_1_animal, guide_explanation_tutorial_1_animal"
@@ -47,10 +47,10 @@
 
 	<!-- チュートリアル3 乗り物 -->
 	<gimmick
-		name="3"
+		name="tutorial_3"
 		character="vehicle"
 		successCondition="goal"
-		goalExplanation="guide_major_tutorial_2_animal, guide_sub_tutorial_2_animal, guide_goal_tutorial_2_animal, guide_explanation_tutorial_2_animal"
+		goalExplanation="guide_major_tutorial_3, guide_sub_tutorial_3, guide_goal_tutorial_3, guide_explanation_tutorial_3"
 		stageGlb="models/stage/bridge.glb"
 		characterGlb="models/vehicle/car.glb"
 		characterPosition="0 : 0.5 : 7.5"
@@ -64,10 +64,10 @@
 
 	<!-- チュートリアル4 -->
 	<gimmick
-		name="4"
+		name="tutorial_4"
 		character="animal"
 		successCondition="goal"
-		goalExplanation="guide_major_tutorial_3, guide_sub_tutorial_3, guide_goal_tutorial_3, guide_explanation_tutorial_3"
+		goalExplanation="guide_major_tutorial_4, guide_sub_tutorial_4, guide_goal_tutorial_4, guide_explanation_tutorial_4"
 		stageGlb="models/stage/forest_load_1.glb"
 		characterGlb="models/animal/squirrel.glb"
 		characterPosition="0 : 1.4 : 8.7"
@@ -86,10 +86,10 @@
 
 	<!-- 「if-else」ブロックを利用するパターン -->
 	<gimmick
-		name="5"
+		name="tutorial_5"
 		character="animal"
 		successCondition="goal"
-		goalExplanation="guide_major_tutorial_4, guide_sub_tutorial_4, guide_goal_tutorial_4, guide_explanation_tutorial_4"
+		goalExplanation="guide_major_tutorial_5, guide_sub_tutorial_5, guide_goal_tutorial_5, guide_explanation_tutorial_5"
 		stageGlb="models/stage/forest_load_2.glb"
 		characterGlb="models/animal/rabit.glb"
 		characterPosition="0 : 1.4 : 8.7"
@@ -107,10 +107,10 @@
 
 	<!-- 「if-elseif-else」ブロックを利用するパターン -->
 	<gimmick
-		name="6"
+		name="tutorial_6"
 		character="animal"
 		successCondition="goal"
-		goalExplanation="guide_major_tutorial_4, guide_sub_tutorial_4, guide_goal_tutorial_4, guide_explanation_tutorial_4"
+		goalExplanation="guide_major_tutorial_5, guide_sub_tutorial_5, guide_goal_tutorial_5, guide_explanation_tutorial_5"
 		stageGlb="models/stage/forest_load_2.glb"
 		characterGlb="models/animal/rabit.glb"
 		characterPosition="0 : 1.4 : 8.7"

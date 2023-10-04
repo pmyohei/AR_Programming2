@@ -18,14 +18,17 @@ import androidx.fragment.app.DialogFragment;
 
 import java.util.ArrayList;
 
-public class CannotSetDialogFragment extends DialogFragment {
+/*
+ * ユーザーにまだ設定できないことを知らせるダイアログ
+ */
+public class CannotSetDialog extends DialogFragment {
 
     // ユーザーのチュートリアル状況
     // 例）この値が１の時、そのユーザーが次にやるチュートリアルが１ということ
     //    チュートリアル１が完了しているというわけではないため注意
     private int mTutorial;
 
-    public CannotSetDialogFragment(int tutorial) {
+    public CannotSetDialog(int tutorial) {
         mTutorial = tutorial;
     }
 

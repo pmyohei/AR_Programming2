@@ -186,11 +186,19 @@
     <string name="snackbar_please_finish_game">ゲーム終了後に押してね</string>
     <string name="snackbar_please_wait">もう少し待ってね</string>
     <string name="snackbar_please_return_home">エラー。。一度Homeに戻ってね</string>
+    <string name="snackbar_field_placed">既に配置しているよ</string>
 
     <!-- ================================================================= -->
     <!-- ギミック紐づけ -->
     <!-- ================================================================= -->
     <!-- ステージ名 -->
+    <string name="tutorial_1">チュートリアル１\n～プログラミングをしてみよう～</string>
+    <string name="tutorial_2">チュートリアル２\n～制限ブロックを学ぼう～</string>
+    <string name="tutorial_3">チュートリアル３\n～ループブロックを学ぼう～</string>
+    <string name="tutorial_4">チュートリアル４\n～条件ブロックを学ぼう①～</string>
+    <string name="tutorial_5">チュートリアル５\n～条件ブロックを学ぼう②～</string>
+    <string name="tutorial_6">チュートリアル６\n～条件ブロックを学ぼう③～</string>
+
     <string name="chase_with_police_car">パトカーで追跡！</string>
     <string name="avoid_poison_mushroom">毒キノコは捨てよう</string>
     <string name="which_poison_mushroom">毒キノコはどれだろう？</string>
@@ -624,7 +632,7 @@
         <![CDATA[
             途中にあるニンジンを食べて家に帰るプログラムを作ってみよう！\n
             ニンジンを食べないと前に進むことができないよ。\n
-            あと、ニンジンは目の前にないと食べることができないよ。\n
+            あと、ニンジンは目の前にないと食べることができないから、食べる前にまずはニンジンにぶつかるまで進んじゃってね。\n
             ループブロックと条件ブロックをうまく組み合わせるのがポイントだよ！
         ]]>
     </string>
@@ -737,15 +745,17 @@
     </string>
 
     <!--  はちみつゲット！  -->
-    <string name="guide_major_bee_and_honey">チュートリアル2</string>
-    <string name="guide_sub_bee_and_honey">～ループブロックを組み合わせてみよう～</string>
-    <string name="guide_goal_bee_and_honey">蜂を退治して、はちみつをゲットしよう</string>
+    <string name="guide_major_bee_and_honey">はちみつゲット</string>
+    <string name="guide_sub_bee_and_honey">～ループブロックをうまく使おう～</string>
+    <string name="guide_goal_bee_and_honey">ハチを退治して、はちみつをゲットしよう</string>
     <string name="guide_explanation_bee_and_honey">
         <![CDATA[
-            蜂を退治してはちみつの所まで移動するプログラムを作ってみよう！\n
-            はちみつの所へ行く前に蜂を退治してね！\n
-            蜂退治は蜂のそばまで移動する必要があるよ\n
-            うまくプログラムしてはちみつをゲットしよう！
+            ハチを退治してはちみつの所まで移動するプログラムを作ってみよう！\n
+            はちみつの所へ行く前に、必ずハチを退治してね！\n
+            ハチを退治する前にハチミツの所へいくと失敗だよ\n
+            それから、ハチを退治するにはハチのそばまで移動する必要があるんだ\n
+            他のステージと同じように、まずはハチにぶつかるまで進んじゃおう！\n
+            うまくプログラムしてはちみつをゲットしてね！
         ]]>
     </string>
 

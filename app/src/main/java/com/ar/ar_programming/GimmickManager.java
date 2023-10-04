@@ -25,6 +25,12 @@ import java.util.Random;
 public class GimmickManager {
 
     //---------------------------
+    // xmlファイル：タグ名／属性名
+    //---------------------------
+    public static final String TAG_START_GIMMICK = "gimmick";
+    public static final String ATTR_NAME = "name";
+
+    //---------------------------
     // ブロック種別
     //---------------------------
     public static final String BLOCK_TYPE_START = "start";
@@ -89,34 +95,6 @@ public class GimmickManager {
     public static final String GIMMICK_FALSE = "false";
 
     //------------------------------
-    // 具体名
-    //------------------------------
-    // ゴール関連
-    public static final String SPECIFIC_NAME_HOUSE = "house";
-    public static final String SPECIFIC_NAME_SWEET_HOUSE = "sweetHouse";
-    // 動物
-    public static final String SPECIFIC_NAME_RABIT = "rabit";
-    public static final String SPECIFIC_NAME_BEAR = "bear";
-    public static final String SPECIFIC_NAME_FOX = "fox";
-    public static final String SPECIFIC_NAME_SQUIRREL = "squirrel";
-    public static final String SPECIFIC_NAME_BEE = "bee";
-    // 乗り物
-    public static final String SPECIFIC_NAME_CAR = "car";
-    public static final String SPECIFIC_NAME_SPORTS_CAR = "sportsCar";
-    // 食べ物
-    public static final String SPECIFIC_NAME_VEGETABLE = "vegetable";
-    public static final String SPECIFIC_NAME_CARROT = "carrot";
-    public static final String SPECIFIC_NAME_MASHROOM_POISON = "mushroomPoison";
-    public static final String SPECIFIC_NAME_HONEY = "honey";
-    public static final String SPECIFIC_NAME_DONUTS = "donuts";
-    public static final String SPECIFIC_NAME_CHOCOLATE = "chocolate";
-    public static final String SPECIFIC_NAME_GREEN_APPLE = "greenApple";
-    public static final String SPECIFIC_NAME_PUMPKIN = "pumpkin";
-    // 物体
-    public static final String SPECIFIC_NAME_SIGNBOARD_STOP = "signboardStop";
-    public static final String SPECIFIC_NAME_PRESENT = "present";
-
-    //------------------------------
     // フォーマット位置関連：デリミタ
     //------------------------------
     // プロパティの各情報
@@ -131,6 +109,8 @@ public class GimmickManager {
     public static final String GIMMICK_DELIMITER_PATH = "/";
     // 対象Node情報：「Nodeの状態」と「Node名」
     public static final String GIMMICK_DELIMITER_TARGET_NODE_INFO = ":";
+    // チュートリアル文字列と番号のデリミタ  例）tutorial_1 の 「_」
+    public static final String GIMMICK_DELIMITER_TUTORIAL_NAME = "_";
 
     //------------------------------
     // フォーマット位置関連：ゴール説明
@@ -178,64 +158,33 @@ public class GimmickManager {
     }
 
     /*
-     * ギミックの取得
-     */
-//    public static Gimmick getGimmick(Context context) {
-//
-//        // チュートリアルかチュートリアル終了しているかでギミック選定を分ける
-//        boolean finishTutorial = Common.isFisishTutorial(context);
-//        if (finishTutorial) {
-//            // ユーザー設定に応じたギミックを生成
-//            return makeUserGimmick(context);
-//        } else {
-//            // チュートリアルからギミックを生成
-//            int tutorial = Common.getTutorialSequence(context);
-//            return makeTutorialGimmick(context, tutorial);
-//        }
-//    }
-
-
-    /*
      * ギミックの取得：ステージ名指定
      */
     public static Gimmick getGimmick(Context context, String stageName) {
 
-        Resources resources = context.getResources();
-        XmlResourceParser parser = resources.getXml(R.xml.gimmick_select);
+        //--------------------------------
+        // 該当ギミック情報までParseを進める
+        //--------------------------------
+        XmlResourceParser parser = getGimmickXmlParse(context, stageName);
+        advanceParsePosition(parser, stageName);
 
-        //-----------------------------------------
-        // 該当するチュートリアルのギミック情報まで進める
-        //-----------------------------------------
-        try {
-            int eventType = parser.getEventType();
-            while (eventType != XmlPullParser.END_DOCUMENT) {
-
-                // 開始タグでタグ名が「gimmick」の場合、読み込み
-                if ((eventType == XmlPullParser.START_TAG) && (Objects.equals(parser.getName(), "gimmick"))) {
-                    String xmlName = parser.getAttributeValue(null, "name");
-                    if (stageName.equals(xmlName)) {
-                        break;
-                    }
-                }
-
-                // 次の要素を読み込む
-                parser.next();
-                eventType = parser.getEventType();
-            }
-        } catch (XmlPullParserException | IOException ignored) {
-            //★エラー対応検討
-        }
-
-        //-----------------------------------------
+        //-----------------
         // ギミック生成
-        //-----------------------------------------
+        //-----------------
         Gimmick gimmick = new Gimmick(context);
         readGimmickData(gimmick, parser);
-
         parser.close();
+
+        // チュートリアル値の設定
+        boolean isTutorial = Common.isStageNameTutorial( stageName );
+        if( isTutorial ){
+            int tutorialNumber = Common.getTutorialNumber(stageName);
+            gimmick.setTutorial(tutorialNumber);
+        }
 
         return gimmick;
     }
+
 
     /*
      * 指定parserからギミック情報を読み込み、指定ギミックに設定する
@@ -313,39 +262,43 @@ public class GimmickManager {
     }
 
     /*
-     * ユーザー設定に応じたギミックXML名を生成
+     * gimmick向けxmlファイルParseを取得
      */
-    public static Gimmick makeUserGimmick(Context context, String stageName) {
+    public static XmlResourceParser getGimmickXmlParse(Context context, String stageName) {
+
+        int gimmickXmlID;
+
+        boolean isTutorial = Common.isStageNameTutorial(stageName);
+        if( isTutorial ){
+            // チュートリアル向け
+            gimmickXmlID = R.xml.gimmick_tutorial;
+        } else {
+            // チュートリアル終了向け
+            gimmickXmlID = R.xml.gimmick_select;
+        }
 
         Resources resources = context.getResources();
-
-        // ユーザー設定に応じたギミックXMLファイルIDを取得
-        int xmlID = getUserGimmickXmlFileNameID(context);
-        XmlResourceParser parser = resources.getXml(xmlID);
-
-        // 指定ステージ名のギミックを取得
-        return getGimmickFromStageName(parser, context, stageName);
+        return resources.getXml( gimmickXmlID );
     }
 
     /*
-     * ユーザーのチュートリアル状態に応じたギミックXML名を生成
+     * 解析位置をステージ名の位置まで進める
      */
-    public static Gimmick makeTutorialGimmick(Context context, int tutorial) {
+    public static void advanceParsePosition(XmlResourceParser parser, String stageName) {
 
-        Resources resources = context.getResources();
-        XmlResourceParser parser = resources.getXml(R.xml.gimmick_tutorial);
-
-        //-----------------------------------------
-        // 該当するチュートリアルのギミック情報まで進める
-        //-----------------------------------------
+        //------------------------------
+        // 該当するギミック情報まで進める
+        //------------------------------
         try {
             int eventType = parser.getEventType();
             while (eventType != XmlPullParser.END_DOCUMENT) {
 
-                // 開始タグでタグ名が「gimmick」の場合、読み込み
-                if ((eventType == XmlPullParser.START_TAG) && (Objects.equals(parser.getName(), "gimmick"))) {
-                    int name = parser.getAttributeIntValue(null, "name", TUTORIAL_FINISH);
-                    if (name == tutorial) {
+                // 「開始タグ」であり「タグ名=gimmick」の位置
+                if ((eventType == XmlPullParser.START_TAG) && (Objects.equals(parser.getName(), TAG_START_GIMMICK))) {
+
+                    // name属性の値を取得
+                    String name = parser.getAttributeValue(null, ATTR_NAME);
+                    if ( name.equals(stageName) ) {
                         break;
                     }
                 }
@@ -357,111 +310,6 @@ public class GimmickManager {
         } catch (XmlPullParserException | IOException ignored) {
             //★エラー対応検討
         }
-
-        //-----------------------------------------
-        // ギミック生成
-        //-----------------------------------------
-        Gimmick gimmick = new Gimmick(context);
-        readGimmickData(gimmick, parser);
-
-        parser.close();
-
-        // チュートリアル値を設定
-        gimmick.setTutorial(tutorial);
-
-        return gimmick;
-    }
-
-    /*
-     * ギミックリスト内からランダムにギミックを取得する
-     */
-    private static Gimmick getGimmickFromStageName(XmlResourceParser parsertmp, Context context, String stageName) {
-        Resources resources = context.getResources();
-        XmlResourceParser parser = resources.getXml(R.xml.gimmick_select);
-
-        //-----------------------------------------
-        // 該当するチュートリアルのギミック情報まで進める
-        //-----------------------------------------
-        try {
-            int eventType = parser.getEventType();
-            while (eventType != XmlPullParser.END_DOCUMENT) {
-
-                // 開始タグでタグ名が「gimmick」の場合、読み込み
-                if ((eventType == XmlPullParser.START_TAG) && (Objects.equals(parser.getName(), "gimmick"))) {
-                    String name = parser.getAttributeValue(null, "name");
-                    if (name.equals(stageName)) {
-                        break;
-                    }
-                }
-
-                // 次の要素を読み込む
-                parser.next();
-                eventType = parser.getEventType();
-            }
-        } catch (XmlPullParserException | IOException ignored) {
-            //★エラー対応検討
-        }
-
-        //-----------------------------------------
-        // ギミック生成
-        //-----------------------------------------
-        Gimmick gimmick = new Gimmick(context);
-        readGimmickData(gimmick, parser);
-
-        parser.close();
-
-        return gimmick;
-    }
-
-    /*
-     * ギミックリスト内からランダムにギミックを取得する
-     */
-    private static Gimmick getGimmickRandomly(XmlResourceParser parser, Context context) {
-
-        //------------------------
-        // 取得ギミック位置
-        //------------------------
-        // ギミック数を取得
-        int gimmickNum = getGimmickNum(parser);
-        // 対象ギミック位置をランダムに選定
-        Random random = new Random();
-        int gimmickIndex = random.nextInt(gimmickNum);
-
-        //------------------------
-        // 該当位置のギミックを取得
-        //------------------------
-        try {
-            int index = 0;
-            int eventType = parser.getEventType();
-            while (eventType != XmlPullParser.END_DOCUMENT) {
-
-                // 開始タグでタグ名が「gimmick」の場合、読み込み
-                if ((eventType == XmlPullParser.START_TAG) && (Objects.equals(parser.getName(), "gimmick"))) {
-                    // 選定対象のギミックindexまできたら終了
-                    if (index == gimmickIndex) {
-                        break;
-                    }
-                    index++;
-                }
-
-                // 次の要素を読み込む
-                parser.next();
-                eventType = parser.getEventType();
-            }
-        } catch (XmlPullParserException | IOException ignored) {
-            //★エラー対応検討
-        }
-
-        //-----------------------------------------
-        // ギミック生成
-        //-----------------------------------------
-        Gimmick gimmick = new Gimmick(context);
-        readGimmickData(gimmick, parser);
-
-        // parser閉じる
-        parser.close();
-
-        return gimmick;
     }
 
     /*
@@ -493,42 +341,6 @@ public class GimmickManager {
     }
 
     /*
-     * ユーザー設定に応じたギミックXMLファイルIDを取得
-     */
-    private static int getUserGimmickXmlFileNameID(Context context) {
-
-        Resources resources = context.getResources();
-        SharedPreferences sharedPref = context.getSharedPreferences(context.getString(R.string.preference_file_key), MODE_PRIVATE);
-
-        //------------------
-        // xmlファイルidの判定
-        //------------------
-        // ユーザーの設定しているキャラクターと難易度
-        int defaultCharacter = resources.getInteger(R.integer.saved_character_default_key);
-        int defaultDifficulty = resources.getInteger(R.integer.saved_difficulty_default_key);
-        int character = sharedPref.getInt(context.getString(R.string.saved_character_key), defaultCharacter);
-        int difficulty = sharedPref.getInt(context.getString(R.string.saved_difficulty_key), defaultDifficulty);
-
-        // xmlファイルidを判定
-        int xmlID = 0;
-//        if (character == SettingActivity.CHARACTER_ANIMAL) {
-//            if (difficulty == SettingActivity.PLAY_DIFFICULTY_EASY) {
-//                xmlID = R.xml.gimmick_animal_easy;
-//            } else {
-//                xmlID = R.xml.gimmick_animal_difficult;
-//            }
-//        } else {
-//            if (difficulty == SettingActivity.PLAY_DIFFICULTY_EASY) {
-//                xmlID = R.xml.gimmick_vehicle_easy;
-//            } else {
-//                xmlID = R.xml.gimmick_vehicle_difficult;
-//            }
-//        }
-
-        return xmlID;
-    }
-
-    /*
      * 条件ブロックのブロック種別表記を統一
      */
     public static String unificationConditionType(String type) {
@@ -547,9 +359,9 @@ public class GimmickManager {
      */
     public static String getBlockStatement(Context context, String type, String action, String targetNode) {
 
-        //--------------------------------------
+        //-------------------------------
         // 文字列リソースの生成
-        //--------------------------------------
+        //-------------------------------
         // 文字列リソースIDの文字列を構築
         // 例）block_exe_forward
         type = unificationConditionType(type);
@@ -645,7 +457,7 @@ public class GimmickManager {
     }
 
     /*
-     * ステージ名リストの取得
+     * ステージ名をリストで取得
      */
     public static ArrayList<String> getStageNameList( Context context, int gimmickXmlID ) {
 
@@ -663,8 +475,8 @@ public class GimmickManager {
             while (eventType != XmlPullParser.END_DOCUMENT) {
 
                 // 開始タグでタグ名が「gimmick」の場合、読み込み
-                if ((eventType == XmlPullParser.START_TAG) && (Objects.equals(parser.getName(), "gimmick"))) {
-                    String stageName = parser.getAttributeValue(null, "name");
+                if ((eventType == XmlPullParser.START_TAG) && (Objects.equals(parser.getName(), TAG_START_GIMMICK))) {
+                    String stageName = parser.getAttributeValue(null, ATTR_NAME);
                     stageList.add( stageName );
                 }
 

@@ -5,8 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingVertical="10dp"
-    android:paddingHorizontal="0dp"
-    android:background="@drawable/frame_stage_select_item">
+    android:paddingHorizontal="0dp">
 
     <RadioButton
         android:id="@+id/rb_stage"
