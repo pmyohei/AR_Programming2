@@ -13,6 +13,7 @@
     <dimen name="how_to_play_tx_size">18sp</dimen>
 
     <dimen name="dialog_padding_bottom">40dp</dimen>
+    <dimen name="dialog_contents_padding_horizontal">20dp</dimen>
 
     <dimen name="setting_title_margin_top">32dp</dimen>
     <dimen name="setting_title_margin_start">20dp</dimen>
