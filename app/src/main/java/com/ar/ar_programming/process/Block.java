@@ -314,7 +314,7 @@ public abstract class Block extends ConstraintLayout {
     }
 
     /*
-     * 処理ブロックドロップリスナーの設定
+     * ブロックドロップリスナーの設定
      */
     public void setDropBlockListerner(DropBlockListener listener) {
 

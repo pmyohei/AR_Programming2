@@ -183,6 +183,7 @@
 
     <!-- snackbar -->
     <string name="snackbar_please_programming">プログラムを作ったらもう一度押してね</string>
+    <string name="snackbar_please_place_stage">ステージを配置したら押してね</string>
     <string name="snackbar_please_finish_game">ゲーム終了後に押してね</string>
     <string name="snackbar_please_wait">もう少し待ってね</string>
     <string name="snackbar_please_return_home">エラー。。一度Homeに戻ってね</string>

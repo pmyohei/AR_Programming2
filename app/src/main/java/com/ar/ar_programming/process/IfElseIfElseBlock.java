@@ -191,11 +191,11 @@ public class IfElseIfElseBlock extends IfElseBlock {
     @Override
     public boolean hasBlock(Block checkBlock) {
         //---------------------
-        // if側のネストをチェック
+        // if側/elseif側のネストをチェック
         //---------------------
         // あれば判定終了
-        boolean firstNest = super.hasBlock(checkBlock);
-        if (firstNest) {
+        boolean firstSecondNest = super.hasBlock(checkBlock);
+        if ( firstSecondNest ) {
             return true;
         }
 
@@ -203,7 +203,7 @@ public class IfElseIfElseBlock extends IfElseBlock {
         // else側のネストをチェック
         //---------------------
         // else側のネストを検索
-        return searchBlockInNest(NEST_SECOND, checkBlock);
+        return searchBlockInNest(NEST_THIRD, checkBlock);
     }
 
     /*
@@ -400,7 +400,7 @@ public class IfElseIfElseBlock extends IfElseBlock {
     }
 
     /*
-     * 処理ブロックドロップリスナーの設定
+     * ブロックドロップリスナーの設定
      */
     @Override
     public void setDropBlockListerner(DropBlockListener listener) {

@@ -237,7 +237,7 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
         initProgrammingArea();
         // マーカ―はスタートブロックに付与
         initStartBlock();
-        // 処理ブロック削除エリア設定
+        // ブロック削除エリア設定
         setRemoveBlockArea();
     }
 
@@ -686,7 +686,6 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
     /*
      * チャート最下部に処理ブロックを生成する
      */
-//    private void createProcessBlock(int blockType, int blockContents, int valueLimit) {
     private void createProcessBlock(Gimmick.XmlBlockInfo xmlBlockInfo) {
 
         ProcessBlock newBlock;
@@ -1956,7 +1955,7 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
                     return;
                 }
                 // 既にフィールド配置済みか
-                if ( isPlacedNodes() ) {
+                if ( isPlacedStage() ) {
                     Snackbar.make(binding.getRoot(), getString(R.string.snackbar_field_placed), Snackbar.LENGTH_SHORT).show();
                     return;
                 }
@@ -2059,9 +2058,9 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
 
 
     /*
-     * ARフラグメント：Node配置済みかどうか
+     * ARフラグメント：ステージ配置済みかどうか
      */
-    private boolean isPlacedNodes() {
+    private boolean isPlacedStage() {
 
         //------------------------
         // 既にフィールドを生成しているか
@@ -2172,7 +2171,10 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
     }
 
     /*
-     * ドロップ必要判定
+     * ドロップ可否判定
+     *  @para1：ドロップ先ブロック
+     *  @para2：ドラッグ中ブロック
+     *
      * 　以下の場合、ドロップ処理は行わない
      * 　・「ドロップ先ブロック」と「ドラッグ中のブロック」が同じ
      * 　・「ドロップ先ブロック」が「ドラッグ中のブロック」の一つ上に位置する
@@ -2191,7 +2193,7 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
         //------------------------------------------
         //  ネスト内のブロックにドロップしようとしている
         //------------------------------------------
-        if (dragBlock.hasBlock(dropBlock)) {
+        if ( dragBlock.hasBlock(dropBlock) ) {
             Log.i("isDropable", "hasBlock()");
             return false;
         }
@@ -2650,7 +2652,7 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
                 //------------------
                 // ドロップ可能判定
                 //------------------
-                if (!isDropable(dropBlock, (Block) dragEvent.getLocalState())) {
+                if ( !isDropable(dropBlock, (Block) dragEvent.getLocalState()) ) {
                     // ドロップ対象外なら何もしない
                     return true;
                 }
@@ -2777,7 +2779,8 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
     public void onMenuGoalGuide() {
 
         // ステージ配置前なら何もしない
-        if( mPlayState < PLAY_STATE_PRE_PLAY){
+        if( !isPlacedStage() ){
+            Snackbar.make(binding.getRoot(), getString(R.string.snackbar_please_place_stage), Snackbar.LENGTH_SHORT).show();
             return;
         }
 
@@ -2790,6 +2793,13 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
      */
     @Override
     public void onMenuClearFieldClick() {
+
+        // ステージ配置前なら何もしない
+        if( !isPlacedStage() ){
+            Snackbar.make(binding.getRoot(), getString(R.string.snackbar_please_place_stage), Snackbar.LENGTH_SHORT).show();
+            return;
+        }
+
         // ステージを削除
         removeField();
         // 積み上げていたブロックを削除
@@ -2801,6 +2811,13 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
      */
     @Override
     public void onMenuInitProgrammingClick() {
+
+        // ステージ配置前なら何もしない
+        if( !isPlacedStage() ){
+            Snackbar.make(binding.getRoot(), getString(R.string.snackbar_please_place_stage), Snackbar.LENGTH_SHORT).show();
+            return;
+        }
+
         initProgramming();
     }
 
