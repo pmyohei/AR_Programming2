@@ -94,7 +94,7 @@ public class Common {
     /*
      * ステージクリア保存
      */
-    public static void saveStageClear(Context context, String stageName) {
+    public static void saveStageSuccess(Context context, String stageName) {
 
         // 指定されたステージをクリア状態として保存
         SharedPreferences sharedPref = context.getSharedPreferences(context.getString(R.string.preference_file_key), MODE_PRIVATE);
@@ -120,7 +120,7 @@ public class Common {
      * ステージ未クリアのステージ名を取得
      *   ※未クリアのステージの内、gimmick-xml上一番先頭にあるステージ名を返す
      */
-    public static String getHeadNotClearStageName(Context context, ArrayList<String> stageList) {
+    public static String getHeadNotSuccessStageName(Context context, ArrayList<String> stageList) {
 
         for (String stageName : stageList) {
 

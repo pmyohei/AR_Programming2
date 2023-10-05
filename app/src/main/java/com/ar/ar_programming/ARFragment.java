@@ -395,7 +395,7 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
             // チュートリアル完了
             // クリアしていないステージの内、一番先頭にあるステージ名を取得
             ArrayList<String> stageNameList = GimmickManager.getStageNameList(context, R.xml.gimmick_select);
-            stageName = Common.getHeadNotClearStageName(context, stageNameList);
+            stageName = Common.getHeadNotSuccessStageName(context, stageNameList);
 
         } else {
             // チュートリアル中
@@ -428,7 +428,7 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
             // チュートリアル完了
             // クリアしていないステージの内、一番先頭にあるステージ名を取得
             ArrayList<String> stageNameList = GimmickManager.getStageNameList(context, R.xml.gimmick_select);
-            stageName = Common.getHeadNotClearStageName(context, stageNameList);
+            stageName = Common.getHeadNotSuccessStageName(context, stageNameList);
 
         } else {
             // チュートリアル中
@@ -2293,14 +2293,14 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
     }
 
     /*
-     * クリア状態の保存
+     * ステージのクリア状態保存
      */
-    private void saveClearState() {
+    private void saveStageSuccessState() {
 
         Context context = getContext();
 
         // チュートリアル終了済みの場合、クリアしたステージをクリア状態に保存
-        Common.saveStageClear(context, mGimmick.name);
+        Common.saveStageSuccess(context, mGimmick.name);
     }
 
     /*
@@ -2319,7 +2319,7 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
         //---------------------
         // チュートリアル状況更新
         //---------------------
-        saveClearState();
+        saveStageSuccessState();
 
         //------------------
         // ダイアログ
