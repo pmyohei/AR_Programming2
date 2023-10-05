@@ -1,5 +1,7 @@
 package com.ar.ar_programming.process;
 
+import static com.ar.ar_programming.Gimmick.NO_USABLE_LIMIT_NUM;
+
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.DragEvent;
@@ -11,6 +13,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.ar.ar_programming.Gimmick;
 import com.ar.ar_programming.R;
+import com.ar.ar_programming.UserBlockSelectListAdapter;
 
 
 /*
@@ -44,9 +47,11 @@ public abstract class Block extends ConstraintLayout {
     public Block(Context context) {
         this(context, null);
     }
+
     public Block(Context context, AttributeSet attrs) {
         this(context, attrs, 0, null);
     }
+
     public Block(Context context, AttributeSet attrs, int defStyle, Gimmick.XmlBlockInfo xmlBlockInfo) {
         super(context, attrs, defStyle);
 
@@ -142,10 +147,10 @@ public abstract class Block extends ConstraintLayout {
         //----------------
         // 位置に変化がある場合のみ、更新処理を行う
         Block aboveBlock = getAboveBlock();
-        if( shouldUpdatePosition(aboveBlock) ){
+        if (shouldUpdatePosition(aboveBlock)) {
             // 位置更新
-            int direction = setPositionMlp( aboveBlock );
-            startUpdatePositionAnimation( direction );
+            int direction = setPositionMlp(aboveBlock);
+            startUpdatePositionAnimation(direction);
             // ブロック標高設定
             updateBlockElevation();
         }
@@ -160,8 +165,8 @@ public abstract class Block extends ConstraintLayout {
             }
 
             // 親ネストのリサイズ
-            if( inNest() ){
-                getOwnNestBlock().resizeNestHeight( this );
+            if (inNest()) {
+                getOwnNestBlock().resizeNestHeight(this);
             }
         });
     }
@@ -169,31 +174,31 @@ public abstract class Block extends ConstraintLayout {
     /*
      * 位置更新すべきか判定
      */
-    public boolean shouldUpdatePosition(Block aboveBlock ) {
+    public boolean shouldUpdatePosition(Block aboveBlock) {
 
         // 現在位置と更新位置
         int currentTop = getTop();
         int updateTop = aboveBlock.getTop() + aboveBlock.getHeight();
 
         // 現在位置と更新位置が違えば、更新する
-        return ( currentTop != updateTop );
+        return (currentTop != updateTop);
     }
 
     /*
      * 位置更新アニメーションを開始
      */
-    public void startUpdatePositionAnimation( int trancelationDirection ) {
+    public void startUpdatePositionAnimation(int trancelationDirection) {
 
         //アニメーションのためのY初期値（ブロックの移動方向にあわせる）
         float translationY;
-        if( trancelationDirection == BLOCK_POSITION_UP ){
+        if (trancelationDirection == BLOCK_POSITION_UP) {
             translationY = 4;
-        }else{
+        } else {
             translationY = -10;
         }
 
         // アニメーションを付与
-        setTranslationY( translationY );
+        setTranslationY(translationY);
         animate().translationY(0f)
                 .setDuration(400)
                 .setListener(null);
@@ -205,21 +210,53 @@ public abstract class Block extends ConstraintLayout {
     public void updateBlockElevation() {
 
         float elevation = 0f;
-        if( inNest()  ){
+        if (inNest()) {
             // 本ブロックがネスト内にあれば、親ネストより大きい値を設定
             // （確実にネストブロックよりも上にくるようにする）
             elevation = getOwnNestBlock().getElevation() + 1f;
         }
-        setElevation( elevation );
+        setElevation(elevation);
     }
 
     /*
      * ブロック削除
      */
-    public void removeOnChart() {
+    public void removeOnChart(Gimmick gimmick, UserBlockSelectListAdapter adapter) {
         // 自身をチャートから削除
         ViewGroup chart = (ViewGroup) getParent();
         chart.removeView(this);
+
+        // ブロック使用可能数の変更
+        changeBlockUsableNum( gimmick, adapter );
+    }
+
+    /*
+     * ブロック使用可能数の変更
+     * 　　選択肢ブロックリストのブロック使用可能数を変更する
+     */
+    private void changeBlockUsableNum(Gimmick gimmick, UserBlockSelectListAdapter adapter ) {
+
+        // 使用可能数に上限がなければ、変更なし
+        if (mXmlBlockInfo.usableLimitNum == NO_USABLE_LIMIT_NUM) {
+            return;
+        }
+
+        //---------------------
+        // ブロック使用可能数の更新
+        //---------------------
+        // xmlリスト中、削除ブロックのxmlのindexを取得
+        // （選択肢ブロックリストの左からの位置に相当する）
+        int index = gimmick.getBlockXmlIndex(mXmlBlockInfo);
+        if (index < 0) {
+            // フェールセーフ
+            return;
+        }
+
+        // 使用可能数を増やす
+        mXmlBlockInfo.usableNum++;
+
+        // アダプタへ更新通知
+        adapter.notifyItemChanged(index);
     }
 
     /*

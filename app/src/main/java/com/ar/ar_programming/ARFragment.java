@@ -958,7 +958,7 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
         // マーカー変更判定
         //-------------------
         // 削除ブロックがマーカー or 削除ブロック内にマーカーブロックあり
-        if (isNeedChangeMark(removeBlock)) {
+        if ( isNeedChangeMark(removeBlock) ) {
             // 削除対象の1つ上のブロックにマークを設定する
             Block aboveBlock = removeBlock.getAboveBlock();
             changeMarkerBlock(aboveBlock);
@@ -967,44 +967,17 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
         //-------------------
         // ブロック削除
         //-------------------
-        // 上下ブロック保持情報の更新
+        // 選択肢ブロックリストのアダプタ
+        RecyclerView rv_selectBlock = binding.getRoot().findViewById(R.id.rv_selectBlock);
+        UserBlockSelectListAdapter adapter = (UserBlockSelectListAdapter) rv_selectBlock.getAdapter();
+
+        // 削除ブロックの上下ブロック保持情報の更新
         rewriteAboveBelowBlockOnRemove(removeBlock);
-        // 自身をチャートから削除
-        removeBlock.removeOnChart();
-        // 削除ブロックの上ブロックから更新
+        // 積み上げられたブロックから削除ブロックを削除
+        removeBlock.removeOnChart( mGimmick, adapter );
+        // 削除ブロックの上ブロックから更新を行う
         Block aboveBlock = removeBlock.getAboveBlock();
         aboveBlock.updatePosition();
-
-
-        //-------------------
-        // ブロック使用可能数
-        //-------------------
-        // 使用可能数上限があれば
-        Gimmick.XmlBlockInfo xmlBlockInfo = removeBlock.getXmlBlock();
-        if (xmlBlockInfo.usableLimitNum != NO_USABLE_LIMIT_NUM) {
-
-            // xmlリスト中、削除ブロックのxmlのindexを取得
-            int index = mGimmick.getBlockXmlIndex(xmlBlockInfo);
-            if (index < 0) {
-                // フェールセーフ
-                return;
-            }
-
-            // 使用可能数を増やす
-            xmlBlockInfo.usableNum++;
-
-            //----------------------------
-            // 選択肢ブロックリストの表記を更新
-            //----------------------------
-            // アダプタ
-            ViewGroup root = binding.getRoot();
-            RecyclerView rv_selectBlock = root.findViewById(R.id.rv_selectBlock);
-            UserBlockSelectListAdapter adapter = (UserBlockSelectListAdapter) rv_selectBlock.getAdapter();
-
-            // 更新通知
-            adapter.notifyItemChanged(index);
-        }
-
     }
 
     /*
@@ -2089,9 +2062,6 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
         if (tutorial >= TUTORIAL_FINISH) {
             return;
         }
-
-        Log.i("ステージ選択", "ガイド表示 mGimmick.mTutorial=" + mGimmick.mTutorial);
-        Log.i("ステージ選択", "ガイド表示 mGimmick.name=" + mGimmick.name);
 
         //-------------------
         // ヘルプページリスト

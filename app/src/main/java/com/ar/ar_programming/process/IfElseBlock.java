@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.ar.ar_programming.UserBlockSelectListAdapter;
 import com.ar.ar_programming.character.CharacterNode;
 import com.ar.ar_programming.Gimmick;
 import com.ar.ar_programming.R;
@@ -143,15 +144,15 @@ public class IfElseBlock extends IfBlock {
      * ブロック削除
      */
     @Override
-    public void removeOnChart() {
-        super.removeOnChart();
+    public void removeOnChart(Gimmick gimmick, UserBlockSelectListAdapter adapter) {
+        super.removeOnChart( gimmick, adapter );
 
         //------------------------
         // elseネスト内ブロックを削除
         //------------------------
         Block block = getStartBlockForNest(NEST_SECOND);
         while (block != null) {
-            block.removeOnChart();
+            block.removeOnChart( gimmick, adapter );
             block = block.getBelowBlock();
         }
     }

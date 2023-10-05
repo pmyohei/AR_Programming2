@@ -830,7 +830,7 @@ public class Gimmick {
     }
 
     /*
-     * ギミックで使用可能なブロックリストを設定
+     * xmlブロック情報のindexを取得
      */
     public int getBlockXmlIndex(XmlBlockInfo xmlBlockInfo) {
 
