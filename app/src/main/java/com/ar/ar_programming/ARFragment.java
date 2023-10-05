@@ -8,7 +8,6 @@ import static com.ar.ar_programming.character.CharacterNode.ACTION_FAILURE;
 import static com.ar.ar_programming.character.CharacterNode.ACTION_SUCCESS;
 import static com.ar.ar_programming.character.CharacterNode.ACTION_WAITING;
 import static com.ar.ar_programming.GimmickManager.GIMMICK_MAIN_ANIMAL;
-import static com.ar.ar_programming.SettingActivity.CHARACTER_ANIMAL;
 import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED;
 
 import android.animation.Animator;
@@ -20,7 +19,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
-import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -91,7 +89,6 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
     //---------------------------
     // 画面遷移Key
     public static final String KEY_CURRENT_STAGE = "current_stage";
-    public static final String KEY_TUTORIAL = "tutorial";
 
     // プログラミング終了ステータス
     public static final int PROGRAMMING_NOT_END = 0;
@@ -115,7 +112,6 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
     private final float STAGE_RATIO_L = 10.0f;
     private final float STAGE_RATIO_XL = 50.0f;
     // ノードサイズ
-//    public static final float NODE_SIZE_TMP_RATIO = 0.1f;
     public static final float NODE_SIZE_TMP_RATIO = 1f;
     public static final float NODE_SIZE_S = 0.02f;
     public static final float NODE_SIZE_M = 0.5f;
@@ -188,7 +184,8 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
         // ギミック
         //-------------------
         // ステージギミックを選出
-        setGimmick();
+        String stageName = getNextChallengeStage();
+        setGimmick(stageName);
 
         //-------------------------------
         // 画面遷移ランチャーを生成
@@ -340,7 +337,7 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
                         boolean isChanged = intent.getBooleanExtra(SettingActivity.IS_CHANGED_KEY, false);
                         if (isChanged) {
                             // ゲーム状態を初期化
-                            initGameState();
+                            initPreGameState();
                         }
                     }
                 });
@@ -370,16 +367,8 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
 
                         Log.i("ステージ選択", "intent受け取り=" + selectedStage);
 
-                        // Nodeを全クリア
-                        removeField();
-                        // 積み上げたブロックを全クリア
-                        initProgramming();
-                        // ステージギミックを選出
-                        boolean isUpdate = setGimmick(selectedStage);
-                        if( isUpdate ){
-                            // 3Dモデルレンダリング初期生成
-                            initRenderable();
-                        }
+                        // ギミックをリセット
+                        resetGimmick(selectedStage);
                     }
                 });
     }
@@ -421,16 +410,46 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
     }
 
     /*
+     * 次に挑戦するステージ名の取得
+     * 　・チュートリアル中　：次に挑戦するチュートリアル
+     * 　・チュートリアル終了：未クリアのステージで一番先頭にあるステージ
+     */
+    private String getNextChallengeStage() {
+
+        Context context = getContext();
+
+        //-----------------
+        // ステージ名
+        //-----------------
+        String stageName;
+
+        boolean finishTutorial = Common.isFisishTutorial(context);
+        if (finishTutorial) {
+            // チュートリアル完了
+            // クリアしていないステージの内、一番先頭にあるステージ名を取得
+            ArrayList<String> stageNameList = GimmickManager.getStageNameList(context, R.xml.gimmick_select);
+            stageName = Common.getHeadNotClearStageName(context, stageNameList);
+
+        } else {
+            // チュートリアル中
+            stageName = Common.getNextTutorialName(context);
+        }
+
+        return stageName;
+    }
+
+    /*
      * ギミック設定
      *
      *  　＜戻り値＞
      *     ・保持中のギミックが更新されるなら、true
      */
-    private boolean setGimmick(String stageName ) {
+    private boolean setGimmick(String stageName) {
 
         Context context = getContext();
 
-        if( mGimmick.name.equals( stageName ) ){
+        // 既にギミックを保持しているなら、何もしない
+        if ((mGimmick != null) && (mGimmick.name.equals(stageName))) {
             return false;
         }
 
@@ -438,22 +457,6 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
         // ギミック生成
         //-----------------
         mGimmick = GimmickManager.getGimmick(context, stageName);
-        return true;
-    }
-
-    /*
-     * ギミック読み込み
-     */
-    private boolean readGimmick(String stageName) {
-
-        // 現在のステージと同じなら何もしない
-        if (mGimmick.name.equals(stageName)) {
-            return false;
-        }
-
-        // 指定ステージ名のギミックを取得
-        mGimmick = GimmickManager.getGimmick(getContext(), stageName);
-
         return true;
     }
 
@@ -805,30 +808,6 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
     }
 
     /*
-     * ギミックリスト候補を取得
-     */
-    private TypedArray getGimmickList() {
-
-        // ユーザーの設定しているキャラクターと難易度
-        SharedPreferences sharedPref = getActivity().getSharedPreferences(getString(R.string.preference_file_key), MODE_PRIVATE);
-        int defaultCharacter = getResources().getInteger(R.integer.saved_character_default_key);
-        int defaultDifficulty = getResources().getInteger(R.integer.saved_difficulty_default_key);
-        int character = sharedPref.getInt(getString(R.string.saved_character_key), defaultCharacter);
-        int difficulty = sharedPref.getInt(getString(R.string.saved_difficulty_key), defaultDifficulty);
-
-        String characterStr = (character == CHARACTER_ANIMAL ? "animal" : "vehicle");
-        String difficultyStr = (difficulty == SettingActivity.PLAY_DIFFICULTY_EASY ? "easy" : "difficult");
-
-        String arrayName = "gimmick_list_" + characterStr + "_" + difficultyStr;
-
-        int arrayId = getResources().getIdentifier(arrayName, "array", getActivity().getPackageName());
-
-        Log.i("ギミック", "arrayName=" + arrayName);
-
-        return getResources().obtainTypedArray(arrayId);
-    }
-
-    /*
      * 上下ブロック保持情報の更新（ブロック挿入時）
      */
     private void rewriteAboveBelowBlockOnInsert(Block aboveBlock, Block insertBlock) {
@@ -958,7 +937,7 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
         // マーカー変更判定
         //-------------------
         // 削除ブロックがマーカー or 削除ブロック内にマーカーブロックあり
-        if ( isNeedChangeMark(removeBlock) ) {
+        if (isNeedChangeMark(removeBlock)) {
             // 削除対象の1つ上のブロックにマークを設定する
             Block aboveBlock = removeBlock.getAboveBlock();
             changeMarkerBlock(aboveBlock);
@@ -974,7 +953,7 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
         // 削除ブロックの上下ブロック保持情報の更新
         rewriteAboveBelowBlockOnRemove(removeBlock);
         // 積み上げられたブロックから削除ブロックを削除
-        removeBlock.removeOnChart( mGimmick, adapter );
+        removeBlock.removeOnChart(mGimmick, adapter);
         // 削除ブロックの上ブロックから更新を行う
         Block aboveBlock = removeBlock.getAboveBlock();
         aboveBlock.updatePosition();
@@ -1923,12 +1902,12 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
                 // 配置してよいか判定
                 //----------------------------------
                 // レンダラブル生成済みか
-                if ( !isPreparedRenderable() )  {
+                if (!isPreparedRenderable()) {
                     Snackbar.make(binding.getRoot(), getString(R.string.snackbar_please_wait), Snackbar.LENGTH_SHORT).show();
                     return;
                 }
                 // 既にフィールド配置済みか
-                if ( isPlacedStage() ) {
+                if (isPlacedStage()) {
                     Snackbar.make(binding.getRoot(), getString(R.string.snackbar_field_placed), Snackbar.LENGTH_SHORT).show();
                     return;
                 }
@@ -2055,7 +2034,7 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
     /*
      * チュートリアルガイドの表示
      */
-    private void showTutorialGuide( int showTimming ) {
+    private void showTutorialGuide(int showTimming) {
 
         // チュートリアル1が終了しているなら、処理なし
         int tutorial = mGimmick.mTutorial;
@@ -2073,7 +2052,7 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
                 // チュートリアル１の場合は
                 // ユーザー操作に応じて、ガイド内容を切り分け
                 //---------------------------------------
-                if( showTimming == TUTORIAL_GUIDE_SHOW_TAP ){
+                if (showTimming == TUTORIAL_GUIDE_SHOW_TAP) {
                     pageListID = R.array.tutorial_1_tap;
 
                 } else if (showTimming == TUTORIAL_GUIDE_SHOW_STAGE_DESCRIPTION) {
@@ -2085,31 +2064,31 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
                 break;
 
             case 2:
-                if( showTimming == TUTORIAL_GUIDE_SHOW_PROGRAMMING_AREA ){
+                if (showTimming == TUTORIAL_GUIDE_SHOW_PROGRAMMING_AREA) {
                     pageListID = R.array.tutorial_2_stageDescription;
                 }
                 break;
 
             case 3:
-                if( showTimming == TUTORIAL_GUIDE_SHOW_PROGRAMMING_AREA ){
+                if (showTimming == TUTORIAL_GUIDE_SHOW_PROGRAMMING_AREA) {
                     pageListID = R.array.tutorial_3_stageDescription;
                 }
                 break;
 
             case 4:
-                if( showTimming == TUTORIAL_GUIDE_SHOW_PROGRAMMING_AREA ){
+                if (showTimming == TUTORIAL_GUIDE_SHOW_PROGRAMMING_AREA) {
                     pageListID = R.array.tutorial_4_stageDescription;
                 }
                 break;
 
             case 5:
-                if( showTimming == TUTORIAL_GUIDE_SHOW_PROGRAMMING_AREA ){
+                if (showTimming == TUTORIAL_GUIDE_SHOW_PROGRAMMING_AREA) {
                     pageListID = R.array.tutorial_5_stageDescription;
                 }
                 break;
 
             case 6:
-                if( showTimming == TUTORIAL_GUIDE_SHOW_PROGRAMMING_AREA ){
+                if (showTimming == TUTORIAL_GUIDE_SHOW_PROGRAMMING_AREA) {
                     pageListID = R.array.tutorial_6_stageDescription;
                 }
                 break;
@@ -2119,7 +2098,7 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
         }
 
         // 対象外なら終了
-        if( pageListID == -1 ){
+        if (pageListID == -1) {
             return;
         }
 
@@ -2163,7 +2142,7 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
         //------------------------------------------
         //  ネスト内のブロックにドロップしようとしている
         //------------------------------------------
-        if ( dragBlock.hasBlock(dropBlock) ) {
+        if (dragBlock.hasBlock(dropBlock)) {
             Log.i("isDropable", "hasBlock()");
             return false;
         }
@@ -2200,11 +2179,11 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
     }
 
     /*
-     * ゲームを初期状態に戻す
+     * ゲームをステージ配置前の状態に戻す
      * ・フィールドをクリア
      * ・プログラミング処理ブロックを全て削除
      */
-    public void initGameState() {
+    public void initPreGameState() {
 
         // フィールドをクリア
         removeField();
@@ -2230,9 +2209,9 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
         //------------------
         // Scene内のAnchorNodeを削除することで、全Nodeを削除
         AnchorNode anchorNode = searchAnchorNode();
-        if( anchorNode != null ){
+        if (anchorNode != null) {
             Scene scene = arFragment.getArSceneView().getScene();
-            scene.removeChild( anchorNode );
+            scene.removeChild(anchorNode);
         }
 
         // キャラクタークリア
@@ -2321,7 +2300,7 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
         Context context = getContext();
 
         // チュートリアル終了済みの場合、クリアしたステージをクリア状態に保存
-        Common.saveStageClear( context, mGimmick.name );
+        Common.saveStageClear(context, mGimmick.name);
     }
 
     /*
@@ -2354,8 +2333,7 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
         successDialog.setOnBreakListerner(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // ARアクティビティ終了
-                getActivity().finish();
+                breakPlay();
             }
         });
         // 次のチュートリアル設定
@@ -2404,8 +2382,7 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
         failureDialog.setOnBreakListerner(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // ARアクティビティ終了
-                getActivity().finish();
+                breakPlay();
             }
         });
         // 別ステージ選択リスナー設定
@@ -2432,31 +2409,43 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
      */
     public void stageSelect() {
         // 画面遷移
-        Intent intent = new Intent( getActivity(), StageSelectActivity.class );
-        intent.putExtra( KEY_CURRENT_STAGE, mGimmick.name );
+        Intent intent = new Intent(getActivity(), StageSelectActivity.class);
+        intent.putExtra(KEY_CURRENT_STAGE, mGimmick.name);
 
-        mStageSelectLancher.launch( intent );
+        mStageSelectLancher.launch(intent);
+    }
+
+    /*
+     * ギミックリセット
+     */
+    public void resetGimmick( String stageName ) {
+
+        // ステージ配置前の状態に戻す
+        initPreGameState();
+
+        // ステージギミックを選出
+        boolean isUpdate = setGimmick(stageName);
+        if( isUpdate ){
+            // 3Dモデルレンダリング初期生成
+            initRenderable();
+        }
     }
 
     /*
      * ゴール結果ダイアログ：「次のチュートリアルへ」
      */
     public void onNextTutorialClicked() {
-        // Nodeを全クリア
-        removeField();
-        // 積み上げたブロックを全クリア
-        initProgramming();
-        // ステージギミックを選出
-        setGimmick();
-        // 3Dモデルレンダリング初期生成
-        initRenderable();
+
+        String stageName = getNextChallengeStage();
+        resetGimmick( stageName );
     }
 
     /*
      * ゴール結果ダイアログ：「休憩」
      */
-    public void onBreakClicked(View view) {
-
+    public void breakPlay() {
+        // ARアクティビティ終了
+        getActivity().finish();
     }
 
     /*
@@ -2475,52 +2464,6 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
             if (stageOnNode.getName().contains(nodeName)) {
                 return stageOnNode;
             }
-        }
-
-        return null;
-    }
-
-    /*
-     * 指定Node検索（検索対象外リストに該当するNodeは検索しない）
-     */
-    public static Node searchNodeOnStage(AnchorNode anchorNode, String nodeName, List<Node> notSearchList ) {
-
-        Log.i("Node検索", "searchNodeOnStage() 検索対象nodeName=" + nodeName);
-
-        //----------------------
-        // 対象Node検索
-        //----------------------
-        // AnchorNode配下のNodeを検索
-        List<Node> stageOnNodes = anchorNode.getChildren();
-        for (Node stageOnNode : stageOnNodes) {
-
-            //---------------
-            // Node名検索
-            //---------------
-            Log.i("Node検索", "searchNodeOnStage() stageOnNode.getName()=" + stageOnNode.getName());
-            if ( !stageOnNode.getName().contains(nodeName) ) {
-                // 名称が異なれば、違うNode
-                continue;
-            }
-
-            //---------------
-            // 検索対象外判定
-            //---------------
-            // 名称は検索対象Nodeでも、検索対象外リストに該当すれば、対象外
-            boolean isNotSearch = false;
-            for( Node notSearch: notSearchList ){
-                if( stageOnNode.equals( notSearch ) ) {
-                    isNotSearch = true;
-                    break;
-                }
-            }
-            if( isNotSearch ){
-                continue;
-            }
-
-            // 該当Node
-            Log.i("Node検索", "searchNodeOnStage() 発見=" + stageOnNode.getName());
-            return stageOnNode;
         }
 
         return null;
@@ -2770,10 +2713,8 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
             return;
         }
 
-        // ステージを削除
-        removeField();
-        // 積み上げていたブロックを削除
-        initProgramming();
+        // ステージの全クリア
+        initPreGameState();
     }
 
     /*

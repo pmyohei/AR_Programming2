@@ -57,13 +57,6 @@ public abstract class ProcessBlock extends Block {
     }
 
     /*
-     * 処理ブロック内容取得
-     */
-    public String getProcessAction() {
-        return mXmlBlockInfo.action;
-    }
-
-    /*
      * レイアウト最上位ビューIDを取得
      */
     @Override
