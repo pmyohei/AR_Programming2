@@ -67,20 +67,55 @@ public class SettingActivity extends AppCompatActivity {
         setToolbar();
 
         //----------------------
-        // 設定情報をviewに反映
+        // 設定UI
         //----------------------
-        // ユーザー保存情報を取得
-        boolean isFinishTutorial = getUserSavedData();
-        // ユーザ設定情報をレイアウトに反映
-        setUserSettingData(isFinishTutorial);
+        setSettingUI();
+    }
+
+    /*
+     *
+     */
+    private void setSettingUI() {
+
+        boolean isFinishTutorial = Common.isFisishTutorial( this );
+
+        //----------------
+        // チュートリアル中
+        //----------------
+        if( !isFinishTutorial ){
+            // 設定はまだできない旨のダイアログを表示
+            showCannotSetDialog();
+            // 設定UI無効化
+            disableSettingUI();
+            
+            return;
+        }
+
+        //----------------
+        // チュートリアル終了
+        //----------------
+        //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        // !近々リリースするため、無効化しておく!
+        // ユーザーの設定情報を取得
+//        getUserSavedData();
+        // ユーザーの設定情報をUIに判定
+//        reflectUserData();
+
+        disableSettingUI();
+        Snackbar.make(findViewById(R.id.cl_settingRoot), "設定機能は近々リリース予定です！", Snackbar.LENGTH_SHORT).show();
+        //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     }
 
     /*
      * 設定不可のダイアログを表示
      */
-    private void showCannotSetDialog(int tutorial) {
+    private void showCannotSetDialog() {
+
+        // 挑戦中チュートリアル番号
+        int tutorial = Common.getNextTutorialNumber(this);
+
         DialogFragment newFragment = new CannotSetDialog( tutorial );
-        newFragment.show( getSupportFragmentManager(), "cannotSet" );
+        newFragment.show( getSupportFragmentManager(), "cannotSetting" );
     }
 
     /*
@@ -107,24 +142,8 @@ public class SettingActivity extends AppCompatActivity {
      */
     private boolean getUserSavedData() {
 
-        Resources resources = getResources();
-
         // 本アプリ共通情報
         SharedPreferences sharedPref = getSharedPreferences(getString(R.string.preference_file_key), MODE_PRIVATE);
-
-        //--------------------
-        // チュートリアル終了確認
-        //--------------------
-        // 現在のチュートリアル進行状況を取得
-        int tutorial = sharedPref.getInt(getString(R.string.saved_tutorial_key), TUTORIAL_DEFAULT);
-
-        // チュートリアルが未完了の場合
-        if (tutorial < TUTORIAL_FINISH) {
-            // 設定不可のダイアログを表示
-            showCannotSetDialog( tutorial );
-            // 設定情報取得なし
-            return false;
-        }
 
         //--------------------
         // ユーザー設定情報の取得
@@ -157,14 +176,14 @@ public class SettingActivity extends AppCompatActivity {
             reflectUserData();
         } else {
             // 未完了なら、設定UIを無効化
-            disableSetUI();
+            disableSettingUI();
         }
     }
 
     /*
      * ユーザ設定情報のUIを無効化
      */
-    private void disableSetUI() {
+    private void disableSettingUI() {
 
         // UI無効化
         RadioButton radio_table = findViewById(R.id.radio_table);

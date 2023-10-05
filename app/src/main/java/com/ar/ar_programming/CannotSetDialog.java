@@ -26,10 +26,10 @@ public class CannotSetDialog extends DialogFragment {
     // ユーザーのチュートリアル状況
     // 例）この値が１の時、そのユーザーが次にやるチュートリアルが１ということ
     //    チュートリアル１が完了しているというわけではないため注意
-    private int mTutorial;
+    private int mChallengeTutorial;
 
     public CannotSetDialog(int tutorial) {
-        mTutorial = tutorial;
+        mChallengeTutorial = tutorial;
     }
 
     @Override
@@ -87,14 +87,14 @@ public class CannotSetDialog extends DialogFragment {
         // 現在のチュートリアル進行状況を反映
         //-------------------------------
         // テキスト
-        int finishNum = mTutorial - 1;
+        int finishNum = mChallengeTutorial - 1;
         tv_statusNow.setText( Integer.toString(finishNum) );
 
         // イメージ
         int seqTutorial = TUTORIAL_DEFAULT;
         for( ImageView star: starList ){
             // 完了しているチュートリアルのイメージを変更
-            if( seqTutorial < mTutorial  ){
+            if( seqTutorial < mChallengeTutorial){
                 star.setImageDrawable(starImage);
             }
             seqTutorial++;
