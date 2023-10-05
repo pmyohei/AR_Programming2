@@ -1955,7 +1955,6 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
                     Snackbar.make(binding.getRoot(), getString(R.string.snackbar_please_wait), Snackbar.LENGTH_SHORT).show();
                     return;
                 }
-
                 // 既にフィールド配置済みか
                 if ( isPlacedNodes() ) {
                     Snackbar.make(binding.getRoot(), getString(R.string.snackbar_field_placed), Snackbar.LENGTH_SHORT).show();
@@ -2810,6 +2809,14 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
      */
     @Override
     public void onPlayControlClick( FloatingActionButton fab ) {
+
+        //---------------------
+        // ステージ未配置
+        //---------------------
+        if( mPlayState == PLAY_STATE_INIT ){
+            Snackbar.make(binding.getRoot(), getString(R.string.snackbar_please_programming), Snackbar.LENGTH_SHORT).show();
+            return;
+        }
 
         //---------------------
         // プレイ制御

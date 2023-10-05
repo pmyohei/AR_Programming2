@@ -904,6 +904,11 @@ public abstract class CharacterNode extends TransformableNode {
         mCollisionNodeName = GimmickManager.NODE_NAME_NONE;
 
         //----------------------------------
+        // アクション成否をリセット
+        //----------------------------------
+        mSuccessAction = true;
+
+        //----------------------------------
         // リストをリセット
         //----------------------------------
         mNotSearchNodeList.clear();

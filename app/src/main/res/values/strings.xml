@@ -182,7 +182,7 @@
     </string>
 
     <!-- snackbar -->
-    <string name="snackbar_please_programming">プログラミングを作ったらもう一度押してね</string>
+    <string name="snackbar_please_programming">プログラムを作ったらもう一度押してね</string>
     <string name="snackbar_please_finish_game">ゲーム終了後に押してね</string>
     <string name="snackbar_please_wait">もう少し待ってね</string>
     <string name="snackbar_please_return_home">エラー。。一度Homeに戻ってね</string>
@@ -195,9 +195,9 @@
     <string name="tutorial_1">チュートリアル１\n～プログラミングをしてみよう～</string>
     <string name="tutorial_2">チュートリアル２\n～制限ブロックを学ぼう～</string>
     <string name="tutorial_3">チュートリアル３\n～ループブロックを学ぼう～</string>
-    <string name="tutorial_4">チュートリアル４\n～条件ブロックを学ぼう①～</string>
-    <string name="tutorial_5">チュートリアル５\n～条件ブロックを学ぼう②～</string>
-    <string name="tutorial_6">チュートリアル６\n～条件ブロックを学ぼう③～</string>
+    <string name="tutorial_4">チュートリアル４\n～条件ブロックを学ぼう(if)～</string>
+    <string name="tutorial_5">チュートリアル５\n～条件ブロックを学ぼう(if-else)～</string>
+    <string name="tutorial_6">チュートリアル６\n～条件ブロックを学ぼう(if-else if-else)～</string>
 
     <string name="chase_with_police_car">パトカーで追跡！</string>
     <string name="avoid_poison_mushroom">毒キノコは捨てよう</string>
@@ -795,8 +795,9 @@
     <string name="guide_explanation_defeat_crownghost2">
         <![CDATA[
              周りにいるお化けを退治するプログラムを作ってみよう！\n
-            「普通のお化け」はそのまま退治できるよ。\n
-            でも、「ピエロの帽子をかぶったお化け」は強いから、\n
+             お化けは「普通のお化け」と「ピエロお化け」の2種類いるよ。\n
+            「普通のお化け」はそのまま退治できるけど\n
+            「ピエロの帽子をかぶったお化け」は強いから、\n
             「普通のお化け」を退治して慣れていないと倒すことができないんだ。\n
             「普通のお化け」を退治してから「ピエロお化け」を退治するようにプログラミングしてね！\n
             （どこに「ピエロお化け」がいるかはゲームを始めるまでわからないよ）\n\n

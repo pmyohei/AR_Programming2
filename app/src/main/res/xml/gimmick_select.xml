@@ -86,7 +86,7 @@
 		objectNum="2"
 		objectName="present"
 		objectPosition="-6.76 : 5.2 : 0.6, -1.5 : 5.2 : -9.8"
-		block="exe_forward-100_1, exe_rotateright-2_3, exe_pickup-present, loop_facing-present, loop_facing-rabit"
+		block="exe_forward-100_3, exe_rotateright-2_3, exe_pickup-present, loop_facing-present, loop_facing-rabit"
 		/>
 
 	<!-- お菓子を拾ってお菓子の家へ -->
@@ -233,7 +233,7 @@
 		objectName="enemy:ghostClown, enemy:ghost"
 		objectAngle="45, 90, 135, 160, 200, 260, 300"
 		objectPosition="-6.91 : 5.68 : -9.89, -15 : 3.36 : -5.95, -11.2 : 1.23 : -0.019, -3.2 : 3.36 : 2.07, 7.01 : 2.09 : 1.63, 10.7 : 3.36 : -3.78, 13.8 : 4.85 : -13"
-		block="exe_rotateright-1_1, exe_farattack-enemy, exe_changetarget-facing:enemy, if-else_facing-ghostClown, if-else_defeat-ghost, loop_facing-enemy, loop_defeat-ghost"
+		block="exe_rotateright-1_1, exe_farattack-enemy, exe_changetarget-facing:enemy, if-else_facing-ghostClown, if-else_defeat-enemy:ghost, loop_facing-enemy, loop_defeat-ghost"
 		/>
 
 
