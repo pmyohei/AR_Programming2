@@ -15,6 +15,11 @@
     <color name="bg_how_ar">#ffffff</color>
     <color name="bg_how_block_operation">#D7F4D1</color>
 
+    <!---->
+    <!-- 設定画面 -->
+    <!---->
+    <color name="toolbar_return">#808080</color>
+    <color name="toolbar_text">#808080</color>
 
     <!---->
     <!-- AR画面：共通 -->
@@ -22,6 +27,13 @@
     <color name="bg_toolar">#f8a978</color>
     <color name="bg_programing_area_top">#fcf9ea</color>
     <color name="little_transparent">#F2FFFFFF</color>
+
+    <!---->
+    <!-- リトライ確認ダイアログ -->
+    <!---->
+    <color name="tx_contents">#808080</color>
+    <color name="tx_ui">#8AC8CF</color>
+    <color name="bg_retry_dialog">#fcf9ea</color>
 
     <!---->
     <!-- ゴール確認UI／ダイアログ -->

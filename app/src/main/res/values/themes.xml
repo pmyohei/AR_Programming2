@@ -18,28 +18,28 @@
     <!--  ツールバー スタイル  -->
     <style name="ToolbarTheme" parent="@style/ThemeOverlay.AppCompat.ActionBar">
         <!--    戻るボタン（←）の色変更    -->
-        <item name="colorControlNormal">@color/purple_500</item>
+        <item name="colorControlNormal">@color/toolbar_return</item>
         <!--    titleの色変更    -->
-        <item name="android:textColorPrimary">@color/teal_200</item>
-        <item name="android:textColorSecondary">@color/teal_200</item>
+        <item name="android:textColorPrimary">@color/toolbar_text</item>
+        <item name="android:textColorSecondary">@color/toolbar_text</item>
     </style>
 
     <!-- AlertDialog スタイル -->
     <style name="AlertDialogStyle" parent="Theme.AppCompat.Light.Dialog.Alert">
-        <!--    テキスト色    -->
-        <item name="android:textColorPrimary">@color/purple_500</item>
-        <!--    ボタン色    -->
-        <item name="colorAccent">@color/teal_200</item>
-        <!--    背景色    -->
-        <item name="android:background">@color/white</item>
+        <!-- テキスト色 -->
+        <item name="android:textColorPrimary">@color/tx_contents</item>
+        <!-- ボタン色 -->
+        <item name="colorAccent">@color/tx_ui</item>
+        <!-- 背景色 -->
+        <item name="android:background">@color/bg_retry_dialog</item>
+        <!-- font -->
+        <item name="android:fontFamily">@font/yomogi_regular</item>
     </style>
-
 
     <style name="Theme.AR_Programming.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
-
 
     <!-- NumberPicker スタイル -->
     <style name="NumberPickerStyle" parent="Theme.AppCompat.Light.NoActionBar" >
