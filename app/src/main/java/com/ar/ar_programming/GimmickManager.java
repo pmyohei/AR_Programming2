@@ -141,9 +141,6 @@ public class GimmickManager {
     // 文字列リソース構築のプレフィックス
     // 例）「block_exe_forward」の「block」
     private static final String PREFIX_STRING_RESOURCE = "block";
-    // Node名等置換前ワード
-    // 例）「xxxを食べる」の「xxx」
-    public static final String PRE_REPLACE_WORD = "xxx";
 
     /*
      * コンストラクタ
@@ -364,17 +361,6 @@ public class GimmickManager {
         Resources resources = context.getResources();
         String packageName = context.getPackageName();
 
-        Log.i("ギミック改修", "resourceStr=" + resourceStr);
-        int statementId = resources.getIdentifier(resourceStr, "string", packageName);
-        String statement = context.getString(statementId);
-
-        //-------------------------------------
-        // ブロック文内のNode名設定
-        //-------------------------------------
-        // 置換前のワードがなければ、置換なし
-        if (!statement.contains(PRE_REPLACE_WORD)) {
-            return statement;
-        }
 
         // 対象Node名を取得
         Log.i("ギミック改修", "type=" + type);
@@ -382,11 +368,14 @@ public class GimmickManager {
         Log.i("ギミック改修", "targetNode=" + targetNode);
         String SpecificNodeName = getSpecificNodeName(targetNode);
         int targetNodeId = resources.getIdentifier(SpecificNodeName, "string", packageName);
-        String targetNodeName = context.getString(targetNodeId);
+        String targetNodeName = "";
+        if( targetNodeId != 0x00 ){
+            targetNodeName = context.getString(targetNodeId);
+        }
 
-        // ブロック文に対象Node名を埋め込み
-        // （「xxx」を「Node名」に置換）
-        return statement.replace(PRE_REPLACE_WORD, targetNodeName);
+        Log.i("ギミック改修", "resourceStr=" + resourceStr);
+        int statementId = resources.getIdentifier(resourceStr, "string", packageName);
+        return context.getString(statementId, targetNodeName);
     }
 
     /*

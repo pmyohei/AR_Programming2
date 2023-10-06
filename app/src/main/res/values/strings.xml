@@ -110,22 +110,22 @@
     <string name="block_exe_back">後ろに戻る</string>
     <string name="block_exe_rotateright">右に回転</string>
     <string name="block_exe_rotateleft">左に回転</string>
-    <string name="block_exe_eat">xxxを食べる</string>
-    <string name="block_exe_throw">xxxを捨てる</string>
-    <string name="block_exe_attack">目の前のxxxをやっつける</string>
-    <string name="block_exe_farattack">離れた所にいるxxxをやっつける</string>
-    <string name="block_exe_pickup">xxxを拾う</string>
+    <string name="block_exe_eat">%sを食べる</string>
+    <string name="block_exe_throw">%sを捨てる</string>
+    <string name="block_exe_attack">目の前の%sをやっつける</string>
+    <string name="block_exe_farattack">離れた所にいる%sをやっつける</string>
+    <string name="block_exe_pickup">%sを拾う</string>
     <string name="block_exe_changetarget">ターゲットを変更</string>
 
-    <string name="block_loop_arrival">xxxに着くまでループ</string>
-    <string name="block_loop_facing">xxxの方を向くまでループ</string>
-    <string name="block_loop_collect">xxxを全て集めるまでループ</string>
-    <string name="block_loop_defeat">xxxを全て倒すまでループ</string>
-    <string name="block_loop_eat">xxxを全て食べるまでループ</string>
+    <string name="block_loop_arrival">%sに着くまでループ</string>
+    <string name="block_loop_facing">%sの方を向くまでループ</string>
+    <string name="block_loop_collect">%sを全て集めるまでループ</string>
+    <string name="block_loop_defeat">%sを全て倒すまでループ</string>
+    <string name="block_loop_eat">%sを全て食べるまでループ</string>
 
-    <string name="block_if_front">もし 目の前にxxxがあれば</string>
-    <string name="block_if_facing">もし xxxの方を向いていれば</string>
-    <string name="block_if_defeat">もし xxxを倒していれば</string>
+    <string name="block_if_front">もし 目の前に%sがあれば</string>
+    <string name="block_if_facing">もし %sの方を向いていれば</string>
+    <string name="block_if_defeat">もし %sを倒していれば</string>
     <string name="block_if_nothing">もし 目の前に何もなければ</string>
 
     <!--  処理ブロック 処理量の単位  -->
@@ -328,7 +328,7 @@
     <!-- if elseブロック -->
     <string name="how_to_about_if_else_block_title">if elseブロックとは？</string>
     <string name="how_to_about_if_else_block_explanation">
-            条件分岐ブロックともいうよ。\nブロックに書かれたことが成立しているなら、\n「if側ブロック（上にあるブロック）」を実行するブロックだよ。\nもし、成立していないなら、\n「else側ブロック（下にあるブロック）」を実行するブロックだよ。\n状況によって実行したいブロックを変えたいときに使ってね。\n※「else」はそれ以外って意味だよ。\nある条件が成立していないときにしたいことを決めれるんだ。
+            条件分岐ブロックともいうよ。\nブロックに書かれたことが成立しているなら、\n「if側ブロック（上にあるブロック）」を\n実行するブロックだよ。\nもし、成立していないなら、\n「else側ブロック（下にあるブロック）」を\n実行するブロックだよ。\n状況によって実行したいブロックを\n変えたいときに使ってね。\n※「else」はそれ以外って意味だよ。\nある条件が成立していないときに\nしたいことを決めれるんだ。
     </string>
     <string name="how_to_about_if_else_block_example_1">ケース①：ifブロックの条件成立</string>
     <string name="how_to_about_if_else_block_example_2">ケース②：ifブロックの条件不成立</string>
@@ -414,7 +414,7 @@
     <!-- ステージ説明 -->
     <!-- ================================================================= -->
     <!-- チュートリアル１、２ -->
-    <string name="guide_major_tutorial_1_animal">チュートリアル xxx/6</string>
+    <string name="guide_major_tutorial_1_animal">チュートリアル %d/6</string>
     <string name="guide_sub_tutorial_1_animal">～プログラミングをしてみよう～</string>
     <string name="guide_goal_tutorial_1_animal">切り株をよけて、リスのそばまで行こう</string>
     <string name="guide_explanation_tutorial_1_animal">
@@ -422,7 +422,7 @@
     </string>
 
     <!-- チュートリアル３ -->
-    <string name="guide_major_tutorial_3">チュートリアル xxx/6</string>
+    <string name="guide_major_tutorial_3">チュートリアル %d/6</string>
     <string name="guide_sub_tutorial_3">～ループ処理をしてみよう～</string>
     <string name="guide_goal_tutorial_3">橋を渡って看板まで運転</string>
     <string name="guide_explanation_tutorial_3">
@@ -430,7 +430,7 @@
     </string>
 
     <!-- チュートリアル４ -->
-    <string name="guide_major_tutorial_4">チュートリアル xxx/6</string>
+    <string name="guide_major_tutorial_4">チュートリアル %d/6</string>
     <string name="guide_sub_tutorial_4">～条件ブロックを使ってみよう～</string>
     <string name="guide_goal_tutorial_4">ニンジンを食べて家に帰る</string>
     <string name="guide_explanation_tutorial_4">
@@ -438,7 +438,7 @@
     </string>
 
     <!-- チュートリアル５、６ -->
-    <string name="guide_major_tutorial_5">チュートリアル xxx/6</string>
+    <string name="guide_major_tutorial_5">チュートリアル %d/6</string>
     <string name="guide_sub_tutorial_5">～条件ブロックを組み合わせてみよう～</string>
     <string name="guide_goal_tutorial_5">ニンジンは食べて、毒キノコは捨てよう。家につけばクリア</string>
     <string name="guide_explanation_tutorial_5">

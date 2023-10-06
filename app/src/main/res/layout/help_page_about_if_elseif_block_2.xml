@@ -78,6 +78,8 @@
                 android:id="@+id/iv_case2Image2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:scaleType="centerInside"
                 android:layout_marginTop="24dp"
                 android:src="@drawable/how_to_if_elseif_1_1"
                 app:layout_constraintEnd_toEndOf="parent"
