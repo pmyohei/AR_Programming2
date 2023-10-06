@@ -165,10 +165,10 @@
     <!-- menu -->
     <string name="ar_menu_how_to_play">遊び方</string>
     <string name="ar_menu_setting">設定</string>
-    <string name="ar_menu_clear_field">フィールドをクリア</string>
+    <string name="ar_menu_clear_field">ARステージをクリア</string>
     <string name="ar_menu_init_programming">初めからプログラミング</string>
     <string name="ar_menu_goal_guide">ステージの説明をみる</string>
-    <string name="ar_menu_select_stage">別のステージで遊ぶ</string>
+    <string name="ar_menu_select_stage">遊びたいステージを選ぶ</string>
 
     <!-- プログラミング画面 -->
     <string name="programming_top">Let\'s Programming!</string>
@@ -198,7 +198,7 @@
     <string name="tutorial_3">チュートリアル３\n～ループブロックを学ぼう～</string>
     <string name="tutorial_4">チュートリアル４\n～条件ブロックを学ぼう(if)～</string>
     <string name="tutorial_5">チュートリアル５\n～条件ブロックを学ぼう(if-else)～</string>
-    <string name="tutorial_6">チュートリアル６\n～条件ブロックを学ぼう(if-else if-else)～</string>
+    <string name="tutorial_6">チュートリアル６\n～条件ブロックを学ぼう(if-elseif-else)～</string>
 
     <string name="chase_with_police_car">パトカーで追跡！</string>
     <string name="avoid_poison_mushroom">毒キノコは捨てよう</string>
@@ -266,7 +266,7 @@
     <string name="ar_dialog_success">ステージクリア！</string>
     <string name="ar_dialog_failure">失敗\.\.\.</string>
     <string name="ar_dialog_next_tutorial">次のチュートリアルへ</string>
-    <string name="ar_dialog_play_another_stage">別のステージで遊ぶ！</string>
+    <string name="ar_dialog_play_another_stage">遊びたいステージを選択！</string>
     <string name="ar_dialog_try">もう一度！</string>
     <string name="ar_dialog_break">休憩（ホームへ）</string>
 
@@ -646,7 +646,7 @@
         <![CDATA[
             ニンジンを食べて家に帰るプログラムを作ってみよう！\n
             ただし、途中で毒キノコがあるから、毒キノコは食べずに捨てちゃおう！\n
-            複数の条件ブロックをうまく組み合わせるのがポイントだよ！
+            条件ブロックをどう使うかがポイントだよ！
         ]]>
     </string>
 

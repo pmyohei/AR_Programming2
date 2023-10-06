@@ -185,6 +185,7 @@ public class StageSelectAdapter extends RecyclerView.Adapter<StageSelectAdapter.
         // 選択中位置を取得
         //----------------
         mSelectPosition = initSelectedStagePosition();
+        mStageList.get(mSelectPosition).mIsSelect = true;
 
         //-------------------------
         // 挑戦中チュートリアル番号を取得

@@ -43,6 +43,7 @@
     <!--  Loopブロックとは？  -->
     <array name="about_loop_block">
         <item>@layout/help_page_about_loop_block_1</item>
+        <item>@layout/help_page_about_loop_block_2</item>
     </array>
 
     <!--  ifブロックとは？  -->
@@ -99,6 +100,7 @@
     <array name="tutorial_3_stageDescription">
         <item>@layout/third_start_tutorial_1</item>
         <item>@layout/help_page_about_loop_block_1</item>
+        <item>@layout/help_page_about_loop_block_2</item>
     </array>
 
     <!--  チュートリアル４  -->
