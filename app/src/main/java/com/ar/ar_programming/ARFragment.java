@@ -72,7 +72,6 @@ import com.google.ar.sceneform.rendering.Renderable;
 import com.google.ar.sceneform.rendering.RenderableInstance;
 import com.google.ar.sceneform.rendering.ViewRenderable;
 import com.google.ar.sceneform.ux.BaseArFragment;
-import com.google.ar.sceneform.ux.TransformableNode;
 import com.google.ar.sceneform.ux.TransformationSystem;
 
 import java.util.ArrayList;
@@ -1241,8 +1240,6 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
      */
     private void createNodeCharacter(AnchorNode anchorNode) {
 
-        Scene scene = arFragment.getArSceneView().getScene();
-
         // キャラクターサイズ
         // 「* 0.1f」は暫定処理。3Dモデルの大きさに合わせる
         float scale = getNodeScale() * NODE_SIZE_TMP_RATIO;
@@ -1301,7 +1298,6 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
         characterNode.setLocalPosition(position);
         characterNode.setLocalRotation(facingDirection);
         characterNode.setRenderable(mCharacterRenderable);
-        characterNode.select();
 
         // アニメーション初期化処理：必須
         characterNode.initAnimation();
@@ -1331,8 +1327,6 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
      * ステージ上のオブジェクト生成
      */
     private void createNodeObject(AnchorNode anchorNode) {
-
-        TransformationSystem transformationSystem = arFragment.getTransformationSystem();
 
         // Nodeスケール
         final float scale = getNodeScale();
@@ -1377,16 +1371,13 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
                 //-------------
                 // Node生成
                 //-------------
-                TransformableNode node = new TransformableNode(transformationSystem);
+                Node node = new Node();
                 node.setName(objectName);
                 Log.i("ギミック", "setName()=" + objectName);
-                node.getScaleController().setMinScale(scale);
-                node.getScaleController().setMaxScale(scale * 2);
                 node.setLocalScale(scaleVector);
                 node.setParent(anchorNode);
                 node.setLocalPosition(pos);
                 node.setRenderable(renderable);
-                node.select();
 
                 // 角度指定あれば設定
                 if (mGimmick.objectAngleList.size() > 0) {
@@ -1407,58 +1398,9 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
     }
 
     /*
-     * ステージ上の敵を生成
-     */
-    private void createNodeEnemy(AnchorNode anchorNode) {
-
-        TransformationSystem transformationSystem = arFragment.getTransformationSystem();
-
-        // Nodeスケール
-        final float scale = getNodeScale();
-        Vector3 scaleVector = new Vector3(scale, scale, scale);
-
-        // ステージの広さ
-        float stageScale = getStageScale();
-
-        //-----------------------------
-        // Node生成
-        //-----------------------------
-        int kindIndex = 0;
-        for (ModelRenderable renderable : mObjectRenderable) {
-
-            // オブジェクトの種類をNode名として設定する
-            String objectName = mGimmick.enemyKindList.get(kindIndex);
-
-            // 位置
-            // （存在している分は位置として設定。位置がなければ先頭データを設定）
-            int posIndex = 0;
-            if (kindIndex < mGimmick.enemyPositionVecList.size()) {
-                posIndex = kindIndex;
-            }
-            Vector3 enemyPosition = mGimmick.enemyPositionVecList.get(posIndex);
-            Vector3 position = new Vector3(enemyPosition.x * scale, enemyPosition.y * scale, enemyPosition.z * scale);
-
-            // Node生成
-            TransformableNode node = new TransformableNode(transformationSystem);
-            node.setName(objectName);
-            node.getScaleController().setMinScale(scale);
-            node.getScaleController().setMaxScale(scale * 2);
-            node.setLocalScale(scaleVector);
-            node.setParent(anchorNode);
-            node.setLocalPosition(position);
-            node.setRenderable(renderable);
-            node.select();
-
-            kindIndex++;
-        }
-    }
-
-    /*
      * 目標説明UIの生成
      */
     private void createNodeGoalGuideUI(AnchorNode anchorNode) {
-
-        TransformationSystem transformationSystem = arFragment.getTransformationSystem();
 
         // 配置位置
         final float GUIDE_POS_Y = 0.05f;    // 高さ
@@ -1466,15 +1408,11 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
         Vector3 pos = new Vector3(0f, GUIDE_POS_Y, GUIDE_POS_Z);
 
         // Node生成
-        TransformableNode node = new TransformableNode(transformationSystem);
+        Node node = new Node();
         node.setName(GimmickManager.NODE_NAME_GOAL_GUIDE_UI);
-//        node.getScaleController().setMinScale(1);
-//        node.getScaleController().setMaxScale(1);
-//        node.setLocalScale(scaleVector);
         node.setParent(anchorNode);
         node.setLocalPosition(pos);
         node.setRenderable(mGuideViewRenderable);
-        node.select();
 
         //------------------------
         // タッチ時のゴール目標表示
@@ -1491,19 +1429,9 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
     }
 
     /*
-     * 目標説明UIの生成
-     */
-    private void createNodeProcess(AnchorNode anchorNode) {
-
-
-    }
-
-    /*
      * ステージNode生成
      */
     private void createNodeStage(AnchorNode anchorNode) {
-
-        TransformationSystem transformationSystem = arFragment.getTransformationSystem();
 
         // Nodeスケール
         final float scale = getNodeScale();
@@ -1516,15 +1444,12 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
         */
 
         // Node生成
-        TransformableNode node = new TransformableNode(transformationSystem);
+        Node node = new Node();
         node.setName(GimmickManager.NODE_NAME_STAGE);
-        node.getScaleController().setMinScale(scale);
-        node.getScaleController().setMaxScale(scale * 2);
         node.setLocalScale(scaleVector);
         node.setParent(anchorNode);
         node.setLocalPosition(new Vector3(0f, 0f, 0f));
         node.setRenderable(mStageRenderable);
-        node.select();
     }
 
     /*
@@ -1543,8 +1468,6 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
         //----------------
         // Node生成
         //----------------
-        TransformationSystem transformationSystem = arFragment.getTransformationSystem();
-
         // Nodeスケール
         final float scale = getNodeScale();
         Vector3 scaleVector = new Vector3(scale, scale, scale);
@@ -1562,16 +1485,13 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
         Vector3 scalePos = new Vector3(mGimmick.goalPositionVec.x * scale, mGimmick.goalPositionVec.y * scale, mGimmick.goalPositionVec.z * scale);
 
         // Node生成
-        TransformableNode node = new TransformableNode(transformationSystem);
+        Node node = new Node();
         node.setName(mGimmick.goalName);
-        node.getScaleController().setMinScale(scale);
-        node.getScaleController().setMaxScale(scale * 2);
         node.setLocalScale(scaleVector);
         node.setParent(anchorNode);
         node.setLocalPosition(scalePos);
         node.setLocalRotation(facingDirection);
         node.setRenderable(mGoalRenderable);
-        node.select();
     }
 
     /*
@@ -1630,19 +1550,14 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
             //-----------
             // Node生成
             //-----------
-            TransformationSystem transformationSystem = arFragment.getTransformationSystem();
-
-            TransformableNode newNode = new TransformableNode(transformationSystem);
+            Node newNode = new Node();
             Log.i("Node検索", "replaceNodeOnStage() newNodeName=" + newNodeName);
             newNode.setName(newNodeName);
-            newNode.getScaleController().setMinScale(scale);
-            newNode.getScaleController().setMaxScale(scale * 2);
             newNode.setLocalScale(scaleVector);
             newNode.setParent(parent);
             newNode.setLocalPosition(position);
             newNode.setLocalRotation(angle);
             newNode.setRenderable(newRenderable);
-            newNode.select();
 
             replaceIndex++;
         }
@@ -1653,8 +1568,6 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
      */
     private void createNodeSuccess(AnchorNode anchorNode) {
 
-        TransformationSystem transformationSystem = arFragment.getTransformationSystem();
-
         // Nodeスケール
         final float scale = getNodeScale();
         Vector3 scaleVector = new Vector3(scale, scale, scale);
@@ -1662,14 +1575,11 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
         Vector3 pos = new Vector3(0f, 0f, 0f);
 
         // Node生成
-        TransformableNode node = new TransformableNode(transformationSystem);
-        node.getScaleController().setMinScale(scale);
-        node.getScaleController().setMaxScale(scale * 2);
+        Node node = new Node();
         node.setLocalScale(scaleVector);
         node.setParent(anchorNode);
         node.setLocalPosition(pos);
         node.setRenderable(mSuccessRenderable);
-        node.select();
 
         //----------------------------
         // ３Dモデルのアニメーションを開始
@@ -1687,21 +1597,17 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
             @Override
             public void onAnimationStart(Animator animator) {
             }
-
             @Override
             public void onAnimationCancel(Animator animator) {
             }
-
             @Override
             public void onAnimationRepeat(Animator animator) {
             }
-
             @Override
             public void onAnimationEnd(Animator animator) {
             }
         });
     }
-
 
     /*
      * ユーザー指定のNodeサイズの取得
@@ -1939,8 +1845,6 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
                 createNodeStage(anchorNode);
                 // 目標説明view
                 createNodeGoalGuideUI(anchorNode);
-                //
-                createNodeProcess(anchorNode);
 
                 //----------------------------------
                 // 処理ブロック
