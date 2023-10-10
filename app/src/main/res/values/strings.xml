@@ -135,7 +135,8 @@
     <string name="block_contents_else_id_prefix">そうではなく </string>
 
     <!-- ダイアログ -->
-    <string name="process_volume_degree_error">!範囲外です(0～360)!</string>
+    <string name="process_volume_walk_error">!範囲外です(1～100)!</string>
+    <string name="process_volume_degree_error">!範囲外です(1～360)!</string>
 
     <!-- snackbar -->
     <string name="diable_set_volume">このブロックは変更できないよ</string>

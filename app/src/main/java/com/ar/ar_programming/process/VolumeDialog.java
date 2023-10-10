@@ -21,22 +21,31 @@ public class VolumeDialog extends DialogFragment {
     public static final int VOLUME_KIND_ANGLE = 1;
 
     // 入力上限
-    public static final int VOLUME_LIMIT_CM = 999;
+    public static final int VOLUME_LIMIT_CM = 100;
     public static final int VOLUME_LIMIT_ANGLE = 360;
 
-    //---------------------------
-    // フィールド変数
-    //---------------------------
+    //------------------
+    // アクション共通
+    //------------------
     // 処理量
     public int mVolume;
-    // 処理量種別
-    public int mVolumeKind = VOLUME_KIND_CM;
-    // 処理量上限
-    public int mVolumeLimit;
     // クリックリスナー
     private PositiveClickListener mPositiveClickListener;
 
+    //------------------
+    // アクション別
+    //------------------
+    // 処理量上限
+    public int mVolumeLimit;
+    // 処理量単位
+    public int mUnitStringID;
+    // 処理量単位
+    public int mRangeErrorStringID;
 
+
+    /*
+     * コンストラクタ
+     */
     // 空のコンストラクタ（DialogFragmentのお約束）
     public VolumeDialog() {
     }
@@ -56,7 +65,7 @@ public class VolumeDialog extends DialogFragment {
         // ユーザーOKイメージ押下設定
         setPositiveImage(dialog);
         // 単位表記設定
-        setUnitStr(dialog, mVolumeKind);
+        setUnitStr(dialog);
 
         return dialog;
     }
@@ -81,13 +90,6 @@ public class VolumeDialog extends DialogFragment {
         np_1.setMaxValue(9);
         np_1.setMinValue(0);
 
-        // 数値フォーマット設定
-/*
-        np_100.setFormatter( new PickerFormatter() );
-        np_10.setFormatter( new PickerFormatter() );
-        np_1.setFormatter( new PickerFormatter() );
-*/
-
         //----------------------------------
         // 設定情報をPickerに反映
         //----------------------------------
@@ -110,16 +112,21 @@ public class VolumeDialog extends DialogFragment {
         iv_save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // ユーザーが設定した量
+                //------------------------------
+                // ユーザーが設定した量の範囲チェック
+                //------------------------------
                 int volume = getUserVolume();
-                // 範囲チェック
-                if (volume > mVolumeLimit) {
+                if ((volume < 1) || (volume > mVolumeLimit) ) {
                     // 範囲外ならエラーメッセージを表示
-                    TextView tv_error = dialog.findViewById(R.id.tv_error);
-                    tv_error.setVisibility(View.VISIBLE);
+                    TextView tv_rangeError = dialog.findViewById(R.id.tv_rangeError);
+                    tv_rangeError.setText( mRangeErrorStringID );
+                    tv_rangeError.setVisibility(View.VISIBLE);
                     return;
                 }
 
+                //-------------
+                // 設定完了
+                //-------------
                 mPositiveClickListener.onPositiveClick(volume);
                 dismiss();
             }
@@ -129,19 +136,10 @@ public class VolumeDialog extends DialogFragment {
     /*
      * 単位表記設定
      */
-    private void setUnitStr( Dialog dialog, int volumeKind ) {
-
-        // 処理種別に応じた単位表記
-        int unitStrID;
-        if( volumeKind == VOLUME_KIND_CM ){
-            unitStrID = R.string.block_unit_walk;
-        } else {
-            unitStrID = R.string.block_unit_rotate;
-        }
-
+    private void setUnitStr(Dialog dialog) {
         // 書き換え
         TextView tv_unit = dialog.findViewById(R.id.tv_unit);
-        tv_unit.setText( unitStrID );
+        tv_unit.setText( mUnitStringID );
     }
 
     /*
@@ -165,26 +163,46 @@ public class VolumeDialog extends DialogFragment {
     }
 
     /*
+     * 処理種別の設定
+     */
+    public void setVolumeKind( int volumeKind ) {
+
+        //----------------------------------
+        // 処理種別に応じて保持するデータを切り分け
+        //----------------------------------
+        if( volumeKind == VOLUME_KIND_CM ){
+
+            //-------------
+            // 前進／後退
+            //-------------
+            // 処理量上限
+            mVolumeLimit = VOLUME_LIMIT_CM;
+            // 単位
+            mUnitStringID = R.string.block_unit_walk;
+            // 判定エラーメッセージ
+            mRangeErrorStringID = R.string.process_volume_walk_error;
+
+        } else {
+
+            //-------------
+            // 回転
+            //-------------
+            // 処理量上限
+            mVolumeLimit = VOLUME_LIMIT_ANGLE;
+            // 単位
+            mUnitStringID = R.string.block_unit_rotate;
+            // 判定エラーメッセージ
+            mRangeErrorStringID = R.string.process_volume_degree_error;
+        }
+
+    }
+
+    /*
      * 処理量の設定
      */
-    public void setVolume( int volumeKind, String degrees ) {
-        // 処理量種別
-        mVolumeKind = volumeKind;
+    public void setVolume( String volume ) {
         // 処理量
-        mVolume = Integer.parseInt( degrees );
-
-        // 処理種別に応じた上限値
-        if( volumeKind == VOLUME_KIND_CM ){
-            mVolumeLimit = VOLUME_LIMIT_CM;
-        } else {
-            mVolumeLimit = VOLUME_LIMIT_ANGLE;
-        }
-
-        // 単位表記を書き換え
-        Dialog dialog = getDialog();
-        if( dialog != null ){
-            setUnitStr( dialog, volumeKind );
-        }
+        mVolume = Integer.parseInt( volume );
     }
 
     /*

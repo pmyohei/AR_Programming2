@@ -174,7 +174,7 @@ public class ExecuteBlock extends ProcessBlock {
     private void showVolumeSetDialog(TextView tv_volume) {
 
         //--------------------
-        // 処理量種別種別
+        // 処理量種別
         //--------------------
         int volumeKind;
         String action = mXmlBlockInfo.action;
@@ -192,7 +192,8 @@ public class ExecuteBlock extends ProcessBlock {
 
         // 処理量設定ダイアログを表示
         VolumeDialog dialog = VolumeDialog.newInstance();
-        dialog.setVolume(volumeKind, volume);
+        dialog.setVolumeKind(volumeKind);
+        dialog.setVolume(volume);
         dialog.setOnPositiveClickListener(new VolumeDialog.PositiveClickListener() {
                 @Override
                 public void onPositiveClick(int volume) {
