@@ -92,6 +92,11 @@ public abstract class CharacterNode extends TransformableNode {
     private Scene mScene;
     private Gimmick mGimmick;
 
+    //-----------------------------
+    // プログラミング終了通知の受信有無
+    //-----------------------------
+    private boolean mNotifyProgrammingEnd;
+
     //---------------------------
     // 衝突
     //---------------------------
@@ -136,6 +141,9 @@ public abstract class CharacterNode extends TransformableNode {
         //----------
         mNotSearchNodeList = new ArrayList<>();
         mRemovedNodeList = new ArrayList<>();
+
+        // プログラミング終了通知OFF
+        mNotifyProgrammingEnd = false;
 
         //----------------------------------------
         // アニメーション終了時の処理用保持用変数を初期化
@@ -314,7 +322,7 @@ public abstract class CharacterNode extends TransformableNode {
         Log.i("Eat", "detectCollision() 衝突後　mCollisionNodeName=" + mCollisionNodeName);
 
         // リスナーコール判定
-        if ( !collisionNode.equals(GimmickManager.NODE_NAME_NONE) ) {
+        if (!collisionNode.equals(GimmickManager.NODE_NAME_NONE)) {
             mCollisionDetectListener.onCollisionDetect(collisionNode, mProcessAnimator);
         }
 
@@ -472,7 +480,7 @@ public abstract class CharacterNode extends TransformableNode {
         //----------------
         // Node削除
         //----------------
-        removeNodeOnStage( targetNode );
+        removeNodeOnStage(targetNode);
 
         //---------------
         // 成功処理
@@ -624,7 +632,7 @@ public abstract class CharacterNode extends TransformableNode {
         ArrayList<Node> nodes = mScene.overlapTestAll(this);
         Node deleteNode = nodes.get(index);
 
-        removeNodeOnStage( deleteNode );
+        removeNodeOnStage(deleteNode);
     }
 
     /*
@@ -633,11 +641,11 @@ public abstract class CharacterNode extends TransformableNode {
     public void removeNodeOnStage(Node node) {
 
         // 除外リストへ追加
-        mRemovedNodeList.add( node.getName() );
+        mRemovedNodeList.add(node.getName());
 
         // ステージから削除
         NodeParent parent = getParentNode();
-        parent.removeChild( node );
+        parent.removeChild(node);
     }
 
     /*
@@ -863,17 +871,27 @@ public abstract class CharacterNode extends TransformableNode {
     }
 
     /*
+     * プログラミングの実行の中断
+     */
+    public void notifyInterruptionProgramming() {
+        // プログラミング中断ON
+        mNotifyProgrammingEnd = true;
+        // ブロック側のアニメーションを終了
+        mProcessAnimator.end();
+    }
+
+    /*
      * 状態を初期化
      */
     public void initStatus() {
 
         //----------------------------------
-        // 初期位置に戻す
+        // 位置関連
         //----------------------------------
-        // 位置
+        // 位置を初期位置に
         setLocalPosition(mStartPosition);
 
-        // 角度
+        // 角度を初期位置に
         // Quaternionのy/wの値を算出
         float w = calcQuaternionWvalue(mStartDegree);
         float y = calcQuaternionYvalue(mStartDegree);
@@ -913,6 +931,11 @@ public abstract class CharacterNode extends TransformableNode {
         //----------------------------------
         mNotSearchNodeList.clear();
         mRemovedNodeList.clear();
+
+        //----------------------------------
+        // 中断情報をリセット
+        //----------------------------------
+        mNotifyProgrammingEnd = false;
     }
 
     /*
@@ -1027,18 +1050,16 @@ public abstract class CharacterNode extends TransformableNode {
             @Override
             public void onAnimationCancel(Animator animator) {
             }
-
             @Override
             public void onAnimationRepeat(Animator animator) {
             }
-
             @Override
             public void onAnimationStart(Animator animator) {
             }
 
             /*
              * ブロックアニメーション終了時
-             * ※setWalk()等のコール満了時
+             *   ※setWalk()等のコール満了時
              */
             @Override
             public void onAnimationEnd(Animator animator) {
@@ -1373,10 +1394,10 @@ public abstract class CharacterNode extends TransformableNode {
     }
 
     /*
-     * ゴールNode名の取得
+     * プログラミング実行中状態の取得
      */
-    public void notifyProgrammingFailure() {
-        mSuccessAction = false;
+    public boolean getNotifyProgrammingEnd() {
+        return mNotifyProgrammingEnd;
     }
 
     /*

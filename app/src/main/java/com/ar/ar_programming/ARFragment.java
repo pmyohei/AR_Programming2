@@ -96,6 +96,7 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
     public static final int PROGRAMMING_NOT_END = 0;
     public static final int PROGRAMMING_SUCCESS = 1;
     public static final int PROGRAMMING_FAILURE = -1;
+    public static final int PROGRAMMING_REDO    = -2;
 
     // ステージ4辺
     private final int STAGE_BOTTOM = 0;
@@ -621,6 +622,9 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
      *   キャラクター位置、プログラミング状態を初期状態に戻す
      */
     private void returnGameToStart() {
+
+        // キャラクターにプログラミング中断通知を送る
+        mCharacterNode.notifyInterruptionProgramming();
         // キャラクター位置リセット
         mCharacterNode.initStatus();
         // ゲーム状態をゲーム開始前にする
@@ -628,7 +632,7 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
     }
 
     /*
-     * 処理ブロック開始
+     * ブロック開始
      */
     private void runProcessBlock(ProcessBlock block) {
 
@@ -1600,15 +1604,12 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
             @Override
             public void onAnimationStart(Animator animator) {
             }
-
             @Override
             public void onAnimationCancel(Animator animator) {
             }
-
             @Override
             public void onAnimationRepeat(Animator animator) {
             }
-
             @Override
             public void onAnimationEnd(Animator animator) {
             }

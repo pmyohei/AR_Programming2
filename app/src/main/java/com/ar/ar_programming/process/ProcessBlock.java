@@ -163,6 +163,14 @@ public abstract class ProcessBlock extends Block {
 
         Log.i("ブロック処理の流れ", "ProcessBlock　tranceNextBlock()開始");
 
+        //-----------------
+        // プログラミング中断
+        //-----------------
+        boolean notify = characterNode.getNotifyProgrammingEnd();
+        if( notify ){
+            return;
+        }
+
         //------------------
         // 下ブロックチェック
         //------------------
