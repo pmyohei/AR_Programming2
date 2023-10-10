@@ -2153,7 +2153,7 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
     }
 
     /*
-     * プログラミングを初期化（積み上げたブロックを全て削除）
+     * プログラミングエリアを初期化（積み上げたブロックを全て削除）
      */
     public void initProgramming() {
 
@@ -2708,12 +2708,22 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
     @Override
     public void onMenuInitProgrammingClick() {
 
-        // ステージ配置前なら何もしない
+        // ステージ配置前なら、不可メッセージを表示
         if( !isPlacedStage() ){
             Snackbar.make(binding.getRoot(), getString(R.string.snackbar_please_place_stage), Snackbar.LENGTH_SHORT).show();
             return;
         }
 
+        // プログラム実行中なら、不可メッセージを表示
+        if( mPlayState == PLAY_STATE_PLAYING ){
+            Snackbar.make(binding.getRoot(), getString(R.string.snackbar_please_finish_game), Snackbar.LENGTH_SHORT).show();
+            return;
+        }
+
+        //---------------
+        // 全クリア
+        //---------------
+        // 積み上げたブロックを全クリア
         initProgramming();
     }
 
