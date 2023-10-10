@@ -322,6 +322,7 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
      */
     private void setSettingRegistrationLauncher() {
 
+        // ! 初回リリース未使用
         mSettingRegistrationLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 new ActivityResultCallback<ActivityResult>() {
@@ -543,7 +544,7 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         // ゲームをリセット
-                        returnGameToStart();
+                        returnGameToStart( true );
                         // Fabアイコンを切り替え
                         fab.setImageResource(R.drawable.baseline_play);
                     }
@@ -621,10 +622,13 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
      * ゲームリセット
      *   キャラクター位置、プログラミング状態を初期状態に戻す
      */
-    private void returnGameToStart() {
+    private void returnGameToStart( boolean interruption) {
 
-        // キャラクターにプログラミング中断通知を送る
-        mCharacterNode.notifyInterruptionProgramming();
+        if( interruption ){
+            // キャラクターにプログラミング中断通知を送る
+            mCharacterNode.notifyInterruptionProgramming();
+        }
+
         // キャラクター位置リセット
         mCharacterNode.initStatus();
         // ゲーム状態をゲーム開始前にする
@@ -2098,7 +2102,6 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
      * ・プログラミング処理ブロックを全て削除
      */
     public void initPreGameState() {
-
         // フィールドをクリア
         removeField();
         // プログラミングを初期化（ブロック全削除）
@@ -2122,7 +2125,7 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
         // キャラクター状態リセット
         //---------------------
         // ステージから除外する前に、状態をリセットしておく
-        returnGameToStart();
+        returnGameToStart( false );
 
         //------------------
         // Node全削除
@@ -2384,7 +2387,7 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
      */
     public void onRetryClicked() {
         // ゲームをリセット
-        returnGameToStart();
+        returnGameToStart( false );
         // Fabアイコンを切り替え
         mPlayControlFab.setImageResource(R.drawable.baseline_play);
     }
@@ -2667,6 +2670,14 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
      */
     @Override
     public void onMenuSelectStage() {
+
+        // プログラム実行中なら、不可メッセージを表示
+        if( mPlayState == PLAY_STATE_PLAYING ){
+            Snackbar.make(binding.getRoot(), getString(R.string.snackbar_please_finish_game), Snackbar.LENGTH_SHORT).show();
+            return;
+        }
+
+        // ステージ選択
         stageSelect();
     }
 
@@ -2697,6 +2708,11 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
             Snackbar.make(binding.getRoot(), getString(R.string.snackbar_please_place_stage), Snackbar.LENGTH_SHORT).show();
             return;
         }
+        // プログラム実行中なら、不可メッセージを表示
+        if( mPlayState == PLAY_STATE_PLAYING ){
+            Snackbar.make(binding.getRoot(), getString(R.string.snackbar_please_finish_game), Snackbar.LENGTH_SHORT).show();
+            return;
+        }
 
         // ステージの全クリア
         initPreGameState();
@@ -2713,7 +2729,6 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
             Snackbar.make(binding.getRoot(), getString(R.string.snackbar_please_place_stage), Snackbar.LENGTH_SHORT).show();
             return;
         }
-
         // プログラム実行中なら、不可メッセージを表示
         if( mPlayState == PLAY_STATE_PLAYING ){
             Snackbar.make(binding.getRoot(), getString(R.string.snackbar_please_finish_game), Snackbar.LENGTH_SHORT).show();

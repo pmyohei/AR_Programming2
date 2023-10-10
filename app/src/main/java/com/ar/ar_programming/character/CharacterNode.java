@@ -1174,6 +1174,9 @@ public abstract class CharacterNode extends TransformableNode {
      */
     private int shouldFinishProgram() {
 
+        //----------------------
+        // ブロック処理関連
+        //----------------------
         // ゴール判定
         if (isGoaled()) {
             Log.i("プログラミング終了シーケンス", "CharacterNode shouldFinishProgram() ゴール到達");
@@ -1190,7 +1193,37 @@ public abstract class CharacterNode extends TransformableNode {
             return PROGRAMMING_FAILURE;
         }
 
+        //----------------------
+        // ステージ場外判定
+        //----------------------
+        // 距離の上限を2.0mとする
+        final float DISTANCE_LIMIT = 2.0f;
+        float distance = calcStageDistance();
+        if( distance > DISTANCE_LIMIT){
+            // キャラクターが超えてしまったら失敗
+            return PROGRAMMING_FAILURE;
+        }
+
+        // プログラム継続
         return PROGRAMMING_NOT_END;
+    }
+
+
+    /*
+     * 自分（キャラクター）とステージとの距離（単純な直線距離）を算出
+     *   単位：m　のため、50cm離れるとすると、0.5が算出される
+     */
+    private float calcStageDistance() {
+
+        // 自分（キャラクター）の位置
+        float selfPosX = getLocalPosition().x;
+        float selfPosY = getLocalPosition().z;
+
+        // 軸間を二乗（ステージは原点）
+        float distanceSquaredX = (selfPosX - 0) * (selfPosX - 0);
+        float distanceSquaredY = (selfPosY - 0) * (selfPosY - 0);
+        //距離を返す
+        return (float) Math.sqrt( distanceSquaredX + distanceSquaredY);
     }
 
     /*
