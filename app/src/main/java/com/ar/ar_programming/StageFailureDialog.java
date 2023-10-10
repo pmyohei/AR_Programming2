@@ -73,7 +73,7 @@ public class StageFailureDialog extends DialogFragment {
         setListerner(dialog);
 
         // チュートリアル中の場合
-        boolean finishTutorial = Common.isFisishTutorial( getContext() );
+        boolean finishTutorial = Common.isCompleteTutorial( getContext() );
         if( !finishTutorial ){
             dialog.findViewById(R.id.tv_otherStage).setVisibility( View.GONE );
         }

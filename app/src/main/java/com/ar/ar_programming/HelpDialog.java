@@ -30,7 +30,7 @@ import com.google.android.material.tabs.TabLayoutMediator;
 
 public class HelpDialog extends DialogFragment {
 
-    private OnStartEndListener mOnStartEndListener;
+    private HelpDialogListener mHelpDialogListener;
 
     // 空のコンストラクタ
     // ※必須（画面回転等の画面再生成時にコールされる）
@@ -66,7 +66,13 @@ public class HelpDialog extends DialogFragment {
         setupDialogSize(dialog);
 
         // onStart()終了リスナーをコール
-        mOnStartEndListener.onStartEnd();
+        mHelpDialogListener.onStartEnd();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mHelpDialogListener.onDismiss();
     }
 
     /*
@@ -157,16 +163,20 @@ public class HelpDialog extends DialogFragment {
     /*
      * onStart()終了リスナー設定
      */
-    public void setOnStartEndListerner(OnStartEndListener listerner) {
-        mOnStartEndListener = listerner;
+    public void setOnStartEndListerner(HelpDialogListener listerner) {
+        mHelpDialogListener = listerner;
     }
 
     /*
      * onStart()終了インターフェース
      */
-    public interface OnStartEndListener {
+    public interface HelpDialogListener {
         void onStartEnd();
+        void onDismiss();
     }
+
+
+
 
     /*
      * ヘルプページ用アダプタ

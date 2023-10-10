@@ -2,8 +2,11 @@ package com.ar.ar_programming;
 
 import static android.content.Context.MODE_PRIVATE;
 
+import static com.ar.ar_programming.Common.PREFIX_TUTORIAL_NAME;
 import static com.ar.ar_programming.Common.TUTORIAL_FINISH;
+import static com.ar.ar_programming.Common.TUTORIAL_LAST;
 import static com.ar.ar_programming.Gimmick.NO_USABLE_LIMIT_NUM;
+import static com.ar.ar_programming.GimmickManager.GIMMICK_DELIMITER_TUTORIAL_NAME;
 import static com.ar.ar_programming.character.CharacterNode.ACTION_FAILURE;
 import static com.ar.ar_programming.character.CharacterNode.ACTION_SUCCESS;
 import static com.ar.ar_programming.character.CharacterNode.ACTION_WAITING;
@@ -389,7 +392,7 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
         //-----------------
         String stageName;
 
-        boolean finishTutorial = Common.isFisishTutorial(context);
+        boolean finishTutorial = Common.isCompleteTutorial(context);
         if (finishTutorial) {
             // チュートリアル完了
             // クリアしていないステージの内、一番先頭にあるステージ名を取得
@@ -422,7 +425,7 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
         //-----------------
         String stageName;
 
-        boolean finishTutorial = Common.isFisishTutorial(context);
+        boolean finishTutorial = Common.isCompleteTutorial(context);
         if (finishTutorial) {
             // チュートリアル完了
             // クリアしていないステージの内、一番先頭にあるステージ名を取得
@@ -1597,12 +1600,15 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
             @Override
             public void onAnimationStart(Animator animator) {
             }
+
             @Override
             public void onAnimationCancel(Animator animator) {
             }
+
             @Override
             public void onAnimationRepeat(Animator animator) {
             }
+
             @Override
             public void onAnimationEnd(Animator animator) {
             }
@@ -2014,11 +2020,14 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
 
         // onStart()終了リスナーの設定
         int finalPageListID = pageListID;
-        helpDialog.setOnStartEndListerner(new HelpDialog.OnStartEndListener() {
+        helpDialog.setOnStartEndListerner(new HelpDialog.HelpDialogListener() {
             @Override
             public void onStartEnd() {
                 // ページを設定
                 helpDialog.setupHelpPage(finalPageListID);
+            }
+            @Override
+            public void onDismiss() {
             }
         });
     }
@@ -2203,7 +2212,7 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
 
         Context context = getContext();
 
-        // チュートリアル終了済みの場合、クリアしたステージをクリア状態に保存
+        // クリアしたステージをクリア状態に保存
         Common.saveStageSuccess(context, mGimmick.name);
     }
 
@@ -2221,13 +2230,72 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
         mCharacterNode.setActionWord(ACTION_SUCCESS);
 
         //---------------------
-        // チュートリアル状況更新
+        // ステージ成功情報を更新
         //---------------------
+        boolean showMessage = showFinishTutorialMessage();
         saveStageSuccessState();
 
-        //------------------
-        // ダイアログ
-        //------------------
+        //--------------------
+        // ステージ成功ダイアログ
+        //--------------------
+        if( !showMessage ){
+            // チュートリアル終了メッセージが表示されているなら、ここで成功ダイアログは表示させない
+            showSuccessDialog();
+        }
+    }
+
+
+    /*
+     * チュートリアル終了時のメッセージを表示
+     */
+    private boolean showFinishTutorialMessage() {
+
+        //-------------------------------
+        // チュートリアル完了判定
+        //   今回のクリアでチュートリアルが完了したかどうかを確認
+        //-------------------------------
+        // クリアしたステージが、最後のチュートリアルでないなら、対象外
+        String lastTutorial = (PREFIX_TUTORIAL_NAME + GIMMICK_DELIMITER_TUTORIAL_NAME + Integer.toString(TUTORIAL_LAST));
+        if( !mGimmick.name.equals( lastTutorial ) ){
+            return false;
+        }
+
+        // 最後のチュートリアルの状態が「完了済み」なら、対象外
+        boolean lastTutorialState = Common.getTutorialState( getContext(), mGimmick.name );
+        if( lastTutorialState ){
+            return false;
+        }
+
+        //-------------------------------
+        // メッセージ表示
+        //-------------------------------
+        // チュートリアル終了のメッセージを表示する
+        // !この処理は、「最後のチュートリアル」が完了した１回のみ行われる
+        HelpDialog helpDialog = new HelpDialog();
+        helpDialog.show(getActivity().getSupportFragmentManager(), "help");
+
+        // onStart()終了リスナーの設定
+        helpDialog.setOnStartEndListerner( new HelpDialog.HelpDialogListener() {
+            @Override
+            public void onStartEnd() {
+                // ページを設定
+                helpDialog.setupHelpPage( R.array.complete_tutorial );
+            }
+            @Override
+            public void onDismiss() {
+                // ステージ成功ダイアログの表示
+                showSuccessDialog();
+            }
+        });
+
+        return true;
+    }
+
+    /*
+     * ステージクリア成功時のダイアログ
+     */
+    private void showSuccessDialog() {
+
         // ダイアログ表示
         StageSuccessDialog successDialog = new StageSuccessDialog();
         successDialog.setCancelable(false);
@@ -2255,6 +2323,7 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
                 stageSelect();
             }
         });
+
     }
 
     /*
@@ -2271,6 +2340,14 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
         //--------------------
         // ダイアログ生成
         //--------------------
+        showFailureDialog();
+    }
+
+    /*
+     * ステージクリア失敗時のダイアログ
+     */
+    private void showFailureDialog() {
+
         StageFailureDialog failureDialog = new StageFailureDialog();
         failureDialog.setCancelable(false);
         failureDialog.show(getActivity().getSupportFragmentManager(), "failure");

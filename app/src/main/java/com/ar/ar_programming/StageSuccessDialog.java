@@ -73,7 +73,7 @@ public class StageSuccessDialog extends DialogFragment {
         //--------------------
         // チュートリアル中
         //--------------------
-        boolean finishTutorial = Common.isFisishTutorial( getContext() );
+        boolean finishTutorial = Common.isCompleteTutorial( getContext() );
         if( !finishTutorial ){
             // 文言をチュートリアル向けに書き換え
             String next = getString( R.string.ar_dialog_next_tutorial );

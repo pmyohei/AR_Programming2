@@ -1,20 +1,14 @@
 package com.ar.ar_programming;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
-import androidx.viewpager2.widget.ViewPager2;
 
 import com.ar.ar_programming.databinding.ActivityArBinding;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -126,11 +120,14 @@ public class ARActivity extends AppCompatActivity {
         helpDialog.show(this.getSupportFragmentManager(), "help");
 
         // onStart()終了リスナーの設定
-        helpDialog.setOnStartEndListerner( new HelpDialog.OnStartEndListener() {
+        helpDialog.setOnStartEndListerner( new HelpDialog.HelpDialogListener() {
             @Override
             public void onStartEnd() {
                 // ページを設定
                 helpDialog.setupHelpPage( R.array.how_to_ar );
+            }
+            @Override
+            public void onDismiss() {
             }
         });
     }

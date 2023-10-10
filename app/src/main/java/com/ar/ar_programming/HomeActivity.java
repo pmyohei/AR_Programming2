@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.TextView;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
@@ -21,10 +22,6 @@ public class HomeActivity extends AppCompatActivity {
 
         // Admob
         initAdmob();
-
-        //debug---------------
-        Common.setTutorialDebug(this, 7);
-        //--------------------
     }
 
     /*
@@ -67,4 +64,43 @@ public class HomeActivity extends AppCompatActivity {
         AdRequest adRequest = new AdRequest.Builder().build();
         adView.loadAd(adRequest);
     }
+
+
+    //========================================================
+    public void onDebugTutorialUpClicked(View view) {
+        TextView tv_tutorialSet = findViewById(R.id.tv_tutorialSet);
+
+        String tutorial = tv_tutorialSet.getText().toString();
+        int t = Integer.parseInt( tutorial );
+
+        if( t < 6 ){
+            t++;
+        }
+
+        tv_tutorialSet.setText( Integer.toString( t ) );
+    }
+    public void onDebugTutorialDownClicked(View view) {
+        TextView tv_tutorialSet = findViewById(R.id.tv_tutorialSet);
+
+        String tutorial = tv_tutorialSet.getText().toString();
+        int t = Integer.parseInt( tutorial );
+
+        if( t > 1 ){
+            t--;
+        }
+
+        tv_tutorialSet.setText( Integer.toString( t ) );
+    }
+
+    public void onDebugTutorialSetClicked(View view) {
+        TextView tv_tutorialSet = findViewById(R.id.tv_tutorialSet);
+
+        String tutorial = tv_tutorialSet.getText().toString();
+        int t = Integer.parseInt( tutorial );
+
+        Common.setTutorialDebug(this, t);
+    }
+    //========================================================
+
+
 }

@@ -82,13 +82,22 @@ public class Common {
     /*
      * チュートリアル終了済み判定
      */
-    public static boolean isFisishTutorial(Context context) {
+    public static boolean isCompleteTutorial(Context context) {
 
         // 最終チュートリアルをクリアしていれば、チュートリアルは終了状態にある
         SharedPreferences sharedPref = context.getSharedPreferences(context.getString(R.string.preference_file_key), MODE_PRIVATE);
 
         String lastTutorial = (PREFIX_TUTORIAL_NAME + GIMMICK_DELIMITER_TUTORIAL_NAME + Integer.toString(TUTORIAL_LAST));
         return sharedPref.getBoolean(lastTutorial, false);
+    }
+
+    /*
+     * 指定チュートリアル成功ステータス取得
+     */
+    public static boolean getTutorialState(Context context, String tutorialName) {
+
+        SharedPreferences sharedPref = context.getSharedPreferences(context.getString(R.string.preference_file_key), MODE_PRIVATE);
+        return sharedPref.getBoolean(tutorialName, false);
     }
 
     /*
@@ -157,7 +166,6 @@ public class Common {
 
         editor.apply();
     }
-
 
     /*
      * ステージ名チュートリアル判定

@@ -6,7 +6,6 @@ import static com.ar.ar_programming.Common.TUTORIAL_FINISH;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -215,7 +214,7 @@ public class StageSelectAdapter extends RecyclerView.Adapter<StageSelectAdapter.
     private int getChallengeTutorial(Context context) {
 
         // チュートリアル終了しているなら、全て選択可能となるため、何もしない
-        boolean isFinish = Common.isFisishTutorial( context );
+        boolean isFinish = Common.isCompleteTutorial( context );
         if( isFinish ){
             return TUTORIAL_FINISH;
         }

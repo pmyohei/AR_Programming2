@@ -5,9 +5,6 @@ import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class HowToPlayActivity extends AppCompatActivity {
 
     @Override
@@ -25,11 +22,14 @@ public class HowToPlayActivity extends AppCompatActivity {
         helpDialog.show(this.getSupportFragmentManager(), "help");
 
         // onStart()終了リスナーの設定
-        helpDialog.setOnStartEndListerner( new HelpDialog.OnStartEndListener() {
+        helpDialog.setOnStartEndListerner( new HelpDialog.HelpDialogListener() {
             @Override
             public void onStartEnd() {
                 // ページを設定
                 helpDialog.setupHelpPage( pageArrayResID );
+            }
+            @Override
+            public void onDismiss() {
             }
         });
     }

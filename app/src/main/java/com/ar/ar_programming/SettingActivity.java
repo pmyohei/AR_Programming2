@@ -1,8 +1,5 @@
 package com.ar.ar_programming;
 
-import static com.ar.ar_programming.Common.TUTORIAL_DEFAULT;
-import static com.ar.ar_programming.Common.TUTORIAL_FINISH;
-
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -12,7 +9,6 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -77,7 +73,7 @@ public class SettingActivity extends AppCompatActivity {
      */
     private void setSettingUI() {
 
-        boolean isFinishTutorial = Common.isFisishTutorial( this );
+        boolean isFinishTutorial = Common.isCompleteTutorial( this );
 
         //----------------
         // チュートリアル中

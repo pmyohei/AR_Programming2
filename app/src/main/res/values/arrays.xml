@@ -68,6 +68,10 @@
         <item>@layout/help_page_about_if_elseif_block_4</item>
     </array>
 
+    <!--  チュートリアル完了  -->
+    <array name="complete_tutorial">
+        <item>@layout/complete_tutorial</item>
+    </array>
 
     <!--  ===============  -->
     <!--  チュートリアル関連  -->
