@@ -1273,8 +1273,8 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
         // キャラクターの生成位置／向く方向／サイズ
         //------------------------------------
         // 四辺の内の配置辺
-        Random random = new Random();
-        int side = random.nextInt(STAGE_4_SIDE);
+//        Random random = new Random();
+//        int side = random.nextInt(STAGE_4_SIDE);
 
 /*
         // キャラクター初期位置
@@ -2118,6 +2118,12 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
 
         Log.i("ステージ選択", "removeField()");
 
+        //---------------------
+        // キャラクター状態リセット
+        //---------------------
+        // ステージから除外する前に、状態をリセットしておく
+        returnGameToStart();
+
         //------------------
         // Node全削除
         //------------------
@@ -2127,9 +2133,6 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
             Scene scene = arFragment.getArSceneView().getScene();
             scene.removeChild(anchorNode);
         }
-
-        // キャラクタークリア
-        mCharacterNode = null;
 
         //----------------------------------
         // 処理ブロック

@@ -877,7 +877,9 @@ public abstract class CharacterNode extends TransformableNode {
         // プログラミング中断ON
         mNotifyProgrammingEnd = true;
         // ブロック側のアニメーションを終了
-        mProcessAnimator.end();
+        if( mProcessAnimator != null ){
+            mProcessAnimator.end();
+        }
     }
 
     /*
