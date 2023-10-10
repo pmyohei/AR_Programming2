@@ -1,5 +1,7 @@
 package com.ar.ar_programming.process;
 
+import static com.ar.ar_programming.ARFragment.PROGRAMMING_FAILURE;
+
 import android.content.Context;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -21,10 +23,13 @@ public class LoopBlock extends NestBlock {
     //---------------------------
     // 定数
     //---------------------------
+    // 最低限許容できるループ回数（回転が360度まであり得るため）
+    private final int LOOP_LIMIT = 360;
 
     //---------------------------
     // フィールド変数
     //---------------------------
+    private int mLoopCount;
 
     /*
      * コンストラクタ
@@ -40,6 +45,15 @@ public class LoopBlock extends NestBlock {
     public LoopBlock(Context context, AttributeSet attrs, int defStyle, Gimmick.XmlBlockInfo xmlBlockInfo) {
         super(context, attrs, defStyle, xmlBlockInfo);
         setLayout(R.layout.block_loop);
+
+        init();
+    }
+
+    /*
+     * 初期化
+     */
+    private void init(){
+        mLoopCount = 0;
     }
 
     /*
@@ -51,6 +65,54 @@ public class LoopBlock extends NestBlock {
 
         // 処理ブロック内の内容を書き換え
         rewriteProcessContents();
+    }
+
+    /*
+     * 処理開始
+     */
+    @Override
+    public void startProcess(CharacterNode characterNode) {
+
+        Log.i("ブロック処理の流れ", "Loop startProcess()開始 type=" + mXmlBlockInfo.type);
+        Log.i("ブロック処理の流れ", "Loop startProcess()開始 action=" + mXmlBlockInfo.action);
+
+        //-----------------------------
+        // ネスト内処理ブロック数チェック
+        //-----------------------------
+        // ネスト内に処理ブロックがなければ
+        if ( !hasNestBlock() ) {
+            Log.i("ループ上限判定", "ネスト何に何もなし プログラミング終了");
+            end( PROGRAMMING_FAILURE );
+            return;
+        }
+
+        //-----------------------------
+        // 条件判定
+        //-----------------------------
+        // 条件成立の場合
+        if ( isCondition(characterNode) ) {
+
+            //---------------------
+            // プログラミング強制終了
+            //---------------------
+            // 今回のループでループの上限を超過するなら、プログラミングを終了する
+            if( mLoopCount > LOOP_LIMIT ){
+                Log.i("ループ上限判定", "プログラミング終了");
+                end( PROGRAMMING_FAILURE );
+
+                return;
+            }
+
+            //---------------------
+            // ネスト内ブロックを実行
+            //---------------------
+            ProcessBlock nextBlock = (ProcessBlock) mNestStartBlockFirst.getBelowBlock();
+            nextBlock.startProcess(characterNode);
+            return;
+        }
+
+        // 条件成立の場合、「本ブロック」の下のブロックの実行へ
+        tranceNextBlock(characterNode);
     }
 
     /*
@@ -104,6 +166,11 @@ public class LoopBlock extends NestBlock {
                 break;
         }
 
+        //------------------------
+        // ループカウンタ
+        //------------------------
+        checkLoopCountExpired( result );
+
         return result;
     }
 
@@ -114,31 +181,6 @@ public class LoopBlock extends NestBlock {
         // 対象Nodeと衝突中であれば、到達したとみなす
         return characterNode.isNodeCollision( mXmlBlockInfo.targetNode_1 );
     }
-
-    /*
-     * ループ条件：対象Nodeの方をキャラクターが向いているか判定
-     */
-/*    public boolean isConditionFacing(CharacterNode characterNode) {
-
-        //------------------
-        // 判定対象Nodeを取得
-        //------------------
-        // 検索対象外Nodeリスト
-        List<Node> notSearchNodeList = characterNode.getNotSearchNodeList();
-
-        // AR上のNodeは、全てanchorNodeを親としているため、characterNodeの親Node（=anchorNode）を検索用に渡す
-        AnchorNode anchorNode = (AnchorNode)characterNode.getParentNode();
-        Node targetNode = ArMainFragment.searchNodeOnStage( anchorNode, mXmlBlockInfo.targetNode_1, notSearchNodeList );
-        if( targetNode == null ){
-            // そもそも対象Nodeがなければ、条件不成立とみなす
-            return false;
-        }
-
-        //---------------------------------
-        // キャラクターがNodeを向いているか判定
-        //---------------------------------
-        return characterNode.isFacingToNode( targetNode );
-    }*/
 
     /*
      * ループ条件：指定Nodeを全てxxx（集める、食べる、、、）しているか判定
@@ -155,6 +197,27 @@ public class LoopBlock extends NestBlock {
         Log.i("ブロック処理の流れ", "Loop isConditionEverything() targetNode_1=" + mXmlBlockInfo.targetNode_1);
 
         return ( node == null );
+    }
+
+    /*
+     * ループカウンタ満了判定
+     *   @para true  :ループ継続
+     *         false :ループ終了
+     */
+    private void checkLoopCountExpired( boolean condition ){
+
+        if( !condition ){
+            // ループ終了なら、回数リセットして終了
+            mLoopCount = 0;
+
+            return;
+        }
+
+        //---------------
+        // ループ継続
+        //---------------
+        // ループカウントアップ
+        mLoopCount++;
     }
 }
 

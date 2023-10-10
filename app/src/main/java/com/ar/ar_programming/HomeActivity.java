@@ -73,7 +73,7 @@ public class HomeActivity extends AppCompatActivity {
         String tutorial = tv_tutorialSet.getText().toString();
         int t = Integer.parseInt( tutorial );
 
-        if( t < 6 ){
+        if( t < 7 ){
             t++;
         }
 

@@ -284,7 +284,7 @@ public abstract class CharacterNode extends TransformableNode {
     /*
      * 衝突検知
      */
-    private String detectCollision() {
+    private void detectCollision() {
 
         // 衝突の有無
         String collisionNode = GimmickManager.NODE_NAME_NONE;
@@ -314,11 +314,11 @@ public abstract class CharacterNode extends TransformableNode {
         Log.i("Eat", "detectCollision() 衝突後　mCollisionNodeName=" + mCollisionNodeName);
 
         // リスナーコール判定
-        if (!collisionNode.equals(GimmickManager.NODE_NAME_NONE)) {
+        if ( !collisionNode.equals(GimmickManager.NODE_NAME_NONE) ) {
             mCollisionDetectListener.onCollisionDetect(collisionNode, mProcessAnimator);
         }
 
-        return collisionNode;
+        return;
     }
 
 
@@ -1375,8 +1375,8 @@ public abstract class CharacterNode extends TransformableNode {
     /*
      * ゴールNode名の取得
      */
-    public String getGoalNode() {
-        return mGimmick.goalName;
+    public void notifyProgrammingFailure() {
+        mSuccessAction = false;
     }
 
     /*
@@ -1385,13 +1385,6 @@ public abstract class CharacterNode extends TransformableNode {
     public List<Node> getNotSearchNodeList() {
         return mNotSearchNodeList;
     }
-
-    /*
-     * 衝突中Nodeの取得
-     */
-//    public String getCollisionNode() {
-//        return mCollisionNodeName;
-//    }
 
     /*
      * 衝突検知リスナーの設定

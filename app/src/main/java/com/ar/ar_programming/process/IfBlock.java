@@ -49,6 +49,41 @@ public class IfBlock extends NestBlock {
     }
 
     /*
+     * 処理開始
+     */
+    @Override
+    public void startProcess(CharacterNode characterNode) {
+
+        Log.i("ブロック処理の流れ", "If startProcess()開始 type=" + mXmlBlockInfo.type);
+        Log.i("ブロック処理の流れ", "If startProcess()開始 action=" + mXmlBlockInfo.action);
+
+        //-----------------------------
+        // ネスト内処理ブロック数チェック
+        //-----------------------------
+        // ネスト内に処理ブロックがなければ
+        if ( !hasNestBlock() ) {
+            // 次の処理ブロックへ
+            tranceNextBlock(characterNode);
+            return;
+        }
+
+        //-----------------------------
+        // 条件判定
+        //-----------------------------
+        // 条件成立の場合
+        if ( isCondition(characterNode) ) {
+
+            // ネスト内の処理ブロックを実行
+            ProcessBlock nextBlock = (ProcessBlock) mNestStartBlockFirst.getBelowBlock();
+            nextBlock.startProcess(characterNode);
+            return;
+        }
+
+        // 条件成立の場合、ネストブロックの下のブロックへ
+        tranceNextBlock(characterNode);
+    }
+
+    /*
      * 条件成立判定
      *   @return：条件成立- true
      *   @return：条件不成立- false
