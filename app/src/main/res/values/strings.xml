@@ -437,17 +437,25 @@
 
     <!-- チュートリアル４ -->
     <string name="guide_major_tutorial_4">チュートリアル %d/6</string>
-    <string name="guide_sub_tutorial_4">～条件ブロックを使ってみよう～</string>
-    <string name="guide_goal_tutorial_4">ニンジンを食べて家に帰る</string>
+    <string name="guide_sub_tutorial_4">～ifブロックを使ってみよう～</string>
+    <string name="guide_goal_tutorial_4">途中にあるニンジンを食べて家に帰る</string>
     <string name="guide_explanation_tutorial_4">
         途中にあるニンジンを食べて家に帰るプログラムを作ってみよう！\nニンジンを食べないと前に進むことができないよ。\nあと、ニンジンは目の前にないと食べることができないから、食べる前にまずはニンジンにぶつかるまで進んじゃってね。\nループブロックと条件ブロックをうまく組み合わせるのがポイントだよ！
     </string>
 
-    <!-- チュートリアル５、６ -->
+    <!-- チュートリアル５ -->
     <string name="guide_major_tutorial_5">チュートリアル %d/6</string>
-    <string name="guide_sub_tutorial_5">～条件ブロックを組み合わせてみよう～</string>
-    <string name="guide_goal_tutorial_5">ニンジンは食べて、毒キノコは捨てよう。家につけばクリア</string>
+    <string name="guide_sub_tutorial_5">～if elseブロックを使ってみよう～</string>
+    <string name="guide_goal_tutorial_5">途中にある毒キノコを捨てて家に帰る</string>
     <string name="guide_explanation_tutorial_5">
+        途中にある毒キノコを捨てて家に帰るプログラムを作ってみよう！\n毒キノコを捨てないと前に進むことができないよ。\nあと、毒キノコは目の前にないと捨てることができないから、捨てる前にまずは毒キノコにぶつかるまで進んじゃってね。\nクリアできるブロックの組み合わせは1つだけじゃないけど、折角だからelse側にブロックを置いて動きを確認してみてね！
+    </string>
+
+    <!-- チュートリアル６ -->
+    <string name="guide_major_tutorial_6">チュートリアル %d/6</string>
+    <string name="guide_sub_tutorial_6">～if elseif elseブロックを使ってみよう～</string>
+    <string name="guide_goal_tutorial_6">ニンジンは食べて、毒キノコは捨てよう。家につけばクリア</string>
+    <string name="guide_explanation_tutorial_6">
         ニンジンを食べて家に帰るプログラムを作ってみよう！\nただし、途中で毒キノコがあるから、毒キノコは食べずに捨てちゃおう！\n条件ブロックをどう使うかがポイントだよ！
     </string>
 
@@ -456,7 +464,7 @@
     <string name="guide_sub_chase_with_police_car">～シンプルなプログラミング～</string>
     <string name="guide_goal_chase_with_police_car">車をよけて、逃走車を捕まえよう</string>
     <string name="guide_explanation_chase_with_police_car">
-        逃走車（赤いスポーツカー）を捕まえる\nプログラムを作ってみよう！\n途中の黄色の車にあたると失敗だよ！\nうまく避けるようなプログラミングを作ってね！
+        逃走車（赤いスポーツカー）を捕まえる\nプログラムを作ってみよう！\n途中の黄色の車にあたると失敗だよ！\nうまく避けるようなプログラミングを作ってね！\n\n初めは距離感がわからないかもしれないけど\nプログラミングはトライ＆エラーが重要だよ！\n色々試して頑張ってみてね。\n
     </string>
 
     <!--  毒キノコはどれだろう？  -->
