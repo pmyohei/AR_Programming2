@@ -96,7 +96,7 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
     public static final int PROGRAMMING_NOT_END = 0;
     public static final int PROGRAMMING_SUCCESS = 1;
     public static final int PROGRAMMING_FAILURE = -1;
-    public static final int PROGRAMMING_REDO    = -2;
+    public static final int PROGRAMMING_REDO = -2;
 
     // ステージ4辺
     private final int STAGE_BOTTOM = 0;
@@ -132,10 +132,14 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
     private final int TUTORIAL_GUIDE_SHOW_PROGRAMMING_AREA = 2;     // プログラミングエリア展開
 
     //---------------------------
-    // フィールド変数
+    // 共通
     //---------------------------
     private FragmentArBinding binding;
     private com.google.ar.sceneform.ux.ArFragment arFragment;
+
+    //---------------------------
+    // Renderable
+    //---------------------------
     private ModelRenderable mStageRenderable;
     private ModelRenderable mCharacterRenderable;
     private ModelRenderable mGoalRenderable;
@@ -145,17 +149,32 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
     private ArrayList<ModelRenderable> mObjectRenderable;
     private ArrayList<ModelRenderable> mObjectReplaceRenderable;
 
+    //---------------------------
+    // Node
+    //---------------------------
     private CharacterNode mCharacterNode;
-    private Block mMarkedBlock;             // ブロック下部追加マーカーの付与されている処理ブロック
 
-    private int mPlayState;                 // Play状態
+    //---------------------------
+    // ブロック
+    //---------------------------
+    // ブロック下部追加マーカーの付与されている処理ブロック
+    private Block mMarkedBlock;
+
+    //---------------------------
+    // ゲーム状態管理
+    //---------------------------
     private Gimmick mGimmick;               // ステージギミックID
+    private int mPlayState;                 // Play状態
+    private boolean mIsTutorialGuideShow = false;
 
+    //---------------------------
+    // UI
+    //---------------------------
     private FloatingActionButton mPlayControlFab;
+    private AlertDialog mRetryConfirmDialog;
     private ActivityResultLauncher<Intent> mSettingRegistrationLauncher;
     private ActivityResultLauncher<Intent> mStageSelectLancher;
 
-    private boolean mIsTutorialGuideShow = false;
 
     @Override
     public View onCreateView(
@@ -537,14 +556,14 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
     private void confirmRetryGame(FloatingActionButton fab) {
 
         // リトライ確認ダイアログを表示
-        new AlertDialog.Builder(getActivity(), R.style.AlertDialogStyle)
+        mRetryConfirmDialog = new AlertDialog.Builder(getActivity(), R.style.AlertDialogStyle)
                 .setTitle(getString(R.string.ar_dialog_title))
                 .setMessage(getString(R.string.ar_dialog_contents))
                 .setPositiveButton(getString(R.string.ar_dialog_positive), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         // ゲームをリセット
-                        returnGameToStart( true );
+                        returnGameToStart(true);
                         // Fabアイコンを切り替え
                         fab.setImageResource(R.drawable.baseline_play);
                     }
@@ -622,9 +641,9 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
      * ゲームリセット
      *   キャラクター位置、プログラミング状態を初期状態に戻す
      */
-    private void returnGameToStart( boolean interruption) {
+    private void returnGameToStart(boolean interruption) {
 
-        if( interruption ){
+        if (interruption) {
             // キャラクターにプログラミング中断通知を送る
             mCharacterNode.notifyInterruptionProgramming();
         }
@@ -1608,12 +1627,15 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
             @Override
             public void onAnimationStart(Animator animator) {
             }
+
             @Override
             public void onAnimationCancel(Animator animator) {
             }
+
             @Override
             public void onAnimationRepeat(Animator animator) {
             }
+
             @Override
             public void onAnimationEnd(Animator animator) {
             }
@@ -2031,6 +2053,7 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
                 // ページを設定
                 helpDialog.setupHelpPage(finalPageListID);
             }
+
             @Override
             public void onDismiss() {
             }
@@ -2125,7 +2148,7 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
         // キャラクター状態リセット
         //---------------------
         // ステージから除外する前に、状態をリセットしておく
-        returnGameToStart( false );
+        returnGameToStart(false);
 
         //------------------
         // Node全削除
@@ -2245,7 +2268,7 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
         //--------------------
         // ステージ成功ダイアログ
         //--------------------
-        if( !showMessage ){
+        if (!showMessage) {
             // チュートリアル終了メッセージが表示されているなら、ここで成功ダイアログは表示させない
             showSuccessDialog();
         }
@@ -2263,13 +2286,13 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
         //-------------------------------
         // クリアしたステージが、最後のチュートリアルでないなら、対象外
         String lastTutorial = (PREFIX_TUTORIAL_NAME + GIMMICK_DELIMITER_TUTORIAL_NAME + Integer.toString(TUTORIAL_LAST));
-        if( !mGimmick.name.equals( lastTutorial ) ){
+        if (!mGimmick.name.equals(lastTutorial)) {
             return false;
         }
 
         // 最後のチュートリアルの状態が「完了済み」なら、対象外
-        boolean lastTutorialState = Common.getTutorialState( getContext(), mGimmick.name );
-        if( lastTutorialState ){
+        boolean lastTutorialState = Common.getTutorialState(getContext(), mGimmick.name);
+        if (lastTutorialState) {
             return false;
         }
 
@@ -2282,12 +2305,13 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
         helpDialog.show(getActivity().getSupportFragmentManager(), "help");
 
         // onStart()終了リスナーの設定
-        helpDialog.setOnStartEndListerner( new HelpDialog.HelpDialogListener() {
+        helpDialog.setOnStartEndListerner(new HelpDialog.HelpDialogListener() {
             @Override
             public void onStartEnd() {
                 // ページを設定
-                helpDialog.setupHelpPage( R.array.complete_tutorial );
+                helpDialog.setupHelpPage(R.array.complete_tutorial);
             }
+
             @Override
             public void onDismiss() {
                 // ステージ成功ダイアログの表示
@@ -2303,7 +2327,12 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
      */
     private void showSuccessDialog() {
 
-        // ダイアログ表示
+        // やり直しダイアログが開いていれば、閉じる
+        closeRetryDialog();
+
+        //--------------
+        // ダイアログ生成
+        //--------------
         StageSuccessDialog successDialog = new StageSuccessDialog();
         successDialog.setCancelable(false);
         successDialog.show(getActivity().getSupportFragmentManager(), "success");
@@ -2355,6 +2384,12 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
      */
     private void showFailureDialog() {
 
+        // やり直しダイアログが開いていれば、閉じる
+        closeRetryDialog();
+
+        //--------------
+        // ダイアログ生成
+        //--------------
         StageFailureDialog failureDialog = new StageFailureDialog();
         failureDialog.setCancelable(false);
         failureDialog.show(getActivity().getSupportFragmentManager(), "failure");
@@ -2380,6 +2415,18 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
                 stageSelect();
             }
         });
+    }
+
+
+    /*
+     * ゲームやり直し確認ダイアログのclose
+     */
+    private void closeRetryDialog() {
+
+        // ゲームやり直し確認ダイアログが開いていれば、閉じる
+        if( mRetryConfirmDialog != null && mRetryConfirmDialog.isShowing() ) {
+            mRetryConfirmDialog.dismiss();
+        }
     }
 
     /*
