@@ -127,7 +127,7 @@ public abstract class CharacterNode extends TransformableNode {
     public boolean mSuccessAction;              // アクション成否
     private ViewRenderable mActionRenderable;   // アクション表記Renderable
     private List<Node> mNotSearchNodeList;      // 検索対象外Nodeリスト
-    private List<String> mRemovedNodeList;      // ステージから除外したNodeリスト
+    private List<Node> mRemovedNodeList;      // ステージから除外したNodeリスト
 
 
     /*
@@ -641,7 +641,7 @@ public abstract class CharacterNode extends TransformableNode {
     public void removeNodeOnStage(Node node) {
 
         // 除外リストへ追加
-        mRemovedNodeList.add(node.getName());
+        mRemovedNodeList.add(node);
 
         // ステージから削除
         NodeParent parent = getParentNode();
@@ -1362,8 +1362,19 @@ public abstract class CharacterNode extends TransformableNode {
      * 本キャラクターが指定Nodeをステージから除外したことがあるかどうか
      */
     public boolean isEverRemovedNode(String nodeName) {
-        // 除外リストにあれば、除外したことあり
-        return mRemovedNodeList.contains( nodeName );
+
+        //------------------
+        // 除外リストから検索
+        //------------------
+        for( Node node: mRemovedNodeList ){
+            if( node.getName().equals( nodeName ) ){
+                // 除外リストにあれば、除外したことあり
+                return true;
+            }
+        }
+
+        // 除外したことなし
+        return false;
     }
 
     /*
@@ -1436,10 +1447,17 @@ public abstract class CharacterNode extends TransformableNode {
     }
 
     /*
-     * 検索対象外Nodeリスト
+     * 検索対象外Nodeリストを取得
      */
     public List<Node> getNotSearchNodeList() {
         return mNotSearchNodeList;
+    }
+
+    /*
+     * 除外Nodeリストを取得
+     */
+    public List<Node> getRemovedNodeList() {
+        return mRemovedNodeList;
     }
 
     /*

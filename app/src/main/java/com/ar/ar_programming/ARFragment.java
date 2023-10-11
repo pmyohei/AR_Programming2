@@ -648,10 +648,30 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
             mCharacterNode.notifyInterruptionProgramming();
         }
 
+        // 除外Nodeの復元
+        // !キャラクターの初期化前に行うこと
+        relocateExcludedNode();
         // キャラクター位置リセット
         mCharacterNode.initStatus();
         // ゲーム状態をゲーム開始前にする
         mPlayState = PLAY_STATE_PRE_PLAY;
+    }
+
+    /*
+     * 除外Nodeの再配置
+     *   ゲームの過程でステージから除外されたNode（食べ物や敵等）を再配置する
+     */
+    private void relocateExcludedNode() {
+
+        AnchorNode anchorNode = (AnchorNode) mCharacterNode.getParentNode();
+
+        //---------------
+        // 除外Nodeを再配置
+        //---------------
+        List<Node> removedNodeList = mCharacterNode.getRemovedNodeList();
+        for( Node node: removedNodeList ){
+            node.setParent( anchorNode );
+        }
     }
 
     /*
