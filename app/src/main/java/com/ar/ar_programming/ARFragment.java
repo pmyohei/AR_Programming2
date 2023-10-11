@@ -144,7 +144,7 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
     private ModelRenderable mCharacterRenderable;
     private ModelRenderable mGoalRenderable;
     private ModelRenderable mSuccessRenderable;
-    private ViewRenderable mGuideViewRenderable;
+    private ViewRenderable mGoalGuideRenderable;
     private ViewRenderable mActionRenderable;
     private ArrayList<ModelRenderable> mObjectRenderable;
     private ArrayList<ModelRenderable> mObjectReplaceRenderable;
@@ -1220,12 +1220,12 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
     }
 
     /*
-     * 3Dモデルレンダリング「ゴール説明view」の生成
+     * 3Dモデルレンダリング「ゴール説明」の生成
      */
     private void buildRenderableGuideView(Gimmick gimmick) {
 
         Context context = getContext();
-        mGuideViewRenderable = null;
+        mGoalGuideRenderable = null;
 
         //-------------------
         // ゴール説明view
@@ -1234,7 +1234,7 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
                 .builder()
                 .setView(context, R.layout.goal_guide_ui)
                 .build()
-                .thenAccept(renderable -> mGuideViewRenderable = renderable)
+                .thenAccept(renderable -> mGoalGuideRenderable = renderable)
                 .exceptionally(
                         throwable -> {
                             showRenderableLoadErrorMessage();
@@ -1433,8 +1433,8 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
     private void createNodeGoalGuideUI(AnchorNode anchorNode) {
 
         // 配置位置
-        final float GUIDE_POS_Y = 0.05f;    // 高さ
-        final float GUIDE_POS_Z = -0.6f;  // 奥方向へ
+        final float GUIDE_POS_Y = 0.15f;    // 高さ
+        final float GUIDE_POS_Z = -0.6f;    // 奥方向へ
         Vector3 pos = new Vector3(0f, GUIDE_POS_Y, GUIDE_POS_Z);
 
         // Node生成
@@ -1442,7 +1442,7 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
         node.setName(GimmickManager.NODE_NAME_GOAL_GUIDE_UI);
         node.setParent(anchorNode);
         node.setLocalPosition(pos);
-        node.setRenderable(mGuideViewRenderable);
+        node.setRenderable(mGoalGuideRenderable);
 
         //------------------------
         // タッチ時のゴール目標表示
@@ -1914,7 +1914,7 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
         // 配置必須レンダラブルのどれか一つでもnullなら、Node生成不可
         if ((mCharacterRenderable == null) ||
                 (mStageRenderable == null) ||
-                (mGuideViewRenderable == null) ||
+                (mGoalGuideRenderable == null) ||
                 (mActionRenderable == null)) {
             return false;
         }
