@@ -85,7 +85,6 @@ public abstract class ProcessBlock extends Block {
      */
     @Override
     public int getDropLineViewID() {
-        Log.i("ドロップリスナー", "getDropLineViewID Process側取得");
         return R.id.v_dropLine;
     }
 

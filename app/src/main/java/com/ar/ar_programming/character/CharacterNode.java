@@ -320,8 +320,6 @@ public abstract class CharacterNode extends TransformableNode {
         //----------------
         mCollisionNodeName = collisionNode;
 
-        Log.i("Eat", "detectCollision() 衝突後　mCollisionNodeName=" + mCollisionNodeName);
-
         // リスナーコール判定
         if (!collisionNode.equals(GimmickManager.NODE_NAME_NONE)) {
             mCollisionDetectListener.onCollisionDetect(collisionNode, mProcessAnimator);
@@ -339,7 +337,6 @@ public abstract class CharacterNode extends TransformableNode {
 
         // 衝突中は、処理なし
         if (!mCollisionNodeName.equals(GimmickManager.NODE_NAME_NONE)) {
-//            Log.i("ブロック処理の流れ", "キャラクター setWalk() 衝突中のため停止 mCollisionNodeName=" + mCollisionNodeName);
             return;
         }
 
