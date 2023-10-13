@@ -86,7 +86,7 @@
 		objectNum="2"
 		objectName="present"
 		objectPosition="-6.76 : 5.2 : 0.6, -1.5 : 5.2 : -9.8"
-		block="exe_forward-100_3, exe_rotateright-2_3, exe_pickup-present, loop_facing-present, loop_facing-rabit"
+		block="exe_forward-100_3, exe_rotateright-1_3, exe_pickup-present, loop_facing-present, loop_facing-rabit"
 		/>
 
 	<!-- お菓子を拾ってお菓子の家へ -->
@@ -114,7 +114,8 @@
 	<gimmick
 		name="pickup_sweets_and_sweets_house_2"
 		character="animal"
-		successCondition="goal"
+		successCondition="remove_and_goal"
+		successRemoveTarget="sweets"
 		goalGuide="guide_major_pickup_sweets_and_sweets_house2, guide_sub_pickup_sweets_and_sweets_house2, guide_goal_pickup_sweets_and_sweets_house2, guide_explanation_pickup_sweets_and_sweets_house2"
 		stageGlb="models/stage/sweet_terrace.glb"
 		characterGlb="models/animal/rabit.glb"
@@ -128,7 +129,7 @@
 		objectNum="2, 1"
 		objectName="sweets, sweets"
 		objectPosition="-10.3 : 2.48 : -14.9, -0.01 : 2.48 : -7.66, -0.43 : 2.48 : -17.9"
-		block="exe_forward-40, exe_rotateright-1, exe_pickup-sweets_1, loop_collect-sweets, loop_facing-sweetHouse, loop_facing-sweets, if_front-sweets"
+		block="exe_forward-40, exe_rotateright-1, exe_pickup-sweets_1, loop_collect-sweets, loop_facing-sweetHouse, loop_facing-sweets"
 		/>
 
 
@@ -148,9 +149,9 @@
 		goalName="signboardStop"
 		objectGlb="models/object/banana.glb, models/object/banana_peel.glb"
 		objectNum="2, 1"
-		objectName="banana, bananaPeel"
+		objectName="banana, peel"
 		objectPosition="0 : 1.21 : 3.66, 0 : 1.2 : -0.9, 0 : 1.2 : -5.03"
-		block="exe_forward-100, exe_rotateright-1_1, exe_pickup-banana_1, exe_throw-bananaPeel_1, loop_facing-signboardStop, loop_arrival-signboardStop, if-elseif-else_front-banana-bananaPeel"
+		block="exe_forward-100_1, exe_rotateright-1_1, exe_pickup-banana_1, exe_throw-peel_1, loop_facing-signboardStop, loop_arrival-signboardStop, if-elseif-else_front-banana-peel"
 		/>
 
 	<!-- バナナの皮に気を付けよう ？ブロック -->
@@ -170,10 +171,10 @@
 		objectGlb="models/object/question_box.glb"
 		objectNum="1"
 		objectName="replace"
-		objectReplaceName="banana-bananaPeel"
+		objectReplaceName="banana-peel"
 		objectReplaceGlb="models/object/banana.glb-models/object/banana_peel.glb"
 		objectPosition="0 : 1.2 : -0.9"
-		block="exe_forward-100_2, exe_rotateright-1_1, exe_pickup-banana_1, exe_throw-bananaPeel_1, loop_facing-signboardStop, if-elseif-else_front-banana-bananaPeel"
+		block="exe_forward-100_2, exe_rotateright-1_1, exe_pickup-banana_1, exe_throw-peel_1, loop_facing-signboardStop, if-elseif-else_front-banana-peel"
 		/>
 
 	<!-- はちみつゲット！ -->
@@ -218,6 +219,8 @@
 		/>
 
 	<!-- お化け退治 -->
+	<!-- ※お化けの位置の記載順序：お化けの番号を左上から半時計周りに「１～７」まで付けるとすると、 -->
+	<!--   座標の記載順序は「3, 4, 6, 1, 2, 5, 7」 -->
 	<gimmick
 		name="defeat_crownghost"
 		character="animal"
@@ -231,8 +234,8 @@
 		objectGlb="models/enemy/ghost_clown.glb, models/enemy/ghost.glb"
 		objectNum="3, 4"
 		objectName="enemy:ghostClown, enemy:ghost"
-		objectAngle="45, 90, 135, 160, 200, 260, 300"
-		objectPosition="-6.91 : 5.68 : -9.89, -15 : 3.36 : -5.95, -11.2 : 1.23 : -0.019, -3.2 : 3.36 : 2.07, 7.01 : 2.09 : 1.63, 10.7 : 3.36 : -3.78, 13.8 : 4.85 : -13"
+		objectAngle="135, 160, 260, 45, 90, 200, 300"
+		objectPosition="-11.2 : 1.23 : -0.019, -3.2 : 3.36 : 2.07, 10.7 : 3.36 : -3.78, -6.91 : 5.68 : -9.89, -15 : 3.36 : -5.95, 7.01 : 2.09 : 1.63, 13.8 : 4.85 : -13"
 		block="exe_rotateright-1_1, exe_farattack-enemy, exe_changetarget-facing:enemy, if-else_facing-ghostClown, if-else_defeat-enemy:ghost, loop_facing-enemy, loop_defeat-ghost"
 		/>
 

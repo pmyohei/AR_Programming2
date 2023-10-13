@@ -100,6 +100,8 @@ public class LoopBlock extends NestBlock {
                 Log.i("ループ上限判定", "プログラミング終了");
                 end( PROGRAMMING_FAILURE );
 
+                // ループ回数リセット
+                mLoopCount = 0;
                 return;
             }
 

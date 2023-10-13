@@ -218,16 +218,6 @@ public class IfElseBlock extends IfBlock {
     }
 
     /*
-     * 条件成立判定
-     *   @return：条件成立- true
-     *   @return：条件不成立- false
-     */
-//    @Override
-//    public boolean isCondition(CharacterNode characterNode) {
-//        return super.isCondition( characterNode );
-//    }
-
-    /*
      * ブロック処理開始
      */
     @Override

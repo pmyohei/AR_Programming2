@@ -224,7 +224,7 @@
     <string name="present">プレゼント</string>
     <string name="stamp">切り株</string>
     <string name="banana">バナナ</string>
-    <string name="bananaPeel">バナナの皮</string>
+    <string name="peel">バナナの皮</string>
     <string name="enemy">敵</string>
     <string name="ghost">お化け</string>
     <string name="ghostClown">ピエロお化け</string>
@@ -464,7 +464,15 @@
     <string name="guide_sub_chase_with_police_car">～シンプルなプログラミング～</string>
     <string name="guide_goal_chase_with_police_car">車をよけて、逃走車を捕まえよう</string>
     <string name="guide_explanation_chase_with_police_car">
-        逃走車（赤いスポーツカー）を捕まえる\nプログラムを作ってみよう！\n途中の黄色の車にあたると失敗だよ！\nうまく避けるようなプログラミングを作ってね！\n\n初めは距離感がわからないかもしれないけど\nプログラミングはトライ＆エラーが重要だよ！\n色々試して頑張ってみてね。\n
+        逃走車（赤いスポーツカー）を捕まえる\nプログラムを作ってみよう！\n途中の黄色の車にあたると失敗だよ！\nうまく避けるようなプログラミングを作ってね！\n\n初めは距離感がわからないかもしれないけど、プログラミングはトライ＆エラーが重要だよ！\n色々試して頑張ってみてね。\n
+    </string>
+
+    <!-- 毒キノコは捨てよう -->
+    <string name="guide_major_poison_mushroom">毒キノコに気を付けよう</string>
+    <string name="guide_sub_poison_mushroom">～ifブロックを複数使ってみよう～</string>
+    <string name="guide_goal_poison_mushroom">ニンジンは食べて、毒キノコは捨てよう。家につけばクリア</string>
+    <string name="guide_explanation_poison_mushroom">
+        途中にある毒キノコを捨てて家に帰るプログラムを作ってみよう！\nチュートリアルのステージとほぼ同じだけど、使えるブロックが違うよ。\n違うブロックでも同じことができることを体感してね！
     </string>
 
     <!--  毒キノコはどれだろう？  -->
@@ -480,7 +488,7 @@
     <string name="guide_sub_present_for_rabbit">～うさぎにプレゼントをあげよう～</string>
     <string name="guide_goal_present_for_rabbit">プレゼントを全部拾って、うさぎの所へいけばクリア</string>
     <string name="guide_explanation_present_for_rabbit">
-        プレゼントを拾ってうさぎに届けるプログラムを作ってみよう！\nプレゼントはそばまでいかないと拾えないよ\n道にあるプレゼントは全部拾ってね\n全部あつめずにうさぎのところへ行くと失敗だよ\nループブロックを使ってうまく車の方向を決めてね！
+        道に落ちているプレゼントを拾ってうさぎに届けるプログラムを作ってみよう！\nプレゼントはそばまでいかないと拾えないよ\n道にあるプレゼントは全部拾ってね\n全部あつめずにうさぎのところへ行くと失敗だよ\nループブロックを使ってうまく車の方向を決めよう！
     </string>
 
     <!--  お菓子を拾ってお菓子の家へ  -->
@@ -488,15 +496,15 @@
     <string name="guide_sub_pickup_sweets_and_sweets_house">～お菓子を全部拾おう～</string>
     <string name="guide_goal_pickup_sweets_and_sweets_house">お菓子を全部拾って、お菓子の家までいけばクリア</string>
     <string name="guide_explanation_pickup_sweets_and_sweets_house">
-        お菓子を拾ってお菓子の家までいくプログラムを作ってみよう！\nプレゼントはそばまでいかないと拾えないよ\n道にあるプレゼントは全部拾ってね\n全部あつめずにお菓子の家まで行くと失敗だよ！
+        お菓子を拾ってお菓子の家までいくプログラムを作ってみよう！\nお菓子はそばまでいかないと拾えないよ\n道にあるお菓子は全部拾ってね\n全部あつめずにお菓子の家まで行くと失敗だよ！\nそれから、お菓子の家に野菜は持ち込めないから、野菜を拾うと失敗だよ！
     </string>
 
     <!--  お菓子を拾ってお菓子の家へ２ ジグザグ  -->
     <string name="guide_major_pickup_sweets_and_sweets_house2">お菓子拾い</string>
     <string name="guide_sub_pickup_sweets_and_sweets_house2">～お菓子を全部拾おう～</string>
-    <string name="guide_goal_pickup_sweets_and_sweets_house2">プレゼントを全部拾って、うさぎの所へいけばクリア</string>
+    <string name="guide_goal_pickup_sweets_and_sweets_house2">お菓子を全部拾って、お菓子の家までいけばクリア</string>
     <string name="guide_explanation_pickup_sweets_and_sweets_house2">
-        お菓子を拾ってお菓子の家までいくプログラムを作ってみよう！\nプレゼントはそばまでいかないと拾えないよ。\nあと、プレゼントは散らばっているから、ちゃんとプレゼントの方向を向いてから移動する必要があるね。\nどうすれば全部集められるか考えてみよう！\n\n道にあるプレゼントは全部拾ってね。\n全部あつめずにお菓子の家まで行くと失敗だよ！
+        お菓子を拾ってお菓子の家までいくプログラムを作ってみよう！\nお菓子はそばまでいかないと拾えないよ。\nあと、お菓子は散らばっているから、ちゃんとお菓子の方向を向いてから移動する必要があるね。\nどうすれば全部集められるか考えてみよう！\n\n道にあるプレゼントは全部拾ってね。\n全部あつめずにお菓子の家まで行くと失敗だよ！
     </string>
 
     <!--  バナナの皮に気を付けよう！  -->
@@ -509,24 +517,24 @@
 
     <!--  バナナの皮に気を付けよう！２  ？ブロック  -->
     <string name="guide_major_banana_and_peel_on_bridge_2">バナナ拾い</string>
-    <string name="guide_sub_banana_and_peel_on_bridge_2">～どれがバナナだろう～</string>
+    <string name="guide_sub_banana_and_peel_on_bridge_2">～バナナかな？バナナの皮かな？～</string>
     <string name="guide_goal_banana_and_peel_on_bridge_2">看板までいけばクリア</string>
     <string name="guide_explanation_banana_and_peel_on_bridge_2">
-        看板までたどり着くためのプログラムを作ってみよう！\n途中にあるバナナは拾って、バナナの皮はちゃんと捨てる必要があるよ。\nでも、どの順番でバナナとバナナの皮があるかはゲームを始めるまでわからないよ。\nどんな順番で並んでいても、正しいアクションをとれるようにプログラミングしてね！\n色んな状況に対応するにはどんなブロックを使えばいいか考えてね！
+        看板までたどり着くためのプログラムを作ってみよう！\nでも途中にバナナかバナナの皮があって、ゲームを始めるまでどっちがあるかわからないよ。\nどっちが置いてあっても、正しいアクションがとれるようにプログラミングしてね！\n色んな状況に対応するにはどんなブロックを使えばいいか考えよう！
     </string>
 
     <!--  はちみつゲット！  -->
     <string name="guide_major_bee_and_honey">はちみつゲット</string>
-    <string name="guide_sub_bee_and_honey">～ループブロックをうまく使おう～</string>
+    <string name="guide_sub_bee_and_honey">～ブロックの順番に注意～</string>
     <string name="guide_goal_bee_and_honey">ハチを退治して、はちみつをゲットしよう</string>
     <string name="guide_explanation_bee_and_honey">
         ハチを退治してはちみつの所まで移動するプログラムを作ってみよう！\nはちみつの所へ行く前に、必ずハチを退治してね！\nハチを退治する前にハチミツの所へいくと失敗だよ\nそれから、ハチを退治するにはハチのそばまで移動する必要があるんだ\n他のステージと同じように、まずはハチにぶつかるまで進んじゃおう！\nうまくプログラムしてはちみつをゲットしてね！
     </string>
 
     <!--  野菜を全部たべよう！  -->
-    <string name="guide_major_eat_all_vegetable">食べ物集め</string>
-    <string name="guide_sub_eat_all_vegetable">～食べ物を全部食べよう～</string>
-    <string name="guide_goal_eat_all_vegetable">全部の食べ物を食べればクリア</string>
+    <string name="guide_major_eat_all_vegetable">残さず食べよう</string>
+    <string name="guide_sub_eat_all_vegetable">～野菜を全部食べよう～</string>
+    <string name="guide_goal_eat_all_vegetable">野菜を全部食べればクリア</string>
     <string name="guide_explanation_eat_all_vegetable">
         森の中にある食べ物を全部食べるプログラムを作ってみよう！\n食べ物はそばまでいかないと食べられないよ\n食べ物の方をうまく向いて最後の食べ物まで食べるプログラムを作ってね！
     </string>

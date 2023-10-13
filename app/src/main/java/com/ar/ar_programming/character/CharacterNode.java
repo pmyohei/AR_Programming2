@@ -217,8 +217,9 @@ public abstract class CharacterNode extends TransformableNode {
         //-----------
         // Node生成
         //-----------
-        TransformationSystem transformationSystem = getTransformationSystem();
-        TransformableNode node = new TransformableNode(transformationSystem);
+//        TransformationSystem transformationSystem = getTransformationSystem();
+//        TransformableNode node = new TransformableNode(transformationSystem);
+        Node node = new Node();
         node.setParent(this);
         node.setLocalPosition(pos);
         node.setLocalRotation(qAction);
@@ -493,6 +494,7 @@ public abstract class CharacterNode extends TransformableNode {
      * 捨てる
      */
     private void throwAway() {
+        Log.i("アクション不具合", "throwAway=" + mTargetNode);
         mSuccessAction = deleteFrontNodeAction(mTargetNode);
     }
 
@@ -1188,7 +1190,7 @@ public abstract class CharacterNode extends TransformableNode {
             return PROGRAMMING_FAILURE;
         }
         // 障害物衝突判定
-        if (isNodeCollision(mGimmick.objectObstacle)) {
+        if ( isNodeCollision(mGimmick.objectObstacle) ) {
             Log.i("プログラミング終了シーケンス", "CharacterNode shouldFinishProgram() 障害物と衝突中");
             return PROGRAMMING_FAILURE;
         }

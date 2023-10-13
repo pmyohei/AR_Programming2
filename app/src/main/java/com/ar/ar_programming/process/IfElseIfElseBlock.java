@@ -2,6 +2,7 @@ package com.ar.ar_programming.process;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -316,11 +317,16 @@ public class IfElseIfElseBlock extends IfElseBlock {
      */
     public int judgeTrueNestRootOnFront(CharacterNode characterNode) {
 
+        Log.i("条件判定エラー", "judgeTrueNestRootOnFront()");
+        Log.i("条件判定エラー", "mXmlBlockInfo.targetNode_1=" + mXmlBlockInfo.targetNode_1);
+        Log.i("条件判定エラー", "mXmlBlockInfo.targetNode_2=" + mXmlBlockInfo.targetNode_2);
+
         //--------------
         // 条件１判定
         //--------------
         boolean isFirstCondition = characterNode.isNodeCollision(mXmlBlockInfo.targetNode_1);
         if (isFirstCondition) {
+            Log.i("条件判定エラー", "if通る判定");
             // ifブロックを通る状態
             return NEST_FIRST;
         }
@@ -330,6 +336,7 @@ public class IfElseIfElseBlock extends IfElseBlock {
         //--------------
         boolean isSecondCondition = characterNode.isNodeCollision(mXmlBlockInfo.targetNode_2);
         if (isSecondCondition) {
+            Log.i("条件判定エラー", "else if通る判定");
             // else ifブロックを通る状態
             return NEST_SECOND;
         }

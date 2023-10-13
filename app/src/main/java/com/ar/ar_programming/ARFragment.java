@@ -360,7 +360,7 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
                         boolean isChanged = intent.getBooleanExtra(SettingActivity.IS_CHANGED_KEY, false);
                         if (isChanged) {
                             // ゲーム状態を初期化
-                            initPreGameState();
+                            clearAR();
                         }
                     }
                 });
@@ -562,10 +562,8 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
                 .setPositiveButton(getString(R.string.ar_dialog_positive), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        // ゲームをリセット
-                        returnGameToStart(true);
-                        // Fabアイコンを切り替え
-                        fab.setImageResource(R.drawable.baseline_play);
+                        // リトライ処理
+                        retryStage( true );
                     }
                 })
                 .setNegativeButton(getString(R.string.ar_dialog_negative), null)
@@ -638,10 +636,10 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
     }
 
     /*
-     * ゲームリセット
+     * ゲーム状態初期化
      *   キャラクター位置、プログラミング状態を初期状態に戻す
      */
-    private void returnGameToStart(boolean interruption) {
+    private void initGame(boolean interruption) {
 
         if (interruption) {
             // キャラクターにプログラミング中断通知を送る
@@ -721,7 +719,7 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
     /*
      * 処理ブロック選択肢リストの削除
      */
-    private void clearSelectBlockList() {
+    private void clearSelectBlockArea() {
 
         // 現状のギミックのブロック選択肢数
         int blockNum = mGimmick.xmlBlockInfoList.size();
@@ -731,8 +729,10 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
         RecyclerView rv_selectBlock = root.findViewById(R.id.rv_selectBlock);
         UserBlockSelectListAdapter adapter = (UserBlockSelectListAdapter) rv_selectBlock.getAdapter();
 
-        adapter.clearBlockList();
-        adapter.notifyItemRangeRemoved(0, blockNum);
+        if( adapter != null ){
+            adapter.clearBlockList();
+            adapter.notifyItemRangeRemoved(0, blockNum);
+        }
     }
 
     /*
@@ -1298,6 +1298,8 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
         // キャラクター生成と他Nodeとの重複なしの配置
         //------------------------------------
         CharacterNode characterNode = createTemporaryCharacterNode(anchorNode, scale);
+
+
 
         //-----------------------------
         // ステージ上キャラクターとして保持
@@ -2144,17 +2146,19 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
      * ・フィールドをクリア
      * ・プログラミング処理ブロックを全て削除
      */
-    public void initPreGameState() {
+    public void clearAR() {
         // フィールドをクリア
-        removeField();
+        clearAllNode();
+        // 選択肢ブロックリストを削除
+        clearSelectBlockArea();
         // プログラミングを初期化（ブロック全削除）
         initProgramming();
     }
 
     /*
-     * フィールドをクリアする（配置した３Dモデルを全て削除する）
+     * 全配置済みの全Node削除
      */
-    public void removeField() {
+    public void clearAllNode() {
 
         // ステージ配置前なら何もしない
         if (mPlayState < PLAY_STATE_PRE_PLAY) {
@@ -2167,24 +2171,19 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
         //---------------------
         // キャラクター状態リセット
         //---------------------
-        // ステージから除外する前に、状態をリセットしておく
-        returnGameToStart(false);
+        // ステージクリア後、再度同じギミックを配置する可能性があるため、
+        // ステージ除外前に、ゲーム開始前の状態にする
+        initGame(false);
 
         //------------------
         // Node全削除
         //------------------
         // Scene内のAnchorNodeを削除することで、全Nodeを削除
-        AnchorNode anchorNode = searchAnchorNode();
+        AnchorNode anchorNode = (AnchorNode) mCharacterNode.getParentNode();
         if (anchorNode != null) {
             Scene scene = arFragment.getArSceneView().getScene();
             scene.removeChild(anchorNode);
         }
-
-        //----------------------------------
-        // 処理ブロック
-        //----------------------------------
-        // 選択肢ブロックリストを削除
-        clearSelectBlockList();
 
         //----------------------------------
         // 状態管理
@@ -2414,13 +2413,6 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
         failureDialog.setCancelable(false);
         failureDialog.show(getActivity().getSupportFragmentManager(), "failure");
 
-        // リトライリスナー設定
-        failureDialog.setOnRetryListerner(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onRetryClicked();
-            }
-        });
         // 休憩リスナー設定
         failureDialog.setOnBreakListerner(new View.OnClickListener() {
             @Override
@@ -2428,6 +2420,15 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
                 breakPlay();
             }
         });
+
+        // リトライリスナー設定
+        failureDialog.setOnRetryListerner(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                retryStage( false );
+            }
+        });
+
         // 別ステージ選択リスナー設定
         failureDialog.setOnOtherStageListerner(new View.OnClickListener() {
             @Override
@@ -2452,9 +2453,9 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
     /*
      * ゴール結果ダイアログ：「再挑戦」
      */
-    public void onRetryClicked() {
-        // ゲームをリセット
-        returnGameToStart( false );
+    public void retryStage(boolean interruption ) {
+        // ゲームを開始前に
+        initGame( interruption );
         // Fabアイコンを切り替え
         mPlayControlFab.setImageResource(R.drawable.baseline_play);
     }
@@ -2476,7 +2477,7 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
     public void resetGimmick( String stageName ) {
 
         // ステージ配置前の状態に戻す
-        initPreGameState();
+        clearAR();
 
         // ステージギミックを選出
         boolean isUpdate = setGimmick(stageName);
@@ -2567,25 +2568,6 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
         }
 
         // 該当なし
-        return null;
-    }
-
-    /*
-     * AnchorNode検索
-     */
-    private AnchorNode searchAnchorNode() {
-
-        // Sceneに追加されたNodeを全て取得
-        Scene scene = arFragment.getArSceneView().getScene();
-        List<Node> nodes = scene.getChildren();
-
-        // SceneからAnchorNodeを検索
-        for (Node node : nodes) {
-            if (node.getName().equals(GimmickManager.NODE_NAME_ANCHOR)) {
-                return (AnchorNode) node;
-            }
-        }
-
         return null;
     }
 
@@ -2744,7 +2726,9 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
             return;
         }
 
+        //------------
         // ステージ選択
+        //------------
         stageSelect();
     }
 
@@ -2781,8 +2765,10 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
             return;
         }
 
+        //------------------
         // ステージの全クリア
-        initPreGameState();
+        //------------------
+        clearAR();
     }
 
     /*
