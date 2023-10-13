@@ -167,8 +167,8 @@ public class GimmickManager {
         parser.close();
 
         // チュートリアル値の設定
-        boolean isTutorial = Common.isStageNameTutorial( stageName );
-        if( isTutorial ){
+        boolean isTutorial = Common.isStageNameTutorial(stageName);
+        if (isTutorial) {
             int tutorialNumber = Common.getTutorialNumber(stageName);
             gimmick.setTutorial(tutorialNumber);
         }
@@ -259,7 +259,7 @@ public class GimmickManager {
         int gimmickXmlID;
 
         boolean isTutorial = Common.isStageNameTutorial(stageName);
-        if( isTutorial ){
+        if (isTutorial) {
             // チュートリアル向け
             gimmickXmlID = R.xml.gimmick_tutorial;
         } else {
@@ -268,7 +268,7 @@ public class GimmickManager {
         }
 
         Resources resources = context.getResources();
-        return resources.getXml( gimmickXmlID );
+        return resources.getXml(gimmickXmlID);
     }
 
     /*
@@ -288,7 +288,7 @@ public class GimmickManager {
 
                     // name属性の値を取得
                     String name = parser.getAttributeValue(null, ATTR_NAME);
-                    if ( name.equals(stageName) ) {
+                    if (name.equals(stageName)) {
                         break;
                     }
                 }
@@ -300,6 +300,37 @@ public class GimmickManager {
         } catch (XmlPullParserException | IOException ignored) {
             //★エラー対応検討
         }
+    }
+
+
+    /*
+     * 指定されたxmlの中で、先頭に記載されたステージ名を取得
+     */
+    public static String getFirstStageParsePosition(Context context, int gimmickXmlID) {
+
+        Resources resources = context.getResources();
+        XmlResourceParser parser = resources.getXml(gimmickXmlID);
+
+        try {
+            int eventType = parser.getEventType();
+            while (eventType != XmlPullParser.END_DOCUMENT) {
+
+                // 「開始タグ」であり「タグ名=gimmick」の位置
+                if ((eventType == XmlPullParser.START_TAG) && (Objects.equals(parser.getName(), TAG_START_GIMMICK))) {
+
+                    // name属性の値を取得
+                    return parser.getAttributeValue(null, ATTR_NAME);
+                }
+
+                // 次の要素を読み込む
+                parser.next();
+                eventType = parser.getEventType();
+            }
+        } catch (XmlPullParserException | IOException ignored) {
+            //★エラー対応検討
+        }
+
+        return "";
     }
 
     /*

@@ -132,7 +132,6 @@ public class Common {
     public static String getHeadNotSuccessStageName(Context context, ArrayList<String> stageList) {
 
         for (String stageName : stageList) {
-
             // ステージのクリア状況を取得
             SharedPreferences sharedPref = context.getSharedPreferences(context.getString(R.string.preference_file_key), MODE_PRIVATE);
             boolean isClear = sharedPref.getBoolean(stageName, false);
@@ -141,8 +140,8 @@ public class Common {
             }
         }
 
-        // 全てクリア済みなら、最後のチュートリアル番号の次の番号をチュートリアル名とする文字列を返す
-        return (PREFIX_TUTORIAL_NAME + GIMMICK_DELIMITER_TUTORIAL_NAME + Integer.toString(TUTORIAL_FINISH));
+        // 全てクリア済みなら、先頭のステージ名を返す
+        return GimmickManager.getFirstStageParsePosition( context, R.xml.gimmick_select );
     }
 
     /*
