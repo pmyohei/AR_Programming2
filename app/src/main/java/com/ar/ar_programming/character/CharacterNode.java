@@ -3,9 +3,9 @@ package com.ar.ar_programming.character;
 import static com.ar.ar_programming.ARFragment.PROGRAMMING_FAILURE;
 import static com.ar.ar_programming.ARFragment.PROGRAMMING_NOT_END;
 import static com.ar.ar_programming.ARFragment.PROGRAMMING_SUCCESS;
-import static com.ar.ar_programming.GimmickManager.BLOCK_ACTION_TARGET_NODE_POS;
-import static com.ar.ar_programming.GimmickManager.BLOCK_ACTION_TARGET_NODE_STATE_POS;
+import static com.ar.ar_programming.GimmickManager.BLOCK_CONDITION_DEFEAT;
 import static com.ar.ar_programming.GimmickManager.BLOCK_CONDITION_FACING;
+import static com.ar.ar_programming.GimmickManager.GIMMICK_DELIMITER_ACTION_TARGET_INFO;
 import static com.ar.ar_programming.GimmickManager.GIMMICK_DELIMITER_TARGET_NODE_INFO;
 
 import android.animation.Animator;
@@ -127,7 +127,7 @@ public abstract class CharacterNode extends TransformableNode {
     public boolean mSuccessAction;              // アクション成否
     private ViewRenderable mActionRenderable;   // アクション表記Renderable
     private List<Node> mNotSearchNodeList;      // 検索対象外Nodeリスト
-    private List<Node> mRemovedNodeList;      // ステージから除外したNodeリスト
+    private List<Node> mRemovedNodeList;        // ステージから除外したNodeリスト
 
 
     /*
@@ -494,7 +494,6 @@ public abstract class CharacterNode extends TransformableNode {
      * 捨てる
      */
     private void throwAway() {
-        Log.i("アクション不具合", "throwAway=" + mTargetNode);
         mSuccessAction = deleteFrontNodeAction(mTargetNode);
     }
 
@@ -526,8 +525,56 @@ public abstract class CharacterNode extends TransformableNode {
      * 遠距離攻撃
      */
     private void farAttack() {
-        mSuccessAction = deleteFarNodeAction(mTargetNode);
+
+        // 対象Node情報を分解
+        // 例）「enemy=defeat=ghost」 → 「enemy」「defeat」「ghost」
+        String[] targetNodeInfo = mTargetNode.split(GIMMICK_DELIMITER_ACTION_TARGET_INFO);
+        if( targetNodeInfo.length > 1 ){
+
+            // 攻撃前の条件があれば、判定
+            boolean result = farAttackConditional( targetNodeInfo );
+            if ( !result ) {
+                mSuccessAction = false;
+                return;
+            }
+        }
+
+        //-------------------------
+        // ステージから対象Nodeを除外
+        //-------------------------
+        mSuccessAction = deleteFarNodeAction( targetNodeInfo[0] );
     }
+
+    /*
+     * 遠距離攻撃の条件判定
+     */
+    private boolean farAttackConditional( String targetNodeInfo[] ) {
+
+        String condition = targetNodeInfo[1];
+        String defeatTarget = targetNodeInfo[2];
+
+        //-----------------------------
+        // アクション条件判定
+        //-----------------------------
+        boolean result = false;
+        switch (condition) {
+
+            //-------------------------------------
+            // あるNodeを一度でも除外したことがあるか
+            //-------------------------------------
+            case BLOCK_CONDITION_DEFEAT:
+                result = isEverRemovedNodeContain(defeatTarget);
+                Log.i("ゴースト退治", "isEverRemovedNode()=" + result);
+                Log.i("ゴースト退治", "isEverRemovedNode() defeatTarget=" + defeatTarget);
+                break;
+
+            default:
+                break;
+        }
+
+        return result;
+    }
+
 
     /*
      * 遠距離攻撃アニメーションメソッド
@@ -576,9 +623,13 @@ public abstract class CharacterNode extends TransformableNode {
     private void changeTarget() {
 
         // 対象Node情報を分解
-        String[] targetNodeInfo = mTargetNode.split(GIMMICK_DELIMITER_TARGET_NODE_INFO);
-        String state = targetNodeInfo[BLOCK_ACTION_TARGET_NODE_STATE_POS];
-        String nodeName = targetNodeInfo[BLOCK_ACTION_TARGET_NODE_POS];
+//        String[] targetNodeInfo = mTargetNode.split(GIMMICK_DELIMITER_TARGET_NODE_INFO);
+//        String state = targetNodeInfo[BLOCK_ACTION_TARGET_NODE_STATE_POS];
+//        String nodeName = targetNodeInfo[BLOCK_ACTION_TARGET_NODE_POS];
+
+        String[] targetNodeInfo = mTargetNode.split( "=" );
+        String nodeName = targetNodeInfo[0];
+        String state = targetNodeInfo[1];//★
 
         Node node = null;
 
@@ -1370,6 +1421,26 @@ public abstract class CharacterNode extends TransformableNode {
         //------------------
         for( Node node: mRemovedNodeList ){
             if( node.getName().equals( nodeName ) ){
+                // 除外リストにあれば、除外したことあり
+                return true;
+            }
+        }
+
+        // 除外したことなし
+        return false;
+    }
+
+    /*
+     * 本キャラクターが指定Nodeをステージから除外したことがあるかどうか
+     *   指定Node名を含むNodeでも良しとする
+     */
+    public boolean isEverRemovedNodeContain(String nodeName) {
+
+        //------------------
+        // 除外リストから検索
+        //------------------
+        for( Node node: mRemovedNodeList ){
+            if( node.getName().contains( nodeName ) ){
                 // 除外リストにあれば、除外したことあり
                 return true;
             }

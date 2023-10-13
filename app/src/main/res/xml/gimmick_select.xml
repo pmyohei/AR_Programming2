@@ -221,6 +221,23 @@
 	<!-- お化け退治 -->
 	<!-- ※お化けの位置の記載順序：お化けの番号を左上から半時計周りに「１～７」まで付けるとすると、 -->
 	<!--   座標の記載順序は「3, 4, 6, 1, 2, 5, 7」 -->
+<!--	<gimmick-->
+<!--		name="defeat_crownghost"-->
+<!--		character="animal"-->
+<!--		successCondition="all_remove"-->
+<!--		successRemoveTarget="enemy"-->
+<!--		goalGuide="guide_major_defeat_crownghost, guide_sub_defeat_crownghost, guide_goal_defeat_crownghost, guide_explanation_defeat_crownghost"-->
+<!--		stageGlb="models/stage/fantasy_magic_house.glb"-->
+<!--		characterGlb="models/animal/rabit_witch.glb"-->
+<!--		characterPosition="0.24 : 1.17 : -6.12"-->
+<!--		characterAngle="0"-->
+<!--		objectGlb="models/enemy/ghost_clown.glb, models/enemy/ghost.glb"-->
+<!--		objectNum="3, 4"-->
+<!--		objectName="ghostClown:enemy, ghost:enemy"-->
+<!--		objectAngle="135, 160, 260, 45, 90, 200, 300"-->
+<!--		objectPosition="-11.2 : 1.23 : -0.019, -3.2 : 3.36 : 2.07, 10.7 : 3.36 : -3.78, -6.91 : 5.68 : -9.89, -15 : 3.36 : -5.95, 7.01 : 2.09 : 1.63, 13.8 : 4.85 : -13"-->
+<!--		block="exe_rotateright-1_1, exe_farattack-ghost:enemy, exe_farattack-ghostClown:enemy=defeat=ghost, exe_changetarget-enemy=facing, if-else_facing-ghostClown, if-else_defeat-ghost, loop_facing-enemy, loop_defeat-ghost"-->
+<!--		/>-->
 	<gimmick
 		name="defeat_crownghost"
 		character="animal"
@@ -231,14 +248,13 @@
 		characterGlb="models/animal/rabit_witch.glb"
 		characterPosition="0.24 : 1.17 : -6.12"
 		characterAngle="0"
-		objectGlb="models/enemy/ghost_clown.glb, models/enemy/ghost.glb"
-		objectNum="3, 4"
-		objectName="enemy:ghostClown, enemy:ghost"
+		objectGlb="models/enemy/ghost.glb"
+		objectNum="7"
+		objectName="ghost"
 		objectAngle="135, 160, 260, 45, 90, 200, 300"
 		objectPosition="-11.2 : 1.23 : -0.019, -3.2 : 3.36 : 2.07, 10.7 : 3.36 : -3.78, -6.91 : 5.68 : -9.89, -15 : 3.36 : -5.95, 7.01 : 2.09 : 1.63, 13.8 : 4.85 : -13"
-		block="exe_rotateright-1_1, exe_farattack-enemy, exe_changetarget-facing:enemy, if-else_facing-ghostClown, if-else_defeat-enemy:ghost, loop_facing-enemy, loop_defeat-ghost"
+		block="exe_rotateright-1_1, exe_farattack-ghost, loop_facing-ghost, loop_defeat-ghost"
 		/>
-
 
 	<!-- お化け退治！2 ？ブロック -->
 	<gimmick
@@ -256,9 +272,9 @@
 		objectName="replace"
 		objectAngle="45, 90, 135, 160, 200, 260, 300"
 		objectPosition="-6.91 : 5.68 : -9.89, -15 : 3.36 : -5.95, -11.2 : 1.23 : -0.019, -3.2 : 3.36 : 2.07, 7.01 : 2.09 : 1.63, 10.7 : 3.36 : -3.78, 13.8 : 4.85 : -13"
-		objectReplaceName="enemy:ghost-enemy:ghostClown"
+		objectReplaceName="ghost:enemy-ghostClown:enemy"
 		objectReplaceGlb="models/enemy/ghost.glb-models/enemy/ghost_clown.glb"
-		block="exe_rotateright-1_1, exe_farattack-enemy, exe_changetarget-facing:enemy, if-elseif-else_facing-ghostClown-ghost, if-else_defeat-enemy:ghost, loop_facing-enemy, loop_defeat-ghost"
+		block="exe_rotateright-1_1, exe_farattack-ghost:enemy, exe_farattack-ghostClown:enemy=defeat=ghost, exe_changetarget-enemy=facing, if-else_facing-ghostClown, if-else_defeat-ghost, loop_facing-enemy, loop_defeat-ghost"
 		/>
 
 </gimmick_list>

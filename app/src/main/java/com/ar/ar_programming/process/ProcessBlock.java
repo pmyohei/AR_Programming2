@@ -229,26 +229,6 @@ public abstract class ProcessBlock extends Block {
         mProgrammingListener.onProgrammingEnd( programmingEndState );
     }
 
-
-    /*
-     *
-     */
-    public static String replaceNodeName( Context context, String contentsStr, int nodeNameStringId ) {
-
-        //------------
-        // 置換可能判定
-        //------------
-        // ブロック文に置換文字列があり、かつ、置換先文字列を保持している場合
-        if( contentsStr.contains( "xxx" ) && nodeNameStringId != -1 ){
-            // ブロック文にNode名を埋め込み
-            String nodeName = context.getString( nodeNameStringId );
-            return contentsStr.replace( "xxx", nodeName );
-        }
-
-        // 置換不可
-        return null;
-    }
-
     /*
      * ブロック処理リスナー
      */

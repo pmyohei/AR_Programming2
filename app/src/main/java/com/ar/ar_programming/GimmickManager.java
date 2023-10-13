@@ -103,6 +103,7 @@ public class GimmickManager {
     public static final String GIMMICK_DELIMITER_PATH = "/";
     // 対象Node情報：「Nodeの状態」と「Node名」
     public static final String GIMMICK_DELIMITER_TARGET_NODE_INFO = ":";
+    public static final String GIMMICK_DELIMITER_ACTION_TARGET_INFO = "=";
     // チュートリアル文字列と番号のデリミタ  例）tutorial_1 の 「_」
     public static final String GIMMICK_DELIMITER_TUTORIAL_NAME = "_";
 
@@ -317,7 +318,6 @@ public class GimmickManager {
 
                 // 「開始タグ」であり「タグ名=gimmick」の位置
                 if ((eventType == XmlPullParser.START_TAG) && (Objects.equals(parser.getName(), TAG_START_GIMMICK))) {
-
                     // name属性の値を取得
                     return parser.getAttributeValue(null, ATTR_NAME);
                 }
@@ -392,7 +392,6 @@ public class GimmickManager {
         Resources resources = context.getResources();
         String packageName = context.getPackageName();
 
-
         // 対象Node名を取得
         Log.i("ギミック改修", "type=" + type);
         Log.i("ギミック改修", "action=" + action);
@@ -414,14 +413,19 @@ public class GimmickManager {
      */
     public static String getSpecificNodeName(String targetNode) {
 
-        // 対象Node情報の区切り文字がなければ、引数のNode名がそのまま具体的なNode名
-        if (!targetNode.contains(GIMMICK_DELIMITER_TARGET_NODE_INFO)) {
-            return targetNode;
+        // 「:」あり
+        // 例) 「ghost:enemy」 → 「ghost」
+        if ( targetNode.contains( GIMMICK_DELIMITER_TARGET_NODE_INFO ) ) {
+            return targetNode.split( GIMMICK_DELIMITER_TARGET_NODE_INFO )[0];
         }
 
-        // 対象Node情報の区切り文字があれば、具体的なNode名を抽出
-        String[] nodeInfo = targetNode.split(GIMMICK_DELIMITER_TARGET_NODE_INFO);
-        return nodeInfo[BLOCK_ACTION_TARGET_NODE_POS];
+        // 「:」はないが、「=」あり
+        // 例) 「ghostClown=defeat=ghost」 → 「ghostClown」
+        if ( targetNode.contains( GIMMICK_DELIMITER_ACTION_TARGET_INFO ) ) {
+            return targetNode.split( GIMMICK_DELIMITER_ACTION_TARGET_INFO )[0];
+        }
+
+        return targetNode;
     }
 
     /*

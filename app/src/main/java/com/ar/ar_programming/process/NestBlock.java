@@ -398,13 +398,13 @@ public abstract class NestBlock extends ProcessBlock {
     public boolean isConditionRemoved(CharacterNode characterNode) {
 
         // ステージから除外したことがあるか
-        boolean isEverRemovedNode = characterNode.isEverRemovedNode( mXmlBlockInfo.targetNode_1 );
+        boolean isEverRemovedNode = characterNode.isEverRemovedNodeContain( mXmlBlockInfo.targetNode_1 );
         if( isEverRemovedNode ){
             // あるなら、検索対象外リストはクリアする
             characterNode.clearNotSearchNodeList();
         }
 
-        return  isEverRemovedNode;
+        return isEverRemovedNode;
     }
 }
 

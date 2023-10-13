@@ -82,7 +82,7 @@ public class Gimmick {
         // ブロック情報
         //-----------
         public String type;             // ブロック種別（Single, Loop, If,,,）
-        public String action;           // アクション／条件：動作
+        public String action;           // アクション／ネスト条件：動作
         public String targetNode_1;     // 対象Node1
         public String targetNode_2;     // 対象Node2 elseif
         public int fixVolume;           // 固定処理量
@@ -249,14 +249,16 @@ public class Gimmick {
      */
     private void setXmlExeBlockInfo(String[] blockSplit, XmlBlockInfo xmlBlockInfo) {
 
+
+        // アクション情報を分割
+        // 例）「forward-100」         → [0]forward  [1]100
+        // 例）「pickup-sweets」       → [0]pickup   [1]sweets
+        // 例）「attack-enemy:facing」 → [0]attack   [1]enemy:facing
+        String[] actionAndData = blockSplit[BLOCK_ACTION_DATA_POS].split(GimmickManager.GIMMICK_DELIMITER_CONDITION);
+
         //---------------------------
         // アクション
         //---------------------------
-        // アクション情報を分割
-        // 例）「forward-100」   → [0]forward  [1]100
-        // 例）「pickup-sweets」 → [0]pickup  [1]sweets
-        String[] actionAndData = blockSplit[BLOCK_ACTION_DATA_POS].split(GimmickManager.GIMMICK_DELIMITER_CONDITION);
-
         xmlBlockInfo.action = actionAndData[BLOCK_ACTION_POS];
 
         //---------------------------
@@ -275,12 +277,17 @@ public class Gimmick {
         Pattern pattern = Pattern.compile("^[0-9]+$|-[0-9]+$");
         boolean isVolume = pattern.matcher(actionAttachedData).matches();
         if (isVolume) {
+            //----------------
             // 「固定処理量」
+            //----------------
             xmlBlockInfo.fixVolume = Integer.parseInt(actionAttachedData);
-        } else {
-            // 「対象Node」
-            xmlBlockInfo.targetNode_1 = actionAttachedData;
+            return;
         }
+
+        //--------------------------
+        // 「アクション対象Node」関連
+        //--------------------------
+        xmlBlockInfo.targetNode_1 = actionAttachedData;
     }
 
     /*

@@ -113,7 +113,7 @@
     <string name="block_exe_eat">%sを食べる</string>
     <string name="block_exe_throw">%sを捨てる</string>
     <string name="block_exe_attack">目の前の%sをやっつける</string>
-    <string name="block_exe_farattack">離れた所にいる%sをやっつける</string>
+    <string name="block_exe_farattack">離れた%sをやっつける</string>
     <string name="block_exe_pickup">%sを拾う</string>
     <string name="block_exe_changetarget">ターゲットを変更</string>
 
@@ -544,12 +544,12 @@
     <string name="guide_sub_defeat_crownghost">～お化けを全部退治しよう～</string>
     <string name="guide_goal_defeat_crownghost">お化けを全部退治すればクリア</string>
     <string name="guide_explanation_defeat_crownghost">
-        周りにいるお化けを退治するプログラムを作ってみよう！\n「普通のお化け」はそのまま退治できるよ。\nでも、「ピエロの帽子をかぶったお化け」は強いから、\n「普通のお化け」を退治して慣れていないと倒すことができないんだ。\n「普通のお化け」を退治してから「ピエロお化け」を退治するようにプログラミングしてね！\n\n今回のステージでは、敵が目の前に居なくても\n敵の方を向いているだけで倒すことができるよ。
+        周りにいるお化けを退治するプログラムを作ってみよう！\n今回のステージでは、敵が目の前に居なくても、敵の方を向いていれば倒すことができるよ。
     </string>
 
     <!--  お化け退治！2 ？ブロック -->
     <string name="guide_major_defeat_crownghost2">お化け退治</string>
-    <string name="guide_sub_defeat_crownghost2">～お化けを全部退治しよう～</string>
+    <string name="guide_sub_defeat_crownghost2">～ピエロお化けに注意～</string>
     <string name="guide_goal_defeat_crownghost2">お化けを全部退治すればクリア</string>
     <string name="guide_explanation_defeat_crownghost2">
         周りにいるお化けを退治するプログラムを作ってみよう！\n お化けは「普通のお化け」と「ピエロお化け」の2種類いるよ。\n「普通のお化け」はそのまま退治できるけど\n「ピエロの帽子をかぶったお化け」は強いから、\n「普通のお化け」を退治して慣れていないと倒すことができないんだ。\n「普通のお化け」を退治してから「ピエロお化け」を退治するようにプログラミングしてね！\n（どこに「ピエロお化け」がいるかはゲームを始めるまでわからないよ）\n\n今回のステージでは、敵が目の前に居なくても\n敵の方を向いているだけで倒すことができるよ。
