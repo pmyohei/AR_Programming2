@@ -113,7 +113,7 @@
     <string name="block_exe_eat">%sを食べる</string>
     <string name="block_exe_throw">%sを捨てる</string>
     <string name="block_exe_attack">目の前の%sをやっつける</string>
-    <string name="block_exe_farattack">離れた%sをやっつける</string>
+    <string name="block_exe_farattack">%sをやっつける</string>
     <string name="block_exe_pickup">%sを拾う</string>
     <string name="block_exe_changetarget">ターゲットを変更</string>
 
