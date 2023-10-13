@@ -67,39 +67,39 @@ public class HomeActivity extends AppCompatActivity {
 
 
     //========================================================
-    public void onDebugTutorialUpClicked(View view) {
-        TextView tv_tutorialSet = findViewById(R.id.tv_tutorialSet);
-
-        String tutorial = tv_tutorialSet.getText().toString();
-        int t = Integer.parseInt( tutorial );
-
-        if( t < 7 ){
-            t++;
-        }
-
-        tv_tutorialSet.setText( Integer.toString( t ) );
-    }
-    public void onDebugTutorialDownClicked(View view) {
-        TextView tv_tutorialSet = findViewById(R.id.tv_tutorialSet);
-
-        String tutorial = tv_tutorialSet.getText().toString();
-        int t = Integer.parseInt( tutorial );
-
-        if( t > 1 ){
-            t--;
-        }
-
-        tv_tutorialSet.setText( Integer.toString( t ) );
-    }
-
-    public void onDebugTutorialSetClicked(View view) {
-        TextView tv_tutorialSet = findViewById(R.id.tv_tutorialSet);
-
-        String tutorial = tv_tutorialSet.getText().toString();
-        int t = Integer.parseInt( tutorial );
-
-        Common.setTutorialDebug(this, t);
-    }
+//    public void onDebugTutorialUpClicked(View view) {
+//        TextView tv_tutorialSet = findViewById(R.id.tv_tutorialSet);
+//
+//        String tutorial = tv_tutorialSet.getText().toString();
+//        int t = Integer.parseInt( tutorial );
+//
+//        if( t < 7 ){
+//            t++;
+//        }
+//
+//        tv_tutorialSet.setText( Integer.toString( t ) );
+//    }
+//    public void onDebugTutorialDownClicked(View view) {
+//        TextView tv_tutorialSet = findViewById(R.id.tv_tutorialSet);
+//
+//        String tutorial = tv_tutorialSet.getText().toString();
+//        int t = Integer.parseInt( tutorial );
+//
+//        if( t > 1 ){
+//            t--;
+//        }
+//
+//        tv_tutorialSet.setText( Integer.toString( t ) );
+//    }
+//
+//    public void onDebugTutorialSetClicked(View view) {
+//        TextView tv_tutorialSet = findViewById(R.id.tv_tutorialSet);
+//
+//        String tutorial = tv_tutorialSet.getText().toString();
+//        int t = Integer.parseInt( tutorial );
+//
+//        Common.setTutorialDebug(this, t);
+//    }
     //========================================================
 
 
