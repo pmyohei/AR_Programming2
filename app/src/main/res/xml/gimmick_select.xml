@@ -28,7 +28,7 @@
 		name="avoid_poison_mushroom"
 		character="animal"
 		successCondition="goal"
-		goalGuide="guide_major_tutorial_5, guide_sub_tutorial_5, guide_goal_tutorial_5, guide_explanation_tutorial_5"
+		goalGuide="guide_major_poison_mushroom, guide_sub_poison_mushroom, guide_goal_poison_mushroom, guide_explanation_poison_mushroom"
 		stageGlb="models/stage/forest_load_2.glb"
 		characterGlb="models/animal/rabit.glb"
 		characterPosition="0 : 1.4 : 8.7"

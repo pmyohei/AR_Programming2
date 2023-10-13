@@ -180,7 +180,7 @@
     <string name="tutorial_6">チュートリアル６\n～条件ブロックを学ぼう(if-elseif-else)～</string>
 
     <string name="chase_with_police_car">パトカーで追跡！</string>
-    <string name="avoid_poison_mushroom">毒キノコは捨てよう</string>
+    <string name="avoid_poison_mushroom">毒キノコに気を付けよう</string>
     <string name="which_poison_mushroom">毒キノコはどれだろう？</string>
     <string name="present_for_rabbit">プレゼントをウサギへ届けよう</string>
     <string name="pickup_sweets_and_sweets_house">お菓子を拾ってお菓子の家へ</string>
@@ -476,7 +476,7 @@
     </string>
 
     <!--  毒キノコはどれだろう？  -->
-    <string name="guide_major_which_poison_mushroom">なにがあるかな</string>
+    <string name="guide_major_which_poison_mushroom">毒キノコはどれかな</string>
     <string name="guide_sub_which_poison_mushroom">～条件ブロックをうまく使おう～</string>
     <string name="guide_goal_which_poison_mushroom">ニンジンは食べて、毒キノコは捨てよう。家につけばクリア</string>
     <string name="guide_explanation_which_poison_mushroom">
