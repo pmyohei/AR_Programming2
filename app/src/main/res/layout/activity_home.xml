@@ -126,69 +126,69 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <!-- for debug  ！本番リリースでは無効化すること -->
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/cl_debug"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginBottom="20dp"
-            android:background="@color/white"
-            android:onClick="onSettingClicked"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            tools:context=".HomeActivity">
+<!--        <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--            android:id="@+id/cl_debug"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="0dp"-->
+<!--            android:layout_marginBottom="20dp"-->
+<!--            android:background="@color/white"-->
+<!--            android:onClick="onSettingClicked"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            tools:context=".HomeActivity">-->
 
-            <TextView
-                android:id="@+id/tv_tutorialSet"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/home_tx_margin_start"
-                android:text="1"
-                android:textSize="@dimen/home_tx_size"
-                android:letterSpacing="0.2"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+<!--            <TextView-->
+<!--                android:id="@+id/tv_tutorialSet"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginStart="@dimen/home_tx_margin_start"-->
+<!--                android:text="1"-->
+<!--                android:textSize="@dimen/home_tx_size"-->
+<!--                android:letterSpacing="0.2"-->
+<!--                app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintTop_toTopOf="parent" />-->
 
-            <TextView
-                android:id="@+id/tv_up"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/home_tx_margin_start"
-                android:text="＋"
-                android:textSize="@dimen/home_tx_size"
-                android:letterSpacing="0.2"
-                android:onClick="onDebugTutorialUpClicked"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@id/tv_tutorialSet"
-                app:layout_constraintTop_toTopOf="parent" />
+<!--            <TextView-->
+<!--                android:id="@+id/tv_up"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginStart="@dimen/home_tx_margin_start"-->
+<!--                android:text="＋"-->
+<!--                android:textSize="@dimen/home_tx_size"-->
+<!--                android:letterSpacing="0.2"-->
+<!--                android:onClick="onDebugTutorialUpClicked"-->
+<!--                app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                app:layout_constraintStart_toEndOf="@id/tv_tutorialSet"-->
+<!--                app:layout_constraintTop_toTopOf="parent" />-->
 
-            <TextView
-                android:id="@+id/tv_down"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/home_tx_margin_start"
-                android:text="ー"
-                android:textSize="@dimen/home_tx_size"
-                android:letterSpacing="0.2"
-                android:onClick="onDebugTutorialDownClicked"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@id/tv_up"
-                app:layout_constraintTop_toTopOf="parent" />
+<!--            <TextView-->
+<!--                android:id="@+id/tv_down"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginStart="@dimen/home_tx_margin_start"-->
+<!--                android:text="ー"-->
+<!--                android:textSize="@dimen/home_tx_size"-->
+<!--                android:letterSpacing="0.2"-->
+<!--                android:onClick="onDebugTutorialDownClicked"-->
+<!--                app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                app:layout_constraintStart_toEndOf="@id/tv_up"-->
+<!--                app:layout_constraintTop_toTopOf="parent" />-->
 
-            <TextView
-                android:id="@+id/tv_setUserData"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/home_tx_margin_start"
-                android:text="設定する"
-                android:textSize="20sp"
-                android:letterSpacing="0.2"
-                android:onClick="onDebugTutorialSetClicked"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
+<!--            <TextView-->
+<!--                android:id="@+id/tv_setUserData"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginStart="@dimen/home_tx_margin_start"-->
+<!--                android:text="設定する"-->
+<!--                android:textSize="20sp"-->
+<!--                android:letterSpacing="0.2"-->
+<!--                android:onClick="onDebugTutorialSetClicked"-->
+<!--                app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                app:layout_constraintEnd_toEndOf="parent" />-->
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+<!--        </androidx.constraintlayout.widget.ConstraintLayout>-->
         <!-- for debug  ！本番リリースでは無効化すること -->
 
     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -202,7 +202,7 @@
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
         ads:adSize="BANNER"
-        ads:adUnitId="@string/admob_unit_id_test"
+        ads:adUnitId="@string/admob_unit_id"
         app:layout_constraintTop_toBottomOf="@+id/cl_setting"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
