@@ -534,6 +534,9 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
         // ステージ上の置きかえ対象Node置き換え
         replaceNodeOnStage();
 
+        // ブロック追加を制限
+        controlSelectBlockArea(false);
+
         //----------------------
         // プログラミング実行開始
         //----------------------
@@ -563,7 +566,7 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         // リトライ処理
-                        retryStage( true );
+                        retryStage(true);
                     }
                 })
                 .setNegativeButton(getString(R.string.ar_dialog_negative), null)
@@ -602,6 +605,16 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
             @Override
             public boolean onDrag(View view, DragEvent dragEvent) {
 
+                //-----------------
+                // ゲーム中は操作制限
+                //-----------------
+                if (mPlayState == PLAY_STATE_PLAYING) {
+                    return false;
+                }
+
+                //-----------------
+                // ドロップ検出
+                //-----------------
                 switch (dragEvent.getAction()) {
                     case DragEvent.ACTION_DRAG_STARTED:
                     case DragEvent.ACTION_DRAG_LOCATION:
@@ -651,6 +664,8 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
         relocateExcludedNode();
         // キャラクター位置リセット
         mCharacterNode.initStatus();
+        // ブロック選択可能に
+        controlSelectBlockArea( true );
         // ゲーム状態をゲーム開始前にする
         mPlayState = PLAY_STATE_PRE_PLAY;
     }
@@ -667,8 +682,8 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
         // 除外Nodeを再配置
         //---------------
         List<Node> removedNodeList = mCharacterNode.getRemovedNodeList();
-        for( Node node: removedNodeList ){
-            node.setParent( anchorNode );
+        for (Node node : removedNodeList) {
+            node.setParent(anchorNode);
         }
     }
 
@@ -729,10 +744,23 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
         RecyclerView rv_selectBlock = root.findViewById(R.id.rv_selectBlock);
         UserBlockSelectListAdapter adapter = (UserBlockSelectListAdapter) rv_selectBlock.getAdapter();
 
-        if( adapter != null ){
+        if (adapter != null) {
             adapter.clearBlockList();
             adapter.notifyItemRangeRemoved(0, blockNum);
         }
+    }
+
+
+    /*
+     * ブロック選択肢リストの操作制御
+     */
+    private void controlSelectBlockArea( boolean can ) {
+
+        RecyclerView rv_selectBlock = binding.getRoot().findViewById(R.id.rv_selectBlock);
+        UserBlockSelectListAdapter adapter = (UserBlockSelectListAdapter)rv_selectBlock.getAdapter();
+
+        // ブロック選択を不可にする
+        adapter.setCanSelectBlock( can );
     }
 
     /*
@@ -1910,7 +1938,7 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
                 //----------------------------------
                 // 状態管理
                 //----------------------------------
-                // ステージ配置前⇒プログラミング中へ
+                // ステージ配置前⇒プログラミング作成中へ（ゲーム開始前）
                 mPlayState = PLAY_STATE_PRE_PLAY;
 
                 //----------------------------------
@@ -2589,6 +2617,18 @@ public class ARFragment extends Fragment implements ARActivity.MenuClickListener
     @Override
     public boolean onDropBlock(Block dropBlock, DragEvent dragEvent) {
 
+        //-----------------
+        // ゲーム中は操作制限
+        //-----------------
+        if( mPlayState == PLAY_STATE_PLAYING ){
+            // ドラッグされてきたブロックの半透明化を解除
+            dragBlockTranceOff(dragEvent);
+            return false;
+        }
+
+        //------------------------
+        // ドロップ
+        //------------------------
         // ドロップ予定ラインビュー
         int dropLineID = dropBlock.getDropLineViewID();
         View v_dropLine = dropBlock.findViewById(dropLineID);

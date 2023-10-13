@@ -35,14 +35,15 @@ public class UserBlockSelectListAdapter extends RecyclerView.Adapter<UserBlockSe
     //---------------------------
     // フィールド変数
     //----------------------------
-    // 処理ブロックリストリスト
+    // ブロックリストリスト
     private final ArrayList<Gimmick.XmlBlockInfo> mXmlBlockInfo;
-    // クリックリスナー
+    // 選択肢ブロッククリックリスナー
     private BlockClickListener mBlockClickListener;
-
+    // ブロック追加の可不可
+    private boolean mCanSelectBlock;
 
     /*
-     * 処理ブロック
+     * ブロック
      */
     class ProcessBlockViewHolder extends RecyclerView.ViewHolder {
 
@@ -102,6 +103,13 @@ public class UserBlockSelectListAdapter extends RecyclerView.Adapter<UserBlockSe
             cl_parent.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+
+                    //-----------------
+                    // ブロック選択可 判定
+                    //-----------------
+                    if( !mCanSelectBlock ){
+                        return;
+                    }
 
                     //-----------------
                     // 使用可能数
@@ -256,6 +264,8 @@ public class UserBlockSelectListAdapter extends RecyclerView.Adapter<UserBlockSe
     public UserBlockSelectListAdapter( ArrayList<Gimmick.XmlBlockInfo> blockList ) {
         mXmlBlockInfo = new ArrayList<>();
         mXmlBlockInfo.addAll( blockList );
+
+        mCanSelectBlock = true;
     }
 
     /*
@@ -321,14 +331,22 @@ public class UserBlockSelectListAdapter extends RecyclerView.Adapter<UserBlockSe
     }
 
     /*
-     * 処理ブロックリストクリア
+     * ブロック選択 可／不可
+     */
+    public void setCanSelectBlock(boolean enable ) {
+        mCanSelectBlock = enable;
+    }
+
+    /*
+     * ブロックリストクリア
      */
     public void clearBlockList() {
         mXmlBlockInfo.clear();
     }
 
+
     /*
-     * 処理ブロッククリックリスナーの設定
+     * ブロッククリックリスナーの設定
      */
     public void setOnBlockClickListener(BlockClickListener listener ) {
         mBlockClickListener = listener;
@@ -338,7 +356,7 @@ public class UserBlockSelectListAdapter extends RecyclerView.Adapter<UserBlockSe
      * 処理結果通知用のインターフェース
      */
     public interface BlockClickListener {
-        // 処理ブロッククリックリスナー
+        // ブロッククリックリスナー
         void onBlockClick( Gimmick.XmlBlockInfo xmlBlockInfo );
     }
 }
