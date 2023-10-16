@@ -23,6 +23,7 @@
         <item>@layout/help_page_about_ar_2</item>
         <item>@layout/help_page_about_ar_3</item>
         <item>@layout/help_page_about_ar_4</item>
+        <item>@layout/help_page_about_ar_5</item>
     </array>
 
     <!--  ブロック基本操作  -->

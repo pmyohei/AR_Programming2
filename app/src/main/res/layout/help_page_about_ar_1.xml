@@ -53,7 +53,22 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
-                android:text="@string/how_to_ar_explanation_1"
+                android:text="@string/how_to_ar_caution_1"
+                android:textAlignment="center"
+                android:textColor="@color/error_text"
+                android:textSize="@dimen/how_to_page_exp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/tv_exp2"
+                app:layout_constraintTop_toBottomOf="@id/v_border" />
+
+            <TextView
+                android:id="@+id/tv_exp2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="@string/how_to_ar_caution_2"
                 android:textAlignment="center"
                 android:textColor="@color/black"
                 android:textSize="@dimen/how_to_page_exp"
@@ -61,7 +76,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/v_border" />
+                app:layout_constraintTop_toBottomOf="@id/tv_exp1" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

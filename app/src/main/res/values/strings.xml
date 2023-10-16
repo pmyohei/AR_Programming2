@@ -259,6 +259,12 @@
     
     <!-- AR基本操作 -->
     <string name="how_to_ar_title">ARの遊び方</string>
+    <string name="how_to_ar_caution_1">
+            注意事項\n（遊ぶ前に必ず読んでね！）
+    </string>
+    <string name="how_to_ar_caution_2">
+            ARで遊ぶときは、周りのものや他の人にぶつかったりしないように注意してね。\n初めは、自分の机に座って遊ぶといいよ！\nもし外で遊ぶときは、車や歩行者に注意して、\n公園や庭等の広い場所で遊ぼう！\n慣れていない内は、ご両親の見ている前で一緒に遊んでね！
+    </string>
     <string name="how_to_ar_explanation_1">
             ARカメラが起動したら\nまずはカメラで身の回りにある\n平面なところを映してみよう！
     </string>

@@ -49,31 +49,19 @@
                 app:layout_constraintTop_toBottomOf="@id/tv_pageTitle" />
 
             <TextView
-                android:id="@+id/tv_exp2"
+                android:id="@+id/tv_exp1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
-                android:text="@string/how_to_ar_explanation_2"
+                android:layout_marginTop="20dp"
+                android:text="@string/how_to_ar_explanation_1"
                 android:textAlignment="center"
                 android:textColor="@color/black"
                 android:textSize="@dimen/how_to_page_exp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/v_border" />
-
-            <ImageView
-                android:id="@+id/iv_image1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:adjustViewBounds="true"
-                android:scaleType="centerInside"
-                android:layout_marginTop="24dp"
-                android:src="@drawable/how_to_ar_dot"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tv_exp2" />
+                app:layout_constraintTop_toBottomOf="@id/v_border" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
