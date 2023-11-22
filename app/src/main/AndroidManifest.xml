@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="com.ar.ar_programming">
+    xmlns:tools="http://schemas.android.com/tools">
     <!-- カメラの使用／アプリの実行にARCoreが必須　に設定 -->
     <uses-permission android:name="android.permission.CAMERA" />
     <!--  Admob  -->
@@ -10,6 +9,9 @@
     <uses-feature
         android:name="android.hardware.camera.ar"
         android:required="true" />
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
 
     <application
         android:allowBackup="true"

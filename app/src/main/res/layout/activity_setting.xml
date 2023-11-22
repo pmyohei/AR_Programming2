@@ -290,4 +290,20 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <TextView
+        android:id="@+id/tv_licenses"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:fontFamily="@font/hachimarupop_regular"
+        android:letterSpacing="0.2"
+        android:text="@string/licenses"
+        android:textColor="@color/tx_home"
+        android:textSize="@dimen/setting_tx_licenses_size"
+        android:textStyle="bold"
+        android:onClick="onLicensesClicked"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

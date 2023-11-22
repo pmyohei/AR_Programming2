@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">AR_Programming</string>
+    <string name="app_name">ARプログラミング</string>
 
     <!-- Admod（アプリID） -->
     <string name="admob_app_id" translatable="false">ca-app-pub-8046295810838892~9506977518</string>
@@ -94,6 +94,9 @@
 
     <!-- snackbar -->
     <string name="setting_snackbar_message">保存しました</string>
+
+    <!--  ライセンス  -->
+    <string name="licenses">Licenses</string>
 
     <!-- ================================================================= -->
     <!-- 処理ブロック -->

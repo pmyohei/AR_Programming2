@@ -1,5 +1,6 @@
 plugins {
     id 'com.android.application'
+    id 'com.google.android.gms.oss-licenses-plugin'
 }
 
 android {
@@ -9,8 +10,8 @@ android {
         applicationId "com.ar.ar_programming"
         minSdk 24
         targetSdk 33
-        versionCode 2
-        versionName "1.1"
+        versionCode 3       // !2023/11/22 アプリ名変更／ライセンス表記対応
+        versionName "1.2"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -28,6 +29,7 @@ android {
     buildFeatures {
         viewBinding true
     }
+    namespace 'com.ar.ar_programming'
 }
 
 dependencies {
@@ -40,10 +42,10 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
-
     //ARCoreとSceneformの依存関係の追加
     implementation "com.gorisse.thomas.sceneform:sceneform:1.20.3"
-
     // Admob
     implementation 'com.google.android.gms:play-services-ads:22.4.0'
+    //
+    implementation("com.google.android.gms:play-services-oss-licenses:17.0.1")
 }

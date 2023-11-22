@@ -9,17 +9,23 @@
     <dimen name="home_tx_margin_start">20dp</dimen>
     <dimen name="home_tx_size">24sp</dimen>
 
+    <!---->
     <!--  遊び方画面  -->
+    <!---->
     <dimen name="how_to_play_tx_size">18sp</dimen>
 
     <dimen name="dialog_padding_bottom">40dp</dimen>
     <dimen name="dialog_contents_padding_horizontal">20dp</dimen>
 
+    <!---->
+    <!--  Setting画面  -->
+    <!---->
     <dimen name="setting_title_margin_top">32dp</dimen>
     <dimen name="setting_title_margin_start">20dp</dimen>
     <dimen name="setting_item_margin_top">18dp</dimen>
     <dimen name="setting_title_size">18sp</dimen>
     <dimen name="setting_tx_item_size">14sp</dimen>
+    <dimen name="setting_tx_licenses_size">16sp</dimen>
     <dimen name="setting_icon_size">40dp</dimen>
 
     <dimen name="chart_area_width">2000dp</dimen>

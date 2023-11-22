@@ -16,6 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.RadioButton;
 
+import com.google.android.gms.oss.licenses.OssLicensesMenuActivity;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.Objects;
@@ -451,6 +452,13 @@ public class SettingActivity extends AppCompatActivity {
         finish();
     }
 
+    /*
+     * licenses押下時処理
+     */
+    public void onLicensesClicked(View view) {
+        Intent intent = new Intent(this, OssLicensesMenuActivity.class);
+        startActivity(intent);
+    }
 
     /*
      * ツールバーオプションメニュー生成
