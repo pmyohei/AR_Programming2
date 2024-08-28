@@ -4,14 +4,14 @@ plugins {
 }
 
 android {
-    compileSdk 33
+    compileSdk 34
 
     defaultConfig {
         applicationId "com.ar.ar_programming"
         minSdk 24
-        targetSdk 33
-        versionCode 3       // !2023/11/22 アプリ名変更／ライセンス表記対応
-        versionName "1.2"
+        targetSdk 34
+        versionCode 4       // !2024/08/28 API34対応
+        versionName "1.3"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
